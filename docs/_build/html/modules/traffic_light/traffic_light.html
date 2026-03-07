@@ -1,0 +1,272 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>traffic_light State Machine &mdash; Traffic Light Controller</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=4a496375" />
+
+  
+    <link rel="shortcut icon" href="../../_static/logo.svg"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">test auto — Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../overview.html#modules">Modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../blinky/index.html">blinky</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../blinky/entity.html">blinky — Entity</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../blinky/entity.html#annotated-source">Annotated Source</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../blinky/fsm.html">blinky State Machine</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../blinky/fsm.html#state-transition-diagram">State Transition Diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../blinky/fsm.html#state-output-table">State Output Table</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../blinky/fsm.html#transitions">Transitions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../blinky/timing.html">blinky — Timing Diagrams</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../blinky/timing.html#p-next-state">P Next State</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../blinky/timing.html#p-outputs">P Outputs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../blinky/timing.html#p-state-reg">P State Reg</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../blinky/processes/index.html">Processes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../blinky/processes/p_state_reg.html">p_state_reg</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../blinky/processes/p_state_reg.html#description">Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../blinky/processes/p_state_reg.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../blinky/processes/p_next_state.html">p_next_state</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../blinky/processes/p_next_state.html#description">Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../blinky/processes/p_next_state.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../blinky/processes/p_outputs.html">p_outputs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../blinky/processes/p_outputs.html#description">Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../blinky/processes/p_outputs.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../blinky/processes/index.html#summary">Summary</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">traffic_light</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="entity.html">traffic_light — Entity</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="entity.html#annotated-source">Annotated Source</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fsm.html">traffic_light State Machine</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fsm.html#state-transition-diagram">State Transition Diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fsm.html#state-output-table">State Output Table</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fsm.html#transitions">Transitions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="timing.html">traffic_light — Timing Diagrams</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="timing.html#p-next-state">P Next State</a></li>
+<li class="toctree-l3"><a class="reference internal" href="timing.html#p-outputs">P Outputs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="timing.html#p-state-reg">P State Reg</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="processes/index.html">Processes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="processes/p_state_reg.html">p_state_reg</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="processes/p_state_reg.html#description">Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="processes/p_state_reg.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="processes/p_next_state.html">p_next_state</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="processes/p_next_state.html#description">Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="processes/p_next_state.html#signal-assignments">Signal Assignments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="processes/p_next_state.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="processes/p_outputs.html">p_outputs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="processes/p_outputs.html#description">Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="processes/p_outputs.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="processes/index.html#summary">Summary</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Traffic Light Controller</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">traffic_light State Machine</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/modules/traffic_light/traffic_light.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="traffic-light-state-machine">
+<h1>traffic_light State Machine<a class="headerlink" href="#traffic-light-state-machine" title="Link to this heading"></a></h1>
+<p>Auto-extracted from <code class="docutils literal notranslate"><span class="pre">traffic_light.vhd</span></code>.</p>
+<section id="state-transition-diagram">
+<h2>State Transition Diagram<a class="headerlink" href="#state-transition-diagram" title="Link to this heading"></a></h2>
+<div class="graphviz"><object data="../../_images/graphviz-e3d96cf4929559b8bd2b7ddace0a585a8a566688.svg" type="image/svg+xml" class="graphviz">
+<p class="warning">digraph traffic_light {
+    rankdir=LR;
+    node [shape=circle, style=filled, fontname=Helvetica, fontsize=12];
+    edge [fontname=Helvetica, fontsize=10];
+
+    __start [shape=point, width=0.2, fillcolor=black];
+
+    RED [fillcolor=salmon];
+    RED_AMBER [fillcolor=lightyellow];
+    GREEN [fillcolor=lightgreen];
+    AMBER [fillcolor=orange];
+
+    __start -&gt; RED [label=&quot;reset&quot;];
+
+    RED -&gt; RED_AMBER [label=&quot;timer_exp = '1'&quot;];
+    RED_AMBER -&gt; GREEN [label=&quot;timer_exp = '1'&quot;];
+    GREEN -&gt; AMBER [label=&quot;timer_exp = '1'&quot;];
+    AMBER -&gt; RED [label=&quot;timer_exp = '1'&quot;];
+}</p></object></div>
+</section>
+<section id="state-output-table">
+<h2>State Output Table<a class="headerlink" href="#state-output-table" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>State</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">red_out</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">amber_out</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">green_out</span></code></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RED</span></code></p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">RED_AMBER</span></code></p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GREEN</span></code></p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">AMBER</span></code></p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="transitions">
+<h2>Transitions<a class="headerlink" href="#transitions" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>From</p></th>
+<th class="head"><p>To</p></th>
+<th class="head"><p>Condition</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RED</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RED_AMBER</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">timer_exp</span> <span class="pre">=</span> <span class="pre">'1'</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">RED_AMBER</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">GREEN</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">timer_exp</span> <span class="pre">=</span> <span class="pre">'1'</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GREEN</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">AMBER</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">timer_exp</span> <span class="pre">=</span> <span class="pre">'1'</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">AMBER</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RED</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">timer_exp</span> <span class="pre">=</span> <span class="pre">'1'</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, HDL Team.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

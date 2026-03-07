@@ -1,0 +1,47 @@
+{#
+  layout.html — project-level layout override for sphinx_rtd_theme.
+  Inherits everything from the base theme; only overrides specific blocks.
+#}
+{% extends "!layout.html" %}
+
+{# ── Browser tab title ────────────────────────────────────────────────────── #}
+{% block htmltitle %}
+  <title>{{ title }} — {{ project }}</title>
+{% endblock %}
+
+{# ── Sidebar logo / project name area ─────────────────────────────────────── #}
+{% block sidebartitle %}
+  <div class="hdl-sidebar-brand">
+    {% if logo %}
+      <img src="{{ pathto('_static/' + logo, 1) }}" class="hdl-logo" alt="{{ project }} logo"/>
+    {% endif %}
+    <span class="hdl-project-name">{{ project }}</span>
+    <span class="hdl-project-version">v{{ release }}</span>
+  </div>
+{% endblock %}
+
+{# ── Footer ───────────────────────────────────────────────────────────────── #}
+{% block footer %}
+  <div class="hdl-footer">
+    <div class="hdl-footer-left">
+      <strong>{{ project }}</strong> v{{ release }}
+      &nbsp;·&nbsp;
+      {{ copyright }}
+    </div>
+    <div class="hdl-footer-right">
+      Built with
+      <a href="https://www.sphinx-doc.org" target="_blank">Sphinx</a>
+      &nbsp;·&nbsp;
+      <a href="https://wavedrom.com" target="_blank">WaveDrom</a>
+      &nbsp;·&nbsp;
+      <a href="https://graphviz.org" target="_blank">Graphviz</a>
+    </div>
+  </div>
+{% endblock %}
+
+{# ── Extra head content (meta tags) ───────────────────────────────────────── #}
+{% block extrahead %}
+  {{ super() }}
+  <meta name="author" content="{{ author }}"/>
+  <meta name="description" content="{{ project }} HDL documentation"/>
+{% endblock %}

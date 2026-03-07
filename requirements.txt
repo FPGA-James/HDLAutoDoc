@@ -1,0 +1,17 @@
+# Core Sphinx
+sphinx>=7.0,<9.0
+
+# Pin docutils — sphinxvhdl 0.2.2 has a transition node bug with docutils 0.21+
+docutils>=0.18,<0.21
+
+# Theme
+sphinx-rtd-theme>=2.0
+
+# WaveDrom — multiple diagrams per file via .. wavedrom:: directive
+sphinxcontrib-wavedrom>=3.0
+
+# VHDL domain — auto-doc from annotated VHDL source
+sphinx-vhdl>=0.1
+
+# Offline WaveDrom rendering (no Node.js needed for PDF builds)
+wavedrom

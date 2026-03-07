@@ -1,0 +1,19 @@
+digraph traffic_light {
+    rankdir=LR;
+    node [shape=circle, style=filled, fontname=Helvetica, fontsize=12];
+    edge [fontname=Helvetica, fontsize=10];
+
+    __start [shape=point, width=0.2, fillcolor=black];
+
+    RED [fillcolor=salmon];
+    RED_AMBER [fillcolor=lightyellow];
+    GREEN [fillcolor=lightgreen];
+    AMBER [fillcolor=orange];
+
+    __start -> RED [label="reset"];
+
+    RED -> RED_AMBER [label="timer_exp = '1'"];
+    RED_AMBER -> GREEN [label="timer_exp = '1'"];
+    GREEN -> AMBER [label="timer_exp = '1'"];
+    AMBER -> RED [label="timer_exp = '1'"];
+}

@@ -1,0 +1,120 @@
+/* custom.css — HDL documentation theme */
+
+/* ── Sidebar brand area ───────────────────────────────────────────────────── */
+.hdl-sidebar-brand {
+    padding: 16px 12px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 8px;
+}
+
+.hdl-logo {
+    display: block;
+    max-width: 100px;
+    margin: 0 auto 8px;
+}
+
+.hdl-project-name {
+    display: block;
+    color: #fff;
+    font-size: 1.1em;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.3;
+}
+
+.hdl-project-version {
+    display: block;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.75em;
+    text-align: center;
+    font-family: monospace;
+    margin-top: 2px;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+.hdl-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    background: #f8f8f8;
+    border-top: 1px solid #e0e0e0;
+    font-size: 0.8em;
+    color: #666;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.hdl-footer a {
+    color: #2980b9;
+    text-decoration: none;
+}
+
+.hdl-footer a:hover {
+    text-decoration: underline;
+}
+
+/* ── Breadcrumb badge ─────────────────────────────────────────────────────── */
+.hdl-breadcrumb-aside {
+    float: right;
+    font-size: 0.8em;
+}
+
+.hdl-build-badge {
+    background: #2980b9;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 0.85em;
+    font-family: monospace;
+}
+
+/* ── WaveDrom diagrams ────────────────────────────────────────────────────── */
+.wavedrom {
+    display: block;
+    margin: 1.5em auto;
+    text-align: center;
+}
+
+/* ── Graphviz FSM diagrams ────────────────────────────────────────────────── */
+.graphviz svg {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1em auto;
+}
+
+/* ── Signal / port tables ─────────────────────────────────────────────────── */
+table.docutils td:first-child {
+    font-family: monospace;
+    font-weight: bold;
+}
+
+table.docutils td code {
+    background: #f0f4f8;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+/* ── VHDL source blocks ───────────────────────────────────────────────────── */
+div[class^="highlight-vhdl"] pre {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    border-left: 3px solid #2980b9;
+    border-radius: 4px;
+}
+
+/* ── Section headings ─────────────────────────────────────────────────────── */
+h1 { border-bottom: 2px solid #2980b9; padding-bottom: 6px; }
+h2 { border-bottom: 1px solid #d0d0d0; padding-bottom: 4px; }
+
+/* ── Rubric (process name headings) ──────────────────────────────────────── */
+p.rubric {
+    font-family: monospace;
+    font-size: 1.05em;
+    color: #2980b9;
+    border-left: 3px solid #2980b9;
+    padding-left: 8px;
+    margin-top: 1.5em;
+}
