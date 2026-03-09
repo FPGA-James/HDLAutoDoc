@@ -154,7 +154,8 @@ def write_always(path: Path, content: str) -> str:
 
 def module_index_rst(entity: dict, children: list[str],
                      shared_children: set[str],
-                     has_processes: bool = True) -> str:
+                     has_processes: bool = True,
+                     is_top: bool = False) -> str:
     """Always-regenerated toctree for one module."""
     name  = entity["name"]
     title = name
@@ -170,6 +171,9 @@ def module_index_rst(entity: dict, children: list[str],
     if has_processes:
         lines.append("   processes/index")
     lines.append("")
+
+    if is_top:
+        lines += ["   ../../registers", ""]
 
     if children:
         lines += [
@@ -406,6 +410,7 @@ def index_rst(entities: list[dict], project_name: str,
     else:
         for e in entities:
             lines.append(f"   modules/{e['name']}/index")
+        lines.append("   registers")
 
     lines += [
         "",
@@ -458,16 +463,20 @@ if __name__ == "__main__":
     src_dir  = Path(sys.argv[1])
     docs_dir = Path(sys.argv[2])
 
-    # Project name from parent folder — skip generic names like 'src', 'docs', 'files'
+    # Project name — from argument, or derived from parent folder name
     GENERIC_NAMES = {"src", "docs", "files", "hdl", "rtl", "vhdl", "verilog",
                      "source", "sources", "project", "projects", "workspace"}
-    candidate = docs_dir.resolve().parent
-    # Walk up until we find a non-generic folder name
-    for _ in range(4):
-        if candidate.name.lower() not in GENERIC_NAMES:
-            break
-        candidate = candidate.parent
-    project_name = candidate.name.replace("_", " ").replace("-", " ").title()
+
+    if len(sys.argv) > 3 and sys.argv[3].strip():
+        project_name = sys.argv[3].strip()
+    else:
+        candidate = docs_dir.resolve().parent
+        for _ in range(4):
+            if candidate.name.lower() not in GENERIC_NAMES:
+                break
+            candidate = candidate.parent
+        project_name = candidate.name.replace("_", " ").replace("-", " ").title()
+
     print(f"Project: {project_name}")
 
     # Load hierarchy if available
@@ -512,7 +521,8 @@ if __name__ == "__main__":
         results.append(write_always(
             mod_dir / "index.rst",
             module_index_rst(entity, children, shared_names,
-                             has_processes=has_processes)
+                             has_processes=has_processes,
+                             is_top=(hierarchy and name == hierarchy["top"]))
         ))
         results.append(write_always(
             mod_dir / "fsm.rst",

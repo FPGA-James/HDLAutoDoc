@@ -1,0 +1,42 @@
+[conf]
+mode = "r_w"
+description = "Counter configuration."
+
+[conf.condition]
+type = "enumeration"
+description = "Set mode for how the counter operates."
+default_value = "clock_cycles"
+
+[conf.condition.element]
+clock_cycles = "Increment counter each clock cycle."
+clock_cycles_with_enable = "Increment counter when clock_enable is asserted."
+enable_edges = "Increment counter each time clock_enable changes state."
+
+[conf.increment]
+type = "integer"
+description = "Step size for each counter increment."
+min_value = 1
+max_value = 255
+default_value = 1
+
+[command]
+mode = "wpulse"
+description = "Issue a one-shot command to the counter."
+
+[command.reset_counter]
+type = "bit"
+description = "Pulse high to reset the counter to zero."
+default_value = "0"
+
+[status]
+mode = "r"
+description = "Current counter status."
+
+[status.enabled]
+type = "bit"
+description = "Asserted when the counter is actively running."
+
+[status.pulse_count]
+type = "bit_vector"
+width = 16
+description = "Number of pulses emitted since last reset."

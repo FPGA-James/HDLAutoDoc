@@ -1,0 +1,91 @@
+# my_block.yml
+register_block:
+  name: test123
+  byte_size: 256
+
+  registers:
+    # -----------------------------------------------
+    # Control Register (offset 0x00) — read/write
+    # -----------------------------------------------
+    - name: CTRL
+      offset_address: 0x00
+      bit_fields:
+        - name: TX_EN
+          bit_assignment:
+            lsb: 0
+            width: 1
+          type: rw
+          initial_value: 0
+          comment: "Transmit enable"
+
+        - name: RX_EN
+          bit_assignment:
+            lsb: 1
+            width: 1
+          type: rw
+          initial_value: 0
+          comment: "Receive enable"
+
+        - name: LOOPBACK
+          bit_assignment:
+            lsb: 2
+            width: 1
+          type: rw
+          initial_value: 0
+          comment: "Internal loopback mode"
+
+    # -----------------------------------------------
+    # Status Register (offset 0x04) — read-only
+    # -----------------------------------------------
+    - name: STATUS
+      offset_address: 0x04
+      bit_fields:
+        - name: TX_BUSY
+          bit_assignment:
+            lsb: 0
+            width: 1
+          type: ro
+          comment: "Transmit in progress"
+
+        - name: RX_VALID
+          bit_assignment:
+            lsb: 1
+            width: 1
+          type: ro
+          comment: "Receive data ready"
+
+    # -----------------------------------------------
+    # Baud Rate Divisor (offset 0x08) — read/write
+    # -----------------------------------------------
+    - name: BAUD_DIV
+      offset_address: 0x08
+      bit_fields:
+        - name: DIVISOR
+          bit_assignment:
+            lsb: 0
+            width: 16
+          type: rw
+          initial_value: 0x0045
+          comment: "Clock divisor for baud rate generation"
+
+    # -----------------------------------------------
+    # Interrupt Enable (offset 0x0C)
+    # -----------------------------------------------
+    - name: INT_EN
+      offset_address: 0x0C
+      bit_fields:
+        - name: TX_DONE_IE
+          bit_assignment:
+            lsb: 0
+            width: 1
+          type: rw
+          initial_value: 0
+          comment: "TX done interrupt enable"
+
+        - name: RX_DONE_IE
+          bit_assignment:
+            lsb: 1
+            width: 1
+          type: rw
+          initial_value: 0
+          comment: "RX done interrupt enable"

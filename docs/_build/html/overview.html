@@ -6,11 +6,11 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>James — Overview &mdash; Traffic Light Controller</title>
+  <title>test123 — Overview &mdash; Traffic Light Controller</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
-      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=4a496375" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=806932e2" />
 
   
     <link rel="shortcut icon" href="_static/logo.svg"/>
@@ -19,11 +19,12 @@
       <script src="_static/documentation_options.js?v=8d563738"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/theme.js?v=e53adc8f"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="top" href="modules/top/index.html" />
-    <link rel="prev" title="James" href="index.html" /> 
+    <link rel="prev" title="test123" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,7 +49,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">James — Overview</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">test123 — Overview</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#modules">Modules</a></li>
 </ul>
 </li>
@@ -59,6 +60,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="modules/top/fsm.html">top — State Machine</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/top/timing.html">top — Timing Diagrams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="registers.html">Registers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/top/index.html#submodules">Submodules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="modules/blinky/index.html">blinky</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="modules/blinky/entity.html">blinky — Entity</a></li>
@@ -106,7 +108,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">James — Overview</li>
+      <li class="breadcrumb-item active">test123 — Overview</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/overview.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -116,8 +118,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="james-overview">
-<h1>James — Overview<a class="headerlink" href="#james-overview" title="Link to this heading"></a></h1>
+  <section id="test123-overview">
+<h1>test123 — Overview<a class="headerlink" href="#test123-overview" title="Link to this heading"></a></h1>
 <p>This project contains 4 VHDL/SV modules.</p>
 <p>Top-level module: <a class="reference internal" href="modules/top/index.html"><span class="doc">top</span></a></p>
 <section id="modules">
@@ -130,14 +132,6 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="modules/blinky/index.html"><span class="doc">blinky</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">blinky.vhd</span></code></p></td>
-<td><p>Blinky LED controller. Implements a 3-state FSM that drives an LED through a repeating</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/traffic_light/index.html"><span class="doc">traffic_light</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">traffic_light.vhd</span></code></p></td>
-<td><p>Traffic light controller. Implements a standard UK traffic light sequencer with four states:</p></td>
-</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="modules/top/index.html"><span class="doc">top</span></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">top.vhd</span></code></p></td>
 <td><p>top entity.</p></td>
@@ -145,6 +139,14 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="modules/pwm_controller/index.html"><span class="doc">pwm_controller</span></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">pwm_controller.sv</span></code></p></td>
 <td><p>PWM controller module. Generates a variable duty-cycle PWM signal using a 3-state FSM:</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/traffic_light/index.html"><span class="doc">traffic_light</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">traffic_light.vhd</span></code></p></td>
+<td><p>Traffic light controller. Implements a standard UK traffic light sequencer with four states:</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/blinky/index.html"><span class="doc">blinky</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">blinky.vhd</span></code></p></td>
+<td><p>Blinky LED controller. Implements a 3-state FSM that drives an LED through a repeating</p></td>
 </tr>
 </tbody>
 </table>
@@ -155,7 +157,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="James" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="test123" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="modules/top/index.html" class="btn btn-neutral float-right" title="top" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

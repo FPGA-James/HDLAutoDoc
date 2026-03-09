@@ -6,6 +6,21 @@ BUILDDIR       = docs/_build
 SCRIPTDIR      = scripts
 FILELIST       = filelist.f
 HIERARCHY_JSON = $(SOURCEDIR)/hierarchy.json
+PYTHON = python3
+
+# Project name — used as the documentation title.
+# Defaults to the parent directory name if left blank.
+PROJECT        ?= test123
+
+# =============================================================================
+# RgGen Register Generation Makefile
+# =============================================================================
+CONFIG   := registers/config.yml
+REGMAP   := registers/$(PROJECT).yml
+REG_OUT_DIR  := registers/generated
+OUT_DIR  := registers/out
+PLUGINS  := rggen-vhdl rggen-markdown
+
 
 .PHONY: help install hierarchy scaffold extract html pdf \
         clean clean-generated clean-all
@@ -26,7 +41,7 @@ help:
 install:
 	pip install -r requirements.txt
 
-# ── Step 1: parse filelist.f → hierarchy.json ─────────────────────────────────
+## ── Step 1: parse filelist.f → hierarchy.json ─────────────────────────────────
 hierarchy:
 	@echo "Parsing design hierarchy from $(FILELIST)..."
 	python $(SCRIPTDIR)/parse_hierarchy.py $(FILELIST) $(HIERARCHY_JSON)
@@ -34,7 +49,7 @@ hierarchy:
 # ── Step 2: scaffold RST shells from hierarchy ────────────────────────────────
 scaffold: hierarchy
 	@echo "Scaffolding RST files..."
-	python $(SCRIPTDIR)/generate_rst.py src $(SOURCEDIR)
+	python $(SCRIPTDIR)/generate_rst.py src $(SOURCEDIR) "$(PROJECT)"
 
 # ── Step 3: extract FSM + processes for every module ─────────────────────────
 # run_extract.py reads hierarchy.json — no hardcoded module names here.
@@ -42,18 +57,25 @@ extract: scaffold
 	python $(SCRIPTDIR)/run_extract.py \
 		$(HIERARCHY_JSON) $(SOURCEDIR) $(SCRIPTDIR)
 	@echo "Regenerating timing pages..."
-	python $(SCRIPTDIR)/generate_rst.py src $(SOURCEDIR)
+	python $(SCRIPTDIR)/generate_rst.py src $(SOURCEDIR) "$(PROJECT)"
 
 # ── Step 4: build HTML ────────────────────────────────────────────────────────
 html: extract
 	mkdir -p $(SOURCEDIR)/_static $(SOURCEDIR)/_templates
+	@echo "Checking for register map..."
+	python $(SCRIPTDIR)/include_registers.py . $(SOURCEDIR)
 	$(SPHINXBUILD) -M html $(SOURCEDIR) $(BUILDDIR) $(SPHINXOPTS)
 	@echo ""
 	@echo "Documentation built: $(BUILDDIR)/html/index.html"
 
 # ── PDF build ─────────────────────────────────────────────────────────────────
 pdf: extract
+	@echo "Checking for register map..."
+	python $(SCRIPTDIR)/include_registers.py . $(SOURCEDIR)
 	$(SPHINXBUILD) -M latexpdf $(SOURCEDIR) $(BUILDDIR) $(SPHINXOPTS)
+
+# -- make all docs, html and pdf
+doc: regs html pdf
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Clean targets
@@ -61,6 +83,7 @@ pdf: extract
 #   Tier 2 — Always-regenerated files         → make clean-generated
 #   Tier 3 — Hand-editable scaffolded shells  → make clean-all
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 clean:
 	@echo "Removing Sphinx build output..."
@@ -78,6 +101,7 @@ clean-generated: clean
 	rm -rf $(SOURCEDIR)/fsm
 	rm -rf $(SOURCEDIR)/processes
 	rm -rf $(SOURCEDIR)/timing
+	rm -rf $(REG_OUT_DIR)
 	@# Per-module always-regenerated files (walk modules/ if it exists)
 	@if [ -d $(SOURCEDIR)/modules ]; then \
 		find $(SOURCEDIR)/modules -maxdepth 2 \
@@ -93,3 +117,12 @@ clean-all: clean-generated
 	@echo "WARNING: Removing hand-editable shells (edits will be lost)..."
 	rm -rf $(SOURCEDIR)/modules
 	@echo "Done. Run 'make html' to regenerate everything from scratch."
+
+## regs : Generate registers from the register map
+regs: $(OUT_DIR)
+	$(PYTHON) scripts/registers/generate.py
+# 	rggen --plugin rggen-vhdl -c $(CONFIG) --output $(OUT_DIR) $(REGMAP)
+# 	pandoc $(OUT_DIR)/*.md -o $(OUT_DIR)/registers.html
+
+$(OUT_DIR):
+	mkdir -p $(OUT_DIR)

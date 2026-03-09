@@ -8,6 +8,8 @@ top
    fsm
    timing
 
+   ../../registers
+
 Submodules
 ----------
 
