@@ -3,6 +3,7 @@ p_next_state
 
 | **Source file:** ``traffic_light.vhd``
 | **Source line:** 99
+| **Block type:** ``process``
 | **Sensitivity list:** ``state``, ``timer_exp``
 
 Description

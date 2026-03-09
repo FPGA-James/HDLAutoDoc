@@ -1,0 +1,11 @@
+digraph hierarchy {
+    rankdir=TB;
+    node [shape=box, style=filled, fillcolor=lightblue,
+          fontname=Helvetica, fontsize=12];
+    edge [fontname=Helvetica, fontsize=10];
+
+
+    top -> blinky;
+    top -> pwm_controller;
+    top -> traffic_light;
+}

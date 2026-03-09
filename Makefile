@@ -1,57 +1,57 @@
 # Makefile for HDL Sphinx Documentation
-SPHINXOPTS   ?=
-SPHINXBUILD   = sphinx-build
-SOURCEDIR     = docs
-BUILDDIR      = docs/_build
-SCRIPTDIR     = scripts
-SRCDIR        = src
-PROJECT       = "test auto"
+SPHINXOPTS    ?=
+SPHINXBUILD    = sphinx-build
+SOURCEDIR      = docs
+BUILDDIR       = docs/_build
+SCRIPTDIR      = scripts
+FILELIST       = filelist.f
+HIERARCHY_JSON = $(SOURCEDIR)/hierarchy.json
 
-VHD_FILES    := $(wildcard $(SRCDIR)/*.vhd)
-VHD_MODULES  := $(basename $(notdir $(VHD_FILES)))
-
-.PHONY: help install scaffold extract html pdf clean clean-generated clean-all
+.PHONY: help install hierarchy scaffold extract html pdf \
+        clean clean-generated clean-all
 
 help:
 	@echo ""
 	@echo "  make install           Install Python dependencies"
-	@echo "  make scaffold          Generate RST shells from VHDL entity names"
-	@echo "  make extract           Extract FSM + process docs from VHDL source"
+	@echo "  make hierarchy         Parse filelist.f and write hierarchy.json"
+	@echo "  make scaffold          Generate RST shells (runs hierarchy first)"
+	@echo "  make extract           Extract FSM + process docs (runs scaffold first)"
 	@echo "  make html              Build HTML documentation"
 	@echo "  make pdf               Build PDF documentation"
 	@echo "  make clean             Remove Sphinx build output only"
 	@echo "  make clean-generated   Remove always-regenerated files"
 	@echo "  make clean-all         Remove everything including hand-editable shells"
 	@echo ""
-	@echo "  Detected VHDL modules: $(VHD_MODULES)"
-	@echo ""
 
 install:
 	pip install -r requirements.txt
 
-scaffold:
-	@echo "Scaffolding RST files from VHDL entities..."
-	python $(SCRIPTDIR)/generate_rst.py $(SRCDIR) $(SOURCEDIR) $(PROJECT)
+# ── Step 1: parse filelist.f → hierarchy.json ─────────────────────────────────
+hierarchy:
+	@echo "Parsing design hierarchy from $(FILELIST)..."
+	python $(SCRIPTDIR)/parse_hierarchy.py $(FILELIST) $(HIERARCHY_JSON)
 
-# FSM dot+rst and processes all go directly into docs/modules/<mod>/
+# ── Step 2: scaffold RST shells from hierarchy ────────────────────────────────
+scaffold: hierarchy
+	@echo "Scaffolding RST files..."
+	python $(SCRIPTDIR)/generate_rst.py src $(SOURCEDIR)
 
+# ── Step 3: extract FSM + processes for every module ─────────────────────────
+# run_extract.py reads hierarchy.json — no hardcoded module names here.
 extract: scaffold
-	@$(foreach mod, $(VHD_MODULES), \
-		echo "Extracting: $(mod)..." && \
-		python $(SCRIPTDIR)/extract_fsm.py \
-			$(SRCDIR)/$(mod).vhd $(mod) $(SOURCEDIR)/modules/$(mod) && \
-		python $(SCRIPTDIR)/extract_processes.py \
-			$(SRCDIR)/$(mod).vhd $(SOURCEDIR)/modules/$(mod)/processes; \
-	)
-	@echo "Regenerating timing pages from extracted process diagrams..."
-	python $(SCRIPTDIR)/generate_rst.py $(SRCDIR) $(SOURCEDIR) $(PROJECT)
+	python $(SCRIPTDIR)/run_extract.py \
+		$(HIERARCHY_JSON) $(SOURCEDIR) $(SCRIPTDIR)
+	@echo "Regenerating timing pages..."
+	python $(SCRIPTDIR)/generate_rst.py src $(SOURCEDIR)
 
+# ── Step 4: build HTML ────────────────────────────────────────────────────────
 html: extract
 	mkdir -p $(SOURCEDIR)/_static $(SOURCEDIR)/_templates
 	$(SPHINXBUILD) -M html $(SOURCEDIR) $(BUILDDIR) $(SPHINXOPTS)
 	@echo ""
 	@echo "Documentation built: $(BUILDDIR)/html/index.html"
 
+# ── PDF build ─────────────────────────────────────────────────────────────────
 pdf: extract
 	$(SPHINXBUILD) -M latexpdf $(SOURCEDIR) $(BUILDDIR) $(SPHINXOPTS)
 
@@ -69,22 +69,27 @@ clean:
 
 clean-generated: clean
 	@echo "Removing always-regenerated files..."
+	rm -f  $(HIERARCHY_JSON)
 	rm -f  $(SOURCEDIR)/index.rst
 	rm -f  $(SOURCEDIR)/overview.rst
-	@# Remove stale top-level dirs from old structure if present
+	rm -f  $(SOURCEDIR)/hierarchy.rst
+	rm -f  $(SOURCEDIR)/hierarchy.dot
+	@# Stale top-level dirs from old flat structure
 	rm -rf $(SOURCEDIR)/fsm
 	rm -rf $(SOURCEDIR)/processes
 	rm -rf $(SOURCEDIR)/timing
-	rm -f  $(foreach mod, $(VHD_MODULES), $(SOURCEDIR)/modules/$(mod)/index.rst)
-	rm -f  $(foreach mod, $(VHD_MODULES), $(SOURCEDIR)/modules/$(mod)/fsm.rst)
-	rm -f  $(foreach mod, $(VHD_MODULES), $(SOURCEDIR)/modules/$(mod)/timing.rst)
-	rm -f  $(foreach mod, $(VHD_MODULES), $(SOURCEDIR)/modules/$(mod)/$(mod).dot)
-	rm -f  $(foreach mod, $(VHD_MODULES), $(SOURCEDIR)/modules/$(mod)/$(mod).rst)
-	rm -rf $(foreach mod, $(VHD_MODULES), $(SOURCEDIR)/modules/$(mod)/processes)
+	@# Per-module always-regenerated files (walk modules/ if it exists)
+	@if [ -d $(SOURCEDIR)/modules ]; then \
+		find $(SOURCEDIR)/modules -maxdepth 2 \
+		     -name "index.rst" -o -name "fsm.rst" -o -name "timing.rst" \
+		     -o -name "*.dot"  -o -name "*.rst" -path "*/processes/*" \
+		| xargs rm -f 2>/dev/null; \
+		find $(SOURCEDIR)/modules -maxdepth 2 -name "processes" -type d \
+		| xargs rm -rf 2>/dev/null; \
+	fi
 	@echo "Done."
 
 clean-all: clean-generated
 	@echo "WARNING: Removing hand-editable shells (edits will be lost)..."
 	rm -rf $(SOURCEDIR)/modules
-	rm -f  $(SOURCEDIR)/overview.rst
 	@echo "Done. Run 'make html' to regenerate everything from scratch."

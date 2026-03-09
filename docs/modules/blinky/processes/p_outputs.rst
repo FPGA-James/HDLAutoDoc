@@ -3,6 +3,7 @@ p_outputs
 
 | **Source file:** ``blinky.vhd``
 | **Source line:** 133
+| **Block type:** ``process``
 | **Sensitivity list:** ``state``
 
 Description

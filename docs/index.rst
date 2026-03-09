@@ -1,13 +1,13 @@
-test auto
-=========
+James
+=====
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents
 
    overview
-   modules/blinky/index
-   modules/traffic_light/index
+   modules/top/index
+   hierarchy
 
 Indices
 -------

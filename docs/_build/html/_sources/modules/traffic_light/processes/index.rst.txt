@@ -16,26 +16,26 @@ Summary
 .. list-table::
    :header-rows: 1
 
-   * - Process
+   * - Block
      - Type
-     - Sensitivity List
+     - Sensitivity
      - Source Line
      - WaveDrom
 
    * - :doc:`p_state_reg`
-     - Clocked
+     - ``process``
      - ``clk``
      - 65
      - ✔
 
    * - :doc:`p_next_state`
-     - Combinational
+     - ``process``
      - ``state``, ``timer_exp``
      - 99
      - ✔
 
    * - :doc:`p_outputs`
-     - Combinational
+     - ``process``
      - ``state``
      - 147
      - ✔

@@ -5,9 +5,9 @@ digraph blinky {
 
     __start [shape=point, width=0.2, fillcolor=black];
 
-    OFF_STATE [fillcolor=lightblue];
-    ON_STATE [fillcolor=lightblue];
-    FADE_STATE [fillcolor=lightblue];
+    OFF_STATE [fillcolor=lightgray];
+    ON_STATE [fillcolor=lightgreen];
+    FADE_STATE [fillcolor=lightyellow];
 
     __start -> OFF_STATE [label="reset"];
 

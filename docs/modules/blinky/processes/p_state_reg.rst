@@ -3,6 +3,7 @@ p_state_reg
 
 | **Source file:** ``blinky.vhd``
 | **Source line:** 67
+| **Block type:** ``process``
 | **Sensitivity list:** ``clk``
 
 Description

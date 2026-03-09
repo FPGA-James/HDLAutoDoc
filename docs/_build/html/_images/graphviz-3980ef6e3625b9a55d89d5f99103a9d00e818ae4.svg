@@ -17,7 +17,7 @@
 <!-- OFF_STATE -->
 <g id="node2" class="node">
 <title>OFF_STATE</title>
-<ellipse fill="lightblue" stroke="black" cx="123.24" cy="-55.68" rx="51.09" ry="51.09"/>
+<ellipse fill="lightgray" stroke="black" cx="123.24" cy="-55.68" rx="51.09" ry="51.09"/>
 <text xml:space="preserve" text-anchor="middle" x="123.24" y="-50.65" font-family="Helvetica,sans-Serif" font-size="12.00">OFF_STATE</text>
 </g>
 <!-- __start&#45;&gt;OFF_STATE -->
@@ -30,7 +30,7 @@
 <!-- ON_STATE -->
 <g id="node3" class="node">
 <title>ON_STATE</title>
-<ellipse fill="lightblue" stroke="black" cx="288.5" cy="-116.68" rx="47.42" ry="47.42"/>
+<ellipse fill="lightgreen" stroke="black" cx="288.5" cy="-116.68" rx="47.42" ry="47.42"/>
 <text xml:space="preserve" text-anchor="middle" x="288.5" y="-111.65" font-family="Helvetica,sans-Serif" font-size="12.00">ON_STATE</text>
 </g>
 <!-- OFF_STATE&#45;&gt;ON_STATE -->
@@ -43,7 +43,7 @@
 <!-- FADE_STATE -->
 <g id="node4" class="node">
 <title>FADE_STATE</title>
-<ellipse fill="lightblue" stroke="black" cx="458.35" cy="-55.68" rx="55.68" ry="55.68"/>
+<ellipse fill="lightyellow" stroke="black" cx="458.35" cy="-55.68" rx="55.68" ry="55.68"/>
 <text xml:space="preserve" text-anchor="middle" x="458.35" y="-50.65" font-family="Helvetica,sans-Serif" font-size="12.00">FADE_STATE</text>
 </g>
 <!-- ON_STATE&#45;&gt;FADE_STATE -->

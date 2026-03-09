@@ -3,6 +3,7 @@ p_next_state
 
 | **Source file:** ``blinky.vhd``
 | **Source line:** 100
+| **Block type:** ``process``
 | **Sensitivity list:** ``state``, ``en``, ``timer_exp``
 
 Description

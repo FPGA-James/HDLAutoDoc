@@ -1,7 +1,9 @@
-test auto — Overview
-====================
+James — Overview
+================
 
-This project contains 2 VHDL entities.
+This project contains 4 VHDL/SV modules.
+
+Top-level module: :doc:`modules/top/index`
 
 Modules
 -------
@@ -9,7 +11,7 @@ Modules
 .. list-table::
    :header-rows: 1
 
-   * - Entity
+   * - Module
      - Source File
      - Description
 
@@ -20,3 +22,11 @@ Modules
    * - :doc:`modules/traffic_light/index`
      - ``traffic_light.vhd``
      - Traffic light controller. Implements a standard UK traffic light sequencer with four states:
+
+   * - :doc:`modules/top/index`
+     - ``top.vhd``
+     - top entity.
+
+   * - :doc:`modules/pwm_controller/index`
+     - ``pwm_controller.sv``
+     - PWM controller module. Generates a variable duty-cycle PWM signal using a 3-state FSM:

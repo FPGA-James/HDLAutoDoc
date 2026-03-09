@@ -1,7 +1,7 @@
 blinky — Entity
 ===============
 
-Auto-documented from ``src/blinky.vhd``.
+Source file: ``src/blinky.vhd``.
 
 .. vhdl:autoentity:: blinky
 

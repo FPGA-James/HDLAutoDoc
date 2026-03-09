@@ -3,6 +3,7 @@ p_state_reg
 
 | **Source file:** ``traffic_light.vhd``
 | **Source line:** 65
+| **Block type:** ``process``
 | **Sensitivity list:** ``clk``
 
 Description

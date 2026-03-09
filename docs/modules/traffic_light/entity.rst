@@ -1,7 +1,7 @@
 traffic_light — Entity
 ======================
 
-Auto-documented from ``src/traffic_light.vhd``.
+Source file: ``src/traffic_light.vhd``.
 
 .. vhdl:autoentity:: traffic_light
 
