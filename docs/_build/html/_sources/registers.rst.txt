@@ -1,27 +1,51 @@
 Registers
 =========
 
-Auto-generated register map imported from ``registers/generated/counter_regs.html``.
-
 .. raw:: html
 
-   <div style="
-       width: 100%;
-       height: 80vh;
-       min-height: 600px;
-       border: 1px solid #e1e4e5;
-       border-radius: 4px;
-       overflow: hidden;
-   ">
-     <iframe
-       src="_static/registers.html"
-       style="width:100%; height:100%; border:none;"
-       title="Register Map">
-     </iframe>
-   </div>
-
-.. note::
-
-   This page embeds the register map generated at ``registers/generated/counter_regs.html``.
-   Re-run ``make html`` after regenerating the register map to update it.
+   <style>
+     .wy-nav-side,
+     .wy-nav-top,
+     nav.wy-nav-top,
+     .rst-versions,
+     footer, .footer,
+     div[role="navigation"],
+     .wy-breadcrumbs { display: none !important; }
+     .wy-nav-content-wrap { margin-left: 0 !important; }
+     .wy-nav-content    { max-width: 100% !important; padding: 0 !important; }
+     body, html { margin: 0; padding: 0; overflow: hidden; }
+     .document, .documentwrapper, .bodywrapper, .body, section
+       { height: 100%; margin: 0 !important; padding: 0 !important; }
+     #registers-frame {
+       position: fixed;
+       top: 0; left: 0;
+       width: 100vw; height: 100vh;
+       border: none;
+       z-index: 9999;
+     }
+     /* Floating info strip — sits above the iframe */
+     #reg-info {
+       position: fixed;
+       bottom: 1.5rem;
+       left: 50%;
+       transform: translateX(-50%);
+       z-index: 10000;
+       background: rgba(30, 30, 46, 0.82);
+       color: #cdd6f4;
+       font-family: 'IBM Plex Mono', monospace;
+       font-size: 0.78em;
+       padding: 0.4rem 1rem;
+       border-radius: 2rem;
+       border: 1px solid rgba(137, 180, 250, 0.3);
+       backdrop-filter: blur(8px);
+       pointer-events: none;
+       white-space: nowrap;
+     }
+   </style>
+   <iframe
+     id="registers-frame"
+     src="_static/registers/counter_regs.html"
+     title="Register Map">
+   </iframe>
+   <div id="reg-info">Register Map &mdash; re-run <code>make html</code> to update</div>
 

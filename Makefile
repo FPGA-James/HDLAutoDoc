@@ -1,4 +1,14 @@
 # Makefile for HDL Sphinx Documentation
+
+PYTHON = python3
+
+# Project name — used as the documentation title.
+# Defaults to the parent directory name if left blank.
+PROJECT        ?= test123
+
+# =============================================================================
+# HDL_AUTODOC Generation Make Variables
+# =============================================================================
 SPHINXOPTS    ?=
 SPHINXBUILD    = sphinx-build
 SOURCEDIR      = docs
@@ -6,11 +16,20 @@ BUILDDIR       = docs/_build
 SCRIPTDIR      = scripts
 FILELIST       = filelist.f
 HIERARCHY_JSON = $(SOURCEDIR)/hierarchy.json
-PYTHON = python3
+# Entry point filename for the register map HTML output.
+# Override to match your register tool's output filename.
+# Examples:
+#   make doc REG_ENTRY=index.html            (Questa Register Assistant)
+#   make doc REG_ENTRY=counter_regs.html     (custom generator)
+#   make doc REG_ENTRY=regmap.html           (other tools)
+# Leave blank to auto-detect (picks index.html or first .html found).
+REG_ENTRY  ?= counter_regs.html
 
-# Project name — used as the documentation title.
-# Defaults to the parent directory name if left blank.
-PROJECT        ?= test123
+# ── Register generation + full doc build ─────────────────────────────────────
+# Runs the register generator first, then the full Sphinx pipeline.
+# Set REGGEN to your register generation script path if different.
+REGGEN     ?= scripts/registers/generate.py
+
 
 # =============================================================================
 # RgGen Register Generation Makefile
@@ -75,7 +94,10 @@ pdf: extract
 	$(SPHINXBUILD) -M latexpdf $(SOURCEDIR) $(BUILDDIR) $(SPHINXOPTS)
 
 # -- make all docs, html and pdf
-doc: regs html pdf
+doc: regs
+	$(MAKE) html
+	$(MAKE) pdf
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Clean targets
@@ -83,25 +105,24 @@ doc: regs html pdf
 #   Tier 2 — Always-regenerated files         → make clean-generated
 #   Tier 3 — Hand-editable scaffolded shells  → make clean-all
 # ─────────────────────────────────────────────────────────────────────────────
-
-
 clean:
 	@echo "Removing Sphinx build output..."
 	rm -rf $(BUILDDIR)
 	@echo "Done."
 
-clean-generated: clean
+cclean-generated: clean
 	@echo "Removing always-regenerated files..."
 	rm -f  $(HIERARCHY_JSON)
 	rm -f  $(SOURCEDIR)/index.rst
 	rm -f  $(SOURCEDIR)/overview.rst
 	rm -f  $(SOURCEDIR)/hierarchy.rst
 	rm -f  $(SOURCEDIR)/hierarchy.dot
+	rm -f  $(SOURCEDIR)/registers.rst
+	rm -rf $(SOURCEDIR)/_static/registers
 	@# Stale top-level dirs from old flat structure
 	rm -rf $(SOURCEDIR)/fsm
 	rm -rf $(SOURCEDIR)/processes
 	rm -rf $(SOURCEDIR)/timing
-	rm -rf $(REG_OUT_DIR)
 	@# Per-module always-regenerated files (walk modules/ if it exists)
 	@if [ -d $(SOURCEDIR)/modules ]; then \
 		find $(SOURCEDIR)/modules -maxdepth 2 \

@@ -25,9 +25,16 @@ online_skin_js_url     = "https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.3.0/
 graphviz_output_format = "svg"
 
 # ── sphinx-vhdl ──────────────────────────────────────────────────────────────
-vhdl_autodoc_source_path = os.path.normpath(
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), "../src")
-)
+# # Walk up from conf.py to find src/ — works regardless of how deep docs/ is
+# _conf_dir = os.path.dirname(os.path.abspath(__file__))
+# _root = _conf_dir
+# for _ in range(6):
+#     _candidate = os.path.join(_root, "src")
+#     if os.path.isdir(_candidate):
+#         break
+#     _root = os.path.dirname(_root)
+# # sphinx-vhdl requires a list, not a bare string
+# vhdl_autodoc_source_path = [_candidate]
 
 # ── HTML output ──────────────────────────────────────────────────────────────
 html_theme         = "sphinx_rtd_theme"

@@ -126,63 +126,7 @@
 <dl class="vhdl autoentity">
 <dt class="sig sig-object vhdl" id="vhdl-entity-traffic_light">
 <span class="k"><span class="pre">ENTITY</span> </span><span class="sig-name descname"><span class="pre">traffic_light</span></span><span class="k"> <span class="pre">IS</span></span><a class="headerlink" href="#vhdl-entity-traffic_light" title="Link to this definition"></a></dt>
-<dd><p>Traffic light controller.</p>
-<p>Implements a standard UK traffic light sequencer with four states:
-RED, RED_AMBER, GREEN, and AMBER. The FSM advances on each rising
-clock edge when timer_exp is asserted.</p>
-<p>State sequence: RED -&gt; RED_AMBER -&gt; GREEN -&gt; AMBER -&gt; RED.</p>
-<span class="sig-name descname">Generics</span><table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Generic</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Default</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-</tbody>
-</table>
-<span class="sig-name descname">Ports</span><table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Port</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Mode</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even" id="vhdl-portsignal-traffic_light-clk"><td><p>clk</p></td>
-<td><p>std_logic</p></td>
-<td><p>in</p></td>
-<td><p>System clock, rising-edge triggered.</p></td>
-</tr>
-<tr class="row-odd" id="vhdl-portsignal-traffic_light-rst"><td><p>rst</p></td>
-<td><p>std_logic</p></td>
-<td><p>in</p></td>
-<td><p>Synchronous active-high reset. Returns FSM to RED state.</p></td>
-</tr>
-<tr class="row-even" id="vhdl-portsignal-traffic_light-timer_exp"><td><p>timer_exp</p></td>
-<td><p>std_logic</p></td>
-<td><p>in</p></td>
-<td><p>Phase timer expiry pulse. Must be high for exactly one cycle.</p></td>
-</tr>
-<tr class="row-odd" id="vhdl-portsignal-traffic_light-red_out"><td><p>red_out</p></td>
-<td><p>std_logic</p></td>
-<td><p>out</p></td>
-<td><p>Red lamp drive. Asserted in RED and RED_AMBER states.</p></td>
-</tr>
-<tr class="row-even" id="vhdl-portsignal-traffic_light-amber_out"><td><p>amber_out</p></td>
-<td><p>std_logic</p></td>
-<td><p>out</p></td>
-<td><p>Amber lamp drive. Asserted in RED_AMBER and AMBER states.</p></td>
-</tr>
-<tr class="row-odd" id="vhdl-portsignal-traffic_light-green_out"><td><p>green_out</p></td>
-<td><p>std_logic</p></td>
-<td><p>out</p></td>
-<td><p>Green lamp drive. Asserted in GREEN state only.</p></td>
-</tr>
-</tbody>
-</table>
+<dd><p>SPHINX-VHDL: Entity was not found in parsed VHDL files!</p>
 </dd></dl>
 
 <section id="annotated-source">

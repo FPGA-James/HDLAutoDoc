@@ -189,17 +189,21 @@ end
 
 ## 🗺 Register map integration
 
-Place your register builder output anywhere under `registers/generated/`:
+Place your Questa Register Assistant HTML export under `registers/generated/`:
 
 ```
 registers/
 └── generated/
-    └── my_chip_registers.html   ← any filename, any register tool
+    ├── index.html              ← entry point (required)
+    ├── index2.html
+    ├── index_registers.html
+    ├── style.css
+    └── Registers/
+        ├── reg_ctrl.html
+        └── reg_status.html
 ```
 
-Run `make html`. The register map is automatically embedded as a full-screen page inside the top module's navigation, above the Submodules section. If no file is found, a clear placeholder is shown instead with instructions.
-
-If your tool produces multiple HTML files, the first alphabetically is used and a warning is printed listing the others.
+Run `make html`. The entire directory is copied to `docs/_static/registers/` and embedded as a full-screen iframe, preserving all internal links and CSS. If no export is found a clear placeholder page is shown instead with instructions.
 
 ---
 
@@ -271,12 +275,14 @@ hdl-autodoc/
 ├── registers/
 │   └── generated/              ← place your register map HTML here
 ├── scripts/
-│   ├── parse_hierarchy.py      ← reads filelist.f → hierarchy.json
-│   ├── generate_rst.py         ← scaffolds RST structure
-│   ├── extract_fsm.py          ← extracts FSM case blocks → dot + rst
-│   ├── extract_processes.py    ← extracts labeled processes → rst pages
-│   ├── run_extract.py          ← orchestrates extraction for all modules
-│   └── include_registers.py   ← copies register map + writes rst page
+│   └── hdl_autodoc/            ← drop-in pipeline, reusable across projects
+│       ├── __init__.py
+│       ├── parse_hierarchy.py  ← reads filelist.f → hierarchy.json
+│       ├── generate_rst.py     ← scaffolds RST structure
+│       ├── extract_fsm.py      ← extracts FSM case blocks → dot + rst
+│       ├── extract_processes.py← extracts labeled processes → rst pages
+│       ├── run_extract.py      ← orchestrates extraction for all modules
+│       └── include_registers.py← copies register map + writes rst page
 └── docs/
     ├── conf.py                 ← Sphinx config (edit project metadata here)
     ├── _static/
@@ -372,12 +378,13 @@ Done. The new module appears in the hierarchy, navigation, overview table, and h
 Pull requests welcome. The scripts are intentionally small and single-purpose:
 
 ```
-parse_hierarchy.py    filelist.f         → hierarchy.json
-generate_rst.py       src/ + hierarchy   → docs/modules/**/
-extract_fsm.py        <file.vhd|sv>      → <module>.dot + <module>.rst
-extract_processes.py  <file.vhd|sv>      → p_*.rst + index.rst
-run_extract.py        hierarchy.json     → orchestrates above two
-include_registers.py  registers/         → docs/registers.rst + _static/
+scripts/hdl_autodoc/
+├── parse_hierarchy.py    filelist.f         → hierarchy.json
+├── generate_rst.py       src/ + hierarchy   → docs/modules/**/
+├── extract_fsm.py        <file.vhd|sv>      → <module>.dot + <module>.rst
+├── extract_processes.py  <file.vhd|sv>      → p_*.rst + index.rst
+├── run_extract.py        hierarchy.json     → orchestrates above two
+└── include_registers.py  registers/         → docs/registers.rst + _static/
 ```
 
 ---
