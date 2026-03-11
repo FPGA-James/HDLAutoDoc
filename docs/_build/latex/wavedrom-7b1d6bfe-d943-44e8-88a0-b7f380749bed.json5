@@ -1,7 +1,0 @@
-{ "signal": [
-{ "name": "clk",         "wave": "P............." },
-{ "name": "en",          "wave": "01...........0" },
-{ "name": "state",       "wave": "=.=........=..", "data": ["IDLE","COUNTING","DONE"] },
-{ "name": "count",       "wave": "=.=........=..", "data": ["0","1..255","0"] },
-{ "name": "period_done", "wave": "0..........1.0" }
-]}

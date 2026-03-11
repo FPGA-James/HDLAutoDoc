@@ -1,7 +1,0 @@
-{ "signal": [
-{ "name": "state",     "wave": "=.=.=.=.",
-"data": ["RED","RED_AMB","GREEN","AMBER"] },
-{ "name": "red_out",   "wave": "1.1.0.0." },
-{ "name": "amber_out", "wave": "0.1.0.1." },
-{ "name": "green_out", "wave": "0.0.1.0." }
-]}

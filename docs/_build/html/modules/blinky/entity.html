@@ -220,7 +220,68 @@
 <dl class="vhdl autoentity">
 <dt class="sig sig-object vhdl" id="vhdl-entity-blinky">
 <span class="k"><span class="pre">ENTITY</span> </span><span class="sig-name descname"><span class="pre">blinky</span></span><span class="k"> <span class="pre">IS</span></span><a class="headerlink" href="#vhdl-entity-blinky" title="Link to this definition"></a></dt>
-<dd><p>SPHINX-VHDL: Entity was not found in parsed VHDL files!</p>
+<dd><p>Blinky LED controller.</p>
+<p>Implements a 3-state FSM that drives an LED through a repeating
+ON -&gt; FADE -&gt; OFF sequence. Each state is held for a configurable
+number of clock cycles determined by an external timer pulse.</p>
+<p>State sequence: ON -&gt; FADE -&gt; OFF -&gt; ON -&gt; …</p>
+<span class="sig-name descname">Generics</span><table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Generic</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+<span class="sig-name descname">Ports</span><table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Port</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Mode</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even" id="vhdl-portsignal-blinky-clk"><td><p>clk</p></td>
+<td><p>std_logic</p></td>
+<td><p>in</p></td>
+<td><p>System clock, rising-edge triggered.</p></td>
+</tr>
+<tr class="row-odd" id="vhdl-portsignal-blinky-rst"><td><p>rst</p></td>
+<td><p>std_logic</p></td>
+<td><p>in</p></td>
+<td><p>Synchronous active-high reset. Returns FSM to OFF state.</p></td>
+</tr>
+<tr class="row-even" id="vhdl-portsignal-blinky-en"><td><p>en</p></td>
+<td><p>std_logic</p></td>
+<td><p>in</p></td>
+<td><p>Enable signal. FSM only advances when en is asserted.</p></td>
+</tr>
+<tr class="row-odd" id="vhdl-portsignal-blinky-timer_exp"><td><p>timer_exp</p></td>
+<td><p>std_logic</p></td>
+<td><p>in</p></td>
+<td><p>Phase timer expiry pulse. Must be high for exactly one cycle.</p></td>
+</tr>
+<tr class="row-even" id="vhdl-portsignal-blinky-led_on"><td><p>led_on</p></td>
+<td><p>std_logic</p></td>
+<td><p>out</p></td>
+<td><p>LED full-brightness drive.</p></td>
+</tr>
+<tr class="row-odd" id="vhdl-portsignal-blinky-led_fade"><td><p>led_fade</p></td>
+<td><p>std_logic</p></td>
+<td><p>out</p></td>
+<td><p>LED half-brightness PWM drive (fade effect).</p></td>
+</tr>
+<tr class="row-even" id="vhdl-portsignal-blinky-led_off"><td><p>led_off</p></td>
+<td><p>std_logic</p></td>
+<td><p>out</p></td>
+<td><p>LED off indicator (all drives deasserted).</p></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <section id="annotated-source">
