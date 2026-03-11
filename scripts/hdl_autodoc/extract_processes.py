@@ -114,7 +114,7 @@ def find_processes_vhdl(lines: list[str]) -> list[dict]:
             label       = m.group(1).strip()
             sensitivity = [s.strip() for s in m.group(2).split(",")]
             tokens      = extract_comment_tokens(lines, i, prefix="--")
-            body        = []
+            body        = [lines[i]]   # include the process label line itself
             j           = i + 1
             while j < len(lines):
                 body.append(lines[j])
@@ -188,7 +188,7 @@ def find_processes_sv(lines: list[str]) -> list[dict]:
             tokens = extract_comment_tokens(lines, i, prefix="//")
 
             # Collect body until matching 'end'
-            body      = []
+            body      = [lines[i]]   # include the always block header line itself
             depth     = 1 if "begin" in lines[i].lower() else 0
             j         = i + 1
             while j < len(lines):
@@ -324,7 +324,7 @@ def render_process_page(proc: dict, src_filename: str,
 def render_index_page(processes: list[dict], src_filename: str) -> str:
     out = ["Processes", "=========", "",
            f"Auto-extracted from ``{src_filename}``.", "",
-           ".. toctree::", "   :maxdepth: 1", ""]
+           ".. toctree::", "   :maxdepth: 2", ""]
     for proc in processes:
         out.append(f"   {proc['label']}")
     out += ["", "Summary", "-------", "",

@@ -59,8 +59,8 @@
 \addto\captionsenglish{\renewcommand{\contentsname}{Contents}}
 
 \usepackage{sphinxmessages}
-\setcounter{tocdepth}{1}
-
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
 
 \makeatletter
 \@ifpackageloaded{wrapfig}{}{%
@@ -71,7 +71,7 @@
 
 
 \title{Traffic Light Controller}
-\date{Mar 10, 2026}
+\date{Mar 11, 2026}
 \release{1.0.0}
 \author{HDL Team}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -125,13 +125,13 @@ Description
 \sphinxmidrule
 \sphinxtableatstartofbodyhook
 \sphinxAtStartPar
-{\hyperref[\detokenize{modules/pwm_controller/index::doc}]{\sphinxcrossref{\DUrole{doc}{pwm\_controller}}}}
+{\hyperref[\detokenize{modules/traffic_light/index::doc}]{\sphinxcrossref{\DUrole{doc}{traffic\_light}}}}
 &
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{pwm\_controller.sv}}
+\sphinxcode{\sphinxupquote{traffic\_light.vhd}}
 &
 \sphinxAtStartPar
-PWM controller module. Generates a variable duty\sphinxhyphen{}cycle PWM signal using a 3\sphinxhyphen{}state FSM:
+Traffic light controller. Implements a standard UK traffic light sequencer with four states:
 \\
 \sphinxhline
 \sphinxAtStartPar
@@ -145,6 +145,16 @@ top entity.
 \\
 \sphinxhline
 \sphinxAtStartPar
+{\hyperref[\detokenize{modules/pwm_controller/index::doc}]{\sphinxcrossref{\DUrole{doc}{pwm\_controller}}}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{pwm\_controller.sv}}
+&
+\sphinxAtStartPar
+PWM controller module. Generates a variable duty\sphinxhyphen{}cycle PWM signal using a 3\sphinxhyphen{}state FSM:
+\\
+\sphinxhline
+\sphinxAtStartPar
 {\hyperref[\detokenize{modules/blinky/index::doc}]{\sphinxcrossref{\DUrole{doc}{blinky}}}}
 &
 \sphinxAtStartPar
@@ -152,16 +162,6 @@ top entity.
 &
 \sphinxAtStartPar
 Blinky LED controller. Implements a 3\sphinxhyphen{}state FSM that drives an LED through a repeating
-\\
-\sphinxhline
-\sphinxAtStartPar
-{\hyperref[\detokenize{modules/traffic_light/index::doc}]{\sphinxcrossref{\DUrole{doc}{traffic\_light}}}}
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{traffic\_light.vhd}}
-&
-\sphinxAtStartPar
-Traffic light controller. Implements a standard UK traffic light sequencer with four states:
 \\
 \sphinxbottomrule
 \end{tabulary}
@@ -638,17 +638,17 @@ source comments above each process.
 
 \paragraph{P Next State}
 \label{\detokenize{modules/blinky/timing:p-next-state}}
-\noindent\sphinxincludegraphics{{wavedrom-670c3708-6836-4971-bb64-80bf0c194e47}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-d0396c29-f2ec-4eca-a60a-898f8f040456}.pdf}
 
 
 \paragraph{P Outputs}
 \label{\detokenize{modules/blinky/timing:p-outputs}}
-\noindent\sphinxincludegraphics{{wavedrom-8ae315ba-a011-43a0-91c0-529ee1bd861d}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-f9c800f9-9e9c-4a0d-ab12-ce177ca8aa36}.pdf}
 
 
 \paragraph{P State Reg}
 \label{\detokenize{modules/blinky/timing:p-state-reg}}
-\noindent\sphinxincludegraphics{{wavedrom-0d23a246-9538-4da4-ac4c-2708092afddb}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-d29414ff-8cea-4af3-bc9f-68a74d0b5f49}.pdf}
 
 \sphinxstepscope
 
@@ -678,12 +678,13 @@ p\_state\_reg: Clocked state register.
 Captures next\_state on each rising edge of clk.
 Synchronous reset drives state back to OFF\_STATE.
 
-\noindent\sphinxincludegraphics{{wavedrom-dfed7382-3972-4c6f-80e7-37153aa59ced}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-89a17e2b-54a6-4eac-8b08-614f5213776a}.pdf}
 
 
 \subparagraph{Source}
 \label{\detokenize{modules/blinky/processes/p_state_reg:source}}
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{n}{p\PYGZus{}state\PYGZus{}reg}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{process}\PYG{p}{(}\PYG{n}{clk}\PYG{p}{)}
 \PYG{k}{begin}
 \PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{rising\PYGZus{}edge}\PYG{p}{(}\PYG{n}{clk}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{then}
 \PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{rst}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}1\PYGZsq{}}\PYG{+w}{ }\PYG{k}{then}
@@ -724,12 +725,13 @@ ON\_STATE   + en + timer\_exp \sphinxhyphen{}\textgreater{} FADE\_STATE
 FADE\_STATE + en + timer\_exp \sphinxhyphen{}\textgreater{} OFF\_STATE
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-67c034e6-6aa7-4386-a467-5ac2083289f2}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-be4eb36d-6343-441f-86ad-63ff29e94880}.pdf}
 
 
 \subparagraph{Source}
 \label{\detokenize{modules/blinky/processes/p_next_state:source}}
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{n}{p\PYGZus{}next\PYGZus{}state}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{process}\PYG{p}{(}\PYG{n}{state}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{en}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{timer\PYGZus{}exp}\PYG{p}{)}
 \PYG{k}{begin}
 \PYG{+w}{    }\PYG{n}{next\PYGZus{}state}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{state}\PYG{p}{;}
 
@@ -773,12 +775,13 @@ ON\_STATE   \sphinxhyphen{}\textgreater{} led\_on=1 led\_fade=0 led\_off=0
 FADE\_STATE \sphinxhyphen{}\textgreater{} led\_on=0 led\_fade=1 led\_off=0
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-64ab6eb1-1391-44ba-99a4-8583d35945b2}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-9fd849bc-a809-4407-8aab-c7c0b8e6ec3e}.pdf}
 
 
 \subparagraph{Source}
 \label{\detokenize{modules/blinky/processes/p_outputs:source}}
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{n}{p\PYGZus{}outputs}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{process}\PYG{p}{(}\PYG{n}{state}\PYG{p}{)}
 \PYG{k}{begin}
 \PYG{+w}{    }\PYG{n}{led\PYGZus{}on}\PYG{+w}{   }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{;}
 \PYG{+w}{    }\PYG{n}{led\PYGZus{}fade}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{;}
@@ -1152,17 +1155,17 @@ source comments above each process.
 
 \paragraph{P Next State}
 \label{\detokenize{modules/pwm_controller/timing:p-next-state}}
-\noindent\sphinxincludegraphics{{wavedrom-e67f23f7-38a2-4bba-abbd-05a645171aaa}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-81864e8b-2cb1-4143-9179-3fc9c52a43f0}.pdf}
 
 
 \paragraph{P Outputs}
 \label{\detokenize{modules/pwm_controller/timing:p-outputs}}
-\noindent\sphinxincludegraphics{{wavedrom-7cbb1d14-f16f-4030-8643-f381019c4957}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-99114dd1-476d-4cbe-9971-2c781c809180}.pdf}
 
 
 \paragraph{P State Reg}
 \label{\detokenize{modules/pwm_controller/timing:p-state-reg}}
-\noindent\sphinxincludegraphics{{wavedrom-27e70277-3862-4713-8458-2670e219fe71}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-ffdac009-49cc-4f46-bda5-f356c7394d2e}.pdf}
 
 \sphinxstepscope
 
@@ -1193,12 +1196,13 @@ Captures next\_state on each rising edge of clk.
 Synchronous reset drives state to IDLE and clears counter.
 Counter increments each cycle in COUNTING state.
 
-\noindent\sphinxincludegraphics{{wavedrom-8cd7f5c5-c85a-45e6-afd4-dc32332cad2e}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-1e85fcec-b141-4cc0-8d30-dfea0fafd253}.pdf}
 
 
 \subparagraph{Source}
 \label{\detokenize{modules/pwm_controller/processes/p_state_reg:source}}
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{k}{always\PYGZus{}ff}\PYG{+w}{ }\PYG{p}{@}\PYG{p}{(}\PYG{k}{posedge}\PYG{+w}{ }\PYG{n}{clk}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{begin}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{p\PYGZus{}state\PYGZus{}reg}
 \PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{rst}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{begin}
 \PYG{+w}{        }\PYG{n}{state}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{IDLE}\PYG{p}{;}
 \PYG{+w}{        }\PYG{n}{count}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m}{\PYGZsq{}0}\PYG{p}{;}
@@ -1241,12 +1245,13 @@ COUNTING + count==255   \sphinxhyphen{}\textgreater{} DONE
 DONE                    \sphinxhyphen{}\textgreater{} IDLE
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-685835a1-57ea-45dc-903f-96b6c1e41d4a}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-d4dbc03d-fb26-46b1-9494-be9aec22744a}.pdf}
 
 
 \subparagraph{Source}
 \label{\detokenize{modules/pwm_controller/processes/p_next_state:source}}
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{k}{always\PYGZus{}comb}\PYG{+w}{ }\PYG{k}{begin}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{p\PYGZus{}next\PYGZus{}state}
 \PYG{+w}{    }\PYG{n}{next\PYGZus{}state}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{state}\PYG{p}{;}
 \PYG{+w}{    }\PYG{k}{case}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{state}\PYG{p}{)}
 \PYG{+w}{        }\PYG{n+nl}{IDLE:}\PYG{+w}{     }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{en}\PYG{p}{)}\PYG{+w}{              }\PYG{n}{next\PYGZus{}state}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{COUNTING}\PYG{p}{;}
@@ -1286,12 +1291,13 @@ COUNTING \sphinxhyphen{}\textgreater{} pwm\_o=(count \textless{} duty\_i) period
 DONE     \sphinxhyphen{}\textgreater{} pwm\_o=0 period\_done=1
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-1c76cee1-9810-4586-a25f-4126a62e4130}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-d27585de-a9ed-4836-adf9-7e6a890db30b}.pdf}
 
 
 \subparagraph{Source}
 \label{\detokenize{modules/pwm_controller/processes/p_outputs:source}}
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{k}{always\PYGZus{}comb}\PYG{+w}{ }\PYG{k}{begin}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{p\PYGZus{}outputs}
 \PYG{+w}{    }\PYG{n}{pwm\PYGZus{}o}\PYG{+w}{       }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mb}{1\PYGZsq{}b0}\PYG{p}{;}
 \PYG{+w}{    }\PYG{n}{period\PYGZus{}done}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mb}{1\PYGZsq{}b0}\PYG{p}{;}
 \PYG{+w}{    }\PYG{k}{case}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{state}\PYG{p}{)}
@@ -1748,17 +1754,17 @@ source comments above each process.
 
 \paragraph{P Next State}
 \label{\detokenize{modules/traffic_light/timing:p-next-state}}
-\noindent\sphinxincludegraphics{{wavedrom-c895f521-da8e-438c-8da4-68080087a76b}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-e2954151-3a6f-437e-a497-86c35d5b91fd}.pdf}
 
 
 \paragraph{P Outputs}
 \label{\detokenize{modules/traffic_light/timing:p-outputs}}
-\noindent\sphinxincludegraphics{{wavedrom-5dc25ba9-2a05-41f9-872c-51d18cfa5805}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-7e7e25d6-9d22-48a2-af79-0424bdc7fe06}.pdf}
 
 
 \paragraph{P State Reg}
 \label{\detokenize{modules/traffic_light/timing:p-state-reg}}
-\noindent\sphinxincludegraphics{{wavedrom-3a1971d8-5276-4791-bf5a-2f7a4da97983}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-110b6722-8558-42da-9487-df473a9be897}.pdf}
 
 \sphinxstepscope
 
@@ -1789,12 +1795,13 @@ Captures next\_state on each rising edge of clk.
 When rst is asserted the state returns to RED synchronously,
 regardless of timer\_exp or next\_state.
 
-\noindent\sphinxincludegraphics{{wavedrom-5922af9b-da24-4b5c-b82f-4a83eb187b87}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-4385cb86-f4e5-4533-b212-2d38b5b3d2a8}.pdf}
 
 
 \subparagraph{Source}
 \label{\detokenize{modules/traffic_light/processes/p_state_reg:source}}
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{n}{p\PYGZus{}state\PYGZus{}reg}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{process}\PYG{p}{(}\PYG{n}{clk}\PYG{p}{)}
 \PYG{k}{begin}
 \PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{rising\PYGZus{}edge}\PYG{p}{(}\PYG{n}{clk}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{then}
 \PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{rst}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}1\PYGZsq{}}\PYG{+w}{ }\PYG{k}{then}
@@ -1837,7 +1844,7 @@ GREEN     + timer\_exp \sphinxhyphen{}\textgreater{} AMBER
 AMBER     + timer\_exp \sphinxhyphen{}\textgreater{} RED
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-1418e431-882b-451b-9bae-7c25e73b7fd6}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-d65ad3af-d499-4fb9-945b-45902df0e341}.pdf}
 
 
 \subparagraph{Signal Assignments}
@@ -1893,6 +1900,7 @@ RED
 \subparagraph{Source}
 \label{\detokenize{modules/traffic_light/processes/p_next_state:source}}
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{n}{p\PYGZus{}next\PYGZus{}state}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{process}\PYG{p}{(}\PYG{n}{state}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{timer\PYGZus{}exp}\PYG{p}{)}
 \PYG{k}{begin}
 \PYG{+w}{    }\PYG{n}{next\PYGZus{}state}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{state}\PYG{p}{;}
 
@@ -1951,12 +1959,13 @@ GREEN     \sphinxhyphen{}\textgreater{} red=0 amber=0 green=1
 AMBER     \sphinxhyphen{}\textgreater{} red=0 amber=1 green=0
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-0d47a925-e2e6-488d-8ff6-22501a563305}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-a933854f-b299-4d4c-a4c4-4e921d607cdb}.pdf}
 
 
 \subparagraph{Source}
 \label{\detokenize{modules/traffic_light/processes/p_outputs:source}}
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{n}{p\PYGZus{}outputs}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{process}\PYG{p}{(}\PYG{n}{state}\PYG{p}{)}
 \PYG{k}{begin}
 \PYG{+w}{    }\PYG{n}{red\PYGZus{}out}\PYG{+w}{   }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{;}
 \PYG{+w}{    }\PYG{n}{amber\PYGZus{}out}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{;}

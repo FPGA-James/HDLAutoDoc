@@ -13,7 +13,7 @@ SPHINXOPTS    ?=
 SPHINXBUILD    = sphinx-build
 SOURCEDIR      = docs
 BUILDDIR       = docs/_build
-SCRIPTDIR      = scripts
+SCRIPTDIR      = scripts/hdl_autodoc
 FILELIST       = filelist.f
 HIERARCHY_JSON = $(SOURCEDIR)/hierarchy.json
 # Entry point filename for the register map HTML output.

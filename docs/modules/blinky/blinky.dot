@@ -1,0 +1,17 @@
+digraph blinky {
+    rankdir=LR;
+    node [shape=circle, style=filled, fontname=Helvetica, fontsize=12];
+    edge [fontname=Helvetica, fontsize=10];
+
+    __start [shape=point, width=0.2, fillcolor=black];
+
+    OFF_STATE [fillcolor=lightgray];
+    ON_STATE [fillcolor=lightgreen];
+    FADE_STATE [fillcolor=lightyellow];
+
+    __start -> OFF_STATE [label="reset"];
+
+    OFF_STATE -> ON_STATE [label="always"];
+    ON_STATE -> FADE_STATE [label="always"];
+    FADE_STATE -> OFF_STATE [label="always"];
+}

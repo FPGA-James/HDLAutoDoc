@@ -1,0 +1,7 @@
+{ "signal": [
+{ "name": "state",       "wave": "=.=.=.",     "data": ["IDLE","COUNTING","DONE"] },
+{ "name": "count",       "wave": "=.=.=.",     "data": ["x","0..N","N"] },
+{ "name": "duty_i",      "wave": "=.....",     "data": ["D"] },
+{ "name": "pwm_o",       "wave": "0.x.0." },
+{ "name": "period_done", "wave": "0...01" }
+]}
