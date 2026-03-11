@@ -1,0 +1,7 @@
+{
+    "python.defaultInterpreterPath": "/Users/james/.pyenv/versions/3.13.3/bin/python3",
+    "python.testing.pytestEnabled": true,
+    "python.testing.pytestArgs": [],
+    "python.testing.unittestEnabled": false,
+    "python-envs.defaultEnvManager": "ms-python.python:pyenv"
+}
