@@ -1,7 +1,7 @@
 test123 — Overview
 ==================
 
-This project contains 4 VHDL/SV modules.
+This project contains 5 VHDL/SV modules.
 
 Top-level module: :doc:`modules/top/index`
 
@@ -23,10 +23,14 @@ Modules
      - ``pwm_controller.sv``
      - PWM controller module. Generates a variable duty-cycle PWM signal using a 3-state FSM:
 
-   * - :doc:`modules/blinky/index`
-     - ``blinky.vhd``
-     - Blinky LED controller. Implements a 3-state FSM that drives an LED through a repeating
+   * - :doc:`modules/cfg_sync/index`
+     - ``cfg_sync.vhd``
+     - cfg_sync entity.
 
    * - :doc:`modules/top/index`
      - ``top.vhd``
      - top entity.
+
+   * - :doc:`modules/blinky/index`
+     - ``blinky.vhd``
+     - Blinky LED controller. Implements a 3-state FSM that drives an LED through a repeating

@@ -6,4 +6,5 @@
 src/pwm_controller.sv
 src/blinky.vhd
 src/traffic_light.vhd
+src/cfg_sync.vhd
 src/top.vhd

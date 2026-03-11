@@ -7,6 +7,7 @@ top
    entity
    fsm
    timing
+   cdc
 
    ../../registers
 
@@ -18,5 +19,6 @@ Submodules
    :caption: Submodules
 
    ../blinky/index
+   ../cfg_sync/index
    ../pwm_controller/index
    ../traffic_light/index

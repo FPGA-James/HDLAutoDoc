@@ -8,3 +8,4 @@ pwm_controller
    fsm
    timing
    processes/index
+   cdc

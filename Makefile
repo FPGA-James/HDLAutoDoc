@@ -127,6 +127,7 @@ clean-generated: clean
 	@if [ -d $(AUTODOC_SOURCEDIR)/modules ]; then \
 		find $(AUTODOC_SOURCEDIR)/modules -maxdepth 2 \
 		     -name "index.rst" -o -name "fsm.rst" -o -name "timing.rst" \
+		     -o -name "cdc.rst" -o -name "*_cdc.rst" -o -name "*_cdc.dot" \
 		     -o -name "*.dot"  -o -name "*.rst" -path "*/processes/*" \
 		| xargs rm -f 2>/dev/null; \
 		find $(AUTODOC_SOURCEDIR)/modules -maxdepth 2 -name "processes" -type d \

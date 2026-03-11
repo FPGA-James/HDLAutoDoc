@@ -170,6 +170,7 @@ def module_index_rst(entity: dict, children: list[str],
     ]
     if has_processes:
         lines.append("   processes/index")
+    lines.append("   cdc")
     lines.append("")
 
     if is_top:
@@ -230,6 +231,19 @@ def entity_rst(entity: dict, src_rel_to_docs: str = "../../src") -> str:
         "",
     ]
     return "\n".join(lines)
+
+
+def cdc_rst(entity: dict, module_dir: Path = None) -> str:
+    name        = entity["name"]
+    extracted   = module_dir / f"{name}_cdc.rst" if module_dir else None
+    if extracted and extracted.exists():
+        return "\n".join([f".. include:: {name}_cdc.rst", ""])
+    title = f"{name} — Clock Domain Analysis"
+    return "\n".join([
+        title, "=" * len(title), "",
+        ".. note::", "",
+        "   CDC analysis pending — run ``make extract`` to generate.", "",
+    ])
 
 
 def fsm_rst(entity: dict, module_dir: Path = None) -> str:
@@ -531,6 +545,10 @@ if __name__ == "__main__":
         results.append(write_always(
             mod_dir / "timing.rst",
             timing_rst(entity, processes_dir=mod_dir / "processes")
+        ))
+        results.append(write_always(
+            mod_dir / "cdc.rst",
+            cdc_rst(entity, module_dir=mod_dir)
         ))
 
         # Write-if-missing

@@ -5,77 +5,104 @@
 \contentsline {section}{\numberline {2.1}top — Entity}{3}{section.2.1}%
 \contentsline {subsection}{\numberline {2.1.1}Annotated Source}{3}{subsection.2.1.1}%
 \contentsline {section}{\numberline {2.2}top — State Machine}{5}{section.2.2}%
-\contentsline {section}{\numberline {2.3}top — Timing Diagrams}{5}{section.2.3}%
-\contentsline {section}{\numberline {2.4}Registers}{5}{section.2.4}%
-\contentsline {section}{\numberline {2.5}Submodules}{5}{section.2.5}%
-\contentsline {subsection}{\numberline {2.5.1}blinky}{5}{subsection.2.5.1}%
-\contentsline {subsubsection}{\numberline {2.5.1.1}blinky — Entity}{5}{subsubsection.2.5.1.1}%
-\contentsline {paragraph}{Annotated Source}{6}{paragraph*.5}%
-\contentsline {subsubsection}{\numberline {2.5.1.2}blinky State Machine}{9}{subsubsection.2.5.1.2}%
-\contentsline {paragraph}{State Transition Diagram}{9}{paragraph*.6}%
-\contentsline {paragraph}{State Output Table}{9}{paragraph*.7}%
-\contentsline {paragraph}{Transitions}{9}{paragraph*.8}%
-\contentsline {subsubsection}{\numberline {2.5.1.3}blinky — Timing Diagrams}{9}{subsubsection.2.5.1.3}%
-\contentsline {paragraph}{P Next State}{10}{paragraph*.9}%
-\contentsline {paragraph}{P Outputs}{10}{paragraph*.10}%
-\contentsline {paragraph}{P State Reg}{10}{paragraph*.11}%
-\contentsline {subsubsection}{\numberline {2.5.1.4}Processes}{10}{subsubsection.2.5.1.4}%
-\contentsline {paragraph}{p\_state\_reg}{10}{paragraph*.12}%
-\contentsline {subparagraph}{Description}{11}{subparagraph*.13}%
-\contentsline {subparagraph}{Source}{11}{subparagraph*.14}%
-\contentsline {paragraph}{p\_next\_state}{11}{paragraph*.15}%
-\contentsline {subparagraph}{Description}{11}{subparagraph*.16}%
-\contentsline {subparagraph}{Source}{12}{subparagraph*.17}%
-\contentsline {paragraph}{p\_outputs}{12}{paragraph*.18}%
-\contentsline {subparagraph}{Description}{12}{subparagraph*.19}%
-\contentsline {subparagraph}{Source}{13}{subparagraph*.20}%
-\contentsline {paragraph}{Summary}{13}{paragraph*.21}%
-\contentsline {subsection}{\numberline {2.5.2}pwm\_controller}{13}{subsection.2.5.2}%
-\contentsline {subsubsection}{\numberline {2.5.2.1}pwm\_controller — Entity}{13}{subsubsection.2.5.2.1}%
-\contentsline {paragraph}{Annotated Source}{13}{paragraph*.22}%
-\contentsline {subsubsection}{\numberline {2.5.2.2}pwm\_controller State Machine}{16}{subsubsection.2.5.2.2}%
-\contentsline {paragraph}{State Transition Diagram}{16}{paragraph*.23}%
-\contentsline {paragraph}{State Output Table}{16}{paragraph*.24}%
-\contentsline {paragraph}{Transitions}{16}{paragraph*.25}%
-\contentsline {subsubsection}{\numberline {2.5.2.3}pwm\_controller — Timing Diagrams}{17}{subsubsection.2.5.2.3}%
-\contentsline {paragraph}{P Next State}{17}{paragraph*.26}%
-\contentsline {paragraph}{P Outputs}{17}{paragraph*.27}%
-\contentsline {paragraph}{P State Reg}{17}{paragraph*.28}%
-\contentsline {subsubsection}{\numberline {2.5.2.4}Processes}{17}{subsubsection.2.5.2.4}%
-\contentsline {paragraph}{p\_state\_reg}{17}{paragraph*.29}%
+\contentsline {section}{\numberline {2.3}top — Timing Diagrams}{6}{section.2.3}%
+\contentsline {section}{\numberline {2.4}top — Clock Domain Analysis}{6}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Registers}{6}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Submodules}{6}{section.2.6}%
+\contentsline {subsection}{\numberline {2.6.1}blinky}{6}{subsection.2.6.1}%
+\contentsline {subsubsection}{\numberline {2.6.1.1}blinky — Entity}{6}{subsubsection.2.6.1.1}%
+\contentsline {paragraph}{Annotated Source}{7}{paragraph*.5}%
+\contentsline {subsubsection}{\numberline {2.6.1.2}blinky State Machine}{9}{subsubsection.2.6.1.2}%
+\contentsline {paragraph}{State Transition Diagram}{10}{paragraph*.6}%
+\contentsline {paragraph}{State Output Table}{10}{paragraph*.7}%
+\contentsline {paragraph}{Transitions}{10}{paragraph*.8}%
+\contentsline {subsubsection}{\numberline {2.6.1.3}blinky — Timing Diagrams}{10}{subsubsection.2.6.1.3}%
+\contentsline {paragraph}{P Next State}{11}{paragraph*.9}%
+\contentsline {paragraph}{P Outputs}{11}{paragraph*.10}%
+\contentsline {paragraph}{P State Reg}{11}{paragraph*.11}%
+\contentsline {subsubsection}{\numberline {2.6.1.4}Processes}{11}{subsubsection.2.6.1.4}%
+\contentsline {paragraph}{p\_state\_reg}{11}{paragraph*.12}%
+\contentsline {subparagraph}{Description}{12}{subparagraph*.13}%
+\contentsline {subparagraph}{Source}{12}{subparagraph*.14}%
+\contentsline {paragraph}{p\_next\_state}{12}{paragraph*.15}%
+\contentsline {subparagraph}{Description}{12}{subparagraph*.16}%
+\contentsline {subparagraph}{Source}{13}{subparagraph*.17}%
+\contentsline {paragraph}{p\_outputs}{13}{paragraph*.18}%
+\contentsline {subparagraph}{Description}{13}{subparagraph*.19}%
+\contentsline {subparagraph}{Source}{14}{subparagraph*.20}%
+\contentsline {paragraph}{Summary}{14}{paragraph*.21}%
+\contentsline {subsubsection}{\numberline {2.6.1.5}blinky — Clock Domain Analysis}{14}{subsubsection.2.6.1.5}%
+\contentsline {paragraph}{Clock Domain}{14}{paragraph*.22}%
+\contentsline {subsection}{\numberline {2.6.2}cfg\_sync}{14}{subsection.2.6.2}%
+\contentsline {subsubsection}{\numberline {2.6.2.1}cfg\_sync — Entity}{14}{subsubsection.2.6.2.1}%
+\contentsline {paragraph}{Annotated Source}{15}{paragraph*.24}%
+\contentsline {subsubsection}{\numberline {2.6.2.2}cfg\_sync — State Machine}{17}{subsubsection.2.6.2.2}%
+\contentsline {subsubsection}{\numberline {2.6.2.3}cfg\_sync — Timing Diagrams}{17}{subsubsection.2.6.2.3}%
+\contentsline {paragraph}{P Mode Sync}{17}{paragraph*.25}%
+\contentsline {subsubsection}{\numberline {2.6.2.4}Processes}{18}{subsubsection.2.6.2.4}%
+\contentsline {paragraph}{p\_cfg\_reg}{18}{paragraph*.26}%
+\contentsline {subparagraph}{Description}{18}{subparagraph*.27}%
+\contentsline {subparagraph}{Source}{18}{subparagraph*.28}%
+\contentsline {paragraph}{p\_mode\_sync}{18}{paragraph*.29}%
 \contentsline {subparagraph}{Description}{18}{subparagraph*.30}%
-\contentsline {subparagraph}{Source}{18}{subparagraph*.31}%
-\contentsline {paragraph}{p\_next\_state}{18}{paragraph*.32}%
-\contentsline {subparagraph}{Description}{18}{subparagraph*.33}%
+\contentsline {subparagraph}{Source}{19}{subparagraph*.31}%
+\contentsline {paragraph}{p\_duty\_capture}{19}{paragraph*.32}%
+\contentsline {subparagraph}{Description}{19}{subparagraph*.33}%
 \contentsline {subparagraph}{Source}{19}{subparagraph*.34}%
-\contentsline {paragraph}{p\_outputs}{19}{paragraph*.35}%
-\contentsline {subparagraph}{Description}{19}{subparagraph*.36}%
-\contentsline {subparagraph}{Source}{19}{subparagraph*.37}%
-\contentsline {paragraph}{Summary}{20}{paragraph*.38}%
-\contentsline {subsection}{\numberline {2.5.3}traffic\_light}{20}{subsection.2.5.3}%
-\contentsline {subsubsection}{\numberline {2.5.3.1}traffic\_light — Entity}{20}{subsubsection.2.5.3.1}%
-\contentsline {paragraph}{Annotated Source}{20}{paragraph*.40}%
-\contentsline {subsubsection}{\numberline {2.5.3.2}traffic\_light State Machine}{23}{subsubsection.2.5.3.2}%
-\contentsline {paragraph}{State Transition Diagram}{24}{paragraph*.41}%
-\contentsline {paragraph}{State Output Table}{24}{paragraph*.42}%
-\contentsline {paragraph}{Transitions}{24}{paragraph*.43}%
-\contentsline {subsubsection}{\numberline {2.5.3.3}traffic\_light — Timing Diagrams}{24}{subsubsection.2.5.3.3}%
-\contentsline {paragraph}{P Next State}{24}{paragraph*.44}%
-\contentsline {paragraph}{P Outputs}{25}{paragraph*.45}%
-\contentsline {paragraph}{P State Reg}{25}{paragraph*.46}%
-\contentsline {subsubsection}{\numberline {2.5.3.4}Processes}{25}{subsubsection.2.5.3.4}%
-\contentsline {paragraph}{p\_state\_reg}{25}{paragraph*.47}%
-\contentsline {subparagraph}{Description}{25}{subparagraph*.48}%
-\contentsline {subparagraph}{Source}{25}{subparagraph*.49}%
-\contentsline {paragraph}{p\_next\_state}{26}{paragraph*.50}%
-\contentsline {subparagraph}{Description}{26}{subparagraph*.51}%
-\contentsline {subparagraph}{Signal Assignments}{26}{subparagraph*.52}%
-\contentsline {subparagraph}{Source}{26}{subparagraph*.53}%
-\contentsline {paragraph}{p\_outputs}{27}{paragraph*.54}%
-\contentsline {subparagraph}{Description}{27}{subparagraph*.55}%
-\contentsline {subparagraph}{Source}{28}{subparagraph*.56}%
-\contentsline {paragraph}{Summary}{28}{paragraph*.57}%
-\contentsline {chapter}{\numberline {3}Design Hierarchy}{29}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Instantiation Tree}{29}{section.3.1}%
-\contentsline {section}{\numberline {3.2}Module List}{29}{section.3.2}%
-\contentsline {chapter}{\numberline {4}Indices}{31}{chapter.4}%
+\contentsline {paragraph}{Summary}{20}{paragraph*.35}%
+\contentsline {subsubsection}{\numberline {2.6.2.5}cfg\_sync — Clock Domain Analysis}{20}{subsubsection.2.6.2.5}%
+\contentsline {paragraph}{Clock Domains}{20}{paragraph*.36}%
+\contentsline {paragraph}{Signal Crossings}{20}{paragraph*.37}%
+\contentsline {subsection}{\numberline {2.6.3}pwm\_controller}{21}{subsection.2.6.3}%
+\contentsline {subsubsection}{\numberline {2.6.3.1}pwm\_controller — Entity}{21}{subsubsection.2.6.3.1}%
+\contentsline {paragraph}{Annotated Source}{21}{paragraph*.38}%
+\contentsline {subsubsection}{\numberline {2.6.3.2}pwm\_controller State Machine}{23}{subsubsection.2.6.3.2}%
+\contentsline {paragraph}{State Transition Diagram}{24}{paragraph*.39}%
+\contentsline {paragraph}{State Output Table}{24}{paragraph*.40}%
+\contentsline {paragraph}{Transitions}{24}{paragraph*.41}%
+\contentsline {subsubsection}{\numberline {2.6.3.3}pwm\_controller — Timing Diagrams}{24}{subsubsection.2.6.3.3}%
+\contentsline {paragraph}{P Next State}{24}{paragraph*.42}%
+\contentsline {paragraph}{P Outputs}{25}{paragraph*.43}%
+\contentsline {paragraph}{P State Reg}{25}{paragraph*.44}%
+\contentsline {subsubsection}{\numberline {2.6.3.4}Processes}{25}{subsubsection.2.6.3.4}%
+\contentsline {paragraph}{p\_state\_reg}{25}{paragraph*.45}%
+\contentsline {subparagraph}{Description}{25}{subparagraph*.46}%
+\contentsline {subparagraph}{Source}{26}{subparagraph*.47}%
+\contentsline {paragraph}{p\_next\_state}{26}{paragraph*.48}%
+\contentsline {subparagraph}{Description}{26}{subparagraph*.49}%
+\contentsline {subparagraph}{Source}{26}{subparagraph*.50}%
+\contentsline {paragraph}{p\_outputs}{27}{paragraph*.51}%
+\contentsline {subparagraph}{Description}{27}{subparagraph*.52}%
+\contentsline {subparagraph}{Source}{27}{subparagraph*.53}%
+\contentsline {paragraph}{Summary}{27}{paragraph*.54}%
+\contentsline {subsubsection}{\numberline {2.6.3.5}pwm\_controller — Clock Domain Analysis}{27}{subsubsection.2.6.3.5}%
+\contentsline {paragraph}{Clock Domain}{28}{paragraph*.55}%
+\contentsline {subsection}{\numberline {2.6.4}traffic\_light}{28}{subsection.2.6.4}%
+\contentsline {subsubsection}{\numberline {2.6.4.1}traffic\_light — Entity}{28}{subsubsection.2.6.4.1}%
+\contentsline {paragraph}{Annotated Source}{28}{paragraph*.57}%
+\contentsline {subsubsection}{\numberline {2.6.4.2}traffic\_light State Machine}{32}{subsubsection.2.6.4.2}%
+\contentsline {paragraph}{State Transition Diagram}{32}{paragraph*.58}%
+\contentsline {paragraph}{State Output Table}{32}{paragraph*.59}%
+\contentsline {paragraph}{Transitions}{32}{paragraph*.60}%
+\contentsline {subsubsection}{\numberline {2.6.4.3}traffic\_light — Timing Diagrams}{32}{subsubsection.2.6.4.3}%
+\contentsline {paragraph}{P Next State}{33}{paragraph*.61}%
+\contentsline {paragraph}{P Outputs}{33}{paragraph*.62}%
+\contentsline {paragraph}{P State Reg}{33}{paragraph*.63}%
+\contentsline {subsubsection}{\numberline {2.6.4.4}Processes}{33}{subsubsection.2.6.4.4}%
+\contentsline {paragraph}{p\_state\_reg}{33}{paragraph*.64}%
+\contentsline {subparagraph}{Description}{33}{subparagraph*.65}%
+\contentsline {subparagraph}{Source}{34}{subparagraph*.66}%
+\contentsline {paragraph}{p\_next\_state}{34}{paragraph*.67}%
+\contentsline {subparagraph}{Description}{34}{subparagraph*.68}%
+\contentsline {subparagraph}{Signal Assignments}{35}{subparagraph*.69}%
+\contentsline {subparagraph}{Source}{35}{subparagraph*.70}%
+\contentsline {paragraph}{p\_outputs}{35}{paragraph*.71}%
+\contentsline {subparagraph}{Description}{35}{subparagraph*.72}%
+\contentsline {subparagraph}{Source}{36}{subparagraph*.73}%
+\contentsline {paragraph}{Summary}{36}{paragraph*.74}%
+\contentsline {subsubsection}{\numberline {2.6.4.5}traffic\_light — Clock Domain Analysis}{36}{subsubsection.2.6.4.5}%
+\contentsline {paragraph}{Clock Domain}{36}{paragraph*.75}%
+\contentsline {chapter}{\numberline {3}Design Hierarchy}{37}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Instantiation Tree}{37}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Module List}{37}{section.3.2}%
+\contentsline {chapter}{\numberline {4}Indices}{39}{chapter.4}%

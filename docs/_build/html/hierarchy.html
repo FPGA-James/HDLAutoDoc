@@ -23,7 +23,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="p_outputs" href="modules/traffic_light/processes/p_outputs.html" /> 
+    <link rel="prev" title="traffic_light — Clock Domain Analysis" href="modules/traffic_light/cdc.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -59,6 +59,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="modules/top/fsm.html">top — State Machine</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/top/timing.html">top — Timing Diagrams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/top/cdc.html">top — Clock Domain Analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="registers.html">Registers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/top/index.html#submodules">Submodules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="modules/blinky/index.html">blinky</a><ul>
@@ -95,6 +96,46 @@
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="modules/blinky/processes/index.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="modules/blinky/cdc.html">blinky — Clock Domain Analysis</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="modules/blinky/cdc.html#clock-domain">Clock Domain</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="modules/cfg_sync/index.html">cfg_sync</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/cfg_sync/entity.html">cfg_sync — Entity</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="modules/cfg_sync/entity.html#annotated-source">Annotated Source</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="modules/cfg_sync/fsm.html">cfg_sync — State Machine</a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/cfg_sync/timing.html">cfg_sync — Timing Diagrams</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="modules/cfg_sync/timing.html#p-mode-sync">P Mode Sync</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="modules/cfg_sync/processes/index.html">Processes</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="modules/cfg_sync/processes/p_cfg_reg.html">p_cfg_reg</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="modules/cfg_sync/processes/p_cfg_reg.html#description">Description</a></li>
+<li class="toctree-l6"><a class="reference internal" href="modules/cfg_sync/processes/p_cfg_reg.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="modules/cfg_sync/processes/p_mode_sync.html">p_mode_sync</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="modules/cfg_sync/processes/p_mode_sync.html#description">Description</a></li>
+<li class="toctree-l6"><a class="reference internal" href="modules/cfg_sync/processes/p_mode_sync.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="modules/cfg_sync/processes/p_duty_capture.html">p_duty_capture</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="modules/cfg_sync/processes/p_duty_capture.html#description">Description</a></li>
+<li class="toctree-l6"><a class="reference internal" href="modules/cfg_sync/processes/p_duty_capture.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="modules/cfg_sync/processes/index.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="modules/cfg_sync/cdc.html">cfg_sync — Clock Domain Analysis</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="modules/cfg_sync/cdc.html#clock-domains">Clock Domains</a></li>
+<li class="toctree-l5"><a class="reference internal" href="modules/cfg_sync/cdc.html#signal-crossings">Signal Crossings</a></li>
 </ul>
 </li>
 </ul>
@@ -135,6 +176,10 @@
 <li class="toctree-l5"><a class="reference internal" href="modules/pwm_controller/processes/index.html#summary">Summary</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="modules/pwm_controller/cdc.html">pwm_controller — Clock Domain Analysis</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="modules/pwm_controller/cdc.html#clock-domain">Clock Domain</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="modules/traffic_light/index.html">traffic_light</a><ul>
@@ -172,6 +217,10 @@
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="modules/traffic_light/processes/index.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="modules/traffic_light/cdc.html">traffic_light — Clock Domain Analysis</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="modules/traffic_light/cdc.html#clock-domain">Clock Domain</a></li>
 </ul>
 </li>
 </ul>
@@ -214,10 +263,10 @@
   <section id="design-hierarchy">
 <h1>Design Hierarchy<a class="headerlink" href="#design-hierarchy" title="Link to this heading"></a></h1>
 <p>Top-level module: <code class="docutils literal notranslate"><span class="pre">top</span></code>
-Total modules: 4</p>
+Total modules: 5</p>
 <section id="instantiation-tree">
 <h2>Instantiation Tree<a class="headerlink" href="#instantiation-tree" title="Link to this heading"></a></h2>
-<div class="graphviz"><object data="_images/graphviz-d2a3754b6dbfac497818921f0d33371d6e959499.svg" type="image/svg+xml" class="graphviz">
+<div class="graphviz"><object data="_images/graphviz-0b2a6de41f37565b502bd4d4ee23cb1efb302f73.svg" type="image/svg+xml" class="graphviz">
 <p class="warning">digraph hierarchy {
     rankdir=TB;
     node [shape=box, style=filled, fillcolor=lightblue,
@@ -226,6 +275,7 @@ Total modules: 4</p>
 
 
     top -&gt; blinky;
+    top -&gt; cfg_sync;
     top -&gt; pwm_controller;
     top -&gt; traffic_light;
 }</p></object></div>
@@ -246,17 +296,22 @@ Total modules: 4</p>
 <td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
 <td><p>—</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/pwm_controller/index.html"><span class="doc">pwm_controller</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/cfg_sync/index.html"><span class="doc">cfg_sync</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">src/cfg_sync.vhd</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/pwm_controller/index.html"><span class="doc">pwm_controller</span></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">src/pwm_controller.sv</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
 <td><p>—</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="modules/top/index.html"><span class="doc">top</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/top/index.html"><span class="doc">top</span></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">src/top.vhd</span></code></p></td>
 <td><p><em>(top)</em></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">blinky</span></code>, <code class="docutils literal notranslate"><span class="pre">pwm_controller</span></code>, <code class="docutils literal notranslate"><span class="pre">traffic_light</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">blinky</span></code>, <code class="docutils literal notranslate"><span class="pre">cfg_sync</span></code>, <code class="docutils literal notranslate"><span class="pre">pwm_controller</span></code>, <code class="docutils literal notranslate"><span class="pre">traffic_light</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/traffic_light/index.html"><span class="doc">traffic_light</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/traffic_light/index.html"><span class="doc">traffic_light</span></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">src/traffic_light.vhd</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
 <td><p>—</p></td>
@@ -270,7 +325,7 @@ Total modules: 4</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="modules/traffic_light/processes/p_outputs.html" class="btn btn-neutral float-left" title="p_outputs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="modules/traffic_light/cdc.html" class="btn btn-neutral float-left" title="traffic_light — Clock Domain Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

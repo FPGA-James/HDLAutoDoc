@@ -98,7 +98,7 @@
 \chapter{test123 — Overview}
 \label{\detokenize{overview:test123-overview}}\label{\detokenize{overview::doc}}
 \sphinxAtStartPar
-This project contains 4 VHDL/SV modules.
+This project contains 5 VHDL/SV modules.
 
 \sphinxAtStartPar
 Top\sphinxhyphen{}level module: {\hyperref[\detokenize{modules/top/index::doc}]{\sphinxcrossref{\DUrole{doc}{top}}}}
@@ -145,13 +145,13 @@ PWM controller module. Generates a variable duty\sphinxhyphen{}cycle PWM signal 
 \\
 \sphinxhline
 \sphinxAtStartPar
-{\hyperref[\detokenize{modules/blinky/index::doc}]{\sphinxcrossref{\DUrole{doc}{blinky}}}}
+{\hyperref[\detokenize{modules/cfg_sync/index::doc}]{\sphinxcrossref{\DUrole{doc}{cfg\_sync}}}}
 &
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{blinky.vhd}}
+\sphinxcode{\sphinxupquote{cfg\_sync.vhd}}
 &
 \sphinxAtStartPar
-Blinky LED controller. Implements a 3\sphinxhyphen{}state FSM that drives an LED through a repeating
+cfg\_sync entity.
 \\
 \sphinxhline
 \sphinxAtStartPar
@@ -162,6 +162,16 @@ Blinky LED controller. Implements a 3\sphinxhyphen{}state FSM that drives an LED
 &
 \sphinxAtStartPar
 top entity.
+\\
+\sphinxhline
+\sphinxAtStartPar
+{\hyperref[\detokenize{modules/blinky/index::doc}]{\sphinxcrossref{\DUrole{doc}{blinky}}}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{blinky.vhd}}
+&
+\sphinxAtStartPar
+Blinky LED controller. Implements a 3\sphinxhyphen{}state FSM that drives an LED through a repeating
 \\
 \sphinxbottomrule
 \end{tabulary}
@@ -257,8 +267,57 @@ std\_logic
 in
 &
 \sphinxAtStartPar
-Synchronous active\sphinxhyphen{}high reset.
+Synchronous active\sphinxhyphen{}high reset (sys\_clk domain).
 \\
+\sphinxhline
+\sphinxAtStartPar
+cfg\_clk
+&
+\sphinxAtStartPar
+std\_logic
+&
+\sphinxAtStartPar
+in
+&
+\sphinxAtStartPar
+Config bus clock (slow, e.g. 10 MHz from external MCU).
+\\
+\sphinxhline
+\sphinxAtStartPar
+cfg\_rst
+&
+\sphinxAtStartPar
+std\_logic
+&
+\sphinxAtStartPar
+in
+&
+\sphinxAtStartPar
+Synchronous active\sphinxhyphen{}high reset (cfg\_clk domain).
+\\
+\sphinxhline
+\sphinxAtStartPar
+mode\_sel
+&
+\sphinxAtStartPar
+std\_logic
+&
+\sphinxAtStartPar
+in
+&
+\sphinxAtStartPar
+Config inputs (cfg\_clk domain).
+\\
+\sphinxhline
+\sphinxAtStartPar
+duty\_cycle
+&
+\sphinxAtStartPar
+std\_logic\_vector(7 downto 0)
+&
+\sphinxAtStartPar
+in
+&\\
 \sphinxhline
 \sphinxAtStartPar
 red\_out
@@ -353,38 +412,60 @@ PWM output for LED fading (shared).
 \begin{sphinxVerbatim}[commandchars=\\\{\},numbers=left,firstnumber=1,stepnumber=1]
 \PYG{c+c1}{\PYGZhy{}\PYGZhy{} Top\PYGZhy{}level integration module.}
 \PYG{c+c1}{\PYGZhy{}\PYGZhy{}}
-\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Instantiates the traffic\PYGZus{}light controller and the blinky LED module.}
-\PYG{c+c1}{\PYGZhy{}\PYGZhy{} The PWM controller is shared between both to drive the LED fade output.}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Instantiates the traffic\PYGZus{}light controller, blinky LED module, PWM}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{} controller, and cfg\PYGZus{}sync. Runtime configuration (blinky enable and PWM}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{} duty cycle) arrives on a slow config bus clock and is synchronised into}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{} the main 50 MHz domain by cfg\PYGZus{}sync.}
 \PYG{k}{library}\PYG{+w}{ }\PYG{n+nn}{ieee}\PYG{p}{;}
 \PYG{k}{use}\PYG{+w}{ }\PYG{n+nn}{ieee.std\PYGZus{}logic\PYGZus{}1164.}\PYG{k}{all}\PYG{p}{;}
 
 \PYG{k}{entity}\PYG{+w}{ }\PYG{n+nc}{top}\PYG{+w}{ }\PYG{k}{is}
 \PYG{+w}{    }\PYG{k}{port}\PYG{+w}{ }\PYG{p}{(}
 \PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} System clock 50 MHz.}
-\PYG{+w}{        }\PYG{n}{clk}\PYG{+w}{         }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
-\PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Synchronous active\PYGZhy{}high reset.}
-\PYG{+w}{        }\PYG{n}{rst}\PYG{+w}{         }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{clk}\PYG{+w}{          }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Synchronous active\PYGZhy{}high reset (sys\PYGZus{}clk domain).}
+\PYG{+w}{        }\PYG{n}{rst}\PYG{+w}{          }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Config bus clock (slow, e.g. 10 MHz from external MCU).}
+\PYG{+w}{        }\PYG{n}{cfg\PYGZus{}clk}\PYG{+w}{      }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Synchronous active\PYGZhy{}high reset (cfg\PYGZus{}clk domain).}
+\PYG{+w}{        }\PYG{n}{cfg\PYGZus{}rst}\PYG{+w}{      }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Config inputs (cfg\PYGZus{}clk domain).}
+\PYG{+w}{        }\PYG{n}{mode\PYGZus{}sel}\PYG{+w}{     }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{duty\PYGZus{}cycle}\PYG{+w}{   }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic\PYGZus{}vector}\PYG{p}{(}\PYG{l+m+mi}{7}\PYG{+w}{ }\PYG{k}{downto}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{;}
 \PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Traffic light outputs.}
-\PYG{+w}{        }\PYG{n}{red\PYGZus{}out}\PYG{+w}{     }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{out}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
-\PYG{+w}{        }\PYG{n}{amber\PYGZus{}out}\PYG{+w}{   }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{out}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
-\PYG{+w}{        }\PYG{n}{green\PYGZus{}out}\PYG{+w}{   }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{out}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{red\PYGZus{}out}\PYG{+w}{      }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{out}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{amber\PYGZus{}out}\PYG{+w}{    }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{out}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{green\PYGZus{}out}\PYG{+w}{    }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{out}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
 \PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Blinky LED outputs.}
-\PYG{+w}{        }\PYG{n}{led\PYGZus{}on}\PYG{+w}{      }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{out}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
-\PYG{+w}{        }\PYG{n}{led\PYGZus{}fade}\PYG{+w}{    }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{out}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
-\PYG{+w}{        }\PYG{n}{led\PYGZus{}off}\PYG{+w}{     }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{out}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{led\PYGZus{}on}\PYG{+w}{       }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{out}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{led\PYGZus{}fade}\PYG{+w}{     }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{out}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{led\PYGZus{}off}\PYG{+w}{      }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{out}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
 \PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} PWM output for LED fading (shared).}
-\PYG{+w}{        }\PYG{n}{pwm\PYGZus{}out}\PYG{+w}{     }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{out}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}
+\PYG{+w}{        }\PYG{n}{pwm\PYGZus{}out}\PYG{+w}{      }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{out}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}
 \PYG{+w}{    }\PYG{p}{)}\PYG{p}{;}
 \PYG{k}{end}\PYG{+w}{ }\PYG{k}{entity}\PYG{+w}{ }\PYG{n+nc}{top}\PYG{p}{;}
 
 \PYG{k}{architecture}\PYG{+w}{ }\PYG{n+nc}{rtl}\PYG{+w}{ }\PYG{k}{of}\PYG{+w}{ }\PYG{n+nc}{top}\PYG{+w}{ }\PYG{k}{is}
 
-\PYG{+w}{    }\PYG{k}{signal}\PYG{+w}{ }\PYG{n}{timer\PYGZus{}exp}\PYG{+w}{    }\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
-\PYG{+w}{    }\PYG{k}{signal}\PYG{+w}{ }\PYG{n}{blinky\PYGZus{}en}\PYG{+w}{    }\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
-\PYG{+w}{    }\PYG{k}{signal}\PYG{+w}{ }\PYG{n}{pwm\PYGZus{}duty}\PYG{+w}{     }\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic\PYGZus{}vector}\PYG{p}{(}\PYG{l+m+mi}{7}\PYG{+w}{ }\PYG{k}{downto}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{;}
-\PYG{+w}{    }\PYG{k}{signal}\PYG{+w}{ }\PYG{n}{period\PYGZus{}done}\PYG{+w}{  }\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{signal}\PYG{+w}{ }\PYG{n}{timer\PYGZus{}exp}\PYG{+w}{   }\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{signal}\PYG{+w}{ }\PYG{n}{blinky\PYGZus{}en}\PYG{+w}{   }\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{signal}\PYG{+w}{ }\PYG{n}{pwm\PYGZus{}duty}\PYG{+w}{    }\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic\PYGZus{}vector}\PYG{p}{(}\PYG{l+m+mi}{7}\PYG{+w}{ }\PYG{k}{downto}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{signal}\PYG{+w}{ }\PYG{n}{period\PYGZus{}done}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
 
 \PYG{k}{begin}
+
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} u\PYGZus{}cfg\PYGZus{}sync: Synchronise config bus inputs into the system clock domain.}
+\PYG{+w}{    }\PYG{n}{u\PYGZus{}cfg\PYGZus{}sync}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{entity}\PYG{+w}{ }\PYG{n+nc}{work}\PYG{p}{.}\PYG{n}{cfg\PYGZus{}sync}
+\PYG{+w}{        }\PYG{k}{port}\PYG{+w}{ }\PYG{k}{map}\PYG{+w}{ }\PYG{p}{(}
+\PYG{+w}{            }\PYG{n}{sys\PYGZus{}clk}\PYG{+w}{    }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{clk}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{sys\PYGZus{}rst}\PYG{+w}{    }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{rst}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{cfg\PYGZus{}clk}\PYG{+w}{    }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{cfg\PYGZus{}clk}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{cfg\PYGZus{}rst}\PYG{+w}{    }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{cfg\PYGZus{}rst}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{mode\PYGZus{}sel}\PYG{+w}{   }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{mode\PYGZus{}sel}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{duty\PYGZus{}cycle}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{duty\PYGZus{}cycle}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{blinky\PYGZus{}en}\PYG{+w}{  }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{blinky\PYGZus{}en}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{pwm\PYGZus{}duty}\PYG{+w}{   }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{pwm\PYGZus{}duty}
+\PYG{+w}{        }\PYG{p}{)}\PYG{p}{;}
 
 \PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} u\PYGZus{}traffic\PYGZus{}light: Traffic light FSM instance.}
 \PYG{+w}{    }\PYG{n}{u\PYGZus{}traffic\PYGZus{}light}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{entity}\PYG{+w}{ }\PYG{n+nc}{work}\PYG{p}{.}\PYG{n}{traffic\PYGZus{}light}
@@ -452,6 +533,19 @@ No wavedrom diagrams found in process comments.
 \sphinxAtStartPar
 Add \sphinxcode{\sphinxupquote{.. wavedrom::}} blocks in the VHDL source above each
 process to have them appear here automatically.
+
+\sphinxstepscope
+
+
+\section{top — Clock Domain Analysis}
+\label{\detokenize{modules/top/cdc:top-clock-domain-analysis}}\label{\detokenize{modules/top/cdc::doc}}
+\sphinxAtStartPar
+Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{top.vhd}}.
+
+\begin{sphinxadmonition}{note}{Note:}
+\sphinxAtStartPar
+No clocked processes detected. This module appears to be purely combinational.
+\end{sphinxadmonition}
 
 \sphinxstepscope
 
@@ -939,17 +1033,17 @@ source comments above each process.
 
 \paragraph{P Next State}
 \label{\detokenize{modules/blinky/timing:p-next-state}}
-\noindent\sphinxincludegraphics{{wavedrom-1012e823-8ecd-46d4-a8bb-fb9a1cb50f48}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-570fd8ad-fb35-433b-9136-09fe880882d5}.pdf}
 
 
 \paragraph{P Outputs}
 \label{\detokenize{modules/blinky/timing:p-outputs}}
-\noindent\sphinxincludegraphics{{wavedrom-f69388b1-3f1f-47c9-b91f-05416b6eab42}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-9b024e2a-3ad5-42ee-b75d-d98e4683c4fb}.pdf}
 
 
 \paragraph{P State Reg}
 \label{\detokenize{modules/blinky/timing:p-state-reg}}
-\noindent\sphinxincludegraphics{{wavedrom-cddfd3a9-4590-438f-8d2f-e4202248051d}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-8ec7cd88-00d4-4678-9630-9f7a189c8d7b}.pdf}
 
 \sphinxstepscope
 
@@ -979,7 +1073,7 @@ p\_state\_reg: Clocked state register.
 Captures next\_state on each rising edge of clk.
 Synchronous reset drives state back to OFF\_STATE.
 
-\noindent\sphinxincludegraphics{{wavedrom-846eacd1-2bd0-4161-b47f-3d944f1bf97d}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-c4e90d5c-835e-4a26-bde1-84530f3ac3cc}.pdf}
 
 
 \subparagraph{Source}
@@ -1026,7 +1120,7 @@ ON\_STATE   + en + timer\_exp \sphinxhyphen{}\textgreater{} FADE\_STATE
 FADE\_STATE + en + timer\_exp \sphinxhyphen{}\textgreater{} OFF\_STATE
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-5511da8a-33f1-4c9c-a6d0-a347ec89d972}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-c746ec44-9c19-402f-966a-673a3c38b597}.pdf}
 
 
 \subparagraph{Source}
@@ -1076,7 +1170,7 @@ ON\_STATE   \sphinxhyphen{}\textgreater{} led\_on=1 led\_fade=0 led\_off=0
 FADE\_STATE \sphinxhyphen{}\textgreater{} led\_on=0 led\_fade=1 led\_off=0
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-8edbb77d-f0f6-4dd7-9066-fa78e025c907}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-7fb4661f-397d-4b1a-a7a9-33a482b6aa72}.pdf}
 
 
 \subparagraph{Source}
@@ -1169,6 +1263,684 @@ WaveDrom
 &
 \sphinxAtStartPar
 \(\pmb{\checkmark}\)
+\\
+\sphinxbottomrule
+\end{tabulary}
+\sphinxtableafterendhook\par
+\sphinxattableend\end{savenotes}
+
+\sphinxstepscope
+
+
+\subsubsection{blinky — Clock Domain Analysis}
+\label{\detokenize{modules/blinky/cdc:blinky-clock-domain-analysis}}\label{\detokenize{modules/blinky/cdc::doc}}
+\sphinxAtStartPar
+Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{blinky.vhd}}.
+
+\begin{sphinxadmonition}{note}{Note:}
+\sphinxAtStartPar
+No clock domain crossings detected. All clocked logic uses a single clock domain (\sphinxcode{\sphinxupquote{clk}}).
+\end{sphinxadmonition}
+
+
+\paragraph{Clock Domain}
+\label{\detokenize{modules/blinky/cdc:clock-domain}}
+
+\begin{savenotes}\sphinxattablestart
+\sphinxthistablewithglobalstyle
+\centering
+\begin{tabulary}{\linewidth}[t]{TT}
+\sphinxtoprule
+\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Clock
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Clocked Processes
+\\
+\sphinxmidrule
+\sphinxtableatstartofbodyhook
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{clk}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{p\_state\_reg}}
+\\
+\sphinxbottomrule
+\end{tabulary}
+\sphinxtableafterendhook\par
+\sphinxattableend\end{savenotes}
+
+\sphinxstepscope
+
+
+\subsection{cfg\_sync}
+\label{\detokenize{modules/cfg_sync/index:cfg-sync}}\label{\detokenize{modules/cfg_sync/index::doc}}
+\sphinxstepscope
+
+
+\subsubsection{cfg\_sync — Entity}
+\label{\detokenize{modules/cfg_sync/entity:cfg-sync-entity}}\label{\detokenize{modules/cfg_sync/entity::doc}}
+\sphinxAtStartPar
+Source file: \sphinxcode{\sphinxupquote{src/cfg\_sync.vhd}}.
+
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{modules/cfg_sync/entity:vhdl-entity-cfg_sync}}
+\pysigstartsignatures
+\pysigline
+{\DUrole{k}{ENTITY }\sphinxbfcode{\sphinxupquote{cfg\_sync}}\DUrole{k}{ IS}}
+\pysigstopsignatures\sphinxbfcode{\sphinxupquote{Generics}}
+
+\begin{savenotes}\sphinxattablestart
+\sphinxthistablewithglobalstyle
+\centering
+\begin{tabulary}{\linewidth}[t]{TTTT}
+\sphinxtoprule
+\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Generic
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Type
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Default
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Description
+\\
+\sphinxmidrule
+\sphinxtableatstartofbodyhook\sphinxbottomrule
+\end{tabulary}
+\sphinxtableafterendhook\par
+\sphinxattableend\end{savenotes}
+\sphinxbfcode{\sphinxupquote{Ports}}
+
+\begin{savenotes}\sphinxattablestart
+\sphinxthistablewithglobalstyle
+\centering
+\begin{tabulary}{\linewidth}[t]{TTTT}
+\sphinxtoprule
+\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Port
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Type
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Mode
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Description
+\\
+\sphinxmidrule
+\sphinxtableatstartofbodyhook
+\sphinxAtStartPar
+sys\_clk
+&
+\sphinxAtStartPar
+std\_logic
+&
+\sphinxAtStartPar
+in
+&
+\sphinxAtStartPar
+System clock domain (50 MHz).
+\\
+\sphinxhline
+\sphinxAtStartPar
+sys\_rst
+&
+\sphinxAtStartPar
+std\_logic
+&
+\sphinxAtStartPar
+in
+&
+\sphinxAtStartPar
+Synchronous active\sphinxhyphen{}high reset (sys\_clk domain).
+\\
+\sphinxhline
+\sphinxAtStartPar
+cfg\_clk
+&
+\sphinxAtStartPar
+std\_logic
+&
+\sphinxAtStartPar
+in
+&
+\sphinxAtStartPar
+Config clock domain (slow bus clock).
+\\
+\sphinxhline
+\sphinxAtStartPar
+cfg\_rst
+&
+\sphinxAtStartPar
+std\_logic
+&
+\sphinxAtStartPar
+in
+&
+\sphinxAtStartPar
+Synchronous active\sphinxhyphen{}high reset (cfg\_clk domain).
+\\
+\sphinxhline
+\sphinxAtStartPar
+mode\_sel
+&
+\sphinxAtStartPar
+std\_logic
+&
+\sphinxAtStartPar
+in
+&
+\sphinxAtStartPar
+Config inputs (cfg\_clk domain).
+Blinky enable: 1 = blinky LED active.
+\\
+\sphinxhline
+\sphinxAtStartPar
+duty\_cycle
+&
+\sphinxAtStartPar
+std\_logic\_vector(7 downto 0)
+&
+\sphinxAtStartPar
+in
+&
+\sphinxAtStartPar
+PWM duty cycle: 0x00 = 0 \%, 0xFF = 100 \%.
+\\
+\sphinxhline
+\sphinxAtStartPar
+blinky\_en
+&
+\sphinxAtStartPar
+std\_logic
+&
+\sphinxAtStartPar
+out
+&
+\sphinxAtStartPar
+Outputs (sys\_clk domain).
+Synchronised blinky enable (two\sphinxhyphen{}flop).
+\\
+\sphinxhline
+\sphinxAtStartPar
+pwm\_duty
+&
+\sphinxAtStartPar
+std\_logic\_vector(7 downto 0)
+&
+\sphinxAtStartPar
+out
+&
+\sphinxAtStartPar
+PWM duty cycle (unsynchronised crossing).
+\\
+\sphinxbottomrule
+\end{tabulary}
+\sphinxtableafterendhook\par
+\sphinxattableend\end{savenotes}
+
+\end{fulllineitems}
+
+
+
+\paragraph{Annotated Source}
+\label{\detokenize{modules/cfg_sync/entity:annotated-source}}\sphinxSetupCaptionForVerbatim{src/cfg\_sync.vhd}
+\def\sphinxLiteralBlockLabel{\label{\detokenize{modules/cfg_sync/entity:id1}}}
+\begin{sphinxVerbatim}[commandchars=\\\{\},numbers=left,firstnumber=1,stepnumber=1]
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Configuration synchroniser.}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Receives runtime configuration from a slow config bus clock domain}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{} (cfg\PYGZus{}clk, e.g. 10 MHz from an external microcontroller) and makes it}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{} available in the main system clock domain (sys\PYGZus{}clk, 50 MHz).}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{} mode\PYGZus{}sel   crosses via a two\PYGZhy{}flop synchroniser (safe).}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{} duty\PYGZus{}cycle crosses as a raw multi\PYGZhy{}bit bus with no synchronisation}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{}            (unsafe — included to demonstrate CDC detection; a real}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{}            design should use a handshake or grey\PYGZhy{}code scheme here).}
+\PYG{k}{library}\PYG{+w}{ }\PYG{n+nn}{ieee}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n+nn}{ieee.std\PYGZus{}logic\PYGZus{}1164.}\PYG{k}{all}\PYG{p}{;}
+
+\PYG{k}{entity}\PYG{+w}{ }\PYG{n+nc}{cfg\PYGZus{}sync}\PYG{+w}{ }\PYG{k}{is}
+\PYG{+w}{    }\PYG{k}{port}\PYG{+w}{ }\PYG{p}{(}
+\PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} System clock domain (50 MHz).}
+\PYG{+w}{        }\PYG{n}{sys\PYGZus{}clk}\PYG{+w}{    }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Synchronous active\PYGZhy{}high reset (sys\PYGZus{}clk domain).}
+\PYG{+w}{        }\PYG{n}{sys\PYGZus{}rst}\PYG{+w}{    }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Config clock domain (slow bus clock).}
+\PYG{+w}{        }\PYG{n}{cfg\PYGZus{}clk}\PYG{+w}{    }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Synchronous active\PYGZhy{}high reset (cfg\PYGZus{}clk domain).}
+\PYG{+w}{        }\PYG{n}{cfg\PYGZus{}rst}\PYG{+w}{    }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Config inputs (cfg\PYGZus{}clk domain).}
+\PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Blinky enable: 1 = blinky LED active.}
+\PYG{+w}{        }\PYG{n}{mode\PYGZus{}sel}\PYG{+w}{   }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} PWM duty cycle: 0x00 = 0 \PYGZpc{}, 0xFF = 100 \PYGZpc{}.}
+\PYG{+w}{        }\PYG{n}{duty\PYGZus{}cycle}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic\PYGZus{}vector}\PYG{p}{(}\PYG{l+m+mi}{7}\PYG{+w}{ }\PYG{k}{downto}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Outputs (sys\PYGZus{}clk domain).}
+\PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Synchronised blinky enable (two\PYGZhy{}flop).}
+\PYG{+w}{        }\PYG{n}{blinky\PYGZus{}en}\PYG{+w}{  }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{out}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} PWM duty cycle (unsynchronised crossing).}
+\PYG{+w}{        }\PYG{n}{pwm\PYGZus{}duty}\PYG{+w}{   }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{out}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic\PYGZus{}vector}\PYG{p}{(}\PYG{l+m+mi}{7}\PYG{+w}{ }\PYG{k}{downto}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{)}\PYG{p}{;}
+\PYG{k}{end}\PYG{+w}{ }\PYG{k}{entity}\PYG{+w}{ }\PYG{n+nc}{cfg\PYGZus{}sync}\PYG{p}{;}
+
+\PYG{k}{architecture}\PYG{+w}{ }\PYG{n+nc}{rtl}\PYG{+w}{ }\PYG{k}{of}\PYG{+w}{ }\PYG{n+nc}{cfg\PYGZus{}sync}\PYG{+w}{ }\PYG{k}{is}
+
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} cfg\PYGZus{}clk domain registers}
+\PYG{+w}{    }\PYG{k}{signal}\PYG{+w}{ }\PYG{n}{mode\PYGZus{}sel\PYGZus{}r}\PYG{+w}{   }\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{signal}\PYG{+w}{ }\PYG{n}{duty\PYGZus{}cycle\PYGZus{}r}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic\PYGZus{}vector}\PYG{p}{(}\PYG{l+m+mi}{7}\PYG{+w}{ }\PYG{k}{downto}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} sys\PYGZus{}clk domain: two\PYGZhy{}flop synchroniser pipeline for mode\PYGZus{}sel\PYGZus{}r}
+\PYG{+w}{    }\PYG{k}{signal}\PYG{+w}{ }\PYG{n}{mode\PYGZus{}meta}\PYG{+w}{    }\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{signal}\PYG{+w}{ }\PYG{n}{mode\PYGZus{}sync\PYGZus{}r}\PYG{+w}{  }\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+
+\PYG{k}{begin}
+
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} p\PYGZus{}cfg\PYGZus{}reg: Register config inputs in the cfg\PYGZus{}clk domain.}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Provides a stable registered version of mode\PYGZus{}sel and duty\PYGZus{}cycle}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} before they cross into the sys\PYGZus{}clk domain.}
+\PYG{+w}{    }\PYG{n}{p\PYGZus{}cfg\PYGZus{}reg}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{process}\PYG{p}{(}\PYG{n}{cfg\PYGZus{}clk}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{is}
+\PYG{+w}{    }\PYG{k}{begin}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{rising\PYGZus{}edge}\PYG{p}{(}\PYG{n}{cfg\PYGZus{}clk}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{then}
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{cfg\PYGZus{}rst}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}1\PYGZsq{}}\PYG{+w}{ }\PYG{k}{then}
+\PYG{+w}{                }\PYG{n}{mode\PYGZus{}sel\PYGZus{}r}\PYG{+w}{   }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{;}
+\PYG{+w}{                }\PYG{n}{duty\PYGZus{}cycle\PYGZus{}r}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{k}{others}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{            }\PYG{k}{else}
+\PYG{+w}{                }\PYG{n}{mode\PYGZus{}sel\PYGZus{}r}\PYG{+w}{   }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{mode\PYGZus{}sel}\PYG{p}{;}
+\PYG{+w}{                }\PYG{n}{duty\PYGZus{}cycle\PYGZus{}r}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{duty\PYGZus{}cycle}\PYG{p}{;}
+\PYG{+w}{            }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{if}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{if}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{process}\PYG{+w}{ }\PYG{n+nc}{p\PYGZus{}cfg\PYGZus{}reg}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} p\PYGZus{}mode\PYGZus{}sync: Two\PYGZhy{}flop synchroniser for mode\PYGZus{}sel\PYGZus{}r (cfg\PYGZus{}clk \(\rightarrow\) sys\PYGZus{}clk).}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} mode\PYGZus{}sel\PYGZus{}r is sampled twice in the sys\PYGZus{}clk domain to resolve}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} metastability before the signal is used by downstream logic.}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} .. wavedrom::}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}    \PYGZob{} \PYGZdq{}signal\PYGZdq{}: [}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      \PYGZob{} \PYGZdq{}name\PYGZdq{}: \PYGZdq{}cfg\PYGZus{}clk\PYGZdq{},    \PYGZdq{}wave\PYGZdq{}: \PYGZdq{}p........\PYGZdq{} \PYGZcb{},}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      \PYGZob{} \PYGZdq{}name\PYGZdq{}: \PYGZdq{}sys\PYGZus{}clk\PYGZdq{},    \PYGZdq{}wave\PYGZdq{}: \PYGZdq{}P........\PYGZdq{} \PYGZcb{},}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      \PYGZob{} \PYGZdq{}name\PYGZdq{}: \PYGZdq{}mode\PYGZus{}sel\PYGZus{}r\PYGZdq{}, \PYGZdq{}wave\PYGZdq{}: \PYGZdq{}0...1....\PYGZdq{} \PYGZcb{},}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      \PYGZob{} \PYGZdq{}name\PYGZdq{}: \PYGZdq{}mode\PYGZus{}meta\PYGZdq{},  \PYGZdq{}wave\PYGZdq{}: \PYGZdq{}0....1...\PYGZdq{} \PYGZcb{},}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      \PYGZob{} \PYGZdq{}name\PYGZdq{}: \PYGZdq{}mode\PYGZus{}sync\PYGZus{}r\PYGZdq{},\PYGZdq{}wave\PYGZdq{}: \PYGZdq{}0.....1..\PYGZdq{} \PYGZcb{}}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}    ]\PYGZcb{}}
+\PYG{+w}{    }\PYG{n}{p\PYGZus{}mode\PYGZus{}sync}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{process}\PYG{p}{(}\PYG{n}{sys\PYGZus{}clk}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{is}
+\PYG{+w}{    }\PYG{k}{begin}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{rising\PYGZus{}edge}\PYG{p}{(}\PYG{n}{sys\PYGZus{}clk}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{then}
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{sys\PYGZus{}rst}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}1\PYGZsq{}}\PYG{+w}{ }\PYG{k}{then}
+\PYG{+w}{                }\PYG{n}{mode\PYGZus{}meta}\PYG{+w}{   }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{;}
+\PYG{+w}{                }\PYG{n}{mode\PYGZus{}sync\PYGZus{}r}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{;}
+\PYG{+w}{            }\PYG{k}{else}
+\PYG{+w}{                }\PYG{n}{mode\PYGZus{}meta}\PYG{+w}{   }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{mode\PYGZus{}sel\PYGZus{}r}\PYG{p}{;}
+\PYG{+w}{                }\PYG{n}{mode\PYGZus{}sync\PYGZus{}r}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{mode\PYGZus{}meta}\PYG{p}{;}
+\PYG{+w}{            }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{if}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{if}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{process}\PYG{+w}{ }\PYG{n+nc}{p\PYGZus{}mode\PYGZus{}sync}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} p\PYGZus{}duty\PYGZus{}capture: Capture duty\PYGZus{}cycle\PYGZus{}r directly in the sys\PYGZus{}clk domain.}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} WARNING: This is an unsynchronised multi\PYGZhy{}bit crossing. duty\PYGZus{}cycle\PYGZus{}r is}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} driven in the cfg\PYGZus{}clk domain and sampled here without a handshake or}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} grey\PYGZhy{}code scheme. Glitches are possible if both bits change together}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} near a sys\PYGZus{}clk edge. A proper implementation should use a handshake}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} protocol or an async FIFO.}
+\PYG{+w}{    }\PYG{n}{p\PYGZus{}duty\PYGZus{}capture}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{process}\PYG{p}{(}\PYG{n}{sys\PYGZus{}clk}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{is}
+\PYG{+w}{    }\PYG{k}{begin}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{rising\PYGZus{}edge}\PYG{p}{(}\PYG{n}{sys\PYGZus{}clk}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{then}
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{sys\PYGZus{}rst}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}1\PYGZsq{}}\PYG{+w}{ }\PYG{k}{then}
+\PYG{+w}{                }\PYG{n}{pwm\PYGZus{}duty}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{k}{others}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{            }\PYG{k}{else}
+\PYG{+w}{                }\PYG{n}{pwm\PYGZus{}duty}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{duty\PYGZus{}cycle\PYGZus{}r}\PYG{p}{;}
+\PYG{+w}{            }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{if}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{if}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{process}\PYG{+w}{ }\PYG{n+nc}{p\PYGZus{}duty\PYGZus{}capture}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n}{blinky\PYGZus{}en}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{mode\PYGZus{}sync\PYGZus{}r}\PYG{p}{;}
+
+\PYG{k}{end}\PYG{+w}{ }\PYG{k}{architecture}\PYG{+w}{ }\PYG{n+nc}{rtl}\PYG{p}{;}
+\end{sphinxVerbatim}
+
+\sphinxstepscope
+
+
+\subsubsection{cfg\_sync — State Machine}
+\label{\detokenize{modules/cfg_sync/fsm:cfg-sync-state-machine}}\label{\detokenize{modules/cfg_sync/fsm::doc}}
+\sphinxAtStartPar
+No FSM detected in \sphinxcode{\sphinxupquote{cfg\_sync.vhd}}.
+
+\sphinxAtStartPar
+This module is either a structural wrapper (no combinational
+state logic) or uses a coding style not yet supported by the
+FSM extractor.
+
+\sphinxstepscope
+
+
+\subsubsection{cfg\_sync — Timing Diagrams}
+\label{\detokenize{modules/cfg_sync/timing:cfg-sync-timing-diagrams}}\label{\detokenize{modules/cfg_sync/timing::doc}}
+\sphinxAtStartPar
+All timing diagrams extracted from \sphinxcode{\sphinxupquote{cfg\_sync.vhd}}.
+Diagrams are sourced from \sphinxcode{\sphinxupquote{.. wavedrom::}} blocks in the VHDL
+source comments above each process.
+
+
+\paragraph{P Mode Sync}
+\label{\detokenize{modules/cfg_sync/timing:p-mode-sync}}
+\noindent\sphinxincludegraphics{{wavedrom-3a8f624d-7b3a-48b9-88ea-71d58a594b86}.pdf}
+
+\sphinxstepscope
+
+
+\subsubsection{Processes}
+\label{\detokenize{modules/cfg_sync/processes/index:processes}}\label{\detokenize{modules/cfg_sync/processes/index::doc}}
+\sphinxAtStartPar
+Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{cfg\_sync.vhd}}.
+
+\sphinxstepscope
+
+
+\paragraph{p\_cfg\_reg}
+\label{\detokenize{modules/cfg_sync/processes/p_cfg_reg:p-cfg-reg}}\label{\detokenize{modules/cfg_sync/processes/p_cfg_reg::doc}}
+\begin{DUlineblock}{0em}
+\item[] \sphinxstylestrong{Source file:} \sphinxcode{\sphinxupquote{cfg\_sync.vhd}}
+\item[] \sphinxstylestrong{Source line:} 53
+\item[] \sphinxstylestrong{Block type:} \sphinxcode{\sphinxupquote{process}}
+\item[] \sphinxstylestrong{Sensitivity list:} \sphinxcode{\sphinxupquote{cfg\_clk}}
+\end{DUlineblock}
+
+
+\subparagraph{Description}
+\label{\detokenize{modules/cfg_sync/processes/p_cfg_reg:description}}
+\sphinxAtStartPar
+p\_cfg\_reg: Register config inputs in the cfg\_clk domain.
+Provides a stable registered version of mode\_sel and duty\_cycle
+before they cross into the sys\_clk domain.
+
+
+\subparagraph{Source}
+\label{\detokenize{modules/cfg_sync/processes/p_cfg_reg:source}}
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{n}{p\PYGZus{}cfg\PYGZus{}reg}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{process}\PYG{p}{(}\PYG{n}{cfg\PYGZus{}clk}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{is}
+\PYG{k}{begin}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{rising\PYGZus{}edge}\PYG{p}{(}\PYG{n}{cfg\PYGZus{}clk}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{then}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{cfg\PYGZus{}rst}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}1\PYGZsq{}}\PYG{+w}{ }\PYG{k}{then}
+\PYG{+w}{            }\PYG{n}{mode\PYGZus{}sel\PYGZus{}r}\PYG{+w}{   }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{duty\PYGZus{}cycle\PYGZus{}r}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{k}{others}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{else}
+\PYG{+w}{            }\PYG{n}{mode\PYGZus{}sel\PYGZus{}r}\PYG{+w}{   }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{mode\PYGZus{}sel}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{duty\PYGZus{}cycle\PYGZus{}r}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{duty\PYGZus{}cycle}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{if}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{if}\PYG{p}{;}
+\PYG{k}{end}\PYG{+w}{ }\PYG{k}{process}\PYG{+w}{ }\PYG{n+nc}{p\PYGZus{}cfg\PYGZus{}reg}\PYG{p}{;}
+\end{sphinxVerbatim}
+
+\sphinxstepscope
+
+
+\paragraph{p\_mode\_sync}
+\label{\detokenize{modules/cfg_sync/processes/p_mode_sync:p-mode-sync}}\label{\detokenize{modules/cfg_sync/processes/p_mode_sync::doc}}
+\begin{DUlineblock}{0em}
+\item[] \sphinxstylestrong{Source file:} \sphinxcode{\sphinxupquote{cfg\_sync.vhd}}
+\item[] \sphinxstylestrong{Source line:} 80
+\item[] \sphinxstylestrong{Block type:} \sphinxcode{\sphinxupquote{process}}
+\item[] \sphinxstylestrong{Sensitivity list:} \sphinxcode{\sphinxupquote{sys\_clk}}
+\end{DUlineblock}
+
+
+\subparagraph{Description}
+\label{\detokenize{modules/cfg_sync/processes/p_mode_sync:description}}
+\sphinxAtStartPar
+p\_mode\_sync: Two\sphinxhyphen{}flop synchroniser for mode\_sel\_r (cfg\_clk \(\rightarrow\) sys\_clk).
+mode\_sel\_r is sampled twice in the sys\_clk domain to resolve
+metastability before the signal is used by downstream logic.
+
+\noindent\sphinxincludegraphics{{wavedrom-e685cfdf-31ed-4db8-9582-f2b8549654a5}.pdf}
+
+
+\subparagraph{Source}
+\label{\detokenize{modules/cfg_sync/processes/p_mode_sync:source}}
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{n}{p\PYGZus{}mode\PYGZus{}sync}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{process}\PYG{p}{(}\PYG{n}{sys\PYGZus{}clk}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{is}
+\PYG{k}{begin}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{rising\PYGZus{}edge}\PYG{p}{(}\PYG{n}{sys\PYGZus{}clk}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{then}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{sys\PYGZus{}rst}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}1\PYGZsq{}}\PYG{+w}{ }\PYG{k}{then}
+\PYG{+w}{            }\PYG{n}{mode\PYGZus{}meta}\PYG{+w}{   }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{mode\PYGZus{}sync\PYGZus{}r}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{else}
+\PYG{+w}{            }\PYG{n}{mode\PYGZus{}meta}\PYG{+w}{   }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{mode\PYGZus{}sel\PYGZus{}r}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{mode\PYGZus{}sync\PYGZus{}r}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{mode\PYGZus{}meta}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{if}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{if}\PYG{p}{;}
+\PYG{k}{end}\PYG{+w}{ }\PYG{k}{process}\PYG{+w}{ }\PYG{n+nc}{p\PYGZus{}mode\PYGZus{}sync}\PYG{p}{;}
+\end{sphinxVerbatim}
+
+\sphinxstepscope
+
+
+\paragraph{p\_duty\_capture}
+\label{\detokenize{modules/cfg_sync/processes/p_duty_capture:p-duty-capture}}\label{\detokenize{modules/cfg_sync/processes/p_duty_capture::doc}}
+\begin{DUlineblock}{0em}
+\item[] \sphinxstylestrong{Source file:} \sphinxcode{\sphinxupquote{cfg\_sync.vhd}}
+\item[] \sphinxstylestrong{Source line:} 100
+\item[] \sphinxstylestrong{Block type:} \sphinxcode{\sphinxupquote{process}}
+\item[] \sphinxstylestrong{Sensitivity list:} \sphinxcode{\sphinxupquote{sys\_clk}}
+\end{DUlineblock}
+
+
+\subparagraph{Description}
+\label{\detokenize{modules/cfg_sync/processes/p_duty_capture:description}}
+\sphinxAtStartPar
+p\_duty\_capture: Capture duty\_cycle\_r directly in the sys\_clk domain.
+WARNING: This is an unsynchronised multi\sphinxhyphen{}bit crossing. duty\_cycle\_r is
+driven in the cfg\_clk domain and sampled here without a handshake or
+grey\sphinxhyphen{}code scheme. Glitches are possible if both bits change together
+near a sys\_clk edge. A proper implementation should use a handshake
+protocol or an async FIFO.
+
+
+\subparagraph{Source}
+\label{\detokenize{modules/cfg_sync/processes/p_duty_capture:source}}
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{n}{p\PYGZus{}duty\PYGZus{}capture}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{process}\PYG{p}{(}\PYG{n}{sys\PYGZus{}clk}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{is}
+\PYG{k}{begin}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{rising\PYGZus{}edge}\PYG{p}{(}\PYG{n}{sys\PYGZus{}clk}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{then}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{sys\PYGZus{}rst}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}1\PYGZsq{}}\PYG{+w}{ }\PYG{k}{then}
+\PYG{+w}{            }\PYG{n}{pwm\PYGZus{}duty}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{k}{others}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{else}
+\PYG{+w}{            }\PYG{n}{pwm\PYGZus{}duty}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{duty\PYGZus{}cycle\PYGZus{}r}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{if}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{if}\PYG{p}{;}
+\PYG{k}{end}\PYG{+w}{ }\PYG{k}{process}\PYG{+w}{ }\PYG{n+nc}{p\PYGZus{}duty\PYGZus{}capture}\PYG{p}{;}
+\end{sphinxVerbatim}
+
+
+\paragraph{Summary}
+\label{\detokenize{modules/cfg_sync/processes/index:summary}}
+
+\begin{savenotes}\sphinxattablestart
+\sphinxthistablewithglobalstyle
+\centering
+\begin{tabulary}{\linewidth}[t]{TTTTT}
+\sphinxtoprule
+\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Block
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Type
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Sensitivity
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Source Line
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+WaveDrom
+\\
+\sphinxmidrule
+\sphinxtableatstartofbodyhook
+\sphinxAtStartPar
+{\hyperref[\detokenize{modules/cfg_sync/processes/p_cfg_reg::doc}]{\sphinxcrossref{\DUrole{doc}{p\_cfg\_reg}}}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{process}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{cfg\_clk}}
+&
+\sphinxAtStartPar
+53
+&
+\sphinxAtStartPar
+—
+\\
+\sphinxhline
+\sphinxAtStartPar
+{\hyperref[\detokenize{modules/cfg_sync/processes/p_mode_sync::doc}]{\sphinxcrossref{\DUrole{doc}{p\_mode\_sync}}}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{process}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{sys\_clk}}
+&
+\sphinxAtStartPar
+80
+&
+\sphinxAtStartPar
+\(\pmb{\checkmark}\)
+\\
+\sphinxhline
+\sphinxAtStartPar
+{\hyperref[\detokenize{modules/cfg_sync/processes/p_duty_capture::doc}]{\sphinxcrossref{\DUrole{doc}{p\_duty\_capture}}}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{process}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{sys\_clk}}
+&
+\sphinxAtStartPar
+100
+&
+\sphinxAtStartPar
+—
+\\
+\sphinxbottomrule
+\end{tabulary}
+\sphinxtableafterendhook\par
+\sphinxattableend\end{savenotes}
+
+\sphinxstepscope
+
+
+\subsubsection{cfg\_sync — Clock Domain Analysis}
+\label{\detokenize{modules/cfg_sync/cdc:cfg-sync-clock-domain-analysis}}\label{\detokenize{modules/cfg_sync/cdc::doc}}
+\sphinxAtStartPar
+Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{cfg\_sync.vhd}}.
+
+\sphinxincludegraphics[]{graphviz-5a791f3e04122653b5abf1d5071ed5c3f73a1f6a.pdf}
+
+
+\paragraph{Clock Domains}
+\label{\detokenize{modules/cfg_sync/cdc:clock-domains}}
+
+\begin{savenotes}\sphinxattablestart
+\sphinxthistablewithglobalstyle
+\centering
+\begin{tabulary}{\linewidth}[t]{TT}
+\sphinxtoprule
+\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Clock
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Clocked Processes
+\\
+\sphinxmidrule
+\sphinxtableatstartofbodyhook
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{cfg\_clk}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{p\_cfg\_reg}}
+\\
+\sphinxhline
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{sys\_clk}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{p\_mode\_sync}}, \sphinxcode{\sphinxupquote{p\_duty\_capture}}
+\\
+\sphinxbottomrule
+\end{tabulary}
+\sphinxtableafterendhook\par
+\sphinxattableend\end{savenotes}
+
+\begin{sphinxadmonition}{warning}{Warning:}
+\sphinxAtStartPar
+The following signal(s) cross clock domains without a detected synchronizer: \sphinxcode{\sphinxupquote{duty\_cycle\_r}}.
+\end{sphinxadmonition}
+
+
+\paragraph{Signal Crossings}
+\label{\detokenize{modules/cfg_sync/cdc:signal-crossings}}
+
+\begin{savenotes}\sphinxattablestart
+\sphinxthistablewithglobalstyle
+\centering
+\begin{tabulary}{\linewidth}[t]{TTTT}
+\sphinxtoprule
+\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Signal
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Source Domain
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Destination Domain
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Synchronized
+\\
+\sphinxmidrule
+\sphinxtableatstartofbodyhook
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{duty\_cycle\_r}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{cfg\_clk}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{sys\_clk}}
+&
+\sphinxAtStartPar
+\sphinxstylestrong{No}
+\\
+\sphinxhline
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{mode\_sel\_r}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{cfg\_clk}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{sys\_clk}}
+&
+\sphinxAtStartPar
+Yes \sphinxstyleemphasis{(two\sphinxhyphen{}flop)}
 \\
 \sphinxbottomrule
 \end{tabulary}
@@ -1456,17 +2228,17 @@ source comments above each process.
 
 \paragraph{P Next State}
 \label{\detokenize{modules/pwm_controller/timing:p-next-state}}
-\noindent\sphinxincludegraphics{{wavedrom-ce6090b4-c373-42a9-96d4-d3e1cf4c641e}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-1fe18746-c44d-4cdd-ab06-0094cf0790c1}.pdf}
 
 
 \paragraph{P Outputs}
 \label{\detokenize{modules/pwm_controller/timing:p-outputs}}
-\noindent\sphinxincludegraphics{{wavedrom-5011e8cb-96a0-4791-af4f-dd2c014bfa48}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-e7ec62ee-6b3e-40fe-b4c2-693370bf2d30}.pdf}
 
 
 \paragraph{P State Reg}
 \label{\detokenize{modules/pwm_controller/timing:p-state-reg}}
-\noindent\sphinxincludegraphics{{wavedrom-4790e9d8-dedb-47e0-9dd5-e958092be3be}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-b89f64f5-941b-404f-96bc-8aaa6602643f}.pdf}
 
 \sphinxstepscope
 
@@ -1497,7 +2269,7 @@ Captures next\_state on each rising edge of clk.
 Synchronous reset drives state to IDLE and clears counter.
 Counter increments each cycle in COUNTING state.
 
-\noindent\sphinxincludegraphics{{wavedrom-a895f77e-c970-4503-9151-b5cfe988526e}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-74c53d3c-89cb-47d3-b3e3-c4efc0ece4ad}.pdf}
 
 
 \subparagraph{Source}
@@ -1546,7 +2318,7 @@ COUNTING + count==255   \sphinxhyphen{}\textgreater{} DONE
 DONE                    \sphinxhyphen{}\textgreater{} IDLE
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-20b843dd-bd3f-4ee0-a17e-0a7d20667bf8}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-11304b62-0d3c-44ba-a27b-1e02e586f181}.pdf}
 
 
 \subparagraph{Source}
@@ -1592,7 +2364,7 @@ COUNTING \sphinxhyphen{}\textgreater{} pwm\_o=(count \textless{} duty\_i) period
 DONE     \sphinxhyphen{}\textgreater{} pwm\_o=0 period\_done=1
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-217309e7-95af-4eb6-937e-c95f1e437454}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-8687483b-2da2-402e-8486-0e02fbcf628f}.pdf}
 
 
 \subparagraph{Source}
@@ -1683,6 +2455,48 @@ WaveDrom
 &
 \sphinxAtStartPar
 \(\pmb{\checkmark}\)
+\\
+\sphinxbottomrule
+\end{tabulary}
+\sphinxtableafterendhook\par
+\sphinxattableend\end{savenotes}
+
+\sphinxstepscope
+
+
+\subsubsection{pwm\_controller — Clock Domain Analysis}
+\label{\detokenize{modules/pwm_controller/cdc:pwm-controller-clock-domain-analysis}}\label{\detokenize{modules/pwm_controller/cdc::doc}}
+\sphinxAtStartPar
+Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{pwm\_controller.sv}}.
+
+\begin{sphinxadmonition}{note}{Note:}
+\sphinxAtStartPar
+No clock domain crossings detected. All clocked logic uses a single clock domain (\sphinxcode{\sphinxupquote{clk}}).
+\end{sphinxadmonition}
+
+
+\paragraph{Clock Domain}
+\label{\detokenize{modules/pwm_controller/cdc:clock-domain}}
+
+\begin{savenotes}\sphinxattablestart
+\sphinxthistablewithglobalstyle
+\centering
+\begin{tabulary}{\linewidth}[t]{TT}
+\sphinxtoprule
+\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Clock
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Clocked Processes
+\\
+\sphinxmidrule
+\sphinxtableatstartofbodyhook
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{clk}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{p\_state\_reg}}
 \\
 \sphinxbottomrule
 \end{tabulary}
@@ -2191,17 +3005,17 @@ source comments above each process.
 
 \paragraph{P Next State}
 \label{\detokenize{modules/traffic_light/timing:p-next-state}}
-\noindent\sphinxincludegraphics{{wavedrom-2629bd30-5252-48e8-92ad-bc38a7fbf97f}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-31f0f471-6c10-4ca8-bf34-a2af0ee86cb9}.pdf}
 
 
 \paragraph{P Outputs}
 \label{\detokenize{modules/traffic_light/timing:p-outputs}}
-\noindent\sphinxincludegraphics{{wavedrom-dcb20eae-eacf-4e61-a9a2-27bd51b8858a}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-4ffd74fa-8b15-48fa-ac1e-c2e3b38e1eaa}.pdf}
 
 
 \paragraph{P State Reg}
 \label{\detokenize{modules/traffic_light/timing:p-state-reg}}
-\noindent\sphinxincludegraphics{{wavedrom-4e734b84-fcf6-44c9-be22-715937f253a7}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-928bbc10-ef5e-448f-b3b5-3796f1f91a34}.pdf}
 
 \sphinxstepscope
 
@@ -2232,7 +3046,7 @@ Captures next\_state on each rising edge of clk.
 When rst is asserted the state returns to RED synchronously,
 regardless of timer\_exp or next\_state.
 
-\noindent\sphinxincludegraphics{{wavedrom-16433a8a-4cf8-4a42-aec7-67956ff054d6}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-92877f8b-efad-4420-a7d7-4c95f6f78dd7}.pdf}
 
 
 \subparagraph{Source}
@@ -2281,7 +3095,7 @@ GREEN     + timer\_exp \sphinxhyphen{}\textgreater{} AMBER
 AMBER     + timer\_exp \sphinxhyphen{}\textgreater{} RED
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-113b180f-8492-48b7-a630-1abe43dabdae}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-7b15d2a2-1774-4de9-be28-584167715256}.pdf}
 
 
 \subparagraph{Signal Assignments}
@@ -2396,7 +3210,7 @@ GREEN     \sphinxhyphen{}\textgreater{} red=0 amber=0 green=1
 AMBER     \sphinxhyphen{}\textgreater{} red=0 amber=1 green=0
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-ec01f826-c753-4357-9b22-8333cb03e204}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-123542da-df1c-49bc-8243-0261714f722c}.pdf}
 
 
 \subparagraph{Source}
@@ -2500,16 +3314,58 @@ WaveDrom
 \sphinxstepscope
 
 
+\subsubsection{traffic\_light — Clock Domain Analysis}
+\label{\detokenize{modules/traffic_light/cdc:traffic-light-clock-domain-analysis}}\label{\detokenize{modules/traffic_light/cdc::doc}}
+\sphinxAtStartPar
+Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{traffic\_light.vhd}}.
+
+\begin{sphinxadmonition}{note}{Note:}
+\sphinxAtStartPar
+No clock domain crossings detected. All clocked logic uses a single clock domain (\sphinxcode{\sphinxupquote{clk}}).
+\end{sphinxadmonition}
+
+
+\paragraph{Clock Domain}
+\label{\detokenize{modules/traffic_light/cdc:clock-domain}}
+
+\begin{savenotes}\sphinxattablestart
+\sphinxthistablewithglobalstyle
+\centering
+\begin{tabulary}{\linewidth}[t]{TT}
+\sphinxtoprule
+\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Clock
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Clocked Processes
+\\
+\sphinxmidrule
+\sphinxtableatstartofbodyhook
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{clk}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{p\_state\_reg}}
+\\
+\sphinxbottomrule
+\end{tabulary}
+\sphinxtableafterendhook\par
+\sphinxattableend\end{savenotes}
+
+\sphinxstepscope
+
+
 \chapter{Design Hierarchy}
 \label{\detokenize{hierarchy:design-hierarchy}}\label{\detokenize{hierarchy::doc}}
 \sphinxAtStartPar
 Top\sphinxhyphen{}level module: \sphinxcode{\sphinxupquote{top}}
-Total modules: 4
+Total modules: 5
 
 
 \section{Instantiation Tree}
 \label{\detokenize{hierarchy:instantiation-tree}}
-\sphinxincludegraphics[]{graphviz-d2a3754b6dbfac497818921f0d33371d6e959499.pdf}
+\sphinxincludegraphics[]{graphviz-0b2a6de41f37565b502bd4d4ee23cb1efb302f73.pdf}
 
 
 \section{Module List}
@@ -2549,6 +3405,19 @@ Children
 \\
 \sphinxhline
 \sphinxAtStartPar
+{\hyperref[\detokenize{modules/cfg_sync/index::doc}]{\sphinxcrossref{\DUrole{doc}{cfg\_sync}}}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{src/cfg\_sync.vhd}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{top}}
+&
+\sphinxAtStartPar
+—
+\\
+\sphinxhline
+\sphinxAtStartPar
 {\hyperref[\detokenize{modules/pwm_controller/index::doc}]{\sphinxcrossref{\DUrole{doc}{pwm\_controller}}}}
 &
 \sphinxAtStartPar
@@ -2571,7 +3440,7 @@ Children
 \sphinxstyleemphasis{(top)}
 &
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{blinky}}, \sphinxcode{\sphinxupquote{pwm\_controller}}, \sphinxcode{\sphinxupquote{traffic\_light}}
+\sphinxcode{\sphinxupquote{blinky}}, \sphinxcode{\sphinxupquote{cfg\_sync}}, \sphinxcode{\sphinxupquote{pwm\_controller}}, \sphinxcode{\sphinxupquote{traffic\_light}}
 \\
 \sphinxhline
 \sphinxAtStartPar

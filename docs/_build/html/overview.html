@@ -60,6 +60,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="modules/top/fsm.html">top — State Machine</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/top/timing.html">top — Timing Diagrams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/top/cdc.html">top — Clock Domain Analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="registers.html">Registers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/top/index.html#submodules">Submodules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="modules/blinky/index.html">blinky</a><ul>
@@ -98,6 +99,46 @@
 <li class="toctree-l5"><a class="reference internal" href="modules/blinky/processes/index.html#summary">Summary</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="modules/blinky/cdc.html">blinky — Clock Domain Analysis</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="modules/blinky/cdc.html#clock-domain">Clock Domain</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="modules/cfg_sync/index.html">cfg_sync</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/cfg_sync/entity.html">cfg_sync — Entity</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="modules/cfg_sync/entity.html#annotated-source">Annotated Source</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="modules/cfg_sync/fsm.html">cfg_sync — State Machine</a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/cfg_sync/timing.html">cfg_sync — Timing Diagrams</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="modules/cfg_sync/timing.html#p-mode-sync">P Mode Sync</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="modules/cfg_sync/processes/index.html">Processes</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="modules/cfg_sync/processes/p_cfg_reg.html">p_cfg_reg</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="modules/cfg_sync/processes/p_cfg_reg.html#description">Description</a></li>
+<li class="toctree-l6"><a class="reference internal" href="modules/cfg_sync/processes/p_cfg_reg.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="modules/cfg_sync/processes/p_mode_sync.html">p_mode_sync</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="modules/cfg_sync/processes/p_mode_sync.html#description">Description</a></li>
+<li class="toctree-l6"><a class="reference internal" href="modules/cfg_sync/processes/p_mode_sync.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="modules/cfg_sync/processes/p_duty_capture.html">p_duty_capture</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="modules/cfg_sync/processes/p_duty_capture.html#description">Description</a></li>
+<li class="toctree-l6"><a class="reference internal" href="modules/cfg_sync/processes/p_duty_capture.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="modules/cfg_sync/processes/index.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="modules/cfg_sync/cdc.html">cfg_sync — Clock Domain Analysis</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="modules/cfg_sync/cdc.html#clock-domains">Clock Domains</a></li>
+<li class="toctree-l5"><a class="reference internal" href="modules/cfg_sync/cdc.html#signal-crossings">Signal Crossings</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="modules/pwm_controller/index.html">pwm_controller</a><ul>
@@ -134,6 +175,10 @@
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="modules/pwm_controller/processes/index.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="modules/pwm_controller/cdc.html">pwm_controller — Clock Domain Analysis</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="modules/pwm_controller/cdc.html#clock-domain">Clock Domain</a></li>
 </ul>
 </li>
 </ul>
@@ -175,6 +220,10 @@
 <li class="toctree-l5"><a class="reference internal" href="modules/traffic_light/processes/index.html#summary">Summary</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="modules/traffic_light/cdc.html">traffic_light — Clock Domain Analysis</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="modules/traffic_light/cdc.html#clock-domain">Clock Domain</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -214,7 +263,7 @@
              
   <section id="test123-overview">
 <h1>test123 — Overview<a class="headerlink" href="#test123-overview" title="Link to this heading"></a></h1>
-<p>This project contains 4 VHDL/SV modules.</p>
+<p>This project contains 5 VHDL/SV modules.</p>
 <p>Top-level module: <a class="reference internal" href="modules/top/index.html"><span class="doc">top</span></a></p>
 <section id="modules">
 <h2>Modules<a class="headerlink" href="#modules" title="Link to this heading"></a></h2>
@@ -226,13 +275,13 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="modules/pwm_controller/index.html"><span class="doc">pwm_controller</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">pwm_controller.sv</span></code></p></td>
-<td><p>PWM controller module. Generates a variable duty-cycle PWM signal using a 3-state FSM:</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/traffic_light/index.html"><span class="doc">traffic_light</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/traffic_light/index.html"><span class="doc">traffic_light</span></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">traffic_light.vhd</span></code></p></td>
 <td><p>Traffic light controller. Implements a standard UK traffic light sequencer with four states:</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/cfg_sync/index.html"><span class="doc">cfg_sync</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cfg_sync.vhd</span></code></p></td>
+<td><p>cfg_sync entity.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="modules/blinky/index.html"><span class="doc">blinky</span></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">blinky.vhd</span></code></p></td>
@@ -241,6 +290,10 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="modules/top/index.html"><span class="doc">top</span></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">top.vhd</span></code></p></td>
 <td><p>top entity.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/pwm_controller/index.html"><span class="doc">pwm_controller</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pwm_controller.sv</span></code></p></td>
+<td><p>PWM controller module. Generates a variable duty-cycle PWM signal using a 3-state FSM:</p></td>
 </tr>
 </tbody>
 </table>

@@ -8,3 +8,4 @@ blinky
    fsm
    timing
    processes/index
+   cdc

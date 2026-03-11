@@ -1,0 +1,34 @@
+digraph cfg_sync_cdc {
+    compound=true;
+    rankdir=LR;
+    node [fontname="Helvetica", fontsize=11, shape=box, style=filled, fillcolor=white];
+    edge [fontname="Helvetica", fontsize=10];
+
+    subgraph cluster_cfg_clk {
+        label="cfg_clk";
+        style=filled;
+        fillcolor="#dbeafe";
+        color="#1d4ed8";
+        fontname="Helvetica Bold";
+        fontsize=13;
+
+        cfg_clk__p_cfg_reg [label="p_cfg_reg"];
+    }
+
+    subgraph cluster_sys_clk {
+        label="sys_clk";
+        style=filled;
+        fillcolor="#fef9c3";
+        color="#b45309";
+        fontname="Helvetica Bold";
+        fontsize=13;
+
+        sys_clk__p_mode_sync [label="p_mode_sync"];
+        sys_clk__p_duty_capture [label="p_duty_capture"];
+    }
+
+    // CDC signal crossings
+    cfg_clk__p_cfg_reg -> sys_clk__p_mode_sync [label="duty_cycle_r\n(unsynchronized)", color="#dc2626", fontcolor="#dc2626", style="dashed", ltail="cluster_cfg_clk", lhead="cluster_sys_clk"];
+    cfg_clk__p_cfg_reg -> sys_clk__p_mode_sync [label="mode_sel_r\n(synchronized)", color="#16a34a", fontcolor="#16a34a", style="solid", ltail="cluster_cfg_clk", lhead="cluster_sys_clk"];
+
+}

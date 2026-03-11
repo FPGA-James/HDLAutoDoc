@@ -6,6 +6,7 @@ digraph hierarchy {
 
 
     top -> blinky;
+    top -> cfg_sync;
     top -> pwm_controller;
     top -> traffic_light;
 }

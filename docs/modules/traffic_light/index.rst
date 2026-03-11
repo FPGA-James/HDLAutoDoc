@@ -8,3 +8,4 @@ traffic_light
    fsm
    timing
    processes/index
+   cdc

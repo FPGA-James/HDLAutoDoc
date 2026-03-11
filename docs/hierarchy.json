@@ -17,8 +17,8 @@
       ],
       "shared": false
     },
-    "blinky": {
-      "file": "src/blinky.vhd",
+    "cfg_sync": {
+      "file": "src/cfg_sync.vhd",
       "children": [],
       "parents": [
         "top"
@@ -29,10 +29,19 @@
       "file": "src/top.vhd",
       "children": [
         "blinky",
+        "cfg_sync",
         "pwm_controller",
         "traffic_light"
       ],
       "parents": [],
+      "shared": false
+    },
+    "blinky": {
+      "file": "src/blinky.vhd",
+      "children": [],
+      "parents": [
+        "top"
+      ],
       "shared": false
     }
   }

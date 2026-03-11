@@ -2,7 +2,7 @@
 
 > **Turn your VHDL and SystemVerilog source into beautiful, navigable documentation — automatically.**
 
-HDL AutoDoc is a zero-boilerplate documentation pipeline for hardware design projects. Drop your source files in, run `make html`, and get a fully structured Sphinx site with FSM diagrams, timing waveforms, process pages, a hierarchy tree, and an embedded register map — all extracted directly from your HDL source.
+HDL AutoDoc is a zero-boilerplate documentation pipeline for hardware design projects. Drop your source files in, run `make html`, and get a fully structured Sphinx site with FSM diagrams, timing waveforms, process pages, a hierarchy tree, a CDC analysis page per module, and an embedded register map — all extracted directly from your HDL source.
 
 No separate doc files to maintain. No manual diagrams to draw. If it's in the source, it's in the docs.
 
@@ -16,6 +16,7 @@ No separate doc files to maintain. No manual diagrams to draw. If it's in the so
 | **FSM state diagrams** | Parsed from `case` blocks, rendered with [Graphviz](https://graphviz.org) |
 | **Timing waveforms** | `.. wavedrom::` blocks in source comments, rendered with [WaveDrom](https://wavedrom.com) |
 | **Per-process pages** | One page per labeled `process` / `always_ff` / `always_comb` block |
+| **CDC analysis** | Clock domains, signal crossings, synchronizer detection, and async FIFO detection — one page per module with a Graphviz diagram |
 | **Design hierarchy** | Driven by `filelist.f` — instantiation tree auto-detected, top-level auto-found |
 | **Shared components** | Documented once, linked from every parent |
 | **VHDL + SystemVerilog** | Mixed-language designs work out of the box |
@@ -39,6 +40,7 @@ docs/
         ├── entity.rst              ← ports, generics, annotated source
         ├── fsm.rst                 ← state diagram + transition table
         ├── timing.rst              ← all wavedrom diagrams for this module
+        ├── cdc.rst                 ← clock domain crossing analysis + diagram
         ├── registers.rst           ← embedded register map (if present)
         ├── processes/
         │   ├── index.rst           ← process summary table
@@ -108,12 +110,13 @@ parse_hierarchy.py     Reads the filelist, extracts module names,
     │                  writes docs/hierarchy.json
     ▼
 generate_rst.py        Scaffolds docs/modules/<n>/ for each module.
-    │                  Always-regenerated: index, fsm, timing pages.
+    │                  Always-regenerated: index, fsm, timing, cdc pages.
     │                  Write-if-missing: entity pages (safe to hand-edit).
     ▼
-run_extract.py         Calls extract_fsm.py and extract_processes.py
-    │                  for every module in hierarchy.json.
-    │                  Extracts FSM dot+rst and per-process rst pages.
+run_extract.py         Calls extract_fsm.py, extract_processes.py, and
+    │                  extract_cdc.py for every module in hierarchy.json.
+    │                  Extracts FSM dot+rst, per-process rst pages, and
+    │                  CDC dot+rst pages.
     ▼
 include_registers.py   Checks registers/generated/*.html. Copies it
     │                  to _static/ and embeds via iframe if found.
@@ -187,9 +190,34 @@ end
 
 ---
 
+## 🔀 CDC analysis
+
+Each module gets a `cdc.rst` page generated automatically. The extractor:
+
+1. **Identifies clock domains** from `rising_edge(clk)` / `always_ff @(posedge clk)` patterns in labeled processes.
+2. **Finds crossing signals** — any signal driven in one clock domain and read in another.
+3. **Detects two-flop synchronizers** — marks a crossing as *synchronized* if the signal feeds a two-register chain in the destination domain.
+4. **Detects async FIFOs and dual-clock instances** — any instantiation where two or more clock-named ports (`*clk*`, `*clock*`, `*ck*`) connect to different signals.
+
+The page includes a **Graphviz diagram** of the clock domains with color-coded edges:
+
+- **Green solid** — crossing is synchronized (two-flop chain detected)
+- **Red dashed** — crossing has no detected synchronizer (warning raised)
+
+Modules with a single clock domain show a "No CDC" note. Purely combinational modules are also noted.
+
+### Known limitations
+
+- Static analysis only — cannot verify CDC in black-box instances or generated code.
+- Clock identity is name-based: two ports carrying the same physical clock under different names will be reported as a crossing.
+- Only the classic two-flop back-to-back chain is detected as synchronized. Handshake, gray-code, and FIFO-based CDC are not automatically marked as synchronized.
+- Reset domain crossings are not covered.
+
+---
+
 ## 🗺 Register map integration
 
-Place your Questa Register Assistant HTML export under `registers/generated/`:
+Place your register map HTML export under `registers/generated/`:
 
 ```
 registers/
@@ -204,6 +232,12 @@ registers/
 ```
 
 Run `make html`. The entire directory is copied to `docs/_static/registers/` and embedded as a full-screen iframe, preserving all internal links and CSS. If no export is found a clear placeholder page is shown instead with instructions.
+
+Override the entry point filename if your tool produces a different name:
+
+```bash
+make html AUTODOC_REG_ENTRY=regmap.html
+```
 
 ---
 
@@ -242,9 +276,11 @@ Content width is fluid by default and scales to your screen:
 | `make install` | Install Python dependencies |
 | `make hierarchy` | Parse `filelist.f` → `hierarchy.json` |
 | `make scaffold` | Generate RST shells (runs hierarchy first) |
-| `make extract` | Extract FSM + process docs (runs scaffold first) |
+| `make extract` | Extract FSM + process + CDC docs (runs scaffold first) |
+| `make regs` | Generate register artifacts from `registers/regs_*.toml` |
 | `make html` | Full build → `docs/_build/html/` |
 | `make pdf` | Full build → LaTeX PDF |
+| `make doc` | Run `regs` + `html` + `pdf` |
 | `make clean` | Remove Sphinx build output only |
 | `make clean-generated` | Remove all auto-generated RST + static files |
 | `make clean-all` | ⚠️ Nuclear reset — removes everything including hand-editable shells |
@@ -259,8 +295,9 @@ Content width is fluid by default and scales to your screen:
 | [sphinx-rtd-theme](https://sphinx-rtd-theme.readthedocs.io) | ReadTheDocs HTML theme |
 | [sphinx-vhdl](https://pypi.org/project/sphinx-vhdl/) | VHDL entity autodoc domain |
 | [sphinxcontrib-wavedrom](https://sphinxcontrib-wavedrom.readthedocs.io) | `.. wavedrom::` directive |
-| [Graphviz](https://graphviz.org) | FSM and hierarchy diagram renderer |
+| [Graphviz](https://graphviz.org) | FSM, hierarchy, and CDC diagram renderer |
 | [docutils](https://docutils.sourceforge.io) | RST parser (pinned `>=0.18,<0.21` for sphinx-vhdl compat) |
+| [hdl-registers](https://hdl-registers.com) | Register map generation from TOML/YAML |
 
 ---
 
@@ -273,16 +310,21 @@ hdl-autodoc/
 ├── requirements.txt
 ├── src/                        ← your HDL source files
 ├── registers/
-│   └── generated/              ← place your register map HTML here
+│   ├── config.yml              ← bus config (width, protocol)
+│   ├── regs_<name>.toml        ← register definitions
+│   └── generated/              ← register map HTML output (auto-generated)
 ├── scripts/
-│   └── hdl_autodoc/            ← drop-in pipeline, reusable across projects
-│       ├── __init__.py
-│       ├── parse_hierarchy.py  ← reads filelist.f → hierarchy.json
-│       ├── generate_rst.py     ← scaffolds RST structure
-│       ├── extract_fsm.py      ← extracts FSM case blocks → dot + rst
-│       ├── extract_processes.py← extracts labeled processes → rst pages
-│       ├── run_extract.py      ← orchestrates extraction for all modules
-│       └── include_registers.py← copies register map + writes rst page
+│   ├── hdl_autodoc/            ← drop-in pipeline, reusable across projects
+│   │   ├── __init__.py
+│   │   ├── parse_hierarchy.py  ← reads filelist.f → hierarchy.json
+│   │   ├── generate_rst.py     ← scaffolds RST structure
+│   │   ├── extract_fsm.py      ← extracts FSM case blocks → dot + rst
+│   │   ├── extract_processes.py← extracts labeled processes → rst pages
+│   │   ├── extract_cdc.py      ← extracts CDC analysis → dot + rst
+│   │   ├── run_extract.py      ← orchestrates extraction for all modules
+│   │   └── include_registers.py← copies register map + writes rst page
+│   └── registers/
+│       └── generate.py         ← generates VHDL, C header, and HTML from register TOML
 └── docs/
     ├── conf.py                 ← Sphinx config (edit project metadata here)
     ├── _static/
@@ -309,6 +351,7 @@ hdl-autodoc/
 | `docs/modules/<n>/index.rst` | 🔄 Auto-generated | Regenerated every build |
 | `docs/modules/<n>/fsm.rst` | 🔄 Auto-generated | Regenerated every build |
 | `docs/modules/<n>/timing.rst` | 🔄 Auto-generated | Aggregated from process wavedrom blocks |
+| `docs/modules/<n>/cdc.rst` | 🔄 Auto-generated | Regenerated every build |
 | `docs/modules/<n>/processes/` | 🔄 Auto-generated | Regenerated every build |
 | `docs/registers.rst` | 🔄 Auto-generated | Written by `include_registers.py` |
 | `docs/_static/registers.html` | 🔄 Auto-generated | Copied from `registers/generated/` |
@@ -324,7 +367,7 @@ hdl-autodoc/
 2. Add it to `filelist.f`
 3. Run `make html`
 
-Done. The new module appears in the hierarchy, navigation, overview table, and hierarchy diagram automatically.
+Done. The new module appears in the hierarchy, navigation, overview table, hierarchy diagram, and gets its own CDC analysis page automatically.
 
 ---
 
@@ -335,10 +378,24 @@ Done. The new module appears in the hierarchy, navigation, overview table, and h
 - **`vhdl:autoentity`** only works for VHDL. SystemVerilog modules get a `literalinclude` source listing instead.
 - **Wavedrom in PDF** requires the `wavedrom` Python package and may not render identically to HTML output.
 - **Register map in PDF** — the iframe embed is HTML-only. The PDF build skips the register page content.
+- **CDC analysis** is static only — see the CDC analysis section for full limitations.
 
 ---
 
 ## 📋 Release notes
+
+### v3.0.0
+
+#### New features
+
+- **CDC analysis** — `extract_cdc.py` generates a `cdc.rst` page per module with a Graphviz diagram. Detects clock domains, signal crossings (synchronized vs unsynchronized), two-flop synchronizer chains, and dual-clock instances (async FIFOs etc.).
+- **Register generation** — `scripts/registers/generate.py` generates VHDL packages, AXI-Lite wrappers, C headers, and HTML documentation from TOML/YAML register definitions using [hdl-registers](https://hdl-registers.com). `make regs` runs generation; `make doc` runs registers + full doc build.
+
+#### Improvements
+
+- Makefile variables prefixed: `AUTODOC_` for Sphinx pipeline variables, `REGS_` for register generation variables.
+- `make doc` target added: runs `regs` + `html` + `pdf` in sequence.
+- `scripts/` reorganised: `hdl_autodoc/` and `registers/` as separate subdirectories.
 
 ### v2.0.0
 
@@ -355,7 +412,7 @@ Done. The new module appears in the hierarchy, navigation, overview table, and h
 
 - Table styling overhauled — transparent backgrounds, single-rule headers, minimal row dividers. RTD theme's white even-row override is explicitly reset.
 - Admonitions use Catppuccin semantic colours: Mauve for notes, Yellow for warnings, Red for errors, Teal for tips.
-- Sidebar uses Catppuccin Crust as background in both modes for consistent contrast regardless of light/light mode.
+- Sidebar uses Catppuccin Crust as background in both modes for consistent contrast regardless of light/dark mode.
 - Code blocks use Catppuccin Crust as background with an accent-coloured left border.
 - `include_registers.py` warns if multiple HTML files are found in `registers/generated/` and states which is used.
 - `clean-generated` target now also removes `docs/registers.rst` and `docs/_static/registers.html`.
@@ -383,7 +440,8 @@ scripts/hdl_autodoc/
 ├── generate_rst.py       src/ + hierarchy   → docs/modules/**/
 ├── extract_fsm.py        <file.vhd|sv>      → <module>.dot + <module>.rst
 ├── extract_processes.py  <file.vhd|sv>      → p_*.rst + index.rst
-├── run_extract.py        hierarchy.json     → orchestrates above two
+├── extract_cdc.py        <file.vhd|sv>      → <module>_cdc.dot + <module>_cdc.rst
+├── run_extract.py        hierarchy.json     → orchestrates above three
 └── include_registers.py  registers/         → docs/registers.rst + _static/
 ```
 
