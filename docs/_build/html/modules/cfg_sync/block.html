@@ -1,0 +1,395 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>cfg_sync — Block Diagram &mdash; Traffic Light Controller</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=806932e2" />
+
+  
+    <link rel="shortcut icon" href="../../_static/logo.svg"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/theme.js?v=e53adc8f"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="cfg_sync — State Machine" href="fsm.html" />
+    <link rel="prev" title="cfg_sync — Entity" href="entity.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">test123 — Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../overview.html#modules">Modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../top/index.html">top</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../top/entity.html">top — Entity</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../top/entity.html#annotated-source">Annotated Source</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../top/block.html">top — Block Diagram</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../top/block.html#ports">Ports</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../top/fsm.html">top — State Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../top/timing.html">top — Timing Diagrams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../top/cdc.html">top — Clock Domain Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../registers.html">Registers</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../top/index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../blinky/index.html">blinky</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../blinky/entity.html">blinky — Entity</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../blinky/entity.html#annotated-source">Annotated Source</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../blinky/block.html">blinky — Block Diagram</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../blinky/block.html#ports">Ports</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../blinky/fsm.html">blinky State Machine</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../blinky/fsm.html#state-transition-diagram">State Transition Diagram</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../blinky/fsm.html#state-output-table">State Output Table</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../blinky/fsm.html#transitions">Transitions</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../blinky/timing.html">blinky — Timing Diagrams</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../blinky/timing.html#p-next-state">P Next State</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../blinky/timing.html#p-outputs">P Outputs</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../blinky/timing.html#p-state-reg">P State Reg</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../blinky/processes/index.html">Processes</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../blinky/processes/p_state_reg.html">p_state_reg</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="../blinky/processes/p_state_reg.html#description">Description</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../blinky/processes/p_state_reg.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../blinky/processes/p_next_state.html">p_next_state</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="../blinky/processes/p_next_state.html#description">Description</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../blinky/processes/p_next_state.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../blinky/processes/p_outputs.html">p_outputs</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="../blinky/processes/p_outputs.html#description">Description</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../blinky/processes/p_outputs.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../blinky/processes/index.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../blinky/cdc.html">blinky — Clock Domain Analysis</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../blinky/cdc.html#clock-domain">Clock Domain</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">cfg_sync</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="entity.html">cfg_sync — Entity</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="entity.html#annotated-source">Annotated Source</a></li>
+</ul>
+</li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">cfg_sync — Block Diagram</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#ports">Ports</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="fsm.html">cfg_sync — State Machine</a></li>
+<li class="toctree-l4"><a class="reference internal" href="timing.html">cfg_sync — Timing Diagrams</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="timing.html#p-mode-sync">P Mode Sync</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="processes/index.html">Processes</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="processes/p_cfg_reg.html">p_cfg_reg</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="processes/p_cfg_reg.html#description">Description</a></li>
+<li class="toctree-l6"><a class="reference internal" href="processes/p_cfg_reg.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="processes/p_mode_sync.html">p_mode_sync</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="processes/p_mode_sync.html#description">Description</a></li>
+<li class="toctree-l6"><a class="reference internal" href="processes/p_mode_sync.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="processes/p_duty_capture.html">p_duty_capture</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="processes/p_duty_capture.html#description">Description</a></li>
+<li class="toctree-l6"><a class="reference internal" href="processes/p_duty_capture.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="processes/index.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="cdc.html">cfg_sync — Clock Domain Analysis</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="cdc.html#clock-domains">Clock Domains</a></li>
+<li class="toctree-l5"><a class="reference internal" href="cdc.html#signal-crossings">Signal Crossings</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../pwm_controller/index.html">pwm_controller</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../pwm_controller/entity.html">pwm_controller — Entity</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../pwm_controller/entity.html#annotated-source">Annotated Source</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../pwm_controller/block.html">pwm_controller — Block Diagram</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../pwm_controller/block.html#ports">Ports</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../pwm_controller/block.html#parameters">Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../pwm_controller/fsm.html">pwm_controller State Machine</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../pwm_controller/fsm.html#state-transition-diagram">State Transition Diagram</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../pwm_controller/fsm.html#state-output-table">State Output Table</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../pwm_controller/fsm.html#transitions">Transitions</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../pwm_controller/timing.html">pwm_controller — Timing Diagrams</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../pwm_controller/timing.html#p-next-state">P Next State</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../pwm_controller/timing.html#p-outputs">P Outputs</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../pwm_controller/timing.html#p-state-reg">P State Reg</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../pwm_controller/processes/index.html">Processes</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../pwm_controller/processes/p_state_reg.html">p_state_reg</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="../pwm_controller/processes/p_state_reg.html#description">Description</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../pwm_controller/processes/p_state_reg.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../pwm_controller/processes/p_next_state.html">p_next_state</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="../pwm_controller/processes/p_next_state.html#description">Description</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../pwm_controller/processes/p_next_state.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../pwm_controller/processes/p_outputs.html">p_outputs</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="../pwm_controller/processes/p_outputs.html#description">Description</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../pwm_controller/processes/p_outputs.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../pwm_controller/processes/index.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../pwm_controller/cdc.html">pwm_controller — Clock Domain Analysis</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../pwm_controller/cdc.html#clock-domain">Clock Domain</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../traffic_light/index.html">traffic_light</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../traffic_light/entity.html">traffic_light — Entity</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../traffic_light/entity.html#annotated-source">Annotated Source</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../traffic_light/block.html">traffic_light — Block Diagram</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../traffic_light/block.html#ports">Ports</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../traffic_light/block.html#generics">Generics</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../traffic_light/fsm.html">traffic_light State Machine</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../traffic_light/fsm.html#state-transition-diagram">State Transition Diagram</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../traffic_light/fsm.html#state-output-table">State Output Table</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../traffic_light/fsm.html#transitions">Transitions</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../traffic_light/timing.html">traffic_light — Timing Diagrams</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../traffic_light/timing.html#p-next-state">P Next State</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../traffic_light/timing.html#p-outputs">P Outputs</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../traffic_light/timing.html#p-state-reg">P State Reg</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../traffic_light/processes/index.html">Processes</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../traffic_light/processes/p_state_reg.html">p_state_reg</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="../traffic_light/processes/p_state_reg.html#description">Description</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../traffic_light/processes/p_state_reg.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../traffic_light/processes/p_next_state.html">p_next_state</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="../traffic_light/processes/p_next_state.html#description">Description</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../traffic_light/processes/p_next_state.html#signal-assignments">Signal Assignments</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../traffic_light/processes/p_next_state.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../traffic_light/processes/p_outputs.html">p_outputs</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="../traffic_light/processes/p_outputs.html#description">Description</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../traffic_light/processes/p_outputs.html#source">Source</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../traffic_light/processes/index.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../traffic_light/cdc.html">traffic_light — Clock Domain Analysis</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../traffic_light/cdc.html#clock-domain">Clock Domain</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../hierarchy.html">Design Hierarchy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../hierarchy.html#instantiation-tree">Instantiation Tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../hierarchy.html#module-list">Module List</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Traffic Light Controller</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../top/index.html">top</a></li>
+          <li class="breadcrumb-item"><a href="index.html">cfg_sync</a></li>
+      <li class="breadcrumb-item active">cfg_sync — Block Diagram</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/modules/cfg_sync/block.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="cfg-sync-block-diagram">
+<h1>cfg_sync — Block Diagram<a class="headerlink" href="#cfg-sync-block-diagram" title="Link to this heading"></a></h1>
+<p>Auto-extracted from <code class="docutils literal notranslate"><span class="pre">cfg_sync.vhd</span></code>.</p>
+<div class="graphviz"><object data="../../_images/graphviz-6311cdc4736c889aebe6d03695826e6cbf742556.svg" type="image/svg+xml" class="graphviz">
+<p class="warning">digraph cfg_sync_block {
+    rankdir=LR;
+    nodesep=0.5;
+    ranksep=0.8;
+    node [fontname=&quot;Helvetica&quot;, fontsize=12, shape=none, margin=0];
+    edge [dir=none, penwidth=2.5, color=&quot;black&quot;];
+
+    // Ports box
+    port_box_cfg_sync [label=&lt;
+        &lt;TABLE BORDER=&quot;2&quot; CELLBORDER=&quot;0&quot; CELLSPACING=&quot;3&quot; CELLPADDING=&quot;0&quot; BGCOLOR=&quot;#fffde7&quot; COLOR=&quot;#5d4200&quot;&gt;
+          &lt;TR&gt;&lt;TD PORT=&quot;i_sys_clk&quot; ALIGN=&quot;LEFT&quot; CELLPADDING=&quot;5&quot;&gt;&amp;#x25B8; sys_clk&lt;/TD&gt;&lt;TD WIDTH=&quot;50&quot;&gt; &lt;/TD&gt;&lt;TD PORT=&quot;o_blinky_en&quot; ALIGN=&quot;RIGHT&quot; CELLPADDING=&quot;5&quot;&gt;blinky_en &amp;#x25C2;&lt;/TD&gt;&lt;/TR&gt;
+          &lt;TR&gt;&lt;TD PORT=&quot;i_sys_rst&quot; ALIGN=&quot;LEFT&quot; CELLPADDING=&quot;5&quot;&gt;&amp;#x25B8; sys_rst&lt;/TD&gt;&lt;TD WIDTH=&quot;50&quot;&gt; &lt;/TD&gt;&lt;TD PORT=&quot;o_pwm_duty&quot; ALIGN=&quot;RIGHT&quot; CELLPADDING=&quot;5&quot;&gt;pwm_duty &amp;#x25C2;&lt;/TD&gt;&lt;/TR&gt;
+          &lt;TR&gt;&lt;TD PORT=&quot;i_cfg_clk&quot; ALIGN=&quot;LEFT&quot; CELLPADDING=&quot;5&quot;&gt;&amp;#x25B8; cfg_clk&lt;/TD&gt;&lt;TD WIDTH=&quot;50&quot;&gt; &lt;/TD&gt;&lt;TD CELLPADDING=&quot;5&quot;&gt; &lt;/TD&gt;&lt;/TR&gt;
+          &lt;TR&gt;&lt;TD PORT=&quot;i_cfg_rst&quot; ALIGN=&quot;LEFT&quot; CELLPADDING=&quot;5&quot;&gt;&amp;#x25B8; cfg_rst&lt;/TD&gt;&lt;TD WIDTH=&quot;50&quot;&gt; &lt;/TD&gt;&lt;TD CELLPADDING=&quot;5&quot;&gt; &lt;/TD&gt;&lt;/TR&gt;
+          &lt;TR&gt;&lt;TD PORT=&quot;i_mode_sel&quot; ALIGN=&quot;LEFT&quot; CELLPADDING=&quot;5&quot;&gt;&amp;#x25B8; mode_sel&lt;/TD&gt;&lt;TD WIDTH=&quot;50&quot;&gt; &lt;/TD&gt;&lt;TD CELLPADDING=&quot;5&quot;&gt; &lt;/TD&gt;&lt;/TR&gt;
+          &lt;TR&gt;&lt;TD PORT=&quot;i_duty_cycle&quot; ALIGN=&quot;LEFT&quot; CELLPADDING=&quot;5&quot;&gt;&amp;#x25B8; duty_cycle [8]&lt;/TD&gt;&lt;TD WIDTH=&quot;50&quot;&gt; &lt;/TD&gt;&lt;TD CELLPADDING=&quot;5&quot;&gt; &lt;/TD&gt;&lt;/TR&gt;
+        &lt;/TABLE&gt;&gt;];
+
+}</p></object></div>
+<section id="ports">
+<h2>Ports<a class="headerlink" href="#ports" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Port</p></th>
+<th class="head"><p>Direction</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sys_clk</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">in</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">std_logic</span></code></p></td>
+<td><p>System clock domain (50 MHz).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sys_rst</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">in</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">std_logic</span></code></p></td>
+<td><p>Synchronous active-high reset (sys_clk domain).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cfg_clk</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">in</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">std_logic</span></code></p></td>
+<td><p>Config clock domain (slow bus clock).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cfg_rst</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">in</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">std_logic</span></code></p></td>
+<td><p>Synchronous active-high reset (cfg_clk domain).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mode_sel</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">in</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">std_logic</span></code></p></td>
+<td><p>Blinky enable: 1 = blinky LED active.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">duty_cycle</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">in</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">std_logic_vector(7</span> <span class="pre">downto</span> <span class="pre">0)</span></code></p></td>
+<td><p>PWM duty cycle: 0x00 = 0 %, 0xFF = 100 %.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">blinky_en</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">out</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">std_logic</span></code></p></td>
+<td><p>Synchronised blinky enable (two-flop).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pwm_duty</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">out</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">std_logic_vector(7</span> <span class="pre">downto</span> <span class="pre">0)</span></code></p></td>
+<td><p>PWM duty cycle (unsynchronised crossing).</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="entity.html" class="btn btn-neutral float-left" title="cfg_sync — Entity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="fsm.html" class="btn btn-neutral float-right" title="cfg_sync — State Machine" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, HDL Team.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

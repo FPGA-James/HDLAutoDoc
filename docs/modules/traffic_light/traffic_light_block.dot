@@ -1,0 +1,27 @@
+digraph traffic_light_block {
+    rankdir=LR;
+    nodesep=0.5;
+    ranksep=0.8;
+    node [fontname="Helvetica", fontsize=12, shape=none, margin=0];
+    edge [dir=none, penwidth=2.5, color="black"];
+
+    // Generics box
+    gen_box_traffic_light [label=<
+        <TABLE BORDER="2" CELLBORDER="0" CELLSPACING="3" CELLPADDING="0" BGCOLOR="#c8f5c4" COLOR="#1a5c1a">
+          <TR><TD PORT="g_CLK_FREQ_HZ" ALIGN="LEFT" CELLPADDING="5">CLK_FREQ_HZ = 50_000_000</TD></TR>
+          <TR><TD PORT="g_PHASE_MS" ALIGN="LEFT" CELLPADDING="5">PHASE_MS = 5_000</TD></TR>
+          <TR><TD PORT="g_TRANS_MS" ALIGN="LEFT" CELLPADDING="5">TRANS_MS = 2_000</TD></TR>
+        </TABLE>>];
+
+    // Ports box
+    port_box_traffic_light [label=<
+        <TABLE BORDER="2" CELLBORDER="0" CELLSPACING="3" CELLPADDING="0" BGCOLOR="#fffde7" COLOR="#5d4200">
+          <TR><TD PORT="i_clk" ALIGN="LEFT" CELLPADDING="5">&#x25B8; clk</TD><TD WIDTH="50"> </TD><TD PORT="o_red_out" ALIGN="RIGHT" CELLPADDING="5">red_out &#x25C2;</TD></TR>
+          <TR><TD PORT="i_rst" ALIGN="LEFT" CELLPADDING="5">&#x25B8; rst</TD><TD WIDTH="50"> </TD><TD PORT="o_amber_out" ALIGN="RIGHT" CELLPADDING="5">amber_out &#x25C2;</TD></TR>
+          <TR><TD PORT="i_timer_exp" ALIGN="LEFT" CELLPADDING="5">&#x25B8; timer_exp</TD><TD WIDTH="50"> </TD><TD PORT="o_green_out" ALIGN="RIGHT" CELLPADDING="5">green_out &#x25C2;</TD></TR>
+        </TABLE>>];
+
+    { rank=same; gen_box_traffic_light; port_box_traffic_light }
+    gen_box_traffic_light -> port_box_traffic_light [style=invis, weight=100];
+
+}

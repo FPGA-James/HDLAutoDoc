@@ -1,0 +1,19 @@
+digraph cfg_sync_block {
+    rankdir=LR;
+    nodesep=0.5;
+    ranksep=0.8;
+    node [fontname="Helvetica", fontsize=12, shape=none, margin=0];
+    edge [dir=none, penwidth=2.5, color="black"];
+
+    // Ports box
+    port_box_cfg_sync [label=<
+        <TABLE BORDER="2" CELLBORDER="0" CELLSPACING="3" CELLPADDING="0" BGCOLOR="#fffde7" COLOR="#5d4200">
+          <TR><TD PORT="i_sys_clk" ALIGN="LEFT" CELLPADDING="5">&#x25B8; sys_clk</TD><TD WIDTH="50"> </TD><TD PORT="o_blinky_en" ALIGN="RIGHT" CELLPADDING="5">blinky_en &#x25C2;</TD></TR>
+          <TR><TD PORT="i_sys_rst" ALIGN="LEFT" CELLPADDING="5">&#x25B8; sys_rst</TD><TD WIDTH="50"> </TD><TD PORT="o_pwm_duty" ALIGN="RIGHT" CELLPADDING="5">pwm_duty &#x25C2;</TD></TR>
+          <TR><TD PORT="i_cfg_clk" ALIGN="LEFT" CELLPADDING="5">&#x25B8; cfg_clk</TD><TD WIDTH="50"> </TD><TD CELLPADDING="5"> </TD></TR>
+          <TR><TD PORT="i_cfg_rst" ALIGN="LEFT" CELLPADDING="5">&#x25B8; cfg_rst</TD><TD WIDTH="50"> </TD><TD CELLPADDING="5"> </TD></TR>
+          <TR><TD PORT="i_mode_sel" ALIGN="LEFT" CELLPADDING="5">&#x25B8; mode_sel</TD><TD WIDTH="50"> </TD><TD CELLPADDING="5"> </TD></TR>
+          <TR><TD PORT="i_duty_cycle" ALIGN="LEFT" CELLPADDING="5">&#x25B8; duty_cycle [8]</TD><TD WIDTH="50"> </TD><TD CELLPADDING="5"> </TD></TR>
+        </TABLE>>];
+
+}

@@ -23,7 +23,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="traffic_light State Machine" href="fsm.html" />
+    <link rel="next" title="traffic_light — Block Diagram" href="block.html" />
     <link rel="prev" title="traffic_light" href="index.html" /> 
 </head>
 
@@ -58,6 +58,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../top/entity.html#annotated-source">Annotated Source</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../top/block.html">top — Block Diagram</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../top/block.html#ports">Ports</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../top/fsm.html">top — State Machine</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../top/timing.html">top — Timing Diagrams</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../top/cdc.html">top — Clock Domain Analysis</a></li>
@@ -66,6 +70,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../blinky/index.html">blinky</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../blinky/entity.html">blinky — Entity</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../blinky/entity.html#annotated-source">Annotated Source</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../blinky/block.html">blinky — Block Diagram</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../blinky/block.html#ports">Ports</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../blinky/fsm.html">blinky State Machine</a><ul>
@@ -110,6 +118,10 @@
 <li class="toctree-l5"><a class="reference internal" href="../cfg_sync/entity.html#annotated-source">Annotated Source</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../cfg_sync/block.html">cfg_sync — Block Diagram</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../cfg_sync/block.html#ports">Ports</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="../cfg_sync/fsm.html">cfg_sync — State Machine</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../cfg_sync/timing.html">cfg_sync — Timing Diagrams</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../cfg_sync/timing.html#p-mode-sync">P Mode Sync</a></li>
@@ -144,6 +156,11 @@
 <li class="toctree-l3"><a class="reference internal" href="../pwm_controller/index.html">pwm_controller</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../pwm_controller/entity.html">pwm_controller — Entity</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../pwm_controller/entity.html#annotated-source">Annotated Source</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../pwm_controller/block.html">pwm_controller — Block Diagram</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../pwm_controller/block.html#ports">Ports</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../pwm_controller/block.html#parameters">Parameters</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../pwm_controller/fsm.html">pwm_controller State Machine</a><ul>
@@ -186,6 +203,11 @@
 <li class="toctree-l3 current"><a class="reference internal" href="index.html">traffic_light</a><ul class="current">
 <li class="toctree-l4 current"><a class="current reference internal" href="#">traffic_light — Entity</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#annotated-source">Annotated Source</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="block.html">traffic_light — Block Diagram</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="block.html#ports">Ports</a></li>
+<li class="toctree-l5"><a class="reference internal" href="block.html#generics">Generics</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="fsm.html">traffic_light State Machine</a><ul>
@@ -283,6 +305,21 @@ clock edge when timer_exp is asserted.</p>
 </tr>
 </thead>
 <tbody>
+<tr class="row-even" id="vhdl-gengeneric-traffic_light-clk_freq_hz"><td><p>CLK_FREQ_HZ</p></td>
+<td><p>natural</p></td>
+<td><p>50_000_000</p></td>
+<td><p>System clock frequency in Hz. Used to derive phase timer counts.</p></td>
+</tr>
+<tr class="row-odd" id="vhdl-gengeneric-traffic_light-phase_ms"><td><p>PHASE_MS</p></td>
+<td><p>natural</p></td>
+<td><p>5_000</p></td>
+<td><p>Duration of the RED and GREEN phases in milliseconds.</p></td>
+</tr>
+<tr class="row-even" id="vhdl-gengeneric-traffic_light-trans_ms"><td><p>TRANS_MS</p></td>
+<td><p>natural</p></td>
+<td><p>2_000</p></td>
+<td><p>Duration of the RED_AMBER and AMBER transition phases in milliseconds.</p></td>
+</tr>
 </tbody>
 </table>
 <span class="sig-name descname">Ports</span><table class="docutils align-default">
@@ -344,156 +381,164 @@ clock edge when timer_exp is asserted.</p>
 <span class="linenos"> 10</span><span class="c1">--</span>
 <span class="linenos"> 11</span><span class="c1">-- State sequence: RED -&gt; RED_AMBER -&gt; GREEN -&gt; AMBER -&gt; RED.</span>
 <span class="linenos"> 12</span><span class="k">entity</span><span class="w"> </span><span class="nc">traffic_light</span><span class="w"> </span><span class="k">is</span>
-<span class="linenos"> 13</span><span class="w">    </span><span class="k">port</span><span class="w"> </span><span class="p">(</span>
-<span class="linenos"> 14</span><span class="w">        </span><span class="c1">-- System clock, rising-edge triggered.</span>
-<span class="linenos"> 15</span><span class="w">        </span><span class="n">clk</span><span class="w">       </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic</span><span class="p">;</span>
-<span class="linenos"> 16</span><span class="w">        </span><span class="c1">-- Synchronous active-high reset. Returns FSM to RED state.</span>
-<span class="linenos"> 17</span><span class="w">        </span><span class="n">rst</span><span class="w">       </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic</span><span class="p">;</span>
-<span class="linenos"> 18</span><span class="w">        </span><span class="c1">-- Phase timer expiry pulse. Must be high for exactly one cycle.</span>
-<span class="linenos"> 19</span><span class="w">        </span><span class="n">timer_exp</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic</span><span class="p">;</span>
-<span class="linenos"> 20</span><span class="w">        </span><span class="c1">-- Red lamp drive. Asserted in RED and RED_AMBER states.</span>
-<span class="linenos"> 21</span><span class="w">        </span><span class="n">red_out</span><span class="w">   </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span>
-<span class="linenos"> 22</span><span class="w">        </span><span class="c1">-- Amber lamp drive. Asserted in RED_AMBER and AMBER states.</span>
-<span class="linenos"> 23</span><span class="w">        </span><span class="n">amber_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span>
-<span class="linenos"> 24</span><span class="w">        </span><span class="c1">-- Green lamp drive. Asserted in GREEN state only.</span>
-<span class="linenos"> 25</span><span class="w">        </span><span class="n">green_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span>
-<span class="linenos"> 26</span><span class="w">    </span><span class="p">);</span>
-<span class="linenos"> 27</span><span class="k">end</span><span class="w"> </span><span class="k">entity</span><span class="w"> </span><span class="nc">traffic_light</span><span class="p">;</span>
-<span class="linenos"> 28</span>
-<span class="linenos"> 29</span><span class="c1">-- RTL implementation using a 3-process Moore FSM style.</span>
-<span class="linenos"> 30</span><span class="k">architecture</span><span class="w"> </span><span class="nc">rtl</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="nc">traffic_light</span><span class="w"> </span><span class="k">is</span>
-<span class="linenos"> 31</span>
-<span class="linenos"> 32</span><span class="w">    </span><span class="c1">-- FSM state type encoding all four traffic light phases.</span>
-<span class="linenos"> 33</span><span class="w">    </span><span class="k">type</span><span class="w"> </span><span class="n">t_state</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="p">(</span>
-<span class="linenos"> 34</span><span class="w">        </span><span class="c1">-- Red light only. Vehicles must remain stopped.</span>
-<span class="linenos"> 35</span><span class="w">        </span><span class="n">RED</span><span class="p">,</span>
-<span class="linenos"> 36</span><span class="w">        </span><span class="c1">-- Red and amber simultaneously. Vehicles prepare to move.</span>
-<span class="linenos"> 37</span><span class="w">        </span><span class="n">RED_AMBER</span><span class="p">,</span>
-<span class="linenos"> 38</span><span class="w">        </span><span class="c1">-- Green light. Vehicles may proceed.</span>
-<span class="linenos"> 39</span><span class="w">        </span><span class="n">GREEN</span><span class="p">,</span>
-<span class="linenos"> 40</span><span class="w">        </span><span class="c1">-- Amber light only. Vehicles prepare to stop.</span>
-<span class="linenos"> 41</span><span class="w">        </span><span class="n">AMBER</span>
-<span class="linenos"> 42</span><span class="w">    </span><span class="p">);</span>
-<span class="linenos"> 43</span>
-<span class="linenos"> 44</span><span class="w">    </span><span class="c1">-- Current state register, initialised to RED at power-on.</span>
-<span class="linenos"> 45</span><span class="w">    </span><span class="k">signal</span><span class="w"> </span><span class="n">state</span><span class="w">      </span><span class="o">:</span><span class="w"> </span><span class="n">t_state</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">RED</span><span class="p">;</span>
-<span class="linenos"> 46</span><span class="w">    </span><span class="c1">-- Next state combinational signal, feeds state register.</span>
-<span class="linenos"> 47</span><span class="w">    </span><span class="k">signal</span><span class="w"> </span><span class="n">next_state</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">t_state</span><span class="p">;</span>
-<span class="linenos"> 48</span>
-<span class="linenos"> 49</span><span class="k">begin</span>
-<span class="linenos"> 50</span>
-<span class="linenos"> 51</span><span class="w">    </span><span class="c1">-- p_state_reg: Clocked state register.</span>
-<span class="linenos"> 52</span><span class="w">    </span><span class="c1">--</span>
-<span class="linenos"> 53</span><span class="w">    </span><span class="c1">-- Captures next_state on each rising edge of clk.</span>
-<span class="linenos"> 54</span><span class="w">    </span><span class="c1">-- When rst is asserted the state returns to RED synchronously,</span>
-<span class="linenos"> 55</span><span class="w">    </span><span class="c1">-- regardless of timer_exp or next_state.</span>
-<span class="linenos"> 56</span><span class="w">    </span><span class="c1">--</span>
-<span class="linenos"> 57</span><span class="w">    </span><span class="c1">-- .. wavedrom::</span>
-<span class="linenos"> 58</span><span class="w">    </span><span class="c1">--</span>
-<span class="linenos"> 59</span><span class="w">    </span><span class="c1">--    { &quot;signal&quot;: [</span>
-<span class="linenos"> 60</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;clk&quot;,   &quot;wave&quot;: &quot;P.......&quot; },</span>
-<span class="linenos"> 61</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;rst&quot;,   &quot;wave&quot;: &quot;1.0.....&quot; },</span>
-<span class="linenos"> 62</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;state&quot;, &quot;wave&quot;: &quot;=.=.....&quot;, &quot;data&quot;: [&quot;(any)&quot;,&quot;RED&quot;] },</span>
-<span class="linenos"> 63</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;red&quot;,   &quot;wave&quot;: &quot;x.1.....&quot; }</span>
-<span class="linenos"> 64</span><span class="w">    </span><span class="c1">--    ]}</span>
-<span class="linenos"> 65</span><span class="w">    </span><span class="n">p_state_reg</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">process</span><span class="p">(</span><span class="n">clk</span><span class="p">)</span>
-<span class="linenos"> 66</span><span class="w">    </span><span class="k">begin</span>
-<span class="linenos"> 67</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">rising_edge</span><span class="p">(</span><span class="n">clk</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
-<span class="linenos"> 68</span><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">rst</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="w"> </span><span class="k">then</span>
-<span class="linenos"> 69</span><span class="w">                </span><span class="n">state</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">RED</span><span class="p">;</span>
-<span class="linenos"> 70</span><span class="w">            </span><span class="k">else</span>
-<span class="linenos"> 71</span><span class="w">                </span><span class="n">state</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">next_state</span><span class="p">;</span>
-<span class="linenos"> 72</span><span class="w">            </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="p">;</span>
-<span class="linenos"> 73</span><span class="w">        </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="p">;</span>
-<span class="linenos"> 74</span><span class="w">    </span><span class="k">end</span><span class="w"> </span><span class="k">process</span><span class="w"> </span><span class="nc">p_state_reg</span><span class="p">;</span>
-<span class="linenos"> 75</span>
-<span class="linenos"> 76</span><span class="w">    </span><span class="c1">-- p_next_state: Combinational next-state logic.</span>
-<span class="linenos"> 77</span><span class="w">    </span><span class="c1">--</span>
-<span class="linenos"> 78</span><span class="w">    </span><span class="c1">-- Evaluates the FSM transition function. Default assignment</span>
-<span class="linenos"> 79</span><span class="w">    </span><span class="c1">-- next_state &lt;= state implements hold when timer_exp is low.</span>
-<span class="linenos"> 80</span><span class="w">    </span><span class="c1">-- All four transitions are guarded solely by timer_exp = 1.</span>
-<span class="linenos"> 81</span><span class="w">    </span><span class="c1">--</span>
-<span class="linenos"> 82</span><span class="w">    </span><span class="c1">-- Transitions:</span>
-<span class="linenos"> 83</span><span class="w">    </span><span class="c1">--   RED       + timer_exp -&gt; RED_AMBER</span>
-<span class="linenos"> 84</span><span class="w">    </span><span class="c1">--   RED_AMBER + timer_exp -&gt; GREEN</span>
-<span class="linenos"> 85</span><span class="w">    </span><span class="c1">--   GREEN     + timer_exp -&gt; AMBER</span>
-<span class="linenos"> 86</span><span class="w">    </span><span class="c1">--   AMBER     + timer_exp -&gt; RED</span>
-<span class="linenos"> 87</span><span class="w">    </span><span class="c1">--</span>
-<span class="linenos"> 88</span><span class="w">    </span><span class="c1">-- .. wavedrom::</span>
+<span class="linenos"> 13</span><span class="w">    </span><span class="k">generic</span><span class="w"> </span><span class="p">(</span>
+<span class="linenos"> 14</span><span class="w">        </span><span class="c1">-- System clock frequency in Hz. Used to derive phase timer counts.</span>
+<span class="linenos"> 15</span><span class="w">        </span><span class="n">CLK_FREQ_HZ</span><span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="kt">natural</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">50</span><span class="n">_000_000</span><span class="p">;</span>
+<span class="linenos"> 16</span><span class="w">        </span><span class="c1">-- Duration of the RED and GREEN phases in milliseconds.</span>
+<span class="linenos"> 17</span><span class="w">        </span><span class="n">PHASE_MS</span><span class="w">     </span><span class="o">:</span><span class="w"> </span><span class="kt">natural</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">5</span><span class="n">_000</span><span class="p">;</span>
+<span class="linenos"> 18</span><span class="w">        </span><span class="c1">-- Duration of the RED_AMBER and AMBER transition phases in milliseconds.</span>
+<span class="linenos"> 19</span><span class="w">        </span><span class="n">TRANS_MS</span><span class="w">     </span><span class="o">:</span><span class="w"> </span><span class="kt">natural</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">2</span><span class="n">_000</span>
+<span class="linenos"> 20</span><span class="w">    </span><span class="p">);</span>
+<span class="linenos"> 21</span><span class="w">    </span><span class="k">port</span><span class="w"> </span><span class="p">(</span>
+<span class="linenos"> 22</span><span class="w">        </span><span class="c1">-- System clock, rising-edge triggered.</span>
+<span class="linenos"> 23</span><span class="w">        </span><span class="n">clk</span><span class="w">       </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic</span><span class="p">;</span>
+<span class="linenos"> 24</span><span class="w">        </span><span class="c1">-- Synchronous active-high reset. Returns FSM to RED state.</span>
+<span class="linenos"> 25</span><span class="w">        </span><span class="n">rst</span><span class="w">       </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic</span><span class="p">;</span>
+<span class="linenos"> 26</span><span class="w">        </span><span class="c1">-- Phase timer expiry pulse. Must be high for exactly one cycle.</span>
+<span class="linenos"> 27</span><span class="w">        </span><span class="n">timer_exp</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic</span><span class="p">;</span>
+<span class="linenos"> 28</span><span class="w">        </span><span class="c1">-- Red lamp drive. Asserted in RED and RED_AMBER states.</span>
+<span class="linenos"> 29</span><span class="w">        </span><span class="n">red_out</span><span class="w">   </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span>
+<span class="linenos"> 30</span><span class="w">        </span><span class="c1">-- Amber lamp drive. Asserted in RED_AMBER and AMBER states.</span>
+<span class="linenos"> 31</span><span class="w">        </span><span class="n">amber_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span>
+<span class="linenos"> 32</span><span class="w">        </span><span class="c1">-- Green lamp drive. Asserted in GREEN state only.</span>
+<span class="linenos"> 33</span><span class="w">        </span><span class="n">green_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span>
+<span class="linenos"> 34</span><span class="w">    </span><span class="p">);</span>
+<span class="linenos"> 35</span><span class="k">end</span><span class="w"> </span><span class="k">entity</span><span class="w"> </span><span class="nc">traffic_light</span><span class="p">;</span>
+<span class="linenos"> 36</span>
+<span class="linenos"> 37</span><span class="c1">-- RTL implementation using a 3-process Moore FSM style.</span>
+<span class="linenos"> 38</span><span class="k">architecture</span><span class="w"> </span><span class="nc">rtl</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="nc">traffic_light</span><span class="w"> </span><span class="k">is</span>
+<span class="linenos"> 39</span>
+<span class="linenos"> 40</span><span class="w">    </span><span class="c1">-- FSM state type encoding all four traffic light phases.</span>
+<span class="linenos"> 41</span><span class="w">    </span><span class="k">type</span><span class="w"> </span><span class="n">t_state</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="p">(</span>
+<span class="linenos"> 42</span><span class="w">        </span><span class="c1">-- Red light only. Vehicles must remain stopped.</span>
+<span class="linenos"> 43</span><span class="w">        </span><span class="n">RED</span><span class="p">,</span>
+<span class="linenos"> 44</span><span class="w">        </span><span class="c1">-- Red and amber simultaneously. Vehicles prepare to move.</span>
+<span class="linenos"> 45</span><span class="w">        </span><span class="n">RED_AMBER</span><span class="p">,</span>
+<span class="linenos"> 46</span><span class="w">        </span><span class="c1">-- Green light. Vehicles may proceed.</span>
+<span class="linenos"> 47</span><span class="w">        </span><span class="n">GREEN</span><span class="p">,</span>
+<span class="linenos"> 48</span><span class="w">        </span><span class="c1">-- Amber light only. Vehicles prepare to stop.</span>
+<span class="linenos"> 49</span><span class="w">        </span><span class="n">AMBER</span>
+<span class="linenos"> 50</span><span class="w">    </span><span class="p">);</span>
+<span class="linenos"> 51</span>
+<span class="linenos"> 52</span><span class="w">    </span><span class="c1">-- Current state register, initialised to RED at power-on.</span>
+<span class="linenos"> 53</span><span class="w">    </span><span class="k">signal</span><span class="w"> </span><span class="n">state</span><span class="w">      </span><span class="o">:</span><span class="w"> </span><span class="n">t_state</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">RED</span><span class="p">;</span>
+<span class="linenos"> 54</span><span class="w">    </span><span class="c1">-- Next state combinational signal, feeds state register.</span>
+<span class="linenos"> 55</span><span class="w">    </span><span class="k">signal</span><span class="w"> </span><span class="n">next_state</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">t_state</span><span class="p">;</span>
+<span class="linenos"> 56</span>
+<span class="linenos"> 57</span><span class="k">begin</span>
+<span class="linenos"> 58</span>
+<span class="linenos"> 59</span><span class="w">    </span><span class="c1">-- p_state_reg: Clocked state register.</span>
+<span class="linenos"> 60</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos"> 61</span><span class="w">    </span><span class="c1">-- Captures next_state on each rising edge of clk.</span>
+<span class="linenos"> 62</span><span class="w">    </span><span class="c1">-- When rst is asserted the state returns to RED synchronously,</span>
+<span class="linenos"> 63</span><span class="w">    </span><span class="c1">-- regardless of timer_exp or next_state.</span>
+<span class="linenos"> 64</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos"> 65</span><span class="w">    </span><span class="c1">-- .. wavedrom::</span>
+<span class="linenos"> 66</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos"> 67</span><span class="w">    </span><span class="c1">--    { &quot;signal&quot;: [</span>
+<span class="linenos"> 68</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;clk&quot;,   &quot;wave&quot;: &quot;P.......&quot; },</span>
+<span class="linenos"> 69</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;rst&quot;,   &quot;wave&quot;: &quot;1.0.....&quot; },</span>
+<span class="linenos"> 70</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;state&quot;, &quot;wave&quot;: &quot;=.=.....&quot;, &quot;data&quot;: [&quot;(any)&quot;,&quot;RED&quot;] },</span>
+<span class="linenos"> 71</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;red&quot;,   &quot;wave&quot;: &quot;x.1.....&quot; }</span>
+<span class="linenos"> 72</span><span class="w">    </span><span class="c1">--    ]}</span>
+<span class="linenos"> 73</span><span class="w">    </span><span class="n">p_state_reg</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">process</span><span class="p">(</span><span class="n">clk</span><span class="p">)</span>
+<span class="linenos"> 74</span><span class="w">    </span><span class="k">begin</span>
+<span class="linenos"> 75</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">rising_edge</span><span class="p">(</span><span class="n">clk</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos"> 76</span><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">rst</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos"> 77</span><span class="w">                </span><span class="n">state</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">RED</span><span class="p">;</span>
+<span class="linenos"> 78</span><span class="w">            </span><span class="k">else</span>
+<span class="linenos"> 79</span><span class="w">                </span><span class="n">state</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">next_state</span><span class="p">;</span>
+<span class="linenos"> 80</span><span class="w">            </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="p">;</span>
+<span class="linenos"> 81</span><span class="w">        </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="p">;</span>
+<span class="linenos"> 82</span><span class="w">    </span><span class="k">end</span><span class="w"> </span><span class="k">process</span><span class="w"> </span><span class="nc">p_state_reg</span><span class="p">;</span>
+<span class="linenos"> 83</span>
+<span class="linenos"> 84</span><span class="w">    </span><span class="c1">-- p_next_state: Combinational next-state logic.</span>
+<span class="linenos"> 85</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos"> 86</span><span class="w">    </span><span class="c1">-- Evaluates the FSM transition function. Default assignment</span>
+<span class="linenos"> 87</span><span class="w">    </span><span class="c1">-- next_state &lt;= state implements hold when timer_exp is low.</span>
+<span class="linenos"> 88</span><span class="w">    </span><span class="c1">-- All four transitions are guarded solely by timer_exp = 1.</span>
 <span class="linenos"> 89</span><span class="w">    </span><span class="c1">--</span>
-<span class="linenos"> 90</span><span class="w">    </span><span class="c1">--    { &quot;signal&quot;: [</span>
-<span class="linenos"> 91</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;clk&quot;,       &quot;wave&quot;: &quot;P.........&quot; },</span>
-<span class="linenos"> 92</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;timer_exp&quot;, &quot;wave&quot;: &quot;0.1.1.1.1.&quot; },</span>
-<span class="linenos"> 93</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;state&quot;,     &quot;wave&quot;: &quot;=.=.=.=.=.&quot;,</span>
-<span class="linenos"> 94</span><span class="w">    </span><span class="c1">--        &quot;data&quot;: [&quot;RED&quot;,&quot;RED_AMB&quot;,&quot;GREEN&quot;,&quot;AMBER&quot;,&quot;RED&quot;] },</span>
-<span class="linenos"> 95</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;red_out&quot;,   &quot;wave&quot;: &quot;1.1.0.0.1.&quot; },</span>
-<span class="linenos"> 96</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;amber_out&quot;, &quot;wave&quot;: &quot;0.1.0.1.0.&quot; },</span>
-<span class="linenos"> 97</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;green_out&quot;, &quot;wave&quot;: &quot;0.0.1.0.0.&quot; }</span>
-<span class="linenos"> 98</span><span class="w">    </span><span class="c1">--    ]}</span>
-<span class="linenos"> 99</span><span class="w">    </span><span class="n">p_next_state</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">process</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="n">timer_exp</span><span class="p">)</span>
-<span class="linenos">100</span><span class="w">    </span><span class="k">begin</span>
-<span class="linenos">101</span><span class="w">        </span><span class="n">next_state</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">state</span><span class="p">;</span>
-<span class="linenos">102</span>
-<span class="linenos">103</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="k">is</span>
-<span class="linenos">104</span><span class="w">            </span><span class="k">when</span><span class="w"> </span><span class="n">RED</span><span class="w"> </span><span class="o">=&gt;</span>
-<span class="linenos">105</span><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="n">timer_exp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="w"> </span><span class="k">then</span>
-<span class="linenos">106</span><span class="w">                    </span><span class="n">next_state</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">RED_AMBER</span><span class="p">;</span>
-<span class="linenos">107</span><span class="w">                </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="p">;</span>
-<span class="linenos">108</span>
-<span class="linenos">109</span><span class="w">            </span><span class="k">when</span><span class="w"> </span><span class="n">RED_AMBER</span><span class="w"> </span><span class="o">=&gt;</span>
-<span class="linenos">110</span><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="n">timer_exp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="w"> </span><span class="k">then</span>
-<span class="linenos">111</span><span class="w">                    </span><span class="n">next_state</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">GREEN</span><span class="p">;</span>
-<span class="linenos">112</span><span class="w">                </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="p">;</span>
-<span class="linenos">113</span>
-<span class="linenos">114</span><span class="w">            </span><span class="k">when</span><span class="w"> </span><span class="n">GREEN</span><span class="w"> </span><span class="o">=&gt;</span>
-<span class="linenos">115</span><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="n">timer_exp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="w"> </span><span class="k">then</span>
-<span class="linenos">116</span><span class="w">                    </span><span class="n">next_state</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">AMBER</span><span class="p">;</span>
-<span class="linenos">117</span><span class="w">                </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="p">;</span>
-<span class="linenos">118</span>
-<span class="linenos">119</span><span class="w">            </span><span class="k">when</span><span class="w"> </span><span class="n">AMBER</span><span class="w"> </span><span class="o">=&gt;</span>
-<span class="linenos">120</span><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="n">timer_exp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="w"> </span><span class="k">then</span>
-<span class="linenos">121</span><span class="w">                    </span><span class="n">next_state</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">RED</span><span class="p">;</span>
-<span class="linenos">122</span><span class="w">                </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="p">;</span>
-<span class="linenos">123</span><span class="w">        </span><span class="k">end</span><span class="w"> </span><span class="k">case</span><span class="p">;</span>
-<span class="linenos">124</span><span class="w">    </span><span class="k">end</span><span class="w"> </span><span class="k">process</span><span class="w"> </span><span class="nc">p_next_state</span><span class="p">;</span>
-<span class="linenos">125</span>
-<span class="linenos">126</span><span class="w">    </span><span class="c1">-- p_outputs: Combinational Moore output decode.</span>
-<span class="linenos">127</span><span class="w">    </span><span class="c1">--</span>
-<span class="linenos">128</span><span class="w">    </span><span class="c1">-- Drives lamp outputs based solely on current state.</span>
-<span class="linenos">129</span><span class="w">    </span><span class="c1">-- All outputs default to 0 before the case statement to</span>
-<span class="linenos">130</span><span class="w">    </span><span class="c1">-- prevent latches during synthesis.</span>
-<span class="linenos">131</span><span class="w">    </span><span class="c1">--</span>
-<span class="linenos">132</span><span class="w">    </span><span class="c1">-- Output truth table:</span>
-<span class="linenos">133</span><span class="w">    </span><span class="c1">--   RED       -&gt; red=1 amber=0 green=0</span>
-<span class="linenos">134</span><span class="w">    </span><span class="c1">--   RED_AMBER -&gt; red=1 amber=1 green=0</span>
-<span class="linenos">135</span><span class="w">    </span><span class="c1">--   GREEN     -&gt; red=0 amber=0 green=1</span>
-<span class="linenos">136</span><span class="w">    </span><span class="c1">--   AMBER     -&gt; red=0 amber=1 green=0</span>
-<span class="linenos">137</span><span class="w">    </span><span class="c1">--</span>
-<span class="linenos">138</span><span class="w">    </span><span class="c1">-- .. wavedrom::</span>
+<span class="linenos"> 90</span><span class="w">    </span><span class="c1">-- Transitions:</span>
+<span class="linenos"> 91</span><span class="w">    </span><span class="c1">--   RED       + timer_exp -&gt; RED_AMBER</span>
+<span class="linenos"> 92</span><span class="w">    </span><span class="c1">--   RED_AMBER + timer_exp -&gt; GREEN</span>
+<span class="linenos"> 93</span><span class="w">    </span><span class="c1">--   GREEN     + timer_exp -&gt; AMBER</span>
+<span class="linenos"> 94</span><span class="w">    </span><span class="c1">--   AMBER     + timer_exp -&gt; RED</span>
+<span class="linenos"> 95</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos"> 96</span><span class="w">    </span><span class="c1">-- .. wavedrom::</span>
+<span class="linenos"> 97</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos"> 98</span><span class="w">    </span><span class="c1">--    { &quot;signal&quot;: [</span>
+<span class="linenos"> 99</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;clk&quot;,       &quot;wave&quot;: &quot;P.........&quot; },</span>
+<span class="linenos">100</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;timer_exp&quot;, &quot;wave&quot;: &quot;0.1.1.1.1.&quot; },</span>
+<span class="linenos">101</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;state&quot;,     &quot;wave&quot;: &quot;=.=.=.=.=.&quot;,</span>
+<span class="linenos">102</span><span class="w">    </span><span class="c1">--        &quot;data&quot;: [&quot;RED&quot;,&quot;RED_AMB&quot;,&quot;GREEN&quot;,&quot;AMBER&quot;,&quot;RED&quot;] },</span>
+<span class="linenos">103</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;red_out&quot;,   &quot;wave&quot;: &quot;1.1.0.0.1.&quot; },</span>
+<span class="linenos">104</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;amber_out&quot;, &quot;wave&quot;: &quot;0.1.0.1.0.&quot; },</span>
+<span class="linenos">105</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;green_out&quot;, &quot;wave&quot;: &quot;0.0.1.0.0.&quot; }</span>
+<span class="linenos">106</span><span class="w">    </span><span class="c1">--    ]}</span>
+<span class="linenos">107</span><span class="w">    </span><span class="n">p_next_state</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">process</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="n">timer_exp</span><span class="p">)</span>
+<span class="linenos">108</span><span class="w">    </span><span class="k">begin</span>
+<span class="linenos">109</span><span class="w">        </span><span class="n">next_state</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">state</span><span class="p">;</span>
+<span class="linenos">110</span>
+<span class="linenos">111</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="k">is</span>
+<span class="linenos">112</span><span class="w">            </span><span class="k">when</span><span class="w"> </span><span class="n">RED</span><span class="w"> </span><span class="o">=&gt;</span>
+<span class="linenos">113</span><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="n">timer_exp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">114</span><span class="w">                    </span><span class="n">next_state</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">RED_AMBER</span><span class="p">;</span>
+<span class="linenos">115</span><span class="w">                </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="p">;</span>
+<span class="linenos">116</span>
+<span class="linenos">117</span><span class="w">            </span><span class="k">when</span><span class="w"> </span><span class="n">RED_AMBER</span><span class="w"> </span><span class="o">=&gt;</span>
+<span class="linenos">118</span><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="n">timer_exp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">119</span><span class="w">                    </span><span class="n">next_state</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">GREEN</span><span class="p">;</span>
+<span class="linenos">120</span><span class="w">                </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="p">;</span>
+<span class="linenos">121</span>
+<span class="linenos">122</span><span class="w">            </span><span class="k">when</span><span class="w"> </span><span class="n">GREEN</span><span class="w"> </span><span class="o">=&gt;</span>
+<span class="linenos">123</span><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="n">timer_exp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">124</span><span class="w">                    </span><span class="n">next_state</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">AMBER</span><span class="p">;</span>
+<span class="linenos">125</span><span class="w">                </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="p">;</span>
+<span class="linenos">126</span>
+<span class="linenos">127</span><span class="w">            </span><span class="k">when</span><span class="w"> </span><span class="n">AMBER</span><span class="w"> </span><span class="o">=&gt;</span>
+<span class="linenos">128</span><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="n">timer_exp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">129</span><span class="w">                    </span><span class="n">next_state</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">RED</span><span class="p">;</span>
+<span class="linenos">130</span><span class="w">                </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="p">;</span>
+<span class="linenos">131</span><span class="w">        </span><span class="k">end</span><span class="w"> </span><span class="k">case</span><span class="p">;</span>
+<span class="linenos">132</span><span class="w">    </span><span class="k">end</span><span class="w"> </span><span class="k">process</span><span class="w"> </span><span class="nc">p_next_state</span><span class="p">;</span>
+<span class="linenos">133</span>
+<span class="linenos">134</span><span class="w">    </span><span class="c1">-- p_outputs: Combinational Moore output decode.</span>
+<span class="linenos">135</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos">136</span><span class="w">    </span><span class="c1">-- Drives lamp outputs based solely on current state.</span>
+<span class="linenos">137</span><span class="w">    </span><span class="c1">-- All outputs default to 0 before the case statement to</span>
+<span class="linenos">138</span><span class="w">    </span><span class="c1">-- prevent latches during synthesis.</span>
 <span class="linenos">139</span><span class="w">    </span><span class="c1">--</span>
-<span class="linenos">140</span><span class="w">    </span><span class="c1">--    { &quot;signal&quot;: [</span>
-<span class="linenos">141</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;state&quot;,     &quot;wave&quot;: &quot;=.=.=.=.&quot;,</span>
-<span class="linenos">142</span><span class="w">    </span><span class="c1">--        &quot;data&quot;: [&quot;RED&quot;,&quot;RED_AMB&quot;,&quot;GREEN&quot;,&quot;AMBER&quot;] },</span>
-<span class="linenos">143</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;red_out&quot;,   &quot;wave&quot;: &quot;1.1.0.0.&quot; },</span>
-<span class="linenos">144</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;amber_out&quot;, &quot;wave&quot;: &quot;0.1.0.1.&quot; },</span>
-<span class="linenos">145</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;green_out&quot;, &quot;wave&quot;: &quot;0.0.1.0.&quot; }</span>
-<span class="linenos">146</span><span class="w">    </span><span class="c1">--    ]}</span>
-<span class="linenos">147</span><span class="w">    </span><span class="n">p_outputs</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">process</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
-<span class="linenos">148</span><span class="w">    </span><span class="k">begin</span>
-<span class="linenos">149</span><span class="w">        </span><span class="n">red_out</span><span class="w">   </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">;</span>
-<span class="linenos">150</span><span class="w">        </span><span class="n">amber_out</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">;</span>
-<span class="linenos">151</span><span class="w">        </span><span class="n">green_out</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">;</span>
-<span class="linenos">152</span>
-<span class="linenos">153</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="k">is</span>
-<span class="linenos">154</span><span class="w">            </span><span class="c1">-- define red</span>
-<span class="linenos">155</span><span class="w">            </span><span class="k">when</span><span class="w"> </span><span class="n">RED</span><span class="w">       </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">red_out</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="p">;</span>
-<span class="linenos">156</span><span class="w">            </span><span class="k">when</span><span class="w"> </span><span class="n">RED_AMBER</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">red_out</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="p">;</span><span class="w"> </span><span class="n">amber_out</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="p">;</span>
-<span class="linenos">157</span><span class="w">            </span><span class="k">when</span><span class="w"> </span><span class="n">GREEN</span><span class="w">     </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">green_out</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="p">;</span>
-<span class="linenos">158</span><span class="w">            </span><span class="k">when</span><span class="w"> </span><span class="n">AMBER</span><span class="w">     </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">amber_out</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="p">;</span>
-<span class="linenos">159</span><span class="w">        </span><span class="k">end</span><span class="w"> </span><span class="k">case</span><span class="p">;</span>
-<span class="linenos">160</span><span class="w">    </span><span class="k">end</span><span class="w"> </span><span class="k">process</span><span class="w"> </span><span class="nc">p_outputs</span><span class="p">;</span>
-<span class="linenos">161</span>
-<span class="linenos">162</span><span class="k">end</span><span class="w"> </span><span class="k">architecture</span><span class="w"> </span><span class="nc">rtl</span><span class="p">;</span>
+<span class="linenos">140</span><span class="w">    </span><span class="c1">-- Output truth table:</span>
+<span class="linenos">141</span><span class="w">    </span><span class="c1">--   RED       -&gt; red=1 amber=0 green=0</span>
+<span class="linenos">142</span><span class="w">    </span><span class="c1">--   RED_AMBER -&gt; red=1 amber=1 green=0</span>
+<span class="linenos">143</span><span class="w">    </span><span class="c1">--   GREEN     -&gt; red=0 amber=0 green=1</span>
+<span class="linenos">144</span><span class="w">    </span><span class="c1">--   AMBER     -&gt; red=0 amber=1 green=0</span>
+<span class="linenos">145</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos">146</span><span class="w">    </span><span class="c1">-- .. wavedrom::</span>
+<span class="linenos">147</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos">148</span><span class="w">    </span><span class="c1">--    { &quot;signal&quot;: [</span>
+<span class="linenos">149</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;state&quot;,     &quot;wave&quot;: &quot;=.=.=.=.&quot;,</span>
+<span class="linenos">150</span><span class="w">    </span><span class="c1">--        &quot;data&quot;: [&quot;RED&quot;,&quot;RED_AMB&quot;,&quot;GREEN&quot;,&quot;AMBER&quot;] },</span>
+<span class="linenos">151</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;red_out&quot;,   &quot;wave&quot;: &quot;1.1.0.0.&quot; },</span>
+<span class="linenos">152</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;amber_out&quot;, &quot;wave&quot;: &quot;0.1.0.1.&quot; },</span>
+<span class="linenos">153</span><span class="w">    </span><span class="c1">--      { &quot;name&quot;: &quot;green_out&quot;, &quot;wave&quot;: &quot;0.0.1.0.&quot; }</span>
+<span class="linenos">154</span><span class="w">    </span><span class="c1">--    ]}</span>
+<span class="linenos">155</span><span class="w">    </span><span class="n">p_outputs</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">process</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+<span class="linenos">156</span><span class="w">    </span><span class="k">begin</span>
+<span class="linenos">157</span><span class="w">        </span><span class="n">red_out</span><span class="w">   </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">;</span>
+<span class="linenos">158</span><span class="w">        </span><span class="n">amber_out</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">;</span>
+<span class="linenos">159</span><span class="w">        </span><span class="n">green_out</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">;</span>
+<span class="linenos">160</span>
+<span class="linenos">161</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="k">is</span>
+<span class="linenos">162</span><span class="w">            </span><span class="c1">-- define red</span>
+<span class="linenos">163</span><span class="w">            </span><span class="k">when</span><span class="w"> </span><span class="n">RED</span><span class="w">       </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">red_out</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="p">;</span>
+<span class="linenos">164</span><span class="w">            </span><span class="k">when</span><span class="w"> </span><span class="n">RED_AMBER</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">red_out</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="p">;</span><span class="w"> </span><span class="n">amber_out</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="p">;</span>
+<span class="linenos">165</span><span class="w">            </span><span class="k">when</span><span class="w"> </span><span class="n">GREEN</span><span class="w">     </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">green_out</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="p">;</span>
+<span class="linenos">166</span><span class="w">            </span><span class="k">when</span><span class="w"> </span><span class="n">AMBER</span><span class="w">     </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">amber_out</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="p">;</span>
+<span class="linenos">167</span><span class="w">        </span><span class="k">end</span><span class="w"> </span><span class="k">case</span><span class="p">;</span>
+<span class="linenos">168</span><span class="w">    </span><span class="k">end</span><span class="w"> </span><span class="k">process</span><span class="w"> </span><span class="nc">p_outputs</span><span class="p">;</span>
+<span class="linenos">169</span>
+<span class="linenos">170</span><span class="k">end</span><span class="w"> </span><span class="k">architecture</span><span class="w"> </span><span class="nc">rtl</span><span class="p">;</span>
 </pre></div>
 </div>
 </div>
@@ -505,7 +550,7 @@ clock edge when timer_exp is asserted.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="traffic_light" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="fsm.html" class="btn btn-neutral float-right" title="traffic_light State Machine" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="block.html" class="btn btn-neutral float-right" title="traffic_light — Block Diagram" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

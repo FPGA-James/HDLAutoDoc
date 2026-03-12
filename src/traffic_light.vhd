@@ -10,6 +10,14 @@ use ieee.numeric_std.all;
 --
 -- State sequence: RED -> RED_AMBER -> GREEN -> AMBER -> RED.
 entity traffic_light is
+    generic (
+        -- System clock frequency in Hz. Used to derive phase timer counts.
+        CLK_FREQ_HZ  : natural := 50_000_000;
+        -- Duration of the RED and GREEN phases in milliseconds.
+        PHASE_MS     : natural := 5_000;
+        -- Duration of the RED_AMBER and AMBER transition phases in milliseconds.
+        TRANS_MS     : natural := 2_000
+    );
     port (
         -- System clock, rising-edge triggered.
         clk       : in  std_logic;

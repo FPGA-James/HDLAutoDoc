@@ -165,6 +165,7 @@ def module_index_rst(entity: dict, children: list[str],
         "   :maxdepth: 3",
         "",
         "   entity",
+        "   block",
         "   fsm",
         "   timing",
     ]
@@ -231,6 +232,19 @@ def entity_rst(entity: dict, src_rel_to_docs: str = "../../src") -> str:
         "",
     ]
     return "\n".join(lines)
+
+
+def block_rst(entity: dict, module_dir: Path = None) -> str:
+    name      = entity["name"]
+    extracted = module_dir / f"{name}_block.rst" if module_dir else None
+    if extracted and extracted.exists():
+        return "\n".join([f".. include:: {name}_block.rst", ""])
+    title = f"{name} — Block Diagram"
+    return "\n".join([
+        title, "=" * len(title), "",
+        ".. note::", "",
+        "   Block diagram pending — run ``make extract`` to generate.", "",
+    ])
 
 
 def cdc_rst(entity: dict, module_dir: Path = None) -> str:
@@ -549,6 +563,10 @@ if __name__ == "__main__":
         results.append(write_always(
             mod_dir / "cdc.rst",
             cdc_rst(entity, module_dir=mod_dir)
+        ))
+        results.append(write_always(
+            mod_dir / "block.rst",
+            block_rst(entity, module_dir=mod_dir)
         ))
 
         # Write-if-missing

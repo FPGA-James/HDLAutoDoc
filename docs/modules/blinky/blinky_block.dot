@@ -1,0 +1,17 @@
+digraph blinky_block {
+    rankdir=LR;
+    nodesep=0.5;
+    ranksep=0.8;
+    node [fontname="Helvetica", fontsize=12, shape=none, margin=0];
+    edge [dir=none, penwidth=2.5, color="black"];
+
+    // Ports box
+    port_box_blinky [label=<
+        <TABLE BORDER="2" CELLBORDER="0" CELLSPACING="3" CELLPADDING="0" BGCOLOR="#fffde7" COLOR="#5d4200">
+          <TR><TD PORT="i_clk" ALIGN="LEFT" CELLPADDING="5">&#x25B8; clk</TD><TD WIDTH="50"> </TD><TD PORT="o_led_on" ALIGN="RIGHT" CELLPADDING="5">led_on &#x25C2;</TD></TR>
+          <TR><TD PORT="i_rst" ALIGN="LEFT" CELLPADDING="5">&#x25B8; rst</TD><TD WIDTH="50"> </TD><TD PORT="o_led_fade" ALIGN="RIGHT" CELLPADDING="5">led_fade &#x25C2;</TD></TR>
+          <TR><TD PORT="i_en" ALIGN="LEFT" CELLPADDING="5">&#x25B8; en</TD><TD WIDTH="50"> </TD><TD PORT="o_led_off" ALIGN="RIGHT" CELLPADDING="5">led_off &#x25C2;</TD></TR>
+          <TR><TD PORT="i_timer_exp" ALIGN="LEFT" CELLPADDING="5">&#x25B8; timer_exp</TD><TD WIDTH="50"> </TD><TD CELLPADDING="5"> </TD></TR>
+        </TABLE>>];
+
+}

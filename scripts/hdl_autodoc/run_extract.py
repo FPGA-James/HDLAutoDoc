@@ -46,3 +46,6 @@ if __name__ == "__main__":
 
         run(["python", str(scripts_dir / "extract_cdc.py"),
              src_file, name, str(module_dir)])
+
+        run(["python", str(scripts_dir / "extract_block.py"),
+             src_file, name, str(module_dir)])

@@ -25,17 +25,17 @@ Summary
    * - :doc:`p_state_reg`
      - ``process``
      - ``clk``
-     - 65
+     - 73
      - ✔
 
    * - :doc:`p_next_state`
      - ``process``
      - ``state``, ``timer_exp``
-     - 99
+     - 107
      - ✔
 
    * - :doc:`p_outputs`
      - ``process``
      - ``state``
-     - 147
+     - 155
      - ✔

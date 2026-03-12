@@ -1,30 +1,6 @@
 {
   "top": "top",
   "modules": {
-    "traffic_light": {
-      "file": "src/traffic_light.vhd",
-      "children": [],
-      "parents": [
-        "top"
-      ],
-      "shared": false
-    },
-    "pwm_controller": {
-      "file": "src/pwm_controller.sv",
-      "children": [],
-      "parents": [
-        "top"
-      ],
-      "shared": false
-    },
-    "cfg_sync": {
-      "file": "src/cfg_sync.vhd",
-      "children": [],
-      "parents": [
-        "top"
-      ],
-      "shared": false
-    },
     "top": {
       "file": "src/top.vhd",
       "children": [
@@ -36,8 +12,32 @@
       "parents": [],
       "shared": false
     },
+    "cfg_sync": {
+      "file": "src/cfg_sync.vhd",
+      "children": [],
+      "parents": [
+        "top"
+      ],
+      "shared": false
+    },
     "blinky": {
       "file": "src/blinky.vhd",
+      "children": [],
+      "parents": [
+        "top"
+      ],
+      "shared": false
+    },
+    "traffic_light": {
+      "file": "src/traffic_light.vhd",
+      "children": [],
+      "parents": [
+        "top"
+      ],
+      "shared": false
+    },
+    "pwm_controller": {
+      "file": "src/pwm_controller.sv",
       "children": [],
       "parents": [
         "top"

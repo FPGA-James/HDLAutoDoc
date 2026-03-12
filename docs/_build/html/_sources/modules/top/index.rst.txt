@@ -5,6 +5,7 @@ top
    :maxdepth: 3
 
    entity
+   block
    fsm
    timing
    cdc
