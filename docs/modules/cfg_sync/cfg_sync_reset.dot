@@ -1,0 +1,28 @@
+digraph cfg_sync_reset {
+    compound=true;
+    rankdir=LR;
+    node [fontname="Helvetica", fontsize=11, shape=box, style=filled, fillcolor=white];
+    edge [fontname="Helvetica", fontsize=10];
+
+    subgraph cluster_cfg_rst {
+        label="cfg_rst (sync)";
+        style=filled; fillcolor="#fce7f3"; color="#9d174d";
+        fontname="Helvetica Bold"; fontsize=13;
+
+        cfg_rst__p_cfg_reg [label="p_cfg_reg\n(cfg_clk)"];
+    }
+
+    subgraph cluster_sys_rst {
+        label="sys_rst (sync)";
+        style=filled; fillcolor="#fed7aa"; color="#c2410c";
+        fontname="Helvetica Bold"; fontsize=13;
+
+        sys_rst__p_mode_sync [label="p_mode_sync\n(sys_clk)"];
+        sys_rst__p_duty_capture [label="p_duty_capture\n(sys_clk)"];
+    }
+
+    // Reset domain crossings
+    cfg_rst__p_cfg_reg -> sys_rst__p_mode_sync [label="duty_cycle_r", color="#dc2626", fontcolor="#dc2626", style="dashed", ltail="cluster_cfg_rst", lhead="cluster_sys_rst"];
+    cfg_rst__p_cfg_reg -> sys_rst__p_mode_sync [label="mode_sel_r", color="#dc2626", fontcolor="#dc2626", style="dashed", ltail="cluster_cfg_rst", lhead="cluster_sys_rst"];
+
+}

@@ -1,0 +1,26 @@
+digraph traffic_light_reset {
+    compound=true;
+    rankdir=LR;
+    node [fontname="Helvetica", fontsize=11, shape=box, style=filled, fillcolor=white];
+    edge [fontname="Helvetica", fontsize=10];
+
+    subgraph cluster_rst {
+        label="rst (sync)";
+        style=filled; fillcolor="#fce7f3"; color="#9d174d";
+        fontname="Helvetica Bold"; fontsize=13;
+
+        rst__p_state_reg [label="p_state_reg\n(clk)"];
+    }
+
+    subgraph cluster_por_n {
+        label="por_n (async)";
+        style=filled; fillcolor="#fed7aa"; color="#c2410c";
+        fontname="Helvetica Bold"; fontsize=13;
+
+        por_n__p_watchdog [label="p_watchdog\n(clk)"];
+    }
+
+    // Reset domain crossings
+    rst__p_state_reg -> por_n__p_watchdog [label="state", color="#dc2626", fontcolor="#dc2626", style="dashed", ltail="cluster_rst", lhead="cluster_por_n"];
+
+}

@@ -172,6 +172,7 @@ def module_index_rst(entity: dict, children: list[str],
     if has_processes:
         lines.append("   processes/index")
     lines.append("   cdc")
+    lines.append("   reset")
     lines.append("")
 
     if is_top:
@@ -232,6 +233,19 @@ def entity_rst(entity: dict, src_rel_to_docs: str = "../../src") -> str:
         "",
     ]
     return "\n".join(lines)
+
+
+def reset_rst(entity: dict, module_dir: Path = None) -> str:
+    name      = entity["name"]
+    extracted = module_dir / f"{name}_reset.rst" if module_dir else None
+    if extracted and extracted.exists():
+        return "\n".join([f".. include:: {name}_reset.rst", ""])
+    title = f"{name} — Reset Domain Analysis"
+    return "\n".join([
+        title, "=" * len(title), "",
+        ".. note::", "",
+        "   Reset domain analysis pending — run ``make extract`` to generate.", "",
+    ])
 
 
 def block_rst(entity: dict, module_dir: Path = None) -> str:
@@ -567,6 +581,10 @@ if __name__ == "__main__":
         results.append(write_always(
             mod_dir / "block.rst",
             block_rst(entity, module_dir=mod_dir)
+        ))
+        results.append(write_always(
+            mod_dir / "reset.rst",
+            reset_rst(entity, module_dir=mod_dir)
         ))
 
         # Write-if-missing

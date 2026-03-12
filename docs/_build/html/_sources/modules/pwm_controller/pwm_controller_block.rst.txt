@@ -62,3 +62,18 @@ Parameters
      - ``int``
      - ``8``
      - —
+
+
+Signals
+-------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Signal
+     - Type
+     - Description
+
+   * - ``count``
+     - ``logic[WIDTH-1:0]``
+     - Period counter register.

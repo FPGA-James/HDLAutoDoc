@@ -2,7 +2,7 @@ p_next_state
 ============
 
 | **Source file:** ``traffic_light.vhd``
-| **Source line:** 107
+| **Source line:** 115
 | **Block type:** ``process``
 | **Sensitivity list:** ``state``, ``timer_exp``
 

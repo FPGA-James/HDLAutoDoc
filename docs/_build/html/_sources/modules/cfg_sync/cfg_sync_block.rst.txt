@@ -55,3 +55,30 @@ Ports
      - ``out``
      - ``std_logic_vector(7 downto 0)``
      - PWM duty cycle (unsynchronised crossing).
+
+
+Signals
+-------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Signal
+     - Type
+     - Description
+
+   * - ``mode_sel_r``
+     - ``std_logic``
+     - cfg_clk domain registers
+
+   * - ``duty_cycle_r``
+     - ``std_logic_vector(7 downto 0)``
+     - —
+
+   * - ``mode_meta``
+     - ``std_logic``
+     - sys_clk domain: two-flop synchroniser pipeline for mode_sel_r
+
+   * - ``mode_sync_r``
+     - ``std_logic``
+     - —

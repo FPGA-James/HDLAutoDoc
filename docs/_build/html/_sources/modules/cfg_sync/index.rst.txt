@@ -10,3 +10,4 @@ cfg_sync
    timing
    processes/index
    cdc
+   reset

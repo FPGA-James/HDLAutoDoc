@@ -10,3 +10,4 @@ traffic_light
    timing
    processes/index
    cdc
+   reset

@@ -2,7 +2,7 @@ p_outputs
 =========
 
 | **Source file:** ``traffic_light.vhd``
-| **Source line:** 155
+| **Source line:** 163
 | **Block type:** ``process``
 | **Sensitivity list:** ``state``
 

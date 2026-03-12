@@ -19,6 +19,7 @@ digraph traffic_light_block {
           <TR><TD PORT="i_clk" ALIGN="LEFT" CELLPADDING="5">&#x25B8; clk</TD><TD WIDTH="50"> </TD><TD PORT="o_red_out" ALIGN="RIGHT" CELLPADDING="5">red_out &#x25C2;</TD></TR>
           <TR><TD PORT="i_rst" ALIGN="LEFT" CELLPADDING="5">&#x25B8; rst</TD><TD WIDTH="50"> </TD><TD PORT="o_amber_out" ALIGN="RIGHT" CELLPADDING="5">amber_out &#x25C2;</TD></TR>
           <TR><TD PORT="i_timer_exp" ALIGN="LEFT" CELLPADDING="5">&#x25B8; timer_exp</TD><TD WIDTH="50"> </TD><TD PORT="o_green_out" ALIGN="RIGHT" CELLPADDING="5">green_out &#x25C2;</TD></TR>
+          <TR><TD PORT="i_por_n" ALIGN="LEFT" CELLPADDING="5">&#x25B8; por_n</TD><TD WIDTH="50"> </TD><TD CELLPADDING="5"> </TD></TR>
         </TABLE>>];
 
     { rank=same; gen_box_traffic_light; port_box_traffic_light }

@@ -17,4 +17,4 @@ Clock Domain
      - Clocked Processes
 
    * - ``clk``
-     - ``p_state_reg``
+     - ``p_state_reg``, ``p_watchdog``

@@ -60,11 +60,13 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../top/block.html">top — Block Diagram</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../top/block.html#ports">Ports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../top/block.html#signals">Signals</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../top/fsm.html">top — State Machine</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../top/timing.html">top — Timing Diagrams</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../top/cdc.html">top — Clock Domain Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../top/reset.html">top — Reset Domain Analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../registers.html">Registers</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../../top/index.html#submodules">Submodules</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../index.html">blinky</a><ul class="current">
@@ -74,6 +76,7 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../block.html">blinky — Block Diagram</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../block.html#ports">Ports</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../block.html#signals">Signals</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../fsm.html">blinky State Machine</a><ul>
@@ -111,6 +114,10 @@
 <li class="toctree-l5"><a class="reference internal" href="../cdc.html#clock-domain">Clock Domain</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../reset.html">blinky — Reset Domain Analysis</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../reset.html#reset-domain">Reset Domain</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../cfg_sync/index.html">cfg_sync</a><ul>
@@ -120,6 +127,7 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../cfg_sync/block.html">cfg_sync — Block Diagram</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../cfg_sync/block.html#ports">Ports</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../cfg_sync/block.html#signals">Signals</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../cfg_sync/fsm.html">cfg_sync — State Machine</a></li>
@@ -151,6 +159,11 @@
 <li class="toctree-l5"><a class="reference internal" href="../../cfg_sync/cdc.html#signal-crossings">Signal Crossings</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../../cfg_sync/reset.html">cfg_sync — Reset Domain Analysis</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../cfg_sync/reset.html#reset-domains">Reset Domains</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../cfg_sync/reset.html#signal-crossings">Signal Crossings</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../pwm_controller/index.html">pwm_controller</a><ul>
@@ -161,6 +174,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../pwm_controller/block.html">pwm_controller — Block Diagram</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../pwm_controller/block.html#ports">Ports</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../pwm_controller/block.html#parameters">Parameters</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../pwm_controller/block.html#signals">Signals</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../pwm_controller/fsm.html">pwm_controller State Machine</a><ul>
@@ -198,6 +212,10 @@
 <li class="toctree-l5"><a class="reference internal" href="../../pwm_controller/cdc.html#clock-domain">Clock Domain</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../../pwm_controller/reset.html">pwm_controller — Reset Domain Analysis</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../pwm_controller/reset.html#reset-domain">Reset Domain</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../traffic_light/index.html">traffic_light</a><ul>
@@ -208,6 +226,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../traffic_light/block.html">traffic_light — Block Diagram</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../traffic_light/block.html#ports">Ports</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../traffic_light/block.html#generics">Generics</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../traffic_light/block.html#signals">Signals</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../traffic_light/fsm.html">traffic_light State Machine</a><ul>
@@ -239,11 +258,21 @@
 <li class="toctree-l6"><a class="reference internal" href="../../traffic_light/processes/p_outputs.html#source">Source</a></li>
 </ul>
 </li>
+<li class="toctree-l5"><a class="reference internal" href="../../traffic_light/processes/p_watchdog.html">p_watchdog</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="../../traffic_light/processes/p_watchdog.html#description">Description</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../traffic_light/processes/p_watchdog.html#source">Source</a></li>
+</ul>
+</li>
 <li class="toctree-l5"><a class="reference internal" href="../../traffic_light/processes/index.html#summary">Summary</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../traffic_light/cdc.html">traffic_light — Clock Domain Analysis</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../traffic_light/cdc.html#clock-domain">Clock Domain</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../traffic_light/reset.html">traffic_light — Reset Domain Analysis</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../traffic_light/reset.html#reset-domains">Reset Domains</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../traffic_light/reset.html#signal-crossings">Signal Crossings</a></li>
 </ul>
 </li>
 </ul>

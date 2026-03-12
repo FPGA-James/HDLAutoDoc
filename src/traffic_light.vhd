@@ -25,6 +25,10 @@ entity traffic_light is
         rst       : in  std_logic;
         -- Phase timer expiry pulse. Must be high for exactly one cycle.
         timer_exp : in  std_logic;
+        -- Async active-low power-on reset for the phase watchdog counter.
+        -- Separate from rst so the counter clears at power-on regardless of
+        -- when the system reset deasserts.
+        por_n     : in  std_logic;
         -- Red lamp drive. Asserted in RED and RED_AMBER states.
         red_out   : out std_logic;
         -- Amber lamp drive. Asserted in RED_AMBER and AMBER states.
@@ -53,6 +57,10 @@ architecture rtl of traffic_light is
     signal state      : t_state := RED;
     -- Next state combinational signal, feeds state register.
     signal next_state : t_state;
+
+    -- Phase watchdog counter. Counts clock cycles spent in the current state.
+    -- Cleared by por_n (async) or whenever the FSM transitions to RED.
+    signal phase_cnt  : std_logic_vector(15 downto 0);
 
 begin
 
@@ -166,5 +174,27 @@ begin
             when AMBER     => amber_out <= '1';
         end case;
     end process p_outputs;
+
+    -- p_watchdog: Phase watchdog counter.
+    --
+    -- Increments each clock cycle to track how long the FSM has been in the
+    -- current phase. Resets to zero whenever the FSM returns to RED.
+    --
+    -- Uses por_n (async active-low) rather than rst so the counter is
+    -- guaranteed zero at power-on before rst has been asserted by the system.
+    -- This creates a deliberate reset domain crossing: state is driven under
+    -- rst (synchronous) but read here under por_n (asynchronous).
+    p_watchdog : process(clk, por_n) is
+    begin
+        if por_n = '0' then
+            phase_cnt <= (others => '0');
+        elsif rising_edge(clk) then
+            if state = RED then
+                phase_cnt <= (others => '0');
+            else
+                phase_cnt <= std_logic_vector(unsigned(phase_cnt) + 1);
+            end if;
+        end if;
+    end process p_watchdog;
 
 end architecture rtl;

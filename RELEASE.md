@@ -1,4 +1,63 @@
-# Release Notes — v3.0.0
+# Release Notes
+
+## v3.2.0
+
+### Block Diagrams
+
+Each module now gets a **`block.rst` page** generated automatically, containing a TerosHDL-inspired block diagram and interface tables.
+
+`extract_block.py` performs the following extraction:
+
+- **Port extraction** — name, direction (`in`/`out`/`inout`), type, bus width range, and description from VHDL `port (...)` and SV module port lists. Comments on the preceding line or same line as the declaration are both captured.
+- **Generics / parameters extraction** — name, type, default value, and description from VHDL `generic (...)` and SV `parameter`/`localparam` declarations.
+
+The `block.rst` page includes:
+
+- A **Graphviz block diagram** using a TerosHDL-inspired style:
+  - **Green box** (top) — generics/parameters with name and default value, one row each.
+  - **Yellow box** (below) — port interface; inputs left-aligned with `►`, outputs right-aligned with `◄`; bus widths annotated inline (e.g. `[8]`, `[WIDTH-1:0]`).
+- A **port table** — name, direction, type, description.
+- A **generics/parameters table** — name, type, default, description (omitted if the module has no generics).
+
+**`test_extract_block.py`** — 36 tests covering VHDL/SV port and generic extraction, width label computation, dot output structure, and RST content.
+
+### Known limitations
+
+- Port comments are captured from the same line or the immediately preceding comment line only. Multi-line preceding comment blocks are not aggregated.
+- SV named parameter syntax (`#(.PARAM(val))`) in instantiations is not detected by the hierarchy parser; positional syntax (`#(val)`) is supported.
+
+---
+
+## v3.1.0
+
+### Test Suite
+
+A pytest suite covering all pipeline scripts has been added under `scripts/hdl_autodoc/tests/`.
+
+Run with:
+
+```bash
+pytest scripts/hdl_autodoc/tests/
+```
+
+| Test file | Coverage |
+|---|---|
+| `test_parse_hierarchy.py` | Module name extraction, instantiation detection, hierarchy building |
+| `test_extract_fsm.py` | FSM transition extraction (VHDL + SV), dot and RST output |
+| `test_extract_processes.py` | Process/always block discovery, comment tokens, RST rendering |
+| `test_extract_cdc.py` | Clock domain identification, crossing detection, synchronizer detection, FIFO detection, dot output |
+| `test_generate_rst.py` | Toctree generation, entity/FSM/CDC/block RST, file write helpers |
+| `test_include_registers.py` | Entry point detection, placeholder vs iframe output, directory copy |
+
+### VS Code test runner configuration
+
+- `pytest.ini` — sets `testpaths` and `pythonpath` so VS Code discovers tests without manual path configuration.
+- `.python-version` — pins pyenv to the project Python version.
+- `.vscode/settings.json` — points the Python extension at the correct interpreter and enables pytest.
+
+---
+
+## v3.0.0
 
 ## CDC Analysis
 

@@ -2,7 +2,7 @@
 
 > **Turn your VHDL and SystemVerilog source into beautiful, navigable documentation — automatically.**
 
-HDL AutoDoc is a zero-boilerplate documentation pipeline for hardware design projects. Drop your source files in, run `make html`, and get a fully structured Sphinx site with FSM diagrams, timing waveforms, process pages, a hierarchy tree, a CDC analysis page per module, and an embedded register map — all extracted directly from your HDL source.
+HDL AutoDoc is a zero-boilerplate documentation pipeline for hardware design projects. Drop your source files in, run `make html`, and get a fully structured Sphinx site with block diagrams, FSM diagrams, timing waveforms, process pages, a hierarchy tree, a CDC analysis page per module, and an embedded register map — all extracted directly from your HDL source.
 
 No separate doc files to maintain. No manual diagrams to draw. If it's in the source, it's in the docs.
 
@@ -13,6 +13,8 @@ No separate doc files to maintain. No manual diagrams to draw. If it's in the so
 | Feature | How it works |
 |---|---|
 | **Auto-discovered ports & entities** | Extracted from `entity`/`module` declarations |
+| **Block diagrams** | TerosHDL-style port diagram (green generics box + yellow ports box) with bus widths, auto-generated per module |
+| **Generics / parameters table** | Name, type, default value, and description extracted from VHDL `generic` and SV `parameter`/`localparam` declarations |
 | **FSM state diagrams** | Parsed from `case` blocks, rendered with [Graphviz](https://graphviz.org) |
 | **Timing waveforms** | `.. wavedrom::` blocks in source comments, rendered with [WaveDrom](https://wavedrom.com) |
 | **Per-process pages** | One page per labeled `process` / `always_ff` / `always_comb` block |
@@ -38,6 +40,7 @@ docs/
     └── top/
         ├── index.rst               ← module toctree + submodules
         ├── entity.rst              ← ports, generics, annotated source
+        ├── block.rst               ← TerosHDL-style block diagram + port/generics tables
         ├── fsm.rst                 ← state diagram + transition table
         ├── timing.rst              ← all wavedrom diagrams for this module
         ├── cdc.rst                 ← clock domain crossing analysis + diagram
@@ -110,13 +113,12 @@ parse_hierarchy.py     Reads the filelist, extracts module names,
     │                  writes docs/hierarchy.json
     ▼
 generate_rst.py        Scaffolds docs/modules/<n>/ for each module.
-    │                  Always-regenerated: index, fsm, timing, cdc pages.
+    │                  Always-regenerated: index, block, fsm, timing, cdc pages.
     │                  Write-if-missing: entity pages (safe to hand-edit).
     ▼
-run_extract.py         Calls extract_fsm.py, extract_processes.py, and
-    │                  extract_cdc.py for every module in hierarchy.json.
-    │                  Extracts FSM dot+rst, per-process rst pages, and
-    │                  CDC dot+rst pages.
+run_extract.py         Calls extract_fsm.py, extract_processes.py,
+    │                  extract_cdc.py, and extract_block.py for every
+    │                  module in hierarchy.json.
     ▼
 include_registers.py   Checks registers/generated/*.html. Copies it
     │                  to _static/ and embeds via iframe if found.
@@ -276,7 +278,7 @@ Content width is fluid by default and scales to your screen:
 | `make install` | Install Python dependencies |
 | `make hierarchy` | Parse `filelist.f` → `hierarchy.json` |
 | `make scaffold` | Generate RST shells (runs hierarchy first) |
-| `make extract` | Extract FSM + process + CDC docs (runs scaffold first) |
+| `make extract` | Extract FSM + process + CDC + block docs (runs scaffold first) |
 | `make regs` | Generate register artifacts from `registers/regs_*.toml` |
 | `make html` | Full build → `docs/_build/html/` |
 | `make pdf` | Full build → LaTeX PDF |
@@ -295,7 +297,7 @@ Content width is fluid by default and scales to your screen:
 | [sphinx-rtd-theme](https://sphinx-rtd-theme.readthedocs.io) | ReadTheDocs HTML theme |
 | [sphinx-vhdl](https://pypi.org/project/sphinx-vhdl/) | VHDL entity autodoc domain |
 | [sphinxcontrib-wavedrom](https://sphinxcontrib-wavedrom.readthedocs.io) | `.. wavedrom::` directive |
-| [Graphviz](https://graphviz.org) | FSM, hierarchy, and CDC diagram renderer |
+| [Graphviz](https://graphviz.org) | FSM, hierarchy, CDC, and block diagram renderer |
 | [docutils](https://docutils.sourceforge.io) | RST parser (pinned `>=0.18,<0.21` for sphinx-vhdl compat) |
 | [hdl-registers](https://hdl-registers.com) | Register map generation from TOML/YAML |
 
@@ -321,6 +323,7 @@ hdl-autodoc/
 │   │   ├── extract_fsm.py      ← extracts FSM case blocks → dot + rst
 │   │   ├── extract_processes.py← extracts labeled processes → rst pages
 │   │   ├── extract_cdc.py      ← extracts CDC analysis → dot + rst
+│   │   ├── extract_block.py    ← extracts block diagram + port/generics tables → dot + rst
 │   │   ├── run_extract.py      ← orchestrates extraction for all modules
 │   │   └── include_registers.py← copies register map + writes rst page
 │   └── registers/
@@ -351,6 +354,7 @@ hdl-autodoc/
 | `docs/modules/<n>/index.rst` | 🔄 Auto-generated | Regenerated every build |
 | `docs/modules/<n>/fsm.rst` | 🔄 Auto-generated | Regenerated every build |
 | `docs/modules/<n>/timing.rst` | 🔄 Auto-generated | Aggregated from process wavedrom blocks |
+| `docs/modules/<n>/block.rst` | 🔄 Auto-generated | Regenerated every build |
 | `docs/modules/<n>/cdc.rst` | 🔄 Auto-generated | Regenerated every build |
 | `docs/modules/<n>/processes/` | 🔄 Auto-generated | Regenerated every build |
 | `docs/registers.rst` | 🔄 Auto-generated | Written by `include_registers.py` |
@@ -367,7 +371,7 @@ hdl-autodoc/
 2. Add it to `filelist.f`
 3. Run `make html`
 
-Done. The new module appears in the hierarchy, navigation, overview table, hierarchy diagram, and gets its own CDC analysis page automatically.
+Done. The new module appears in the hierarchy, navigation, overview table, hierarchy diagram, and gets its own block diagram and CDC analysis page automatically.
 
 ---
 
@@ -379,10 +383,26 @@ Done. The new module appears in the hierarchy, navigation, overview table, hiera
 - **Wavedrom in PDF** requires the `wavedrom` Python package and may not render identically to HTML output.
 - **Register map in PDF** — the iframe embed is HTML-only. The PDF build skips the register page content.
 - **CDC analysis** is static only — see the CDC analysis section for full limitations.
+- **Block diagram generics** — port comments on a preceding line are captured; inline comments on the same line are also captured. Generics with no default value will show no default in the table.
+- **Block diagram SV named parameters** — `#(.PARAM(val))` style is not detected; use positional `#(val)` style.
 
 ---
 
 ## 📋 Release notes
+
+### v3.2.0
+
+#### New features
+
+- **Block diagrams** — `extract_block.py` generates a `block.rst` page per module. The diagram uses a TerosHDL-inspired style: a green box for generics/parameters (with default values) stacked above a yellow box for ports (inputs left with `►`, outputs right with `◄`, bus widths annotated). Both VHDL `generic` and SV `parameter`/`localparam` declarations are extracted.
+- **Port and generics/parameters tables** — the block page includes a full port table (name, direction, type, description) and a generics/parameters table (name, type, default, description). Comments from preceding lines and same-line inline comments are both captured.
+
+### v3.1.0
+
+#### New features
+
+- **Test suite** — pytest suite covering all pipeline scripts under `scripts/hdl_autodoc/tests/`. 119 tests across 6 test files.
+- **VS Code test runner config** — `pytest.ini`, `.python-version`, and `.vscode/settings.json` added so the VS Code Python extension discovers tests correctly.
 
 ### v3.0.0
 
@@ -441,7 +461,8 @@ scripts/hdl_autodoc/
 ├── extract_fsm.py        <file.vhd|sv>      → <module>.dot + <module>.rst
 ├── extract_processes.py  <file.vhd|sv>      → p_*.rst + index.rst
 ├── extract_cdc.py        <file.vhd|sv>      → <module>_cdc.dot + <module>_cdc.rst
-├── run_extract.py        hierarchy.json     → orchestrates above three
+├── extract_block.py      <file.vhd|sv>      → <module>_block.dot + <module>_block.rst
+├── run_extract.py        hierarchy.json     → orchestrates above four
 └── include_registers.py  registers/         → docs/registers.rst + _static/
 ```
 

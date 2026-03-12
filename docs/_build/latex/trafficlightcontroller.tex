@@ -125,26 +125,6 @@ Description
 \sphinxmidrule
 \sphinxtableatstartofbodyhook
 \sphinxAtStartPar
-{\hyperref[\detokenize{modules/top/index::doc}]{\sphinxcrossref{\DUrole{doc}{top}}}}
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{top.vhd}}
-&
-\sphinxAtStartPar
-top entity.
-\\
-\sphinxhline
-\sphinxAtStartPar
-{\hyperref[\detokenize{modules/cfg_sync/index::doc}]{\sphinxcrossref{\DUrole{doc}{cfg\_sync}}}}
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{cfg\_sync.vhd}}
-&
-\sphinxAtStartPar
-cfg\_sync entity.
-\\
-\sphinxhline
-\sphinxAtStartPar
 {\hyperref[\detokenize{modules/blinky/index::doc}]{\sphinxcrossref{\DUrole{doc}{blinky}}}}
 &
 \sphinxAtStartPar
@@ -152,6 +132,16 @@ cfg\_sync entity.
 &
 \sphinxAtStartPar
 Blinky LED controller. Implements a 3\sphinxhyphen{}state FSM that drives an LED through a repeating
+\\
+\sphinxhline
+\sphinxAtStartPar
+{\hyperref[\detokenize{modules/pwm_controller/index::doc}]{\sphinxcrossref{\DUrole{doc}{pwm\_controller}}}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{pwm\_controller.sv}}
+&
+\sphinxAtStartPar
+PWM controller module. Generates a variable duty\sphinxhyphen{}cycle PWM signal using a 3\sphinxhyphen{}state FSM:
 \\
 \sphinxhline
 \sphinxAtStartPar
@@ -165,13 +155,23 @@ Traffic light controller. Implements a standard UK traffic light sequencer with 
 \\
 \sphinxhline
 \sphinxAtStartPar
-{\hyperref[\detokenize{modules/pwm_controller/index::doc}]{\sphinxcrossref{\DUrole{doc}{pwm\_controller}}}}
+{\hyperref[\detokenize{modules/cfg_sync/index::doc}]{\sphinxcrossref{\DUrole{doc}{cfg\_sync}}}}
 &
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{pwm\_controller.sv}}
+\sphinxcode{\sphinxupquote{cfg\_sync.vhd}}
 &
 \sphinxAtStartPar
-PWM controller module. Generates a variable duty\sphinxhyphen{}cycle PWM signal using a 3\sphinxhyphen{}state FSM:
+cfg\_sync entity.
+\\
+\sphinxhline
+\sphinxAtStartPar
+{\hyperref[\detokenize{modules/top/index::doc}]{\sphinxcrossref{\DUrole{doc}{top}}}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{top.vhd}}
+&
+\sphinxAtStartPar
+top entity.
 \\
 \sphinxbottomrule
 \end{tabulary}
@@ -711,6 +711,71 @@ PWM output for LED fading (shared).
 \sphinxtableafterendhook\par
 \sphinxattableend\end{savenotes}
 
+
+\subsection{Signals}
+\label{\detokenize{modules/top/block:signals}}
+
+\begin{savenotes}\sphinxattablestart
+\sphinxthistablewithglobalstyle
+\centering
+\begin{tabulary}{\linewidth}[t]{TTT}
+\sphinxtoprule
+\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Signal
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Type
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Description
+\\
+\sphinxmidrule
+\sphinxtableatstartofbodyhook
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{timer\_exp}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{std\_logic}}
+&
+\sphinxAtStartPar
+—
+\\
+\sphinxhline
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{blinky\_en}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{std\_logic}}
+&
+\sphinxAtStartPar
+—
+\\
+\sphinxhline
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{pwm\_duty}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{std\_logic\_vector(7 downto 0)}}
+&
+\sphinxAtStartPar
+—
+\\
+\sphinxhline
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{period\_done}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{std\_logic}}
+&
+\sphinxAtStartPar
+—
+\\
+\sphinxbottomrule
+\end{tabulary}
+\sphinxtableafterendhook\par
+\sphinxattableend\end{savenotes}
+
 \sphinxstepscope
 
 
@@ -746,6 +811,19 @@ process to have them appear here automatically.
 
 \section{top — Clock Domain Analysis}
 \label{\detokenize{modules/top/cdc:top-clock-domain-analysis}}\label{\detokenize{modules/top/cdc::doc}}
+\sphinxAtStartPar
+Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{top.vhd}}.
+
+\begin{sphinxadmonition}{note}{Note:}
+\sphinxAtStartPar
+No clocked processes detected. This module appears to be purely combinational.
+\end{sphinxadmonition}
+
+\sphinxstepscope
+
+
+\section{top — Reset Domain Analysis}
+\label{\detokenize{modules/top/reset:top-reset-domain-analysis}}\label{\detokenize{modules/top/reset::doc}}
 \sphinxAtStartPar
 Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{top.vhd}}.
 
@@ -1221,6 +1299,51 @@ LED off indicator (all drives deasserted).
 \sphinxtableafterendhook\par
 \sphinxattableend\end{savenotes}
 
+
+\paragraph{Signals}
+\label{\detokenize{modules/blinky/block:signals}}
+
+\begin{savenotes}\sphinxattablestart
+\sphinxthistablewithglobalstyle
+\centering
+\begin{tabulary}{\linewidth}[t]{TTT}
+\sphinxtoprule
+\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Signal
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Type
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Description
+\\
+\sphinxmidrule
+\sphinxtableatstartofbodyhook
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{state}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{t\_state}}
+&
+\sphinxAtStartPar
+Current state register, initialised to OFF at power\sphinxhyphen{}on.
+\\
+\sphinxhline
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{next\_state}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{t\_state}}
+&
+\sphinxAtStartPar
+Next state combinational signal.
+\\
+\sphinxbottomrule
+\end{tabulary}
+\sphinxtableafterendhook\par
+\sphinxattableend\end{savenotes}
+
 \sphinxstepscope
 
 
@@ -1369,17 +1492,17 @@ source comments above each process.
 
 \paragraph{P Next State}
 \label{\detokenize{modules/blinky/timing:p-next-state}}
-\noindent\sphinxincludegraphics{{wavedrom-24f4c08b-d32e-4048-93d9-012d7d8706a2}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-ddadb0aa-7c88-46e1-93a3-4cc77a0ae15a}.pdf}
 
 
 \paragraph{P Outputs}
 \label{\detokenize{modules/blinky/timing:p-outputs}}
-\noindent\sphinxincludegraphics{{wavedrom-2b5165d6-1b25-4e2c-8294-2a2fcf98172e}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-887db0fe-83b0-4916-b576-fd4f0e9d124d}.pdf}
 
 
 \paragraph{P State Reg}
 \label{\detokenize{modules/blinky/timing:p-state-reg}}
-\noindent\sphinxincludegraphics{{wavedrom-c799632d-97b3-43a6-84b5-d5d2db623309}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-86061beb-ce67-4d24-92af-968b02257bd5}.pdf}
 
 \sphinxstepscope
 
@@ -1409,7 +1532,7 @@ p\_state\_reg: Clocked state register.
 Captures next\_state on each rising edge of clk.
 Synchronous reset drives state back to OFF\_STATE.
 
-\noindent\sphinxincludegraphics{{wavedrom-5e5d426e-d3b1-4eee-905b-bda654dcf72d}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-6f7a75a2-d3aa-4b98-b094-96ca2099af8a}.pdf}
 
 
 \subparagraph{Source}
@@ -1456,7 +1579,7 @@ ON\_STATE   + en + timer\_exp \sphinxhyphen{}\textgreater{} FADE\_STATE
 FADE\_STATE + en + timer\_exp \sphinxhyphen{}\textgreater{} OFF\_STATE
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-4f8570a9-51be-4b7d-b316-432835b6fdc0}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-78510f7c-d858-456b-8434-2328007a0a78}.pdf}
 
 
 \subparagraph{Source}
@@ -1506,7 +1629,7 @@ ON\_STATE   \sphinxhyphen{}\textgreater{} led\_on=1 led\_fade=0 led\_off=0
 FADE\_STATE \sphinxhyphen{}\textgreater{} led\_on=0 led\_fade=1 led\_off=0
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-3a56d59b-37fc-4ad2-a305-6d26df144462}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-cffb01aa-923b-4822-97ed-880f7d359253}.pdf}
 
 
 \subparagraph{Source}
@@ -1641,6 +1764,60 @@ Clocked Processes
 &
 \sphinxAtStartPar
 \sphinxcode{\sphinxupquote{p\_state\_reg}}
+\\
+\sphinxbottomrule
+\end{tabulary}
+\sphinxtableafterendhook\par
+\sphinxattableend\end{savenotes}
+
+\sphinxstepscope
+
+
+\subsubsection{blinky — Reset Domain Analysis}
+\label{\detokenize{modules/blinky/reset:blinky-reset-domain-analysis}}\label{\detokenize{modules/blinky/reset::doc}}
+\sphinxAtStartPar
+Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{blinky.vhd}}.
+
+\begin{sphinxadmonition}{note}{Note:}
+\sphinxAtStartPar
+All clocked processes use a single reset domain (\sphinxcode{\sphinxupquote{rst}}, sync). No reset domain crossings detected.
+\end{sphinxadmonition}
+
+
+\paragraph{Reset Domain}
+\label{\detokenize{modules/blinky/reset:reset-domain}}
+
+\begin{savenotes}\sphinxattablestart
+\sphinxthistablewithglobalstyle
+\centering
+\begin{tabulary}{\linewidth}[t]{TTTT}
+\sphinxtoprule
+\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Process
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Clock
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Reset
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Style
+\\
+\sphinxmidrule
+\sphinxtableatstartofbodyhook
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{p\_state\_reg}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{clk}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{rst}}
+&
+\sphinxAtStartPar
+Sync
 \\
 \sphinxbottomrule
 \end{tabulary}
@@ -2088,6 +2265,71 @@ PWM duty cycle (unsynchronised crossing).
 \sphinxtableafterendhook\par
 \sphinxattableend\end{savenotes}
 
+
+\paragraph{Signals}
+\label{\detokenize{modules/cfg_sync/block:signals}}
+
+\begin{savenotes}\sphinxattablestart
+\sphinxthistablewithglobalstyle
+\centering
+\begin{tabulary}{\linewidth}[t]{TTT}
+\sphinxtoprule
+\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Signal
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Type
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Description
+\\
+\sphinxmidrule
+\sphinxtableatstartofbodyhook
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{mode\_sel\_r}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{std\_logic}}
+&
+\sphinxAtStartPar
+cfg\_clk domain registers
+\\
+\sphinxhline
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{duty\_cycle\_r}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{std\_logic\_vector(7 downto 0)}}
+&
+\sphinxAtStartPar
+—
+\\
+\sphinxhline
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{mode\_meta}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{std\_logic}}
+&
+\sphinxAtStartPar
+sys\_clk domain: two\sphinxhyphen{}flop synchroniser pipeline for mode\_sel\_r
+\\
+\sphinxhline
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{mode\_sync\_r}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{std\_logic}}
+&
+\sphinxAtStartPar
+—
+\\
+\sphinxbottomrule
+\end{tabulary}
+\sphinxtableafterendhook\par
+\sphinxattableend\end{savenotes}
+
 \sphinxstepscope
 
 
@@ -2114,7 +2356,7 @@ source comments above each process.
 
 \paragraph{P Mode Sync}
 \label{\detokenize{modules/cfg_sync/timing:p-mode-sync}}
-\noindent\sphinxincludegraphics{{wavedrom-22b0e0ce-97ca-4f92-8804-660e10468a64}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-e67814fc-b396-4cfc-8b26-755af20b7728}.pdf}
 
 \sphinxstepscope
 
@@ -2182,7 +2424,7 @@ p\_mode\_sync: Two\sphinxhyphen{}flop synchroniser for mode\_sel\_r (cfg\_clk \(
 mode\_sel\_r is sampled twice in the sys\_clk domain to resolve
 metastability before the signal is used by downstream logic.
 
-\noindent\sphinxincludegraphics{{wavedrom-85d545af-a730-47d6-a73e-3751485434aa}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-29f22493-0a11-42d2-8406-c28242e1dd53}.pdf}
 
 
 \subparagraph{Source}
@@ -2419,6 +2661,133 @@ Synchronized
 &
 \sphinxAtStartPar
 Yes \sphinxstyleemphasis{(two\sphinxhyphen{}flop)}
+\\
+\sphinxbottomrule
+\end{tabulary}
+\sphinxtableafterendhook\par
+\sphinxattableend\end{savenotes}
+
+\sphinxstepscope
+
+
+\subsubsection{cfg\_sync — Reset Domain Analysis}
+\label{\detokenize{modules/cfg_sync/reset:cfg-sync-reset-domain-analysis}}\label{\detokenize{modules/cfg_sync/reset::doc}}
+\sphinxAtStartPar
+Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{cfg\_sync.vhd}}.
+
+\sphinxincludegraphics[]{graphviz-8317642799b9cbdfa85156f5e4c8d7ddf1067180.pdf}
+
+
+\paragraph{Reset Domains}
+\label{\detokenize{modules/cfg_sync/reset:reset-domains}}
+
+\begin{savenotes}\sphinxattablestart
+\sphinxthistablewithglobalstyle
+\centering
+\begin{tabulary}{\linewidth}[t]{TTTT}
+\sphinxtoprule
+\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Process
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Clock
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Reset
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Style
+\\
+\sphinxmidrule
+\sphinxtableatstartofbodyhook
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{p\_cfg\_reg}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{cfg\_clk}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{cfg\_rst}}
+&
+\sphinxAtStartPar
+Sync
+\\
+\sphinxhline
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{p\_mode\_sync}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{sys\_clk}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{sys\_rst}}
+&
+\sphinxAtStartPar
+Sync
+\\
+\sphinxhline
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{p\_duty\_capture}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{sys\_clk}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{sys\_rst}}
+&
+\sphinxAtStartPar
+Sync
+\\
+\sphinxbottomrule
+\end{tabulary}
+\sphinxtableafterendhook\par
+\sphinxattableend\end{savenotes}
+
+\begin{sphinxadmonition}{warning}{Warning:}
+\sphinxAtStartPar
+The following signals cross between different reset domains. Logic driven under one reset may not be in a consistent state when the other reset releases.
+\end{sphinxadmonition}
+
+
+\paragraph{Signal Crossings}
+\label{\detokenize{modules/cfg_sync/reset:signal-crossings}}
+
+\begin{savenotes}\sphinxattablestart
+\sphinxthistablewithglobalstyle
+\centering
+\begin{tabulary}{\linewidth}[t]{TTT}
+\sphinxtoprule
+\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Signal
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Source Reset
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Destination Reset
+\\
+\sphinxmidrule
+\sphinxtableatstartofbodyhook
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{duty\_cycle\_r}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{cfg\_rst}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{sys\_rst}}
+\\
+\sphinxhline
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{mode\_sel\_r}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{cfg\_rst}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{sys\_rst}}
 \\
 \sphinxbottomrule
 \end{tabulary}
@@ -2727,6 +3096,41 @@ Description
 \sphinxtableafterendhook\par
 \sphinxattableend\end{savenotes}
 
+
+\paragraph{Signals}
+\label{\detokenize{modules/pwm_controller/block:signals}}
+
+\begin{savenotes}\sphinxattablestart
+\sphinxthistablewithglobalstyle
+\centering
+\begin{tabulary}{\linewidth}[t]{TTT}
+\sphinxtoprule
+\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Signal
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Type
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Description
+\\
+\sphinxmidrule
+\sphinxtableatstartofbodyhook
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{count}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{logic{[}WIDTH\sphinxhyphen{}1:0{]}}}
+&
+\sphinxAtStartPar
+Period counter register.
+\\
+\sphinxbottomrule
+\end{tabulary}
+\sphinxtableafterendhook\par
+\sphinxattableend\end{savenotes}
+
 \sphinxstepscope
 
 
@@ -2863,17 +3267,17 @@ source comments above each process.
 
 \paragraph{P Next State}
 \label{\detokenize{modules/pwm_controller/timing:p-next-state}}
-\noindent\sphinxincludegraphics{{wavedrom-a0f91479-31a0-4509-8175-dae5f1f8a9d9}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-9a468f54-3572-42c2-96e4-9b73fe5015da}.pdf}
 
 
 \paragraph{P Outputs}
 \label{\detokenize{modules/pwm_controller/timing:p-outputs}}
-\noindent\sphinxincludegraphics{{wavedrom-21764b20-2cdc-4a1c-b6a0-08fdf157dd8e}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-264c6488-aafd-49b5-9c36-025d3de72911}.pdf}
 
 
 \paragraph{P State Reg}
 \label{\detokenize{modules/pwm_controller/timing:p-state-reg}}
-\noindent\sphinxincludegraphics{{wavedrom-b8424f3a-1d63-4b4e-bb17-7bacde1336b0}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-a99cfaac-885d-4ec4-b91e-df10ea9349ab}.pdf}
 
 \sphinxstepscope
 
@@ -2904,7 +3308,7 @@ Captures next\_state on each rising edge of clk.
 Synchronous reset drives state to IDLE and clears counter.
 Counter increments each cycle in COUNTING state.
 
-\noindent\sphinxincludegraphics{{wavedrom-50bcac8d-d6fe-4d86-b2bd-37da0d8b579b}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-ae295d3c-0ced-411b-a668-fd734910abbd}.pdf}
 
 
 \subparagraph{Source}
@@ -2953,7 +3357,7 @@ COUNTING + count==255   \sphinxhyphen{}\textgreater{} DONE
 DONE                    \sphinxhyphen{}\textgreater{} IDLE
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-f3b70029-26e6-485d-a68e-22452f8ce95c}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-826c4c8e-a06f-408b-9ad2-9f24429eccc2}.pdf}
 
 
 \subparagraph{Source}
@@ -2999,7 +3403,7 @@ COUNTING \sphinxhyphen{}\textgreater{} pwm\_o=(count \textless{} duty\_i) period
 DONE     \sphinxhyphen{}\textgreater{} pwm\_o=0 period\_done=1
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-8117f2e7-bab5-4378-b901-c3df15298559}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-4cd731a7-bab9-4f09-bbd3-3edb7c17d3ff}.pdf}
 
 
 \subparagraph{Source}
@@ -3132,6 +3536,60 @@ Clocked Processes
 &
 \sphinxAtStartPar
 \sphinxcode{\sphinxupquote{p\_state\_reg}}
+\\
+\sphinxbottomrule
+\end{tabulary}
+\sphinxtableafterendhook\par
+\sphinxattableend\end{savenotes}
+
+\sphinxstepscope
+
+
+\subsubsection{pwm\_controller — Reset Domain Analysis}
+\label{\detokenize{modules/pwm_controller/reset:pwm-controller-reset-domain-analysis}}\label{\detokenize{modules/pwm_controller/reset::doc}}
+\sphinxAtStartPar
+Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{pwm\_controller.sv}}.
+
+\begin{sphinxadmonition}{note}{Note:}
+\sphinxAtStartPar
+All clocked processes use a single reset domain (\sphinxcode{\sphinxupquote{rst}}, sync). No reset domain crossings detected.
+\end{sphinxadmonition}
+
+
+\paragraph{Reset Domain}
+\label{\detokenize{modules/pwm_controller/reset:reset-domain}}
+
+\begin{savenotes}\sphinxattablestart
+\sphinxthistablewithglobalstyle
+\centering
+\begin{tabulary}{\linewidth}[t]{TTTT}
+\sphinxtoprule
+\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Process
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Clock
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Reset
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Style
+\\
+\sphinxmidrule
+\sphinxtableatstartofbodyhook
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{p\_state\_reg}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{clk}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{rst}}
+&
+\sphinxAtStartPar
+Sync
 \\
 \sphinxbottomrule
 \end{tabulary}
@@ -3294,6 +3752,21 @@ Phase timer expiry pulse. Must be high for exactly one cycle.
 \\
 \sphinxhline
 \sphinxAtStartPar
+por\_n
+&
+\sphinxAtStartPar
+std\_logic
+&
+\sphinxAtStartPar
+in
+&
+\sphinxAtStartPar
+Async active\sphinxhyphen{}low power\sphinxhyphen{}on reset for the phase watchdog counter.
+Separate from rst so the counter clears at power\sphinxhyphen{}on regardless of
+when the system reset deasserts.
+\\
+\sphinxhline
+\sphinxAtStartPar
 red\_out
 &
 \sphinxAtStartPar
@@ -3371,6 +3844,10 @@ Green lamp drive. Asserted in GREEN state only.
 \PYG{+w}{        }\PYG{n}{rst}\PYG{+w}{       }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
 \PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Phase timer expiry pulse. Must be high for exactly one cycle.}
 \PYG{+w}{        }\PYG{n}{timer\PYGZus{}exp}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Async active\PYGZhy{}low power\PYGZhy{}on reset for the phase watchdog counter.}
+\PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Separate from rst so the counter clears at power\PYGZhy{}on regardless of}
+\PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} when the system reset deasserts.}
+\PYG{+w}{        }\PYG{n}{por\PYGZus{}n}\PYG{+w}{     }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
 \PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Red lamp drive. Asserted in RED and RED\PYGZus{}AMBER states.}
 \PYG{+w}{        }\PYG{n}{red\PYGZus{}out}\PYG{+w}{   }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{out}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
 \PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Amber lamp drive. Asserted in RED\PYGZus{}AMBER and AMBER states.}
@@ -3399,6 +3876,10 @@ Green lamp drive. Asserted in GREEN state only.
 \PYG{+w}{    }\PYG{k}{signal}\PYG{+w}{ }\PYG{n}{state}\PYG{+w}{      }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{t\PYGZus{}state}\PYG{+w}{ }\PYG{o}{:}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{RED}\PYG{p}{;}
 \PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Next state combinational signal, feeds state register.}
 \PYG{+w}{    }\PYG{k}{signal}\PYG{+w}{ }\PYG{n}{next\PYGZus{}state}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{t\PYGZus{}state}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Phase watchdog counter. Counts clock cycles spent in the current state.}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Cleared by por\PYGZus{}n (async) or whenever the FSM transitions to RED.}
+\PYG{+w}{    }\PYG{k}{signal}\PYG{+w}{ }\PYG{n}{phase\PYGZus{}cnt}\PYG{+w}{  }\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic\PYGZus{}vector}\PYG{p}{(}\PYG{l+m+mi}{15}\PYG{+w}{ }\PYG{k}{downto}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{;}
 
 \PYG{k}{begin}
 
@@ -3513,6 +3994,28 @@ Green lamp drive. Asserted in GREEN state only.
 \PYG{+w}{        }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{case}\PYG{p}{;}
 \PYG{+w}{    }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{process}\PYG{+w}{ }\PYG{n+nc}{p\PYGZus{}outputs}\PYG{p}{;}
 
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} p\PYGZus{}watchdog: Phase watchdog counter.}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Increments each clock cycle to track how long the FSM has been in the}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} current phase. Resets to zero whenever the FSM returns to RED.}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Uses por\PYGZus{}n (async active\PYGZhy{}low) rather than rst so the counter is}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} guaranteed zero at power\PYGZhy{}on before rst has been asserted by the system.}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} This creates a deliberate reset domain crossing: state is driven under}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} rst (synchronous) but read here under por\PYGZus{}n (asynchronous).}
+\PYG{+w}{    }\PYG{n}{p\PYGZus{}watchdog}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{process}\PYG{p}{(}\PYG{n}{clk}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{por\PYGZus{}n}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{is}
+\PYG{+w}{    }\PYG{k}{begin}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{por\PYGZus{}n}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}0\PYGZsq{}}\PYG{+w}{ }\PYG{k}{then}
+\PYG{+w}{            }\PYG{n}{phase\PYGZus{}cnt}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{k}{others}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{elsif}\PYG{+w}{ }\PYG{n}{rising\PYGZus{}edge}\PYG{p}{(}\PYG{n}{clk}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{then}
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{state}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{RED}\PYG{+w}{ }\PYG{k}{then}
+\PYG{+w}{                }\PYG{n}{phase\PYGZus{}cnt}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{k}{others}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{            }\PYG{k}{else}
+\PYG{+w}{                }\PYG{n}{phase\PYGZus{}cnt}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic\PYGZus{}vector}\PYG{p}{(}\PYG{k+kt}{unsigned}\PYG{p}{(}\PYG{n}{phase\PYGZus{}cnt}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{            }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{if}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{if}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{process}\PYG{+w}{ }\PYG{n+nc}{p\PYGZus{}watchdog}\PYG{p}{;}
+
 \PYG{k}{end}\PYG{+w}{ }\PYG{k}{architecture}\PYG{+w}{ }\PYG{n+nc}{rtl}\PYG{p}{;}
 \end{sphinxVerbatim}
 
@@ -3524,7 +4027,7 @@ Green lamp drive. Asserted in GREEN state only.
 \sphinxAtStartPar
 Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{traffic\_light.vhd}}.
 
-\sphinxincludegraphics[]{graphviz-cf02ea0488f4d2237d0ce4f4b983a8a74795d4c4.pdf}
+\sphinxincludegraphics[]{graphviz-06d72e7c812744830a8a84e65f8175df442121b0.pdf}
 
 
 \paragraph{Ports}
@@ -3587,6 +4090,19 @@ Synchronous active\sphinxhyphen{}high reset. Returns FSM to RED state.
 &
 \sphinxAtStartPar
 Phase timer expiry pulse. Must be high for exactly one cycle.
+\\
+\sphinxhline
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{por\_n}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{in}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{std\_logic}}
+&
+\sphinxAtStartPar
+when the system reset deasserts.
 \\
 \sphinxhline
 \sphinxAtStartPar
@@ -3693,6 +4209,61 @@ Duration of the RED and GREEN phases in milliseconds.
 &
 \sphinxAtStartPar
 Duration of the RED\_AMBER and AMBER transition phases in milliseconds.
+\\
+\sphinxbottomrule
+\end{tabulary}
+\sphinxtableafterendhook\par
+\sphinxattableend\end{savenotes}
+
+
+\paragraph{Signals}
+\label{\detokenize{modules/traffic_light/block:signals}}
+
+\begin{savenotes}\sphinxattablestart
+\sphinxthistablewithglobalstyle
+\centering
+\begin{tabulary}{\linewidth}[t]{TTT}
+\sphinxtoprule
+\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Signal
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Type
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Description
+\\
+\sphinxmidrule
+\sphinxtableatstartofbodyhook
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{state}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{t\_state}}
+&
+\sphinxAtStartPar
+Current state register, initialised to RED at power\sphinxhyphen{}on.
+\\
+\sphinxhline
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{next\_state}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{t\_state}}
+&
+\sphinxAtStartPar
+Next state combinational signal, feeds state register.
+\\
+\sphinxhline
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{phase\_cnt}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{std\_logic\_vector(15 downto 0)}}
+&
+\sphinxAtStartPar
+Cleared by por\_n (async) or whenever the FSM transitions to RED.
 \\
 \sphinxbottomrule
 \end{tabulary}
@@ -3870,17 +4441,17 @@ source comments above each process.
 
 \paragraph{P Next State}
 \label{\detokenize{modules/traffic_light/timing:p-next-state}}
-\noindent\sphinxincludegraphics{{wavedrom-c0c4a744-21be-4eb1-b934-0f9b491d3334}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-023eca2f-5c96-4cf1-8a6d-03e6080d22c7}.pdf}
 
 
 \paragraph{P Outputs}
 \label{\detokenize{modules/traffic_light/timing:p-outputs}}
-\noindent\sphinxincludegraphics{{wavedrom-23b99524-b4f7-4d61-926f-5d9add55befb}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-4e91dd47-c15d-4f75-a65d-270f2cffc8d1}.pdf}
 
 
 \paragraph{P State Reg}
 \label{\detokenize{modules/traffic_light/timing:p-state-reg}}
-\noindent\sphinxincludegraphics{{wavedrom-b7a20c51-54b7-486c-9f00-0cb3dc7ae7a5}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-c20bdcef-b1ba-4219-9e9f-7b796b00b9b4}.pdf}
 
 \sphinxstepscope
 
@@ -3897,7 +4468,7 @@ Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{traffic\_light.vhd}
 \label{\detokenize{modules/traffic_light/processes/p_state_reg:p-state-reg}}\label{\detokenize{modules/traffic_light/processes/p_state_reg::doc}}
 \begin{DUlineblock}{0em}
 \item[] \sphinxstylestrong{Source file:} \sphinxcode{\sphinxupquote{traffic\_light.vhd}}
-\item[] \sphinxstylestrong{Source line:} 73
+\item[] \sphinxstylestrong{Source line:} 81
 \item[] \sphinxstylestrong{Block type:} \sphinxcode{\sphinxupquote{process}}
 \item[] \sphinxstylestrong{Sensitivity list:} \sphinxcode{\sphinxupquote{clk}}
 \end{DUlineblock}
@@ -3911,7 +4482,7 @@ Captures next\_state on each rising edge of clk.
 When rst is asserted the state returns to RED synchronously,
 regardless of timer\_exp or next\_state.
 
-\noindent\sphinxincludegraphics{{wavedrom-56970e12-ddb6-4d74-b21b-c285ddc892ad}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-1fa81a18-a3f3-40c1-9a1f-2068508df147}.pdf}
 
 
 \subparagraph{Source}
@@ -3936,7 +4507,7 @@ regardless of timer\_exp or next\_state.
 \label{\detokenize{modules/traffic_light/processes/p_next_state:p-next-state}}\label{\detokenize{modules/traffic_light/processes/p_next_state::doc}}
 \begin{DUlineblock}{0em}
 \item[] \sphinxstylestrong{Source file:} \sphinxcode{\sphinxupquote{traffic\_light.vhd}}
-\item[] \sphinxstylestrong{Source line:} 107
+\item[] \sphinxstylestrong{Source line:} 115
 \item[] \sphinxstylestrong{Block type:} \sphinxcode{\sphinxupquote{process}}
 \item[] \sphinxstylestrong{Sensitivity list:} \sphinxcode{\sphinxupquote{state}}, \sphinxcode{\sphinxupquote{timer\_exp}}
 \end{DUlineblock}
@@ -3960,7 +4531,7 @@ GREEN     + timer\_exp \sphinxhyphen{}\textgreater{} AMBER
 AMBER     + timer\_exp \sphinxhyphen{}\textgreater{} RED
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-8ecf9b09-96d3-43e4-b938-12a83665e97f}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-1d7049b9-d708-4e44-ba13-350239cd334f}.pdf}
 
 
 \subparagraph{Signal Assignments}
@@ -4051,7 +4622,7 @@ RED
 \label{\detokenize{modules/traffic_light/processes/p_outputs:p-outputs}}\label{\detokenize{modules/traffic_light/processes/p_outputs::doc}}
 \begin{DUlineblock}{0em}
 \item[] \sphinxstylestrong{Source file:} \sphinxcode{\sphinxupquote{traffic\_light.vhd}}
-\item[] \sphinxstylestrong{Source line:} 155
+\item[] \sphinxstylestrong{Source line:} 163
 \item[] \sphinxstylestrong{Block type:} \sphinxcode{\sphinxupquote{process}}
 \item[] \sphinxstylestrong{Sensitivity list:} \sphinxcode{\sphinxupquote{state}}
 \end{DUlineblock}
@@ -4075,7 +4646,7 @@ GREEN     \sphinxhyphen{}\textgreater{} red=0 amber=0 green=1
 AMBER     \sphinxhyphen{}\textgreater{} red=0 amber=1 green=0
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-59790981-c399-4547-9193-e29b0d766158}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-2f0fc4c6-917b-46db-98a9-dda153dc52c0}.pdf}
 
 
 \subparagraph{Source}
@@ -4095,6 +4666,48 @@ AMBER     \sphinxhyphen{}\textgreater{} red=0 amber=1 green=0
 \PYG{+w}{        }\PYG{k}{when}\PYG{+w}{ }\PYG{n}{AMBER}\PYG{+w}{     }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{amber\PYGZus{}out}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}1\PYGZsq{}}\PYG{p}{;}
 \PYG{+w}{    }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{case}\PYG{p}{;}
 \PYG{k}{end}\PYG{+w}{ }\PYG{k}{process}\PYG{+w}{ }\PYG{n+nc}{p\PYGZus{}outputs}\PYG{p}{;}
+\end{sphinxVerbatim}
+
+\sphinxstepscope
+
+
+\paragraph{p\_watchdog}
+\label{\detokenize{modules/traffic_light/processes/p_watchdog:p-watchdog}}\label{\detokenize{modules/traffic_light/processes/p_watchdog::doc}}
+\begin{DUlineblock}{0em}
+\item[] \sphinxstylestrong{Source file:} \sphinxcode{\sphinxupquote{traffic\_light.vhd}}
+\item[] \sphinxstylestrong{Source line:} 187
+\item[] \sphinxstylestrong{Block type:} \sphinxcode{\sphinxupquote{process}}
+\item[] \sphinxstylestrong{Sensitivity list:} \sphinxcode{\sphinxupquote{clk}}, \sphinxcode{\sphinxupquote{por\_n}}
+\end{DUlineblock}
+
+
+\subparagraph{Description}
+\label{\detokenize{modules/traffic_light/processes/p_watchdog:description}}
+\sphinxAtStartPar
+p\_watchdog: Phase watchdog counter.
+Increments each clock cycle to track how long the FSM has been in the
+current phase. Resets to zero whenever the FSM returns to RED.
+Uses por\_n (async active\sphinxhyphen{}low) rather than rst so the counter is
+guaranteed zero at power\sphinxhyphen{}on before rst has been asserted by the system.
+This creates a deliberate reset domain crossing: state is driven under
+rst (synchronous) but read here under por\_n (asynchronous).
+
+
+\subparagraph{Source}
+\label{\detokenize{modules/traffic_light/processes/p_watchdog:source}}
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{n}{p\PYGZus{}watchdog}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{process}\PYG{p}{(}\PYG{n}{clk}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{por\PYGZus{}n}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{is}
+\PYG{k}{begin}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{por\PYGZus{}n}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}0\PYGZsq{}}\PYG{+w}{ }\PYG{k}{then}
+\PYG{+w}{        }\PYG{n}{phase\PYGZus{}cnt}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{k}{others}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{elsif}\PYG{+w}{ }\PYG{n}{rising\PYGZus{}edge}\PYG{p}{(}\PYG{n}{clk}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{then}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{state}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{RED}\PYG{+w}{ }\PYG{k}{then}
+\PYG{+w}{            }\PYG{n}{phase\PYGZus{}cnt}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{k}{others}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{else}
+\PYG{+w}{            }\PYG{n}{phase\PYGZus{}cnt}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic\PYGZus{}vector}\PYG{p}{(}\PYG{k+kt}{unsigned}\PYG{p}{(}\PYG{n}{phase\PYGZus{}cnt}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{if}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{if}\PYG{p}{;}
+\PYG{k}{end}\PYG{+w}{ }\PYG{k}{process}\PYG{+w}{ }\PYG{n+nc}{p\PYGZus{}watchdog}\PYG{p}{;}
 \end{sphinxVerbatim}
 
 
@@ -4134,7 +4747,7 @@ WaveDrom
 \sphinxcode{\sphinxupquote{clk}}
 &
 \sphinxAtStartPar
-73
+81
 &
 \sphinxAtStartPar
 \(\pmb{\checkmark}\)
@@ -4150,7 +4763,7 @@ WaveDrom
 \sphinxcode{\sphinxupquote{state}}, \sphinxcode{\sphinxupquote{timer\_exp}}
 &
 \sphinxAtStartPar
-107
+115
 &
 \sphinxAtStartPar
 \(\pmb{\checkmark}\)
@@ -4166,10 +4779,26 @@ WaveDrom
 \sphinxcode{\sphinxupquote{state}}
 &
 \sphinxAtStartPar
-155
+163
 &
 \sphinxAtStartPar
 \(\pmb{\checkmark}\)
+\\
+\sphinxhline
+\sphinxAtStartPar
+{\hyperref[\detokenize{modules/traffic_light/processes/p_watchdog::doc}]{\sphinxcrossref{\DUrole{doc}{p\_watchdog}}}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{process}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{clk}}, \sphinxcode{\sphinxupquote{por\_n}}
+&
+\sphinxAtStartPar
+187
+&
+\sphinxAtStartPar
+—
 \\
 \sphinxbottomrule
 \end{tabulary}
@@ -4211,7 +4840,111 @@ Clocked Processes
 \sphinxcode{\sphinxupquote{clk}}
 &
 \sphinxAtStartPar
+\sphinxcode{\sphinxupquote{p\_state\_reg}}, \sphinxcode{\sphinxupquote{p\_watchdog}}
+\\
+\sphinxbottomrule
+\end{tabulary}
+\sphinxtableafterendhook\par
+\sphinxattableend\end{savenotes}
+
+\sphinxstepscope
+
+
+\subsubsection{traffic\_light — Reset Domain Analysis}
+\label{\detokenize{modules/traffic_light/reset:traffic-light-reset-domain-analysis}}\label{\detokenize{modules/traffic_light/reset::doc}}
+\sphinxAtStartPar
+Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{traffic\_light.vhd}}.
+
+\sphinxincludegraphics[]{graphviz-c08a50fb905d87605775bb153dc04b175805e92a.pdf}
+
+
+\paragraph{Reset Domains}
+\label{\detokenize{modules/traffic_light/reset:reset-domains}}
+
+\begin{savenotes}\sphinxattablestart
+\sphinxthistablewithglobalstyle
+\centering
+\begin{tabulary}{\linewidth}[t]{TTTT}
+\sphinxtoprule
+\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Process
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Clock
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Reset
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Style
+\\
+\sphinxmidrule
+\sphinxtableatstartofbodyhook
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{p\_watchdog}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{clk}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{por\_n}}
+&
+\sphinxAtStartPar
+Async
+\\
+\sphinxhline
+\sphinxAtStartPar
 \sphinxcode{\sphinxupquote{p\_state\_reg}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{clk}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{rst}}
+&
+\sphinxAtStartPar
+Sync
+\\
+\sphinxbottomrule
+\end{tabulary}
+\sphinxtableafterendhook\par
+\sphinxattableend\end{savenotes}
+
+\begin{sphinxadmonition}{warning}{Warning:}
+\sphinxAtStartPar
+The following signals cross between different reset domains. Logic driven under one reset may not be in a consistent state when the other reset releases.
+\end{sphinxadmonition}
+
+
+\paragraph{Signal Crossings}
+\label{\detokenize{modules/traffic_light/reset:signal-crossings}}
+
+\begin{savenotes}\sphinxattablestart
+\sphinxthistablewithglobalstyle
+\centering
+\begin{tabulary}{\linewidth}[t]{TTT}
+\sphinxtoprule
+\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Signal
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Source Reset
+&\sphinxstyletheadfamily 
+\sphinxAtStartPar
+Destination Reset
+\\
+\sphinxmidrule
+\sphinxtableatstartofbodyhook
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{state}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{rst}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{por\_n}}
 \\
 \sphinxbottomrule
 \end{tabulary}

@@ -129,6 +129,7 @@ clean-generated: clean
 		     -name "index.rst" -o -name "fsm.rst" -o -name "timing.rst" \
 		     -o -name "cdc.rst" -o -name "*_cdc.rst" -o -name "*_cdc.dot" \
 		     -o -name "block.rst" -o -name "*_block.rst" -o -name "*_block.dot" \
+		     -o -name "reset.rst" -o -name "*_reset.rst" -o -name "*_reset.dot" \
 		     -o -name "*.dot"  -o -name "*.rst" -path "*/processes/*" \
 		| xargs rm -f 2>/dev/null; \
 		find $(AUTODOC_SOURCEDIR)/modules -maxdepth 2 -name "processes" -type d \

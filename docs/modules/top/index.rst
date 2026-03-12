@@ -9,6 +9,7 @@ top
    fsm
    timing
    cdc
+   reset
 
    ../../registers
 

@@ -22,6 +22,8 @@ from extract_block import (
     extract_params_sv,
     extract_ports_sv,
     extract_ports_vhdl,
+    extract_signals_sv,
+    extract_signals_vhdl,
     write_dot_block,
     write_rst_block,
 )
@@ -324,7 +326,7 @@ def test_rst_block_contains_graphviz_directive():
     """The RST page contains a '.. graphviz::' directive referencing the dot file."""
     ports    = extract_ports_vhdl(VHDL_ENTITY)
     generics = extract_generics_vhdl(VHDL_ENTITY)
-    rst      = write_rst_block("my_mod", "my_mod.vhd", ports, generics)
+    rst      = write_rst_block("my_mod", "my_mod.vhd", ports, generics, [])
     assert ".. graphviz::" in rst
     assert "my_mod_block.dot" in rst
 
@@ -333,7 +335,7 @@ def test_rst_block_contains_port_table():
     """The RST page includes a port list-table with all port names."""
     ports    = extract_ports_vhdl(VHDL_ENTITY)
     generics = extract_generics_vhdl(VHDL_ENTITY)
-    rst      = write_rst_block("my_mod", "my_mod.vhd", ports, generics)
+    rst      = write_rst_block("my_mod", "my_mod.vhd", ports, generics, [])
     assert "``clk``" in rst
     assert "``data_i``" in rst
     assert "``data_o``" in rst
@@ -343,7 +345,7 @@ def test_rst_block_contains_generics_table():
     """The RST page includes a generics table when generics are present."""
     ports    = extract_ports_vhdl(VHDL_ENTITY)
     generics = extract_generics_vhdl(VHDL_ENTITY)
-    rst      = write_rst_block("my_mod", "my_mod.vhd", ports, generics)
+    rst      = write_rst_block("my_mod", "my_mod.vhd", ports, generics, [])
     assert "Generics" in rst
     assert "``WIDTH``" in rst
 
@@ -351,6 +353,141 @@ def test_rst_block_contains_generics_table():
 def test_rst_block_no_generics_table_when_empty():
     """No generics section appears when there are no generics."""
     ports = extract_ports_vhdl(VHDL_ENTITY)
-    rst   = write_rst_block("my_mod", "my_mod.vhd", ports, [])
+    rst   = write_rst_block("my_mod", "my_mod.vhd", ports, [], [])
     assert "Generics" not in rst
     assert "Parameters" not in rst
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Signal extraction — VHDL
+# ─────────────────────────────────────────────────────────────────────────────
+
+VHDL_WITH_SIGNALS = """\
+entity sig_mod is
+    port (clk : in std_logic);
+end entity sig_mod;
+
+architecture rtl of sig_mod is
+    -- Current FSM state.
+    signal state      : t_state;
+    signal next_state : t_state;
+    signal count      : std_logic_vector(7 downto 0);
+    signal flag       : std_logic := '0';  -- Default low.
+begin
+    -- architecture body here
+end architecture rtl;
+"""
+
+SV_WITH_SIGNALS = """\
+module sig_sv (input logic clk);
+    // Cycle counter.
+    logic [7:0] count;
+    logic       valid;
+    // Input staging register.
+    logic [3:0] data_reg;
+endmodule
+"""
+
+
+def test_vhdl_signal_count():
+    """All signal declarations in the architecture are extracted."""
+    signals = extract_signals_vhdl(VHDL_WITH_SIGNALS)
+    assert len(signals) == 4
+
+
+def test_vhdl_signal_names():
+    """Signal names are extracted correctly."""
+    signals = extract_signals_vhdl(VHDL_WITH_SIGNALS)
+    names = [s["name"] for s in signals]
+    assert "state" in names
+    assert "count" in names
+    assert "flag" in names
+
+
+def test_vhdl_signal_type_vector():
+    """std_logic_vector signal has the correct type and range."""
+    signals = extract_signals_vhdl(VHDL_WITH_SIGNALS)
+    by_name = {s["name"]: s for s in signals}
+    assert by_name["count"]["type"]  == "std_logic_vector"
+    assert "7 downto 0" in by_name["count"]["range"]
+
+
+def test_vhdl_signal_preceding_comment():
+    """Comment on the line above a signal declaration is captured."""
+    signals = extract_signals_vhdl(VHDL_WITH_SIGNALS)
+    by_name = {s["name"]: s for s in signals}
+    assert "Current FSM state" in by_name["state"]["comment"]
+
+
+def test_vhdl_signal_inline_comment():
+    """Inline comment on the same line as a signal declaration is captured."""
+    signals = extract_signals_vhdl(VHDL_WITH_SIGNALS)
+    by_name = {s["name"]: s for s in signals}
+    assert "Default low" in by_name["flag"]["comment"]
+
+
+def test_vhdl_no_signals_outside_architecture():
+    """Signals are not extracted from outside the architecture declaration area."""
+    text = "entity foo is port (clk : in std_logic); end entity foo;\n"
+    assert extract_signals_vhdl(text) == []
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Signal extraction — SystemVerilog
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_sv_signal_count():
+    """All internal logic declarations are extracted."""
+    signals = extract_signals_sv(SV_WITH_SIGNALS)
+    assert len(signals) == 3
+
+
+def test_sv_signal_names():
+    """Signal names are extracted correctly from SV source."""
+    signals = extract_signals_sv(SV_WITH_SIGNALS)
+    names = [s["name"] for s in signals]
+    assert "count" in names
+    assert "valid" in names
+    assert "data_reg" in names
+
+
+def test_sv_signal_range():
+    """Bit range is captured for a vector signal."""
+    signals = extract_signals_sv(SV_WITH_SIGNALS)
+    by_name = {s["name"]: s for s in signals}
+    assert by_name["count"]["range"] == "7:0"
+
+
+def test_sv_signal_comment():
+    """Preceding-line comment is captured for an SV signal."""
+    signals = extract_signals_sv(SV_WITH_SIGNALS)
+    by_name = {s["name"]: s for s in signals}
+    assert "Cycle counter" in by_name["count"]["comment"]
+
+
+def test_sv_ports_not_extracted_as_signals():
+    """Port declarations (input/output/inout) are not included in the signals list."""
+    signals = extract_signals_sv(SV_WITH_SIGNALS)
+    names = [s["name"] for s in signals]
+    assert "clk" not in names
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Signals table in RST output
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_rst_block_contains_signals_table():
+    """The RST page includes a Signals table when signals are present."""
+    ports   = extract_ports_vhdl(VHDL_WITH_SIGNALS)
+    signals = extract_signals_vhdl(VHDL_WITH_SIGNALS)
+    rst     = write_rst_block("sig_mod", "sig_mod.vhd", ports, [], signals)
+    assert "Signals" in rst
+    assert "``state``" in rst
+    assert "``count``" in rst
+
+
+def test_rst_block_no_signals_table_when_empty():
+    """No Signals section appears when there are no internal signals."""
+    ports = extract_ports_vhdl(VHDL_ENTITY)
+    rst   = write_rst_block("my_mod", "my_mod.vhd", ports, [], [])
+    assert "Signals" not in rst

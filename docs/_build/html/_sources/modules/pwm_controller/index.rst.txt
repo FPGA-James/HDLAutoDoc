@@ -10,3 +10,4 @@ pwm_controller
    timing
    processes/index
    cdc
+   reset

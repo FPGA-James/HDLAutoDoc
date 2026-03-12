@@ -10,3 +10,4 @@ blinky
    timing
    processes/index
    cdc
+   reset

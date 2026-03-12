@@ -50,3 +50,22 @@ Ports
      - ``out``
      - ``std_logic``
      - LED off indicator (all drives deasserted).
+
+
+Signals
+-------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Signal
+     - Type
+     - Description
+
+   * - ``state``
+     - ``t_state``
+     - Current state register, initialised to OFF at power-on.
+
+   * - ``next_state``
+     - ``t_state``
+     - Next state combinational signal.

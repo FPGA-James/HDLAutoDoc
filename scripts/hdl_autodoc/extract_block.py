@@ -2,12 +2,12 @@
 """
 extract_block.py
 ----------------
-Extracts the port interface and generics/parameters from a VHDL entity or
-SystemVerilog module and writes:
+Extracts the port interface, generics/parameters, and internal signals from a
+VHDL entity or SystemVerilog module and writes:
 
   <module_name>_block.dot  — Graphviz block diagram (inputs left, outputs right)
-  <module_name>_block.rst  — RST page with the diagram, port table, and
-                              generics/parameters table
+  <module_name>_block.rst  — RST page with the diagram, port table,
+                              generics/parameters table, and signals table
 
 Port comments are captured from:
   - Same-line:      clk : in std_logic;  -- System clock.
@@ -245,6 +245,98 @@ def extract_params_sv(text: str) -> list[dict]:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Internal signal extraction
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Matches: signal name [, name2] : type[(range)] [:= init]
+_VHDL_SIGNAL_RE = re.compile(
+    r"^\s*signal\s+(\w+(?:\s*,\s*\w+)*)\s*:\s*([\w_]+)"
+    r"(?:\s*\(\s*(.*?)\s*\))?"
+    r"(?:\s*:=\s*([^;]+))?",
+    re.IGNORECASE,
+)
+
+# Matches internal SV: logic/wire/reg [[range]] name [, name2]
+_SV_SIGNAL_RE = re.compile(
+    r"^\s*(logic|wire|reg)\s*(?:\[([^\]]*)\]\s*)?(\w+(?:\s*,\s*\w+)*)\s*;",
+    re.IGNORECASE,
+)
+
+_SV_PORT_KW = {"input", "output", "inout"}
+
+
+def extract_signals_vhdl(text: str) -> list[dict]:
+    """
+    Extract internal signal declarations from a VHDL architecture.
+
+    Scans the declaration region between 'architecture X of Y is' and the
+    first bare 'begin' line.  Returns list of {name, type, range, init, comment}.
+    Comments from the preceding line or same line are captured.
+    """
+    lines = text.splitlines()
+
+    arch_re  = re.compile(r"^\s*architecture\s+\w+\s+of\s+\w+\s+is\b", re.IGNORECASE)
+    begin_re = re.compile(r"^\s*begin\s*$", re.IGNORECASE)
+
+    decl_lines: list[str] = []
+    in_decl = False
+    for line in lines:
+        if not in_decl:
+            if arch_re.match(line):
+                in_decl = True
+        else:
+            if begin_re.match(line):
+                break
+            decl_lines.append(line)
+
+    signals = []
+    for idx, line in enumerate(decl_lines):
+        m = _VHDL_SIGNAL_RE.search(re.sub(r"--.*", "", line))
+        if not m:
+            continue
+        comment = _inline_comment_vhdl(line) or _preceding_comment(decl_lines, idx, "--")
+        for name in [n.strip() for n in m.group(1).split(",")]:
+            signals.append({
+                "name":    name,
+                "type":    m.group(2).lower(),
+                "range":   (m.group(3) or "").strip(),
+                "init":    (m.group(4) or "").strip().rstrip(";").strip(),
+                "comment": comment,
+            })
+    return signals
+
+
+def extract_signals_sv(text: str) -> list[dict]:
+    """
+    Extract internal signal declarations from a SystemVerilog module.
+
+    Matches 'logic', 'wire', or 'reg' declarations that are not port
+    declarations (i.e. not prefixed with input/output/inout).
+    Returns list of {name, type, range, init, comment}.
+    """
+    lines   = text.splitlines()
+    signals = []
+
+    for idx, line in enumerate(lines):
+        stripped = line.strip().lower()
+        if any(stripped.startswith(k) for k in _SV_PORT_KW):
+            continue
+        m = _SV_SIGNAL_RE.match(line)
+        if not m:
+            continue
+        comment = _inline_comment_sv(line) or _preceding_comment(lines, idx, "//")
+        for name in [n.strip() for n in m.group(3).split(",")]:
+            signals.append({
+                "name":    name,
+                "type":    m.group(1).lower(),
+                "range":   (m.group(2) or "").strip(),
+                "init":    "",
+                "comment": comment,
+            })
+    return signals
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Width label helper
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -423,7 +515,8 @@ def _type_str(port: dict) -> str:
 
 
 def write_rst_block(module_name: str, src_filename: str,
-                    ports: list[dict], generics: list[dict]) -> str:
+                    ports: list[dict], generics: list[dict],
+                    signals: list[dict]) -> str:
     dot_file = f"{module_name}_block.dot"
     title    = f"{module_name} — Block Diagram"
     lines    = [title, "=" * len(title), "",
@@ -469,6 +562,22 @@ def write_rst_block(module_name: str, src_filename: str,
                 "",
             ]
 
+    # ── Signals table ────────────────────────────────────────────────────────
+    if signals:
+        lines += [
+            "",
+            "Signals", "-------", "",
+            ".. list-table::", "   :header-rows: 1", "",
+            "   * - Signal", "     - Type", "     - Description", "",
+        ]
+        for s in signals:
+            lines += [
+                f'   * - ``{s["name"]}``',
+                f'     - {_type_str(s)}',
+                f'     - {s["comment"] or "—"}',
+                "",
+            ]
+
     return "\n".join(lines)
 
 
@@ -491,9 +600,11 @@ if __name__ == "__main__":
     if ext in (".vhd", ".vhdl"):
         ports    = extract_ports_vhdl(text)
         generics = extract_generics_vhdl(text)
+        signals  = extract_signals_vhdl(text)
     elif ext in (".sv", ".svh"):
         ports    = extract_ports_sv(text)
         generics = extract_params_sv(text)
+        signals  = extract_signals_sv(text)
     else:
         sys.exit(f"ERROR: Unsupported file type '{ext}'")
 
@@ -503,5 +614,5 @@ if __name__ == "__main__":
     dot_path.write_text(write_dot_block(module_name, ports, generics))
     print(f"  → {dot_path}")
 
-    rst_path.write_text(write_rst_block(module_name, src_path.name, ports, generics))
+    rst_path.write_text(write_rst_block(module_name, src_path.name, ports, generics, signals))
     print(f"  → {rst_path}")

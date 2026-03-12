@@ -80,3 +80,30 @@ Ports
      - ``out``
      - ``std_logic``
      - PWM output for LED fading (shared).
+
+
+Signals
+-------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Signal
+     - Type
+     - Description
+
+   * - ``timer_exp``
+     - ``std_logic``
+     - —
+
+   * - ``blinky_en``
+     - ``std_logic``
+     - —
+
+   * - ``pwm_duty``
+     - ``std_logic_vector(7 downto 0)``
+     - —
+
+   * - ``period_done``
+     - ``std_logic``
+     - —

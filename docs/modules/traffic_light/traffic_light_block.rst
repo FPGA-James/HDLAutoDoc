@@ -31,6 +31,11 @@ Ports
      - ``std_logic``
      - Phase timer expiry pulse. Must be high for exactly one cycle.
 
+   * - ``por_n``
+     - ``in``
+     - ``std_logic``
+     - when the system reset deasserts.
+
    * - ``red_out``
      - ``out``
      - ``std_logic``
@@ -72,3 +77,26 @@ Generics
      - ``natural``
      - ``2_000``
      - Duration of the RED_AMBER and AMBER transition phases in milliseconds.
+
+
+Signals
+-------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Signal
+     - Type
+     - Description
+
+   * - ``state``
+     - ``t_state``
+     - Current state register, initialised to RED at power-on.
+
+   * - ``next_state``
+     - ``t_state``
+     - Next state combinational signal, feeds state register.
+
+   * - ``phase_cnt``
+     - ``std_logic_vector(15 downto 0)``
+     - Cleared by por_n (async) or whenever the FSM transitions to RED.
