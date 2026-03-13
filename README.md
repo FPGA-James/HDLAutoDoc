@@ -14,6 +14,7 @@ No separate doc files to maintain. No manual diagrams to draw. If it's in the so
 |---|---|
 | **Auto-discovered ports & entities** | Extracted from `entity`/`module` declarations |
 | **Block diagrams** | TerosHDL-style port diagram (green generics box + yellow ports box) with bus widths, auto-generated per module |
+| **RTL schematics** | Gate-level netlist diagram via `yosys`, inserted into each block diagram page — optional, `SCHEMATICS=1` |
 | **Generics / parameters table** | Name, type, default value, and description extracted from VHDL `generic` and SV `parameter`/`localparam` declarations |
 | **FSM state diagrams** | Parsed from `case` blocks, rendered with [Graphviz](https://graphviz.org) |
 | **Timing waveforms** | `.. wavedrom::` blocks in source comments, rendered with [WaveDrom](https://wavedrom.com) |
@@ -57,21 +58,76 @@ docs/
 
 ---
 
+## 📦 Dependencies
+
+### Required
+
+| Tool | Purpose | Install |
+|---|---|---|
+| **Python 3.11+** | Pipeline scripts and Sphinx | [python.org](https://python.org) or `brew install python` |
+| **Graphviz** | Renders FSM, hierarchy, CDC, and block diagrams | `brew install graphviz` / `apt install graphviz` |
+| Python packages | Sphinx, wavedrom, etc. | `make install` (reads `requirements.txt`) |
+
+### Optional — PDF output
+
+| Tool | Purpose | Install |
+|---|---|---|
+| **TeX Live** / **MacTeX** | LaTeX PDF via `make pdf` | [tug.org/texlive](https://tug.org/texlive/) or `brew install --cask mactex` |
+
+### Optional — RTL schematics (`SCHEMATICS=1`)
+
+Gate-level netlists rendered inside each module's block diagram page. Enabled with `make html SCHEMATICS=1`.
+
+All modules require **netlistsvg** to render the schematic SVG:
+
+```bash
+npm install -g netlistsvg
+```
+
+**SystemVerilog modules** additionally need `yosys`:
+
+```bash
+# macOS
+brew install yosys
+
+# Debian/Ubuntu
+apt install yosys
+```
+
+**VHDL modules** additionally need `ghdl` and the `ghdl-yosys-plugin`. The plugin is not available as a standalone package — the easiest way to get all three pre-built is the **OSS CAD Suite**:
+
+1. Download the latest release for your platform from [github.com/YosysHQ/oss-cad-suite-build/releases](https://github.com/YosysHQ/oss-cad-suite-build/releases)
+2. Extract and activate the environment:
+
+```bash
+tar -xf oss-cad-suite-<date>-<arch>.tgz
+source oss-cad-suite/environment   # add to your shell profile to make permanent
+```
+
+This puts `yosys`, `ghdl`, and the plugin all on your PATH together.
+
+Verify the GHDL plugin is wired up:
+```bash
+yosys -m ghdl -p "help" 2>&1 | head -3
+```
+
+If yosys or the GHDL plugin is absent, schematic generation is **skipped silently** — the rest of the build continues normally and the block diagram page simply omits the schematic section.
+
+---
+
 ## 🚀 Getting started
-
-### Prerequisites
-
-- Python 3.11+
-- [Graphviz](https://graphviz.org/download/) (`dot` on your PATH)
-- [TeX Live](https://tug.org/texlive/) or [MacTeX](https://tug.org/mactex/) *(PDF only)*
 
 ### Install
 
 ```bash
 git clone https://github.com/your-org/hdl-autodoc.git
 cd hdl-autodoc
-make install
+make venv
 ```
+
+This creates a `.venv/` virtualenv and installs all Python dependencies into it. Subsequent `make` commands automatically use `.venv/bin/python3`, keeping the project isolated from your system Python and any other tools (e.g. OSS CAD Suite) on your PATH.
+
+> If you prefer to manage your own environment, `make install` installs into whatever Python is currently active instead.
 
 ### Point it at your design
 
@@ -281,6 +337,7 @@ Content width is fluid by default and scales to your screen:
 | `make extract` | Extract FSM + process + CDC + block docs (runs scaffold first) |
 | `make regs` | Generate register artifacts from `registers/regs_*.toml` |
 | `make html` | Full build → `docs/_build/html/` |
+| `make html SCHEMATICS=1` | Full build with RTL schematics (requires yosys) |
 | `make pdf` | Full build → LaTeX PDF |
 | `make doc` | Run `regs` + `html` + `pdf` |
 | `make clean` | Remove Sphinx build output only |
@@ -289,7 +346,9 @@ Content width is fluid by default and scales to your screen:
 
 ---
 
-## 📦 Dependencies
+## 📦 Python packages
+
+Installed automatically by `make install`:
 
 | Package | Purpose |
 |---|---|
@@ -324,6 +383,7 @@ hdl-autodoc/
 │   │   ├── extract_processes.py← extracts labeled processes → rst pages
 │   │   ├── extract_cdc.py      ← extracts CDC analysis → dot + rst
 │   │   ├── extract_block.py    ← extracts block diagram + port/generics tables → dot + rst
+│   │   ├── generate_schematic.py← generates RTL schematic via yosys (optional, SCHEMATICS=1)
 │   │   ├── run_extract.py      ← orchestrates extraction for all modules
 │   │   └── include_registers.py← copies register map + writes rst page
 │   └── registers/
@@ -377,18 +437,57 @@ Done. The new module appears in the hierarchy, navigation, overview table, hiera
 
 ## 🐛 Known limitations
 
-- **FSM extraction** requires a labeled `case` block that assigns `next_state`. Complex FSMs split across multiple processes may not be fully captured.
-- **Component instantiation** (VHDL `component` style without `entity work.` prefix) is matched by name — ambiguous names in large designs may need verification.
-- **`vhdl:autoentity`** only works for VHDL. SystemVerilog modules get a `literalinclude` source listing instead.
-- **Wavedrom in PDF** requires the `wavedrom` Python package and may not render identically to HTML output.
+### FSM extraction
+
+- Requires a labeled `case` block that assigns `next_state`. Complex FSMs split across multiple processes may not be fully captured.
+- Only the first matching `case` block per module is extracted — multi-process FSMs are partially captured at best.
+
+### CDC analysis
+
+- Static analysis only — cannot verify CDC in black-box instances or generated code.
+- Clock identity is name-based: two ports carrying the same physical clock under different names will be reported as a crossing.
+- Only the classic two-flop back-to-back chain is detected as synchronized. Handshake, gray-code, and FIFO-based CDC are not automatically marked as synchronized.
+- Reset domain crossings are not covered by the CDC page (see the reset domain page instead).
+
+### Block diagrams
+
+- VHDL `component`-style instantiation (without `entity work.` prefix) is matched by name — ambiguous names in large designs may need verification.
+- SV named parameter overrides (`#(.PARAM(val))` style) are not extracted; use positional style or inline comments.
+- Generics with no default value show a blank default in the table.
+
+### RTL schematics (`SCHEMATICS=1`)
+
+- **Mixed-language top levels** — if a VHDL module instantiates SystemVerilog submodules, ghdl cannot elaborate it. The schematic for that module is skipped cleanly; leaf-level schematics are unaffected.
+- **Unconnected ports** — ghdl is stricter than synthesis tools and will fail if any port is left unconnected in the design under test. The schematic is skipped for that module.
+- **Non-synthesisable constructs** — `wait` statements, file I/O, or other simulation-only VHDL will cause yosys/ghdl to fail. Affected modules are skipped.
+- **Tool availability** — requires yosys and netlistsvg (all modules) plus ghdl + ghdl-yosys-plugin for VHDL. Missing tools produce a warning and the build continues without schematics.
+
+### Entity documentation
+
+- `vhdl:autoentity` only works for VHDL. SystemVerilog modules get a `literalinclude` source listing instead.
+
+### Output formats
+
+- **Wavedrom in PDF** — may not render identically to HTML output depending on the wavedrom CLI version.
 - **Register map in PDF** — the iframe embed is HTML-only. The PDF build skips the register page content.
-- **CDC analysis** is static only — see the CDC analysis section for full limitations.
-- **Block diagram generics** — port comments on a preceding line are captured; inline comments on the same line are also captured. Generics with no default value will show no default in the table.
-- **Block diagram SV named parameters** — `#(.PARAM(val))` style is not detected; use positional `#(val)` style.
 
 ---
 
 ## 📋 Release notes
+
+### v3.3.0
+
+#### New features
+
+- **RTL schematics** — new `generate_schematic.py` script synthesises each module with `yosys` (JSON netlist) and renders a clean gate-level schematic SVG with `netlistsvg`. The schematic is embedded as an *RTL Schematic* section at the bottom of each module's block diagram page. Enabled with `make html SCHEMATICS=1`; off by default. VHDL modules require `ghdl` + `ghdl-yosys-plugin` via the OSS CAD Suite; SystemVerilog modules only need `yosys` + `netlistsvg`.
+- **`make venv` target** — creates a `.venv/` virtualenv and installs all Python dependencies into it in one step. The Makefile auto-detects `.venv/bin/python3` and uses it for all subsequent targets, keeping the project isolated from system Python and other tools (e.g. OSS CAD Suite) on `PATH`.
+
+#### Improvements
+
+- Sphinx is now invoked via `$(PYTHON) -m sphinx` rather than the `sphinx-build` binary, preventing PATH shadowing issues when tools like OSS CAD Suite install their own broken `sphinx-build` wrapper.
+- Mixed-language top-level modules (VHDL instantiating SystemVerilog submodules) are detected before synthesis and skipped with a single clear warning rather than dumping a full ghdl error trace.
+- All source files from `hierarchy.json` are passed to ghdl when synthesising any VHDL module, allowing cross-unit references to resolve correctly.
+- Expanded dependency documentation in README: required, optional PDF, and optional schematic tool groups with per-platform install commands and OSS CAD Suite setup instructions.
 
 ### v3.2.0
 
@@ -462,7 +561,8 @@ scripts/hdl_autodoc/
 ├── extract_processes.py  <file.vhd|sv>      → p_*.rst + index.rst
 ├── extract_cdc.py        <file.vhd|sv>      → <module>_cdc.dot + <module>_cdc.rst
 ├── extract_block.py      <file.vhd|sv>      → <module>_block.dot + <module>_block.rst
-├── run_extract.py        hierarchy.json     → orchestrates above four
+├── generate_schematic.py <file.vhd|sv>      → <module>_schematic.svg  (optional, SCHEMATICS=1)
+├── run_extract.py        hierarchy.json     → orchestrates above
 └── include_registers.py  registers/         → docs/registers.rst + _static/
 ```
 

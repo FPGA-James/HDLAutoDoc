@@ -1,16 +1,23 @@
 # Makefile for HDL Sphinx Documentation
 
-PYTHON = python3
+# Use the project virtualenv if it exists, otherwise fall back to system python3.
+PYTHON = $(shell test -f .venv/bin/python3 && echo .venv/bin/python3 || echo python3)
 
 # Project name — used as the documentation title.
 # Defaults to the parent directory name if left blank.
 PROJECT        ?= test123
 
+# Set to 1 to generate RTL schematics via yosys (requires yosys, and
+# ghdl-yosys-plugin for VHDL modules).  Schematics are inserted into each
+# module's block diagram page.
+#   make html SCHEMATICS=1
+SCHEMATICS     ?= 1
+
 # =============================================================================
 # HDL AutoDoc (Sphinx pipeline) variables
 # =============================================================================
 AUTODOC_SPHINXOPTS    ?=
-AUTODOC_SPHINXBUILD    = sphinx-build
+AUTODOC_SPHINXBUILD    = $(PYTHON) -m sphinx
 AUTODOC_SOURCEDIR      = docs
 AUTODOC_BUILDDIR       = docs/_build
 AUTODOC_SCRIPTDIR      = scripts/hdl_autodoc
@@ -41,24 +48,33 @@ REGS_OUT_DIR       := registers/out
 REGS_PLUGINS       := rggen-vhdl rggen-markdown
 
 
-.PHONY: help install hierarchy scaffold extract html pdf \
+.PHONY: help venv install hierarchy scaffold extract html pdf \
         clean clean-generated clean-all
 
 help:
 	@echo ""
-	@echo "  make install           Install Python dependencies"
-	@echo "  make hierarchy         Parse filelist.f and write hierarchy.json"
-	@echo "  make scaffold          Generate RST shells (runs hierarchy first)"
-	@echo "  make extract           Extract FSM + process docs (runs scaffold first)"
-	@echo "  make html              Build HTML documentation"
-	@echo "  make pdf               Build PDF documentation"
-	@echo "  make clean             Remove Sphinx build output only"
-	@echo "  make clean-generated   Remove always-regenerated files"
-	@echo "  make clean-all         Remove everything including hand-editable shells"
+	@echo "  make venv                 Create .venv and install Python dependencies (recommended)"
+	@echo "  make install              Install Python dependencies into current environment"
+	@echo "  make hierarchy            Parse filelist.f and write hierarchy.json"
+	@echo "  make scaffold             Generate RST shells (runs hierarchy first)"
+	@echo "  make extract              Extract FSM + process docs (runs scaffold first)"
+	@echo "  make html                 Build HTML documentation"
+	@echo "  make html SCHEMATICS=1    Build HTML with RTL schematics (requires yosys)"
+	@echo "  make pdf                  Build PDF documentation"
+	@echo "  make clean                Remove Sphinx build output only"
+	@echo "  make clean-generated      Remove always-regenerated files"
+	@echo "  make clean-all            Remove everything including hand-editable shells"
 	@echo ""
 
+venv:
+	python3 -m venv .venv
+	.venv/bin/pip install --upgrade pip
+	.venv/bin/pip install -r requirements.txt
+	@echo ""
+	@echo "Virtualenv ready. Activate with: source .venv/bin/activate"
+
 install:
-	pip install -r requirements.txt
+	$(PYTHON) -m pip install -r requirements.txt
 
 ## ── Step 1: parse filelist.f → hierarchy.json ─────────────────────────────────
 hierarchy:
@@ -72,9 +88,11 @@ scaffold: hierarchy
 
 # ── Step 3: extract FSM + processes for every module ─────────────────────────
 # run_extract.py reads hierarchy.json — no hardcoded module names here.
+# Pass --schematics when SCHEMATICS=1 to enable yosys RTL schematic generation.
 extract: scaffold
 	python $(AUTODOC_SCRIPTDIR)/run_extract.py \
-		$(AUTODOC_HIERARCHY_JSON) $(AUTODOC_SOURCEDIR) $(AUTODOC_SCRIPTDIR)
+		$(AUTODOC_HIERARCHY_JSON) $(AUTODOC_SOURCEDIR) $(AUTODOC_SCRIPTDIR) \
+		$(if $(filter 1,$(SCHEMATICS)),--schematics)
 	@echo "Regenerating timing pages..."
 	python $(AUTODOC_SCRIPTDIR)/generate_rst.py src $(AUTODOC_SOURCEDIR) "$(PROJECT)"
 
@@ -129,6 +147,7 @@ clean-generated: clean
 		     -name "index.rst" -o -name "fsm.rst" -o -name "timing.rst" \
 		     -o -name "cdc.rst" -o -name "*_cdc.rst" -o -name "*_cdc.dot" \
 		     -o -name "block.rst" -o -name "*_block.rst" -o -name "*_block.dot" \
+		     -o -name "*_schematic.svg" \
 		     -o -name "reset.rst" -o -name "*_reset.rst" -o -name "*_reset.dot" \
 		     -o -name "*.dot"  -o -name "*.rst" -path "*/processes/*" \
 		| xargs rm -f 2>/dev/null; \

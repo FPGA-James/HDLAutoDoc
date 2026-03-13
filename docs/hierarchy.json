@@ -1,12 +1,15 @@
 {
   "top": "top",
   "modules": {
-    "blinky": {
-      "file": "src/blinky.vhd",
-      "children": [],
-      "parents": [
-        "top"
+    "top": {
+      "file": "src/top.vhd",
+      "children": [
+        "blinky",
+        "cfg_sync",
+        "pwm_controller",
+        "traffic_light"
       ],
+      "parents": [],
       "shared": false
     },
     "pwm_controller": {
@@ -33,15 +36,12 @@
       ],
       "shared": false
     },
-    "top": {
-      "file": "src/top.vhd",
-      "children": [
-        "blinky",
-        "cfg_sync",
-        "pwm_controller",
-        "traffic_light"
+    "blinky": {
+      "file": "src/blinky.vhd",
+      "children": [],
+      "parents": [
+        "top"
       ],
-      "parents": [],
       "shared": false
     }
   }
