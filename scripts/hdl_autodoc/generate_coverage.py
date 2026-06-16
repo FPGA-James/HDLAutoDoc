@@ -165,6 +165,11 @@ def main(hierarchy_json: Path, docs_dir: Path) -> None:
     with open(hierarchy_json) as f:
         hierarchy = json.load(f)
 
+    if "top" not in hierarchy or "modules" not in hierarchy:
+        sys.exit(f"Error: {hierarchy_json} missing 'top' or 'modules' keys")
+    if hierarchy["top"] not in hierarchy["modules"]:
+        sys.exit(f"Error: top module '{hierarchy['top']}' not found in modules")
+
     names = _depth_first_order(hierarchy)
     results = [detect_coverage(name, docs_dir) for name in names]
 
