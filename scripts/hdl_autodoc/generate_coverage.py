@@ -148,25 +148,24 @@ def coverage_rst(results: list[CoverageResult]) -> str:
     def bool_cell(v: bool) -> str:
         cls = "cov-yes" if v else "cov-no"
         txt = "✓" if v else "–"
-        return f'        <td class="{cls}">{txt}</td>'
+        return f'         <td class="{cls}">{txt}</td>'
 
     def count_cell(v: int) -> str:
         cls = "cov-count" if v > 0 else "cov-no"
         txt = str(v) if v > 0 else "–"
-        return f'        <td class="{cls}">{txt}</td>'
+        return f'         <td class="{cls}">{txt}</td>'
 
     rows = []
     for r in results:
-        rows.append(
-            "      <tr>\n"
-            f'        <td><a href="modules/{r.name}/index.html">{r.name}</a></td>\n'
-            + bool_cell(r.fsm) + "\n"
-            + count_cell(r.process_count) + "\n"
-            + bool_cell(r.cdc) + "\n"
-            + bool_cell(r.reset) + "\n"
-            + count_cell(r.port_count) + "\n"
-            "      </tr>"
-        )
+        cells = [
+            f'         <td><a href="modules/{r.name}/index.html">{r.name}</a></td>',
+            bool_cell(r.fsm),
+            count_cell(r.process_count),
+            bool_cell(r.cdc),
+            bool_cell(r.reset),
+            count_cell(r.port_count),
+        ]
+        rows.append("       <tr>\n" + "\n".join(cells) + "\n       </tr>")
 
     fsm_tot   = sum(1 for r in results if r.fsm)
     proc_tot  = sum(1 for r in results if r.process_count > 0)
