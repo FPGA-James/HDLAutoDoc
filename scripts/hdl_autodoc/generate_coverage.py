@@ -57,7 +57,7 @@ def detect_coverage(name: str, docs_dir: Path) -> CoverageResult:
     process_count = len(list(procs_dir.glob("p_*.rst"))) if procs_dir.exists() else 0
 
     cdc_rst = mod_dir / f"{name}_cdc.rst"
-    cdc = cdc_rst.exists() and "\u2192" in cdc_rst.read_text()
+    cdc = cdc_rst.exists() and "Signal Crossings" in cdc_rst.read_text()
 
     reset_rst = mod_dir / f"{name}_reset.rst"
     reset = reset_rst.exists() and bool(

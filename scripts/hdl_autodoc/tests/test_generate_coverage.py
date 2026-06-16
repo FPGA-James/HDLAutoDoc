@@ -54,14 +54,16 @@ def test_process_count_zero_when_processes_dir_empty(tmp_path):
 
 # ── CDC ───────────────────────────────────────────────────────────────────────
 
-def test_cdc_detected_when_cdc_rst_contains_arrow(tmp_path):
+def test_cdc_detected_when_cdc_rst_contains_signal_crossings(tmp_path):
     mod_dir = _make_mod(tmp_path, "mymod")
-    (mod_dir / "mymod_cdc.rst").write_text("clk_a → clk_b crossing detected")
+    (mod_dir / "mymod_cdc.rst").write_text(
+        "Signal Crossings\n----------------\n\n* clk_a to clk_b"
+    )
     result = detect_coverage("mymod", tmp_path)
     assert result.cdc is True
 
 
-def test_cdc_not_detected_when_cdc_rst_has_no_arrow(tmp_path):
+def test_cdc_not_detected_when_cdc_rst_has_no_signal_crossings(tmp_path):
     mod_dir = _make_mod(tmp_path, "mymod")
     (mod_dir / "mymod_cdc.rst").write_text("No clock domain crossings detected.")
     result = detect_coverage("mymod", tmp_path)
@@ -118,14 +120,17 @@ Ports
    * - Port
      - Direction
      - Type
+     - Description
 
    * - ``clk``
      - ``in``
      - ``std_logic``
+     - System clock.
 
    * - ``rst``
      - ``in``
      - ``std_logic``
+     - Synchronous reset.
 
 Signals
 -------
@@ -135,9 +140,11 @@ Signals
 
    * - Signal
      - Type
+     - Description
 
    * - ``state``
      - ``t_state``
+     - Current state register.
 
 """
 
