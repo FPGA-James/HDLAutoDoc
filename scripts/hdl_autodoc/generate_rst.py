@@ -432,7 +432,7 @@ def hierarchy_rst(hierarchy: dict) -> str:
 
 
 def index_rst(entities: list[dict], project_name: str,
-              hierarchy: dict = None) -> str:
+              hierarchy: dict = None, has_coverage: bool = False) -> str:
     lines = [
         project_name, "=" * len(project_name), "",
         ".. toctree::",
@@ -453,6 +453,9 @@ def index_rst(entities: list[dict], project_name: str,
         for e in entities:
             lines.append(f"   modules/{e['name']}/index")
         lines.append("   registers")
+
+    if has_coverage:
+        lines.append("   coverage")
 
     lines += [
         "",
@@ -598,9 +601,10 @@ if __name__ == "__main__":
         ))
 
     # Top-level always-regenerated
+    has_coverage = (docs_dir / "coverage.rst").exists()
     results.append(write_always(
         docs_dir / "index.rst",
-        index_rst(entities, project_name, hierarchy)
+        index_rst(entities, project_name, hierarchy, has_coverage=has_coverage)
     ))
     results.append(write_always(
         docs_dir / "overview.rst",
