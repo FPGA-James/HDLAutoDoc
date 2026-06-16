@@ -141,6 +141,41 @@ def format_terminal_table(results: list[CoverageResult]) -> str:
     return "\n".join(lines)
 
 
+def _depth_first_order(hierarchy: dict) -> list[str]:
+    """Return module names in depth-first order starting from the top module."""
+    top = hierarchy["top"]
+    modules = hierarchy["modules"]
+    visited: list[str] = []
+
+    def visit(name: str) -> None:
+        if name not in visited:
+            visited.append(name)
+            for child in modules[name]["children"]:
+                visit(child)
+
+    visit(top)
+    for name in modules:
+        if name not in visited:
+            visited.append(name)
+    return visited
+
+
+def main(hierarchy_json: Path, docs_dir: Path) -> None:
+    """Run coverage detection and write terminal output + coverage.rst."""
+    with open(hierarchy_json) as f:
+        hierarchy = json.load(f)
+
+    names = _depth_first_order(hierarchy)
+    results = [detect_coverage(name, docs_dir) for name in names]
+
+    print(format_terminal_table(results))
+
+    rst = coverage_rst(results)
+    out = docs_dir / "coverage.rst"
+    out.write_text(rst)
+    print(f"\nWrote {out}")
+
+
 def coverage_rst(results: list[CoverageResult]) -> str:
     """Generate a coverage.rst Sphinx page with a coloured HTML table."""
     n = len(results)
@@ -203,3 +238,9 @@ def coverage_rst(results: list[CoverageResult]) -> str:
         "     </tfoot>\n"
         "   </table>\n"
     )
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        sys.exit("Usage: generate_coverage.py <hierarchy.json> <docs_dir>")
+    main(Path(sys.argv[1]), Path(sys.argv[2]))

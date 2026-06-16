@@ -332,3 +332,149 @@ def test_coverage_rst_thead_has_column_headers():
     assert "<th>Module</th>" in rst
     assert "<th>FSM</th>" in rst
     assert "<th>Processes</th>" in rst
+
+
+import json
+from generate_coverage import _depth_first_order, main
+
+
+# ── Hierarchy ordering ────────────────────────────────────────────────────────
+
+def _make_hierarchy(top: str, children: dict[str, list[str]]) -> dict:
+    """Build a minimal hierarchy.json structure."""
+    modules = {}
+    for name, kids in children.items():
+        modules[name] = {"file": f"src/{name}.vhd", "children": kids, "parents": []}
+    for name, kids in children.items():
+        for kid in kids:
+            modules[kid]["parents"] = [name]
+    return {"top": top, "modules": modules}
+
+
+def test_depth_first_order_top_first():
+    h = _make_hierarchy("top", {
+        "top": ["child_a", "child_b"],
+        "child_a": [],
+        "child_b": [],
+    })
+    order = _depth_first_order(h)
+    assert order[0] == "top"
+
+
+def test_depth_first_order_children_after_parent():
+    h = _make_hierarchy("top", {
+        "top": ["child_a", "child_b"],
+        "child_a": [],
+        "child_b": [],
+    })
+    order = _depth_first_order(h)
+    assert order == ["top", "child_a", "child_b"]
+
+
+def test_depth_first_order_nested():
+    h = _make_hierarchy("top", {
+        "top": ["mid"],
+        "mid": ["leaf"],
+        "leaf": [],
+    })
+    order = _depth_first_order(h)
+    assert order == ["top", "mid", "leaf"]
+
+
+def test_depth_first_order_includes_unreachable_modules():
+    h = _make_hierarchy("top", {
+        "top": [],
+        "orphan": [],
+    })
+    order = _depth_first_order(h)
+    assert "top" in order
+    assert "orphan" in order
+
+
+# ── main() integration ────────────────────────────────────────────────────────
+
+def _write_hierarchy(path: Path, hierarchy: dict) -> None:
+    path.write_text(json.dumps(hierarchy))
+
+
+def _make_full_module(docs_dir: Path, name: str, *, fsm=False, procs=0,
+                      cdc_crossings=False, reset_cross=False, ports=0) -> None:
+    mod_dir = docs_dir / "modules" / name
+    mod_dir.mkdir(parents=True, exist_ok=True)
+
+    if fsm:
+        (mod_dir / f"{name}.dot").write_text("digraph {}")
+
+    if procs > 0:
+        p_dir = mod_dir / "processes"
+        p_dir.mkdir(exist_ok=True)
+        for i in range(procs):
+            (p_dir / f"p_proc{i}.rst").write_text("")
+
+    cdc_content = "Signal Crossings\n----------------\n\n* clk_a to clk_b" if cdc_crossings else "No crossings."
+    (mod_dir / f"{name}_cdc.rst").write_text(cdc_content)
+
+    reset_content = "Reset crossing detected." if reset_cross else "Synchronous reset only."
+    (mod_dir / f"{name}_reset.rst").write_text(reset_content)
+
+    if ports > 0:
+        port_rows = "\n".join(
+            f"   * - ``port{i}``\n     - ``in``\n     - ``std_logic``\n     - Port {i}.\n"
+            for i in range(ports)
+        )
+        block = (
+            f"{name} — Block Diagram\n"
+            f"{'=' * (len(name) + 16)}\n\n"
+            "Ports\n-----\n\n"
+            ".. list-table::\n"
+            "   :header-rows: 1\n\n"
+            "   * - Port\n     - Direction\n     - Type\n     - Description\n\n"
+            + port_rows
+        )
+        (mod_dir / f"{name}_block.rst").write_text(block)
+
+
+def test_main_writes_coverage_rst(tmp_path):
+    h = _make_hierarchy("top", {"top": ["child_a"], "child_a": []})
+    hjson = tmp_path / "hierarchy.json"
+    _write_hierarchy(hjson, h)
+    _make_full_module(tmp_path, "top",     fsm=False, procs=0, ports=2)
+    _make_full_module(tmp_path, "child_a", fsm=True,  procs=2, ports=3)
+
+    main(hjson, tmp_path)
+
+    out = tmp_path / "coverage.rst"
+    assert out.exists()
+    content = out.read_text()
+    assert "Documentation Coverage" in content
+    assert "child_a" in content
+
+
+def test_main_preserves_depth_first_order_in_rst(tmp_path):
+    h = _make_hierarchy("top", {"top": ["child_a", "child_b"],
+                                 "child_a": [], "child_b": []})
+    hjson = tmp_path / "hierarchy.json"
+    _write_hierarchy(hjson, h)
+    for name in ("top", "child_a", "child_b"):
+        _make_full_module(tmp_path, name, ports=1)
+
+    main(hjson, tmp_path)
+
+    content = (tmp_path / "coverage.rst").read_text()
+    pos_top     = content.index(">top<")
+    pos_child_a = content.index(">child_a<")
+    pos_child_b = content.index(">child_b<")
+    assert pos_top < pos_child_a < pos_child_b
+
+
+def test_main_prints_terminal_table(tmp_path, capsys):
+    h = _make_hierarchy("top", {"top": []})
+    hjson = tmp_path / "hierarchy.json"
+    _write_hierarchy(hjson, h)
+    _make_full_module(tmp_path, "top", ports=2)
+
+    main(hjson, tmp_path)
+
+    captured = capsys.readouterr()
+    assert "Coverage Report" in captured.out
+    assert "top" in captured.out
