@@ -75,3 +75,67 @@ def detect_coverage(name: str, docs_dir: Path) -> CoverageResult:
         reset=reset,
         port_count=port_count,
     )
+
+
+def format_terminal_table(results: list[CoverageResult]) -> str:
+    """Format a compact terminal coverage table from a list of results."""
+    n = len(results)
+    if not results:
+        return "Coverage Report\nNo modules found.\n"
+
+    name_w = max(len(r.name) for r in results)
+    name_w = max(name_w, 6)  # minimum width of "Module" header
+
+    # Column widths: FSM=5, Processes=11, CDC=5, Reset=7, Ports=9
+    total_w = name_w + 2 + 5 + 2 + 11 + 2 + 5 + 2 + 7 + 2 + 9
+    sep = "─" * total_w
+
+    def fmt_bool(v: bool) -> str:
+        return "✓" if v else "–"
+
+    def fmt_proc(count: int) -> str:
+        return f"{count} procs" if count > 0 else "–"
+
+    def fmt_port(count: int) -> str:
+        return f"{count} ports" if count > 0 else "–"
+
+    def row(name: str, fsm: str, proc: str, cdc: str, rst: str, port: str) -> str:
+        return (
+            f"{name:<{name_w}}  {fsm:>5}  {proc:>11}  "
+            f"{cdc:>5}  {rst:>7}  {port:>9}"
+        )
+
+    lines = [
+        "Coverage Report",
+        sep,
+        row("Module", "FSM", "Processes", "CDC", "Reset", "Ports"),
+        sep,
+    ]
+
+    for r in results:
+        lines.append(row(
+            r.name,
+            fmt_bool(r.fsm),
+            fmt_proc(r.process_count),
+            fmt_bool(r.cdc),
+            fmt_bool(r.reset),
+            fmt_port(r.port_count),
+        ))
+
+    fsm_tot   = sum(1 for r in results if r.fsm)
+    proc_tot  = sum(1 for r in results if r.process_count > 0)
+    cdc_tot   = sum(1 for r in results if r.cdc)
+    reset_tot = sum(1 for r in results if r.reset)
+    port_tot  = sum(1 for r in results if r.port_count > 0)
+
+    lines.append(sep)
+    lines.append(row(
+        "Totals",
+        f"{fsm_tot}/{n}",
+        f"{proc_tot}/{n}",
+        f"{cdc_tot}/{n}",
+        f"{reset_tot}/{n}",
+        f"{port_tot}/{n}",
+    ))
+
+    return "\n".join(lines)

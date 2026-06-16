@@ -160,3 +160,82 @@ def test_port_count_zero_when_block_rst_absent(tmp_path):
     _make_mod(tmp_path, "mymod")
     result = detect_coverage("mymod", tmp_path)
     assert result.port_count == 0
+
+
+from generate_coverage import format_terminal_table
+
+
+# ── Terminal formatter ────────────────────────────────────────────────────────
+
+def _sample_results():
+    return [
+        CoverageResult("blinky",         fsm=True,  process_count=3, cdc=False, reset=True,  port_count=7),
+        CoverageResult("cfg_sync",        fsm=False, process_count=3, cdc=True,  reset=True,  port_count=8),
+        CoverageResult("pwm_controller",  fsm=True,  process_count=3, cdc=False, reset=False, port_count=6),
+        CoverageResult("top",             fsm=False, process_count=0, cdc=False, reset=False, port_count=4),
+        CoverageResult("traffic_light",   fsm=True,  process_count=4, cdc=False, reset=True,  port_count=7),
+    ]
+
+
+def test_terminal_table_contains_all_module_names():
+    out = format_terminal_table(_sample_results())
+    for name in ("blinky", "cfg_sync", "pwm_controller", "top", "traffic_light"):
+        assert name in out
+
+
+def test_terminal_table_checkmark_for_true_fsm():
+    out = format_terminal_table(_sample_results())
+    lines = out.splitlines()
+    blinky_line = next(l for l in lines if l.startswith("blinky"))
+    assert "✓" in blinky_line
+
+
+def test_terminal_table_dash_for_false_fsm():
+    out = format_terminal_table(_sample_results())
+    lines = out.splitlines()
+    cfg_line = next(l for l in lines if l.startswith("cfg_sync"))
+    # First field after name is FSM — cfg_sync has fsm=False
+    assert "–" in cfg_line
+
+
+def test_terminal_table_proc_count_format():
+    out = format_terminal_table(_sample_results())
+    assert "3 procs" in out
+    assert "4 procs" in out
+
+
+def test_terminal_table_dash_for_zero_proc_count():
+    results = [CoverageResult("top", fsm=False, process_count=0, cdc=False, reset=False, port_count=4)]
+    out = format_terminal_table(results)
+    lines = out.splitlines()
+    top_line = next(l for l in lines if l.startswith("top"))
+    assert "procs" not in top_line
+
+
+def test_terminal_table_port_count_format():
+    out = format_terminal_table(_sample_results())
+    assert "7 ports" in out
+    assert "8 ports" in out
+
+
+def test_terminal_table_totals_row_present():
+    out = format_terminal_table(_sample_results())
+    assert "Totals" in out
+
+
+def test_terminal_table_totals_boolean_fraction():
+    out = format_terminal_table(_sample_results())
+    # 3 modules have fsm=True out of 5
+    assert "3/5" in out
+
+
+def test_terminal_table_totals_count_fraction():
+    out = format_terminal_table(_sample_results())
+    # top has process_count=0, all others > 0 → 4/5 have processes
+    assert "4/5" in out
+
+
+def test_terminal_table_separator_lines():
+    out = format_terminal_table(_sample_results())
+    assert "─" in out
+    assert "Coverage Report" in out
