@@ -8,7 +8,7 @@ Source file: ``src/top.vhd``.
 Annotated Source
 ----------------
 
-.. literalinclude:: ../../../src/top.vhd
+.. literalinclude:: ../../../../src/top.vhd
    :language: vhdl
    :linenos:
    :caption: src/top.vhd

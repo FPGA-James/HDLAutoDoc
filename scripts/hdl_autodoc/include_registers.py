@@ -156,12 +156,11 @@ def find_entry_point(src_dir: Path) -> Path | None:
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        sys.exit("Usage: include_registers.py <project_root> <docs_dir> [entry_point]")
+        sys.exit("Usage: include_registers.py <project_root> <docs_dir> [sphinx_root]")
 
     project_root  = Path(sys.argv[1])
     docs_dir      = Path(sys.argv[2])
-    # Optional: explicit entry point filename (e.g. "index.html", "counter_regs.html")
-    forced_entry  = sys.argv[3].strip() if len(sys.argv) > 3 and sys.argv[3].strip() else None
+    forced_entry  = None
 
     static_dir    = docs_dir / "_static"
     registers_rst = docs_dir / "registers.rst"

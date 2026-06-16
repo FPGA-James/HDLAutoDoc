@@ -1,1 +1,7 @@
 CLAUDE.md
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+docs/hdl_autodoc/_build/
+

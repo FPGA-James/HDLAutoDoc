@@ -8,7 +8,7 @@ Source file: ``src/traffic_light.vhd``.
 Annotated Source
 ----------------
 
-.. literalinclude:: ../../../src/traffic_light.vhd
+.. literalinclude:: ../../../../src/traffic_light.vhd
    :language: vhdl
    :linenos:
    :caption: src/traffic_light.vhd

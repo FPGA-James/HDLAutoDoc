@@ -500,7 +500,7 @@ def overview_rst(entities: list[dict], project_name: str,
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        sys.exit("Usage: generate_rst.py <src_dir> <docs_dir>")
+        sys.exit("Usage: generate_rst.py <src_dir> <docs_dir> [project_name]")
 
     src_dir  = Path(sys.argv[1])
     docs_dir = Path(sys.argv[2])

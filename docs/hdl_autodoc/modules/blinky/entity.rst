@@ -8,7 +8,7 @@ Source file: ``src/blinky.vhd``.
 Annotated Source
 ----------------
 
-.. literalinclude:: ../../../src/blinky.vhd
+.. literalinclude:: ../../../../src/blinky.vhd
    :language: vhdl
    :linenos:
    :caption: src/blinky.vhd

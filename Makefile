@@ -18,8 +18,8 @@ SCHEMATICS     ?= 1
 # =============================================================================
 AUTODOC_SPHINXOPTS    ?=
 AUTODOC_SPHINXBUILD    = $(PYTHON) -m sphinx
-AUTODOC_SOURCEDIR      = docs
-AUTODOC_BUILDDIR       = docs/_build
+AUTODOC_SOURCEDIR      = docs/hdl_autodoc
+AUTODOC_BUILDDIR       = $(AUTODOC_SOURCEDIR)/_build
 AUTODOC_SCRIPTDIR      = scripts/hdl_autodoc
 AUTODOC_FILELIST       = filelist.f
 AUTODOC_HIERARCHY_JSON = $(AUTODOC_SOURCEDIR)/hierarchy.json
@@ -137,10 +137,6 @@ clean-generated: clean
 	rm -f  $(AUTODOC_SOURCEDIR)/hierarchy.dot
 	rm -f  $(AUTODOC_SOURCEDIR)/registers.rst
 	rm -rf $(AUTODOC_SOURCEDIR)/_static/registers
-	@# Stale top-level dirs from old flat structure
-	rm -rf $(AUTODOC_SOURCEDIR)/fsm
-	rm -rf $(AUTODOC_SOURCEDIR)/processes
-	rm -rf $(AUTODOC_SOURCEDIR)/timing
 	@# Per-module always-regenerated files (walk modules/ if it exists)
 	@if [ -d $(AUTODOC_SOURCEDIR)/modules ]; then \
 		find $(AUTODOC_SOURCEDIR)/modules -maxdepth 2 \
