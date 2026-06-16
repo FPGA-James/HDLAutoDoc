@@ -139,3 +139,68 @@ def format_terminal_table(results: list[CoverageResult]) -> str:
     ))
 
     return "\n".join(lines)
+
+
+def coverage_rst(results: list[CoverageResult]) -> str:
+    """Generate a coverage.rst Sphinx page with a coloured HTML table."""
+    n = len(results)
+
+    def bool_cell(v: bool) -> str:
+        cls = "cov-yes" if v else "cov-no"
+        txt = "✓" if v else "–"
+        return f'        <td class="{cls}">{txt}</td>'
+
+    def count_cell(v: int) -> str:
+        cls = "cov-count" if v > 0 else "cov-no"
+        txt = str(v) if v > 0 else "–"
+        return f'        <td class="{cls}">{txt}</td>'
+
+    rows = []
+    for r in results:
+        rows.append(
+            "      <tr>\n"
+            f'        <td><a href="modules/{r.name}/index.html">{r.name}</a></td>\n'
+            + bool_cell(r.fsm) + "\n"
+            + count_cell(r.process_count) + "\n"
+            + bool_cell(r.cdc) + "\n"
+            + bool_cell(r.reset) + "\n"
+            + count_cell(r.port_count) + "\n"
+            "      </tr>"
+        )
+
+    fsm_tot   = sum(1 for r in results if r.fsm)
+    proc_tot  = sum(1 for r in results if r.process_count > 0)
+    cdc_tot   = sum(1 for r in results if r.cdc)
+    reset_tot = sum(1 for r in results if r.reset)
+    port_tot  = sum(1 for r in results if r.port_count > 0)
+
+    body = "\n".join(rows)
+
+    return (
+        "Documentation Coverage\n"
+        "======================\n"
+        "\n"
+        ".. raw:: html\n"
+        "\n"
+        '   <table class="coverage-table">\n'
+        "     <thead>\n"
+        "       <tr>\n"
+        "         <th>Module</th><th>FSM</th><th>Processes</th>\n"
+        "         <th>CDC</th><th>Reset</th><th>Ports</th>\n"
+        "       </tr>\n"
+        "     </thead>\n"
+        "     <tbody>\n"
+        f"{body}\n"
+        "     </tbody>\n"
+        "     <tfoot>\n"
+        "       <tr>\n"
+        "         <td>Totals</td>\n"
+        f"         <td>{fsm_tot}/{n}</td>\n"
+        f"         <td>{proc_tot}/{n}</td>\n"
+        f"         <td>{cdc_tot}/{n}</td>\n"
+        f"         <td>{reset_tot}/{n}</td>\n"
+        f"         <td>{port_tot}/{n}</td>\n"
+        "       </tr>\n"
+        "     </tfoot>\n"
+        "   </table>\n"
+    )

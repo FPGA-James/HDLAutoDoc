@@ -239,3 +239,96 @@ def test_terminal_table_separator_lines():
     out = format_terminal_table(_sample_results())
     assert "─" in out
     assert "Coverage Report" in out
+
+
+from generate_coverage import coverage_rst
+
+
+# ── RST generator ─────────────────────────────────────────────────────────────
+
+def _one_result(fsm=True, process_count=3, cdc=False, reset=True, port_count=6):
+    return [CoverageResult("blinky", fsm=fsm, process_count=process_count,
+                           cdc=cdc, reset=reset, port_count=port_count)]
+
+
+def test_coverage_rst_has_title():
+    rst = coverage_rst(_one_result())
+    assert "Documentation Coverage" in rst
+    assert "======================" in rst
+
+
+def test_coverage_rst_has_raw_html_directive():
+    rst = coverage_rst(_one_result())
+    assert ".. raw:: html" in rst
+
+
+def test_coverage_rst_has_coverage_table_class():
+    rst = coverage_rst(_one_result())
+    assert 'class="coverage-table"' in rst
+
+
+def test_coverage_rst_module_link():
+    rst = coverage_rst(_one_result())
+    assert 'href="modules/blinky/index.html"' in rst
+    assert ">blinky<" in rst
+
+
+def test_coverage_rst_cov_yes_for_true_fsm():
+    rst = coverage_rst(_one_result(fsm=True))
+    assert 'class="cov-yes"' in rst
+    assert ">✓<" in rst
+
+
+def test_coverage_rst_cov_no_for_false_cdc():
+    rst = coverage_rst(_one_result(cdc=False))
+    assert 'class="cov-no"' in rst
+
+
+def test_coverage_rst_cov_count_for_process_count():
+    rst = coverage_rst(_one_result(process_count=3))
+    assert 'class="cov-count"' in rst
+    assert ">3<" in rst
+
+
+def test_coverage_rst_cov_count_for_port_count():
+    rst = coverage_rst(_one_result(port_count=6))
+    assert ">6<" in rst
+
+
+def test_coverage_rst_cov_no_for_zero_process_count():
+    rst = coverage_rst(_one_result(process_count=0))
+    assert ">–<" in rst
+
+
+def test_coverage_rst_tfoot_present():
+    rst = coverage_rst(_one_result())
+    assert "<tfoot>" in rst
+
+
+def test_coverage_rst_tfoot_totals():
+    results = [
+        CoverageResult("a", fsm=True,  process_count=2, cdc=True,  reset=False, port_count=3),
+        CoverageResult("b", fsm=False, process_count=0, cdc=False, reset=False, port_count=0),
+    ]
+    rst = coverage_rst(results)
+    assert ">1/2<" in rst   # fsm: 1 True out of 2
+    assert ">0/2<" in rst   # reset: 0 True out of 2
+
+
+def test_coverage_rst_multiple_rows():
+    results = [
+        CoverageResult("mod_a", fsm=True,  process_count=2, cdc=False, reset=True,  port_count=4),
+        CoverageResult("mod_b", fsm=False, process_count=0, cdc=True,  reset=False, port_count=0),
+    ]
+    rst = coverage_rst(results)
+    assert "mod_a" in rst
+    assert "mod_b" in rst
+    assert rst.count("<tr>") >= 3  # header + 2 data rows (+ tfoot row)
+
+
+def test_coverage_rst_thead_has_column_headers():
+    rst = coverage_rst(_one_result())
+    assert "<thead>" in rst
+    assert "<th>Module</th>" in rst
+    assert "<th>FSM</th>" in rst
+    assert "<th>Processes</th>" in rst
