@@ -58,6 +58,7 @@ help:
 	@echo "  make hierarchy            Parse filelist.f and write hierarchy.json"
 	@echo "  make scaffold             Generate RST shells (runs hierarchy first)"
 	@echo "  make extract              Extract FSM + process docs (runs scaffold first)"
+	@echo "  make extract FORCE=1      Force re-extraction of all modules (bypass cache)"
 	@echo "  make coverage              Generate documentation coverage report"
 	@echo "  make html                 Build HTML documentation"
 	@echo "  make html SCHEMATICS=1    Build HTML with RTL schematics (requires yosys)"
@@ -93,7 +94,7 @@ scaffold: hierarchy
 extract: scaffold
 	python $(AUTODOC_SCRIPTDIR)/run_extract.py \
 		$(AUTODOC_HIERARCHY_JSON) $(AUTODOC_SOURCEDIR) $(AUTODOC_SCRIPTDIR) \
-		$(if $(filter 1,$(SCHEMATICS)),--schematics)
+		$(if $(filter 1,$(SCHEMATICS)),--schematics) $(if $(FORCE),--force)
 	@echo "Regenerating timing pages..."
 	python $(AUTODOC_SCRIPTDIR)/generate_rst.py src $(AUTODOC_SOURCEDIR) "$(PROJECT)"
 
@@ -143,6 +144,7 @@ clean-generated: clean
 	rm -f  $(AUTODOC_SOURCEDIR)/hierarchy.dot
 	rm -f  $(AUTODOC_SOURCEDIR)/registers.rst
 	rm -f  $(AUTODOC_SOURCEDIR)/coverage.rst
+	rm -f  $(AUTODOC_SOURCEDIR)/.extract_cache.json
 	rm -rf $(AUTODOC_SOURCEDIR)/_static/registers
 	@# Per-module always-regenerated files (walk modules/ if it exists)
 	@if [ -d $(AUTODOC_SOURCEDIR)/modules ]; then \
