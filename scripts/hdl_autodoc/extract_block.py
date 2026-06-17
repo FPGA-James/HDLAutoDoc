@@ -495,6 +495,66 @@ def write_dot_block(module_name: str, ports: list[dict],
 # RST writer
 # ─────────────────────────────────────────────────────────────────────────────
 
+# ─────────────────────────────────────────────────────────────────────────────
+# HTML port table (used when bus groups are detected)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _html_port_table(bus_groups: list, remaining: list[dict]) -> str:
+    """
+    Render port table as an indented HTML block for use inside ``.. raw:: html``.
+    Bus groups get a <details>/<summary> collapsible row; individual ports get
+    plain <tr> rows.
+    """
+    import html as _h
+
+    rows: list[str] = []
+    rows.append('<table class="port-table">')
+    rows.append("  <thead>")
+    rows.append("    <tr><th>Port</th><th>Direction</th>"
+                "<th>Type</th><th>Description</th></tr>")
+    rows.append("  </thead>")
+    rows.append("  <tbody>")
+
+    for bg in bus_groups:
+        n = len(bg.ports)
+        plural = "s" if n != 1 else ""
+        rows.append('    <tr class="bus-group-row">')
+        rows.append('      <td colspan="4">')
+        rows.append("        <details>")
+        rows.append(
+            f"          <summary><strong>{_h.escape(bg.prefix)}</strong>"
+            f" \u2014 {_h.escape(bg.bus_type)} ({n} port{plural})</summary>"
+        )
+        rows.append('          <table class="bus-ports-inner">')
+        for p in bg.ports:
+            type_text = _type_str(p).replace("`", "")
+            rows.append("            <tr>")
+            rows.append(f'              <td><code>{_h.escape(p["name"])}</code></td>')
+            rows.append(f'              <td><code>{_h.escape(p["dir"])}</code></td>')
+            rows.append(f'              <td><code>{_h.escape(type_text)}</code></td>')
+            rows.append(f'              <td>{_h.escape(p["comment"] or "")}</td>')
+            rows.append("            </tr>")
+        rows.append("          </table>")
+        rows.append("        </details>")
+        rows.append("      </td>")
+        rows.append("    </tr>")
+
+    for p in remaining:
+        type_text = _type_str(p).replace("`", "")
+        rows.append("    <tr>")
+        rows.append(f'      <td><code>{_h.escape(p["name"])}</code></td>')
+        rows.append(f'      <td><code>{_h.escape(p["dir"])}</code></td>')
+        rows.append(f'      <td><code>{_h.escape(type_text)}</code></td>')
+        rows.append(f'      <td>{_h.escape(p["comment"] or "")}</td>')
+        rows.append("    </tr>")
+
+    rows.append("  </tbody>")
+    rows.append("</table>")
+
+    # Each line is indented 3 spaces to satisfy RST's ``.. raw:: html`` block
+    return "\n".join("   " + line for line in rows)
+
+
 _DIR_RST = {"in": "``in``", "out": "``out``", "inout": "``inout``"}
 
 
@@ -517,7 +577,8 @@ def _type_str(port: dict) -> str:
 def write_rst_block(module_name: str, src_filename: str,
                     ports: list[dict], generics: list[dict],
                     signals: list[dict],
-                    include_schematic: bool = False) -> str:
+                    include_schematic: bool = False,
+                    toml_path: Path | None = None) -> str:
     dot_file = f"{module_name}_block.dot"
     title    = f"{module_name} — Block Diagram"
     lines    = [title, "=" * len(title), "",
@@ -526,19 +587,26 @@ def write_rst_block(module_name: str, src_filename: str,
 
     # ── Port table ──────────────────────────────────────────────────────────
     if ports:
-        lines += [
-            "Ports", "-----", "",
-            ".. list-table::", "   :header-rows: 1", "",
-            "   * - Port", "     - Direction", "     - Type", "     - Description", "",
-        ]
-        for p in ports:
+        from detect_buses import group_ports
+        bus_groups, remaining = group_ports(ports, toml_path)
+        if bus_groups:
+            lines += ["Ports", "-----", "", ".. raw:: html", ""]
+            lines.append(_html_port_table(bus_groups, remaining))
+            lines.append("")
+        else:
             lines += [
-                f'   * - ``{p["name"]}``',
-                f'     - {_DIR_RST.get(p["dir"], p["dir"])}',
-                f'     - {_type_str(p)}',
-                f'     - {p["comment"] or "—"}',
-                "",
+                "Ports", "-----", "",
+                ".. list-table::", "   :header-rows: 1", "",
+                "   * - Port", "     - Direction", "     - Type", "     - Description", "",
             ]
+            for p in ports:
+                lines += [
+                    f'   * - ``{p["name"]}``',
+                    f'     - {_DIR_RST.get(p["dir"], p["dir"])}',
+                    f'     - {_type_str(p)}',
+                    f'     - {p["comment"] or "—"}',
+                    "",
+                ]
 
     # ── Generics / parameters table ──────────────────────────────────────────
     if generics:
@@ -599,12 +667,19 @@ def write_rst_block(module_name: str, src_filename: str,
 
 if __name__ == "__main__":
     if len(sys.argv) < 4:
-        sys.exit("Usage: extract_block.py <file.vhd|file.sv> <module_name> <output_dir>")
+        sys.exit("Usage: extract_block.py <file.vhd|file.sv> <module_name> <output_dir> "
+                 "[--bus-groups <path>]")
 
     src_path    = Path(sys.argv[1])
     module_name = sys.argv[2]
     output_dir  = Path(sys.argv[3])
     output_dir.mkdir(parents=True, exist_ok=True)
+
+    args = sys.argv[4:]
+    toml_path: Path | None = None
+    if "--bus-groups" in args:
+        idx = args.index("--bus-groups")
+        toml_path = Path(args[idx + 1])
 
     text = src_path.read_text()
     ext  = src_path.suffix.lower()
@@ -631,5 +706,5 @@ if __name__ == "__main__":
     print(f"  → {dot_path}")
 
     rst_path.write_text(write_rst_block(module_name, src_path.name, ports, generics, signals,
-                                        include_schematic))
+                                        include_schematic, toml_path))
     print(f"  → {rst_path}")

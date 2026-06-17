@@ -491,3 +491,39 @@ def test_rst_block_no_signals_table_when_empty():
     ports = extract_ports_vhdl(VHDL_ENTITY)
     rst   = write_rst_block("my_mod", "my_mod.vhd", ports, [], [])
     assert "Signals" not in rst
+
+
+# ── Bus interface tests ───────────────────────────────────────────────────────
+
+def test_bus_group_produces_details_html():
+    """Bus-detected ports render as .. raw:: html with <details> rows."""
+    ports = [
+        {"name": f"s_axi_{sig}", "dir": "in", "type": "std_logic",
+         "range": None, "comment": f"{sig} signal"}
+        for sig in [
+            "awvalid", "awready", "awaddr",
+            "wvalid",  "wready",  "wdata",  "wstrb",
+            "bvalid",  "bready",  "bresp",
+            "arvalid", "arready", "araddr",
+            "rvalid",  "rready",  "rdata",  "rresp",
+        ]
+    ]
+    rst = write_rst_block("mymod", "mymod.vhd", ports, [], [])
+    assert ".. raw:: html" in rst
+    assert "<details>" in rst
+    assert "s_axi" in rst
+    assert "AXI4-Lite Subordinate" in rst
+    assert ".. list-table::" not in rst
+
+
+def test_no_bus_groups_uses_list_table():
+    """Without bus groups the port section stays as .. list-table::."""
+    ports = [
+        {"name": "clk",  "dir": "in",  "type": "std_logic", "range": None, "comment": "Clock"},
+        {"name": "rst",  "dir": "in",  "type": "std_logic", "range": None, "comment": "Reset"},
+        {"name": "data", "dir": "out", "type": "std_logic", "range": None, "comment": "Data"},
+    ]
+    rst = write_rst_block("mymod", "mymod.vhd", ports, [], [])
+    assert ".. list-table::" in rst
+    assert ".. raw:: html" not in rst
+    assert "<details>" not in rst
