@@ -66,11 +66,13 @@ Patterns are checked in order — AXI4-Full before AXI4-Lite to avoid a burst in
 | AXI4-Full Manager | same signal set — prefix hint: contains `m_` or `mst_` |
 | AXI4-Lite Subordinate | `awvalid awready awaddr wvalid wready wdata wstrb bvalid bready bresp arvalid arready araddr rvalid rready rdata rresp` — prefix hint: contains `s_` or `slv_` |
 | AXI4-Lite Manager | same signal set — prefix hint: contains `m_` or `mst_` |
-| AXI4-Stream | `tvalid tready tdata tlast` (minimum required set; `tstrb tkeep tid tdest tuser` optional) |
+| AXI4-Stream Manager | `tvalid tready tdata tlast` (minimum required set; `tstrb tkeep tid tdest tuser` optional) — prefix hint: contains `m_` or `mst_` |
+| AXI4-Stream Subordinate | same signal set — prefix hint: contains `s_` or `slv_` |
+| AXI4-Stream | same signal set — no Manager/Subordinate prefix hint present |
 | APB Subordinate | `psel penable paddr pwdata prdata pwrite pready` |
 | Wishbone | `cyc stb ack adr dat_i dat_o we` |
 
-When a prefix group matches an AXI4 signal set, the Manager vs. Subordinate label is chosen based on prefix hint; if neither hint is present, it defaults to "AXI4-Full" or "AXI4-Lite" respectively. AXI4-Stream has no Manager/Subordinate distinction.
+When a prefix group matches an AXI4 or AXI4-Stream signal set, the Manager vs. Subordinate label is chosen based on prefix hint (`m_`/`mst_` → Manager, `s_`/`slv_` → Subordinate); if neither hint is present, the label defaults to "AXI4-Full", "AXI4-Lite", or "AXI4-Stream" without a role qualifier.
 
 ---
 
