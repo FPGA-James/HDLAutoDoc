@@ -492,7 +492,7 @@ def write_dot_block(module_name: str, ports: list[dict],
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# RST writer
+# RST / HTML writers
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -505,8 +505,6 @@ def _html_port_table(bus_groups: list, remaining: list[dict]) -> str:
     Bus groups get a <details>/<summary> collapsible row; individual ports get
     plain <tr> rows.
     """
-    import html as _h
-
     rows: list[str] = []
     rows.append('<table class="port-table">')
     rows.append("  <thead>")
@@ -522,17 +520,17 @@ def _html_port_table(bus_groups: list, remaining: list[dict]) -> str:
         rows.append('      <td colspan="4">')
         rows.append("        <details>")
         rows.append(
-            f"          <summary><strong>{_h.escape(bg.prefix)}</strong>"
-            f" \u2014 {_h.escape(bg.bus_type)} ({n} port{plural})</summary>"
+            f"          <summary><strong>{_html.escape(bg.prefix)}</strong>"
+            f" \u2014 {_html.escape(bg.bus_type)} ({n} port{plural})</summary>"
         )
         rows.append('          <table class="bus-ports-inner">')
         for p in bg.ports:
             type_text = _type_str(p).replace("`", "")
             rows.append("            <tr>")
-            rows.append(f'              <td><code>{_h.escape(p["name"])}</code></td>')
-            rows.append(f'              <td><code>{_h.escape(p["dir"])}</code></td>')
-            rows.append(f'              <td><code>{_h.escape(type_text)}</code></td>')
-            rows.append(f'              <td>{_h.escape(p["comment"] or "")}</td>')
+            rows.append(f'              <td><code>{_html.escape(p["name"])}</code></td>')
+            rows.append(f'              <td><code>{_html.escape(p["dir"])}</code></td>')
+            rows.append(f'              <td><code>{_html.escape(type_text)}</code></td>')
+            rows.append(f'              <td>{_html.escape(p["comment"] or "")}</td>')
             rows.append("            </tr>")
         rows.append("          </table>")
         rows.append("        </details>")
@@ -542,10 +540,10 @@ def _html_port_table(bus_groups: list, remaining: list[dict]) -> str:
     for p in remaining:
         type_text = _type_str(p).replace("`", "")
         rows.append("    <tr>")
-        rows.append(f'      <td><code>{_h.escape(p["name"])}</code></td>')
-        rows.append(f'      <td><code>{_h.escape(p["dir"])}</code></td>')
-        rows.append(f'      <td><code>{_h.escape(type_text)}</code></td>')
-        rows.append(f'      <td>{_h.escape(p["comment"] or "")}</td>')
+        rows.append(f'      <td><code>{_html.escape(p["name"])}</code></td>')
+        rows.append(f'      <td><code>{_html.escape(p["dir"])}</code></td>')
+        rows.append(f'      <td><code>{_html.escape(type_text)}</code></td>')
+        rows.append(f'      <td>{_html.escape(p["comment"] or "")}</td>')
         rows.append("    </tr>")
 
     rows.append("  </tbody>")

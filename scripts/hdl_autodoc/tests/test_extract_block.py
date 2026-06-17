@@ -527,3 +527,27 @@ def test_no_bus_groups_uses_list_table():
     assert ".. list-table::" in rst
     assert ".. raw:: html" not in rst
     assert "<details>" not in rst
+
+
+def test_bus_group_with_remaining_ports():
+    """Remaining (non-bus) ports appear as plain rows alongside bus group details."""
+    ports = [
+        {"name": f"s_axi_{sig}", "dir": "in", "type": "std_logic",
+         "range": None, "comment": ""}
+        for sig in [
+            "awvalid", "awready", "awaddr",
+            "wvalid",  "wready",  "wdata",  "wstrb",
+            "bvalid",  "bready",  "bresp",
+            "arvalid", "arready", "araddr",
+            "rvalid",  "rready",  "rdata",  "rresp",
+        ]
+    ] + [
+        {"name": "clk", "dir": "in", "type": "std_logic", "range": None, "comment": "Clock"},
+        {"name": "rst", "dir": "in", "type": "std_logic", "range": None, "comment": "Reset"},
+    ]
+    rst = write_rst_block("mymod", "mymod.vhd", ports, [], [])
+    assert "<details>" in rst          # bus group is collapsed
+    assert "AXI4-Lite Subordinate" in rst
+    # remaining ports appear as plain rows (outside <details>)
+    assert "<code>clk</code>" in rst
+    assert "<code>rst</code>" in rst
