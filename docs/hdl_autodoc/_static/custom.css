@@ -677,3 +677,55 @@ p.rubric {
   color: var(--overlay-1);
   user-select: none;
 }
+
+
+/* ── Coverage table ──────────────────────────────────────────────────────── */
+
+.coverage-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.5rem 0;
+  font-family: var(--f-body);
+  font-size: 0.9em;
+}
+
+.coverage-table th,
+.coverage-table td {
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--surface-0);
+  text-align: center;
+}
+
+.coverage-table th:first-child,
+.coverage-table td:first-child {
+  text-align: left;
+}
+
+.coverage-table thead tr {
+  background: var(--bg-secondary);
+  font-weight: 600;
+  color: var(--subtext-1);
+}
+
+.coverage-table tfoot tr {
+  background: var(--bg-secondary);
+  font-weight: 600;
+  color: var(--subtext-1);
+}
+
+.cov-yes {
+  background: color-mix(in srgb, var(--ctp-green) 18%, transparent);
+  color: var(--success);
+  font-weight: 600;
+}
+
+.cov-no {
+  background: color-mix(in srgb, var(--surface-0) 60%, transparent);
+  color: var(--overlay-1);
+}
+
+.cov-count {
+  background: color-mix(in srgb, var(--ctp-blue) 12%, transparent);
+  color: var(--accent);
+  font-weight: 500;
+}
