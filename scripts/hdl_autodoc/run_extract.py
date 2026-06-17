@@ -58,6 +58,7 @@ def main(
         proc_dir   = module_dir / "processes"
 
         if is_up_to_date(cache, name, src_file, extractor_hash):
+            assert cache is not None  # proven by is_up_to_date
             print(f"Skipping:   {name} (unchanged)")
             updated_cache.modules[name] = cache.modules[name]
             continue
@@ -73,6 +74,10 @@ def main(
         run(["python", str(scripts_dir / "extract_cdc.py"),
              src_file, name, str(module_dir)])
 
+        # Generate RTL schematic before extract_block so the SVG is available
+        # for inclusion in the block diagram RST.  All source files are passed
+        # so that ghdl can resolve cross-unit references (e.g. top-level entities
+        # that instantiate submodules).
         if schematics:
             all_src = [m["file"] for m in hierarchy["modules"].values()]
             run(["python", str(scripts_dir / "generate_schematic.py"),
