@@ -1,8 +1,18 @@
 """Tests for generate_coverage.py — detection signals."""
 
+import json
 from pathlib import Path
+
 import pytest
-from generate_coverage import CoverageResult, detect_coverage
+
+from generate_coverage import (
+    CoverageResult,
+    _depth_first_order,
+    coverage_rst,
+    detect_coverage,
+    format_terminal_table,
+    main,
+)
 
 
 def _make_mod(tmp_path: Path, name: str) -> Path:
@@ -162,9 +172,6 @@ def test_port_count_zero_when_block_rst_absent(tmp_path):
     assert result.port_count == 0
 
 
-from generate_coverage import format_terminal_table
-
-
 # ── Terminal formatter ────────────────────────────────────────────────────────
 
 def _sample_results():
@@ -241,9 +248,6 @@ def test_terminal_table_separator_lines():
     assert "Coverage Report" in out
 
 
-from generate_coverage import coverage_rst
-
-
 # ── RST generator ─────────────────────────────────────────────────────────────
 
 def _one_result(fsm=True, process_count=3, cdc=False, reset=True, port_count=6):
@@ -311,8 +315,9 @@ def test_coverage_rst_tfoot_totals():
         CoverageResult("b", fsm=False, process_count=0, cdc=False, reset=False, port_count=0),
     ]
     rst = coverage_rst(results)
-    assert ">1/2<" in rst   # fsm: 1 True out of 2
-    assert ">0/2<" in rst   # reset: 0 True out of 2
+    # fsm=1/2, processes=1/2, cdc=1/2, reset=0/2, ports=1/2
+    assert rst.count(">1/2<") == 4   # fsm, processes, cdc, ports
+    assert ">0/2<" in rst             # reset: 0 out of 2
 
 
 def test_coverage_rst_multiple_rows():
@@ -332,10 +337,6 @@ def test_coverage_rst_thead_has_column_headers():
     assert "<th>Module</th>" in rst
     assert "<th>FSM</th>" in rst
     assert "<th>Processes</th>" in rst
-
-
-import json
-from generate_coverage import _depth_first_order, main
 
 
 # ── Hierarchy ordering ────────────────────────────────────────────────────────
@@ -432,6 +433,27 @@ def _make_full_module(docs_dir: Path, name: str, *, fsm=False, procs=0,
             + port_rows
         )
         (mod_dir / f"{name}_block.rst").write_text(block)
+
+
+def test_main_exits_if_hierarchy_missing_top_key(tmp_path):
+    hjson = tmp_path / "hierarchy.json"
+    hjson.write_text(json.dumps({"modules": {}}))
+    with pytest.raises(SystemExit):
+        main(hjson, tmp_path)
+
+
+def test_main_exits_if_hierarchy_missing_modules_key(tmp_path):
+    hjson = tmp_path / "hierarchy.json"
+    hjson.write_text(json.dumps({"top": "foo"}))
+    with pytest.raises(SystemExit):
+        main(hjson, tmp_path)
+
+
+def test_main_exits_if_top_module_not_in_modules(tmp_path):
+    hjson = tmp_path / "hierarchy.json"
+    hjson.write_text(json.dumps({"top": "missing", "modules": {"other": {"children": [], "parents": []}}}))
+    with pytest.raises(SystemExit):
+        main(hjson, tmp_path)
 
 
 def test_main_writes_coverage_rst(tmp_path):
