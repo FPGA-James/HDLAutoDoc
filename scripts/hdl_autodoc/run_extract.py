@@ -84,7 +84,8 @@ def main(
                  src_file, name, str(module_dir)] + all_src)
 
         run(["python", str(scripts_dir / "extract_block.py"),
-             src_file, name, str(module_dir)])
+             src_file, name, str(module_dir),
+             "--bus-groups", str(docs_dir / "bus_groups.toml")])
 
         run(["python", str(scripts_dir / "extract_reset.py"),
              src_file, name, str(module_dir)])
