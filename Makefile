@@ -49,7 +49,7 @@ REGS_PLUGINS       := rggen-vhdl rggen-markdown
 
 
 .PHONY: help venv install hierarchy scaffold extract html pdf \
-        clean clean-generated clean-all
+        coverage clean clean-generated clean-all
 
 help:
 	@echo ""
@@ -58,6 +58,7 @@ help:
 	@echo "  make hierarchy            Parse filelist.f and write hierarchy.json"
 	@echo "  make scaffold             Generate RST shells (runs hierarchy first)"
 	@echo "  make extract              Extract FSM + process docs (runs scaffold first)"
+	@echo "  make coverage              Generate documentation coverage report"
 	@echo "  make html                 Build HTML documentation"
 	@echo "  make html SCHEMATICS=1    Build HTML with RTL schematics (requires yosys)"
 	@echo "  make pdf                  Build PDF documentation"
@@ -95,6 +96,11 @@ extract: scaffold
 		$(if $(filter 1,$(SCHEMATICS)),--schematics)
 	@echo "Regenerating timing pages..."
 	python $(AUTODOC_SCRIPTDIR)/generate_rst.py src $(AUTODOC_SOURCEDIR) "$(PROJECT)"
+
+# ── Step 3b: coverage report (opt-in, runs independently after extract) ──────
+coverage: hierarchy
+	python $(AUTODOC_SCRIPTDIR)/generate_coverage.py \
+		$(AUTODOC_HIERARCHY_JSON) $(AUTODOC_SOURCEDIR)
 
 # ── Step 4: build HTML ────────────────────────────────────────────────────────
 html: extract
@@ -136,6 +142,7 @@ clean-generated: clean
 	rm -f  $(AUTODOC_SOURCEDIR)/hierarchy.rst
 	rm -f  $(AUTODOC_SOURCEDIR)/hierarchy.dot
 	rm -f  $(AUTODOC_SOURCEDIR)/registers.rst
+	rm -f  $(AUTODOC_SOURCEDIR)/coverage.rst
 	rm -rf $(AUTODOC_SOURCEDIR)/_static/registers
 	@# Per-module always-regenerated files (walk modules/ if it exists)
 	@if [ -d $(AUTODOC_SOURCEDIR)/modules ]; then \
