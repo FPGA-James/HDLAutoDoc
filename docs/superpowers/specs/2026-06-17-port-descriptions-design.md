@@ -58,14 +58,19 @@ def group_ports(
 
 ### Built-in Bus Patterns
 
+Patterns are checked in order — AXI4-Full before AXI4-Lite to avoid a burst interface being mis-labelled as Lite.
+
 | Type | Key signals (stripped names) |
 |---|---|
+| AXI4-Full Subordinate | `awvalid awready awaddr awlen awsize awburst wvalid wready wdata wstrb wlast bvalid bready bresp arvalid arready araddr arlen arsize arburst rvalid rready rdata rresp rlast` — prefix hint: contains `s_` or `slv_` |
+| AXI4-Full Manager | same signal set — prefix hint: contains `m_` or `mst_` |
 | AXI4-Lite Subordinate | `awvalid awready awaddr wvalid wready wdata wstrb bvalid bready bresp arvalid arready araddr rvalid rready rdata rresp` — prefix hint: contains `s_` or `slv_` |
 | AXI4-Lite Manager | same signal set — prefix hint: contains `m_` or `mst_` |
+| AXI4-Stream | `tvalid tready tdata tlast` (minimum required set; `tstrb tkeep tid tdest tuser` optional) |
 | APB Subordinate | `psel penable paddr pwdata prdata pwrite pready` |
 | Wishbone | `cyc stb ack adr dat_i dat_o we` |
 
-When a prefix group matches the AXI4-Lite signal set, the Manager vs. Subordinate label is chosen based on prefix hint; if neither hint is present, it defaults to "AXI4-Lite".
+When a prefix group matches an AXI4 signal set, the Manager vs. Subordinate label is chosen based on prefix hint; if neither hint is present, it defaults to "AXI4-Full" or "AXI4-Lite" respectively. AXI4-Stream has no Manager/Subordinate distinction.
 
 ---
 
@@ -163,22 +168,24 @@ New file: `scripts/hdl_autodoc/tests/test_detect_buses.py`
 
 | # | Test |
 |---|---|
-| 1 | AXI4-Lite Subordinate detected from `s_axi_` prefix with ≥50% signal match |
-| 2 | APB detected from `apb_` prefix with ≥50% signal match |
-| 3 | Wishbone detected from `wb_` prefix with ≥50% signal match |
-| 4 | Custom group matched by prefix from TOML |
-| 5 | Prefix with < 3 ports not grouped |
-| 6 | Prefix with < 50% signal match not grouped as known bus (ports remain individual) |
-| 7 | `group_ports` preserves order of remaining ports |
-| 8 | Missing TOML path → silently returns no custom groups |
-| 9 | Malformed TOML → silently returns no custom groups (no exception) |
+| 1 | AXI4-Full Subordinate detected from `s_axi_` prefix with ≥50% signal match (has `awlen`, `wlast`, etc.) |
+| 2 | AXI4-Lite Subordinate detected from `s_axi_` prefix when burst signals absent |
+| 3 | AXI4-Stream detected from `axis_` prefix with tvalid/tready/tdata/tlast present |
+| 4 | APB detected from `apb_` prefix with ≥50% signal match |
+| 5 | Wishbone detected from `wb_` prefix with ≥50% signal match |
+| 6 | Custom group matched by prefix from TOML |
+| 7 | Prefix with < 3 ports not grouped |
+| 8 | Prefix with < 50% signal match not grouped as known bus (ports remain individual) |
+| 9 | `group_ports` preserves order of remaining ports |
+| 10 | Missing TOML path → silently returns no custom groups |
+| 11 | Malformed TOML → silently returns no custom groups (no exception) |
 
 `scripts/hdl_autodoc/tests/test_extract_block.py` — 2 new tests:
 
 | # | Test |
 |---|---|
-| 10 | Bus group produces `<details>` HTML and `.. raw:: html` in RST output |
-| 11 | No bus groups → port section uses `.. list-table::` (unchanged) |
+| 12 | Bus group produces `<details>` HTML and `.. raw:: html` in RST output |
+| 13 | No bus groups → port section uses `.. list-table::` (unchanged) |
 
 ---
 
