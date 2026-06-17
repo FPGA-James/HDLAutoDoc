@@ -78,7 +78,7 @@ def test_axi4_stream_manager():
     ports = [_port(f"m_axis_{sig}") for sig in [
         "tvalid", "tready", "tdata", "tlast",
     ]]
-    groups, remaining = group_ports(ports)
+    groups, _ = group_ports(ports)
     assert len(groups) == 1
     assert groups[0].bus_type == "AXI4-Stream Manager"
 
@@ -87,7 +87,7 @@ def test_axi4_stream_subordinate():
     ports = [_port(f"s_axis_{sig}") for sig in [
         "tvalid", "tready", "tdata", "tlast",
     ]]
-    groups, remaining = group_ports(ports)
+    groups, _ = group_ports(ports)
     assert len(groups) == 1
     assert groups[0].bus_type == "AXI4-Stream Subordinate"
 
