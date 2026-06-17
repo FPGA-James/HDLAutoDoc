@@ -160,9 +160,12 @@ def group_ports(
         # Custom TOML match takes priority over built-in patterns
         custom_match = next((c for c in custom if c.get("prefix") == prefix), None)
         if custom_match:
+            label = custom_match.get("label")
+            if not label:
+                continue  # silently skip malformed group entry
             bus_groups.append(BusGroup(
                 prefix=prefix,
-                bus_type=custom_match["label"],
+                bus_type=label,
                 ports=candidates,
             ))
             grouped_names.update(p["name"] for p in candidates)

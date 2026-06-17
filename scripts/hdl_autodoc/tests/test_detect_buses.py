@@ -182,3 +182,15 @@ def test_malformed_toml_no_error(tmp_path):
     ports = [_port("clk"), _port("rst"), _port("en")]
     groups, remaining = group_ports(ports, toml_path=bad_toml)
     assert groups == []
+
+
+# ── Test 12: Custom group missing label is silently skipped ──────────────────
+
+def test_custom_group_missing_label_no_error(tmp_path):
+    """TOML group entry without a label is silently skipped."""
+    toml_file = tmp_path / "bus_groups.toml"
+    toml_file.write_text('[[group]]\nprefix = "dma"\n')  # no label field
+    ports = [_port(f"dma_{sig}") for sig in ["addr", "data", "valid"]]
+    groups, remaining = group_ports(ports, toml_path=toml_file)
+    assert groups == []
+    assert len(remaining) == 3
