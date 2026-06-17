@@ -677,6 +677,8 @@ if __name__ == "__main__":
     toml_path: Path | None = None
     if "--bus-groups" in args:
         idx = args.index("--bus-groups")
+        if idx + 1 >= len(args):
+            sys.exit("ERROR: --bus-groups requires a path argument")
         toml_path = Path(args[idx + 1])
 
     text = src_path.read_text()
