@@ -541,11 +541,16 @@ p.rubric {
   border-bottom: 1px solid var(--surface-0);
 }
 
-/* ── Layout — sidebar and content widths ─────────────────────────────────── */
+/* ── Layout — sidebar, content, and TOC widths ───────────────────────────── */
 /* Furo default: sidebar-drawer = calc(50% - 18.5em) which is ~26em on 1440px,
    but the actual nav (sidebar-container) is only 15em — the rest is dead background.
    Fix: cap the drawer at 20em so only ~5em of background flanks the nav.
-   Content: flex:1 fills the remaining space up to 68em (Furo default is 46em). */
+   Content: flex:1 fills the remaining space up to 68em (Furo default is 46em).
+   Main: space-between so that once content hits max-width, the free space is split
+   evenly between left and right gaps — keeping sidebar left, TOC right, content centred. */
+.main {
+  justify-content: space-between;
+}
 .sidebar-drawer {
   width: 20em;
   min-width: 15em;
