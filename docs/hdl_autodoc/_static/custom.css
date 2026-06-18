@@ -776,3 +776,16 @@ p.rubric {
   border: none;
   border-bottom: 1px solid var(--surface-0);
 }
+
+/* ── Register map tables ──────────────────────────────────────────────────── */
+
+table.register-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+table.register-table th,
+table.register-table td {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
