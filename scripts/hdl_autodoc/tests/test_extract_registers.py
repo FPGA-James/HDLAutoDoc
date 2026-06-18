@@ -70,7 +70,8 @@ def test_r_mode(tmp_path):
     toml = tmp_path / "regs_test.toml"
     toml.write_text('[reg]\nmode = "r"\ndescription = "A register."\n')
     rst = generate_registers_rst(toml, "test")
-    assert "     - r\n" in rst
+    assert "- r\n" in rst
+    assert "- r/w" not in rst  # make sure we matched r, not r/w
 
 
 # ── Test 5: bit field ─────────────────────────────────────────────────────────
@@ -146,3 +147,12 @@ def test_missing_config_yml_defaults_to_32bit(tmp_path):
     rst = generate_registers_rst(_two_regs(tmp_path), "test")
     assert "0x00" in rst
     assert "0x04" in rst
+
+
+# ── Test 11: Register with no fields produces fallback message ────────────────
+
+def test_no_fields_register_produces_fallback(tmp_path):
+    toml = tmp_path / "regs_test.toml"
+    toml.write_text('[status]\nmode = "r"\ndescription = "Status register."\n')
+    rst = generate_registers_rst(toml, "test")
+    assert "No fields defined" in rst

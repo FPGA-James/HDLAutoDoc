@@ -88,7 +88,7 @@ def generate_registers_rst(regs_toml: Path, module_name: str) -> str:
     registers = [(k, v) for k, v in data.items()
                  if isinstance(v, dict) and "mode" in v]
 
-    title = "Register Map"
+    title = f"{module_name} — Register Map"
     lines: list[str] = [title, "=" * len(title), ""]
 
     # Summary table
