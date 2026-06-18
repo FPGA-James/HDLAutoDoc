@@ -39,15 +39,13 @@ vhdl_autodoc_source_path = [_candidate]
 # ── HTML output ──────────────────────────────────────────────────────────────
 html_theme          = "furo"
 html_static_path    = ["_static"]
+templates_path      = ["_templates"]
 html_css_files      = ["custom.css"]
 html_logo           = "_static/logo.svg"
 html_favicon        = "_static/logo.svg"
 html_show_sphinx    = False
 html_title          = project
 html_short_title    = project
-
-# ── Template overrides ────────────────────────────────────────────────────────
-templates_path      = ["_templates"]
 
 html_theme_options = {
     "top_of_page_buttons":  [],     # remove "view source" / "edit" clutter
