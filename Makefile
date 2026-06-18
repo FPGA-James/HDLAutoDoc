@@ -106,16 +106,12 @@ coverage: hierarchy
 # ── Step 4: build HTML ────────────────────────────────────────────────────────
 html: extract
 	mkdir -p $(AUTODOC_SOURCEDIR)/_static $(AUTODOC_SOURCEDIR)/_templates
-	@echo "Checking for register map..."
-	python $(AUTODOC_SCRIPTDIR)/include_registers.py . $(AUTODOC_SOURCEDIR)
 	$(AUTODOC_SPHINXBUILD) -M html $(AUTODOC_SOURCEDIR) $(AUTODOC_BUILDDIR) $(AUTODOC_SPHINXOPTS)
 	@echo ""
 	@echo "Documentation built: $(AUTODOC_BUILDDIR)/html/index.html"
 
 # ── PDF build ─────────────────────────────────────────────────────────────────
 pdf: extract
-	@echo "Checking for register map..."
-	python $(AUTODOC_SCRIPTDIR)/include_registers.py . $(AUTODOC_SOURCEDIR)
 	$(AUTODOC_SPHINXBUILD) -M latexpdf $(AUTODOC_SOURCEDIR) $(AUTODOC_BUILDDIR) $(AUTODOC_SPHINXOPTS)
 
 # -- make all docs, html and pdf
@@ -154,6 +150,7 @@ clean-generated: clean
 		     -o -name "block.rst" -o -name "*_block.rst" -o -name "*_block.dot" \
 		     -o -name "*_schematic.svg" \
 		     -o -name "reset.rst" -o -name "*_reset.rst" -o -name "*_reset.dot" \
+		     -o -name "registers.rst" \
 		     -o -name "*.dot"  -o -name "*.rst" -path "*/processes/*" \
 		| xargs rm -f 2>/dev/null; \
 		find $(AUTODOC_SOURCEDIR)/modules -maxdepth 2 -name "processes" -type d \
