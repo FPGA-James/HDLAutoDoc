@@ -95,7 +95,7 @@ def generate_registers_rst(regs_toml: Path, module_name: str) -> str:
     lines += [
         ".. list-table::",
         "   :header-rows: 1",
-        "   :widths: 25 25 25 25",
+        "   :widths: 20 15 15 50",
         "   :class: register-table",
         "",
         "   * - Register",
@@ -125,7 +125,7 @@ def generate_registers_rst(regs_toml: Path, module_name: str) -> str:
             lines += [
                 ".. list-table::",
                 "   :header-rows: 1",
-                "   :widths: 25 25 25 25",
+                "   :widths: 15 20 20 45",
                 "   :class: register-table",
                 "",
                 "   * - Field",
