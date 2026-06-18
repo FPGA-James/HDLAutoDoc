@@ -94,6 +94,16 @@ def main(
 
     save_cache(updated_cache, cache_path)
 
+    # Register map extraction — always re-run (independent of HDL cache)
+    registers_dir = docs_dir.parent.parent / "registers"
+    for name in hierarchy["modules"]:
+        regs_toml = registers_dir / f"regs_{name}.toml"
+        if regs_toml.exists():
+            module_dir = docs_dir / "modules" / name
+            print(f"Registers:  {name} ({regs_toml.name})...")
+            run(["python", str(scripts_dir / "extract_registers.py"),
+                 str(regs_toml), name, str(module_dir)])
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 4:
