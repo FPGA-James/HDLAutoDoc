@@ -88,7 +88,6 @@
   --f-size:  15px;
   --radius:  6px;
   --shadow:  0 1px 3px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.1);
-  --content-max: clamp(640px, calc(100vw - 300px), 1800px);
   --transition: 0.2s ease;
 }
 
