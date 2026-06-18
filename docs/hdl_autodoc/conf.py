@@ -37,24 +37,21 @@ for _ in range(6):
 vhdl_autodoc_source_path = [_candidate]
 
 # ── HTML output ──────────────────────────────────────────────────────────────
-html_theme         = "sphinx_rtd_theme"
-html_static_path   = ["_static"]
+html_theme          = "furo"
+html_static_path    = ["_static"]
 html_templates_path = ["_templates"]
-html_js_files  = ["theme.js"]
-html_css_files     = ["custom.css"]
-html_logo          = "_static/logo.svg"
-html_favicon       = "_static/logo.svg"
-html_show_sphinx   = False          # remove "Built with Sphinx" footer clutter
-html_title         = project
-html_short_title   = project
+html_css_files      = ["custom.css"]
+html_logo           = "_static/logo.svg"
+html_favicon        = "_static/logo.svg"
+html_show_sphinx    = False
+html_title          = project
+html_short_title    = project
 
 html_theme_options = {
-    "logo_only":           True,    # show logo instead of project name in sidebar
-    "navigation_depth":    6,
-    "collapse_navigation": False,
-    "sticky_navigation":   True,
-    "includehidden":       True,
-    "titles_only":         False,
+    "navigation_with_keys": True,   # j/k keyboard nav between pages
+    "top_of_page_buttons":  [],     # remove "view source" / "edit" clutter
+    "light_css_variables":  {},     # reserved — Catppuccin Latte port goes here
+    "dark_css_variables":   {},     # reserved — Catppuccin Mocha port goes here
 }
 
 # ── LaTeX / PDF output ────────────────────────────────────────────────────────
