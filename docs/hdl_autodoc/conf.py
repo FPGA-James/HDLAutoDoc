@@ -41,6 +41,7 @@ html_theme          = "furo"
 html_static_path    = ["_static"]
 templates_path      = ["_templates"]
 html_css_files      = ["custom.css"]
+html_js_files       = ["search-hotkey.js"]
 html_logo           = "_static/logo.svg"
 html_favicon        = "_static/logo.svg"
 html_show_sphinx    = False
