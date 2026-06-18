@@ -5,7 +5,7 @@ sphinx>=7.0,<9.0
 docutils>=0.18,<0.21
 
 # Theme
-furo
+furo>=2025.12.19
 
 # WaveDrom — multiple diagrams per file via .. wavedrom:: directive
 sphinxcontrib-wavedrom>=3.0
