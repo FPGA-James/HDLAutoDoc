@@ -541,6 +541,13 @@ p.rubric {
   border-bottom: 1px solid var(--surface-0);
 }
 
+/* ── Layout — widen content column beyond Furo's default 46em ────────────── */
+/* min() ensures graceful shrink on narrower viewports */
+.content {
+  width: min(68em, 100%);
+}
+
+
 /* ── Register map tables ──────────────────────────────────────────────────── */
 
 table.register-table {
