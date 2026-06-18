@@ -46,7 +46,7 @@ def _render_enum_subtable(elements: dict[str, str]) -> list[str]:
         "",
         "       .. list-table::",
         "          :header-rows: 1",
-        "          :widths: 30 70",
+        "          :widths: 50 50",
         "",
         "          * - Value",
         "            - Description",
@@ -95,7 +95,7 @@ def generate_registers_rst(regs_toml: Path, module_name: str) -> str:
     lines += [
         ".. list-table::",
         "   :header-rows: 1",
-        "   :widths: 20 15 15 50",
+        "   :widths: 25 25 25 25",
         "",
         "   * - Register",
         "     - Offset",
@@ -124,7 +124,7 @@ def generate_registers_rst(regs_toml: Path, module_name: str) -> str:
             lines += [
                 ".. list-table::",
                 "   :header-rows: 1",
-                "   :widths: 20 20 20 40",
+                "   :widths: 25 25 25 25",
                 "",
                 "   * - Field",
                 "     - Type",
