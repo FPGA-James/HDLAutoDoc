@@ -155,7 +155,7 @@ def write_always(path: Path, content: str) -> str:
 def module_index_rst(entity: dict, children: list[str],
                      shared_children: set[str],
                      has_processes: bool = True,
-                     is_top: bool = False) -> str:
+                     has_registers: bool = False) -> str:
     """Always-regenerated toctree for one module."""
     name  = entity["name"]
     title = name
@@ -173,10 +173,9 @@ def module_index_rst(entity: dict, children: list[str],
         lines.append("   processes/index")
     lines.append("   cdc")
     lines.append("   reset")
+    if has_registers:
+        lines.append("   registers")
     lines.append("")
-
-    if is_top:
-        lines += ["   ../../registers", ""]
 
     if children:
         lines += [
@@ -431,8 +430,24 @@ def hierarchy_rst(hierarchy: dict) -> str:
     return "\n".join(lines)
 
 
+def registers_rst(modules_with_regs: list[str]) -> str:
+    """Top-level registers index page listing all modules with register maps."""
+    title = "Register Maps"
+    lines = [
+        title, "=" * len(title), "",
+        ".. toctree::",
+        "   :maxdepth: 1",
+        "",
+    ]
+    for name in modules_with_regs:
+        lines.append(f"   modules/{name}/registers")
+    lines.append("")
+    return "\n".join(lines)
+
+
 def index_rst(entities: list[dict], project_name: str,
-              hierarchy: dict = None, has_coverage: bool = False) -> str:
+              hierarchy: dict = None, has_coverage: bool = False,
+              modules_with_regs: list[str] | None = None) -> str:
     lines = [
         project_name, "=" * len(project_name), "",
         ".. toctree::",
@@ -443,16 +458,18 @@ def index_rst(entities: list[dict], project_name: str,
     ]
 
     if hierarchy:
-        # Only list the top-level module — it contains submodule toctrees
         top = hierarchy["top"]
         lines += [
             f"   modules/{top}/index",
             "   hierarchy",
         ]
+        if modules_with_regs:
+            lines.append("   registers")
     else:
         for e in entities:
             lines.append(f"   modules/{e['name']}/index")
-        lines.append("   registers")
+        if modules_with_regs:
+            lines.append("   registers")
 
     if has_coverage:
         lines.append("   coverage")
@@ -552,6 +569,7 @@ if __name__ == "__main__":
         shared_names = {n for n, m in hierarchy["modules"].items() if m["shared"]}
 
     results = []
+    modules_with_regs: list[str] = []
 
     for entity in entities:
         name    = entity["name"].lower()
@@ -563,11 +581,14 @@ if __name__ == "__main__":
 
         # Always regenerated
         has_processes = (mod_dir / "processes" / "index.rst").exists()
+        has_registers = (mod_dir / "registers.rst").exists()
+        if has_registers:
+            modules_with_regs.append(name)
         results.append(write_always(
             mod_dir / "index.rst",
             module_index_rst(entity, children, shared_names,
                              has_processes=has_processes,
-                             is_top=(hierarchy and name == hierarchy["top"]))
+                             has_registers=has_registers)
         ))
         results.append(write_always(
             mod_dir / "fsm.rst",
@@ -602,9 +623,15 @@ if __name__ == "__main__":
 
     # Top-level always-regenerated
     has_coverage = (docs_dir / "coverage.rst").exists()
+    if modules_with_regs:
+        results.append(write_always(
+            docs_dir / "registers.rst",
+            registers_rst(modules_with_regs)
+        ))
     results.append(write_always(
         docs_dir / "index.rst",
-        index_rst(entities, project_name, hierarchy, has_coverage=has_coverage)
+        index_rst(entities, project_name, hierarchy, has_coverage=has_coverage,
+                  modules_with_regs=modules_with_regs or None)
     ))
     results.append(write_always(
         docs_dir / "overview.rst",

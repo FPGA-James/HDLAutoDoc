@@ -23,7 +23,9 @@ from generate_rst import (
     cdc_rst,
     entity_rst,
     fsm_rst,
+    index_rst,
     module_index_rst,
+    registers_rst,
     write_always,
     write_if_missing,
 )
@@ -75,9 +77,9 @@ def test_index_rst_no_submodules_section_when_childless():
 
 
 def test_index_rst_top_includes_registers():
-    """The top-level module's toctree includes the registers page."""
+    """The module toctree includes the registers page when has_registers=True."""
     rst = module_index_rst(_make_entity(), children=[], shared_children=set(),
-                           is_top=True)
+                           has_registers=True)
     assert "registers" in rst
 
 
@@ -179,3 +181,37 @@ def test_write_always_creates_parent_dirs(tmp_path):
     p = tmp_path / "deep" / "nested" / "file.rst"
     write_always(p, "content")
     assert p.exists()
+
+
+# ── Register-aware toctree tests ──────────────────────────────────────────────
+
+def test_module_index_rst_with_registers_includes_registers_entry():
+    """has_registers=True adds registers to the module toctree."""
+    rst = module_index_rst(
+        _make_entity(), children=[], shared_children=set(),
+        has_registers=True
+    )
+    assert "   registers" in rst
+
+
+def test_module_index_rst_without_registers_excludes_registers_entry():
+    """has_registers=False (default) does not add registers to the toctree."""
+    rst = module_index_rst(
+        _make_entity(), children=[], shared_children=set()
+    )
+    assert "registers" not in rst
+
+
+def test_registers_rst_generates_toctree():
+    """registers_rst writes a toctree with module paths."""
+    rst = registers_rst(["counter", "top"])
+    assert "modules/counter/registers" in rst
+    assert "modules/top/registers" in rst
+    assert ".. toctree::" in rst
+
+
+def test_index_rst_includes_registers_when_modules_present():
+    """index_rst adds a registers entry when modules_with_regs is non-empty."""
+    entity = {"name": "top", "brief": "Top.", "file": "top.vhd", "ports": []}
+    rst = index_rst([entity], "MyProject", modules_with_regs=["top"])
+    assert "registers" in rst
