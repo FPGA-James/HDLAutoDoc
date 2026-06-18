@@ -44,16 +44,16 @@ def _render_field_type(fdata: dict) -> str:
 def _render_enum_subtable(elements: dict[str, str]) -> list[str]:
     lines = [
         "",
-        "      .. list-table::",
-        "         :header-rows: 1",
-        "         :widths: 30 70",
+        "       .. list-table::",
+        "          :header-rows: 1",
+        "          :widths: 30 70",
         "",
-        "         * - Value",
-        "           - Description",
+        "          * - Value",
+        "            - Description",
     ]
     for val, desc in elements.items():
-        lines.append(f"         * - ``{val}``")
-        lines.append(f"           - {desc}")
+        lines.append(f"          * - ``{val}``")
+        lines.append(f"            - {desc}")
     lines.append("")
     return lines
 

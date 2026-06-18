@@ -1,0 +1,40 @@
+[ctrl]
+mode = "r_w"
+description = "Control register. Written by the config-bus master to configure blinky and PWM behaviour."
+
+[ctrl.enable]
+type = "bit"
+description = "Assert to enable blinky LED output. Deassert to force LED off."
+default_value = "0"
+
+[ctrl.mode_sel]
+type = "enumeration"
+description = "Selects the blinky operating mode synchronised into the sys_clk domain."
+default_value = "blinky"
+
+[ctrl.mode_sel.element]
+blinky = "LED blinks at the configured rate."
+static = "LED driven to a constant on or off state."
+
+[pwm]
+mode = "r_w"
+description = "PWM duty-cycle register. Controls the PWM output driven by pwm_controller."
+
+[pwm.duty_cycle]
+type = "bit_vector"
+width = 8
+description = "PWM duty cycle. 0x00 = 0 %, 0xFF = 100 %. Crosses into sys_clk domain (unsynchronised — use a stable write window)."
+default_value = "0x00"
+
+[status]
+mode = "r"
+description = "Read-back register. Reflects the synchronised values visible in the sys_clk domain."
+
+[status.blinky_en]
+type = "bit"
+description = "Synchronised value of ctrl.enable as seen in the sys_clk domain (two-flop output)."
+
+[status.pwm_duty]
+type = "bit_vector"
+width = 8
+description = "Current pwm_duty value in the sys_clk domain (raw crossing, may be metastable during transitions)."
