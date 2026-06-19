@@ -100,6 +100,15 @@ def test_vivado_luts_available(tmp_path):
     assert modules[0].luts_available == 134600
 
 
+# ── Test: Vivado ffs_available ─────────────────────────────────────────────
+
+def test_vivado_ffs_available(tmp_path):
+    rpt = tmp_path / "util.rpt"
+    rpt.write_text(_VIVADO_UTIL)
+    modules, _ = parse_utilization(rpt)
+    assert modules[0].ffs_available == 269200
+
+
 # ── Test 3: Vivado hierarchical breakdown ─────────────────────────────────────
 
 def test_vivado_hierarchical_per_module(tmp_path):

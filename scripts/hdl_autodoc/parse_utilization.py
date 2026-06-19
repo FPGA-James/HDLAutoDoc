@@ -156,7 +156,15 @@ def _parse_vivado(text: str) -> list[ModuleUtilization]:
                 continue
         break  # only the first hierarchical table
 
-    return hier_results if hier_results else [top]
+    if hier_results:
+        # Restore available counts from the summary onto the top-level hier entry
+        for m in hier_results:
+            if m.module_name == "top":
+                m.luts_available = top.luts_available
+                m.ffs_available  = top.ffs_available
+                break
+        return hier_results
+    return [top]
 
 
 # ── Yosys stat parser ─────────────────────────────────────────────────────────
