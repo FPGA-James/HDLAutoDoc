@@ -48,7 +48,7 @@ REGS_OUT_DIR       := registers/out
 REGS_PLUGINS       := rggen-vhdl rggen-markdown
 
 
-.PHONY: help venv install hierarchy scaffold extract html pdf \
+.PHONY: help venv install hierarchy scaffold extract reports html pdf \
         coverage clean clean-generated clean-all
 
 help:
@@ -103,6 +103,14 @@ coverage: hierarchy
 	python $(AUTODOC_SCRIPTDIR)/generate_coverage.py \
 		$(AUTODOC_HIERARCHY_JSON) $(AUTODOC_SOURCEDIR)
 
+# ── Step 3c: synthesis/PnR report ingestion (opt-in, after CI generates reports/) ──
+reports: hierarchy
+	@echo "Ingesting synthesis reports..."
+	python $(AUTODOC_SCRIPTDIR)/extract_reports.py \
+		$(AUTODOC_HIERARCHY_JSON) $(AUTODOC_SOURCEDIR) reports
+	@echo "Regenerating RST for implementation pages..."
+	python $(AUTODOC_SCRIPTDIR)/generate_rst.py src $(AUTODOC_SOURCEDIR) "$(PROJECT)"
+
 # ── Step 4: build HTML ────────────────────────────────────────────────────────
 html: extract
 	mkdir -p $(AUTODOC_SOURCEDIR)/_static $(AUTODOC_SOURCEDIR)/_templates
@@ -140,6 +148,8 @@ clean-generated: clean
 	rm -f  $(AUTODOC_SOURCEDIR)/hierarchy.dot
 	rm -f  $(AUTODOC_SOURCEDIR)/registers.rst
 	rm -f  $(AUTODOC_SOURCEDIR)/coverage.rst
+	rm -f  $(AUTODOC_SOURCEDIR)/synthesis/index.rst
+	rm -rf $(AUTODOC_SOURCEDIR)/synthesis
 	rm -f  $(AUTODOC_SOURCEDIR)/.extract_cache.json
 	rm -rf $(AUTODOC_SOURCEDIR)/_static/registers
 	@# Per-module always-regenerated files (walk modules/ if it exists)
@@ -151,6 +161,7 @@ clean-generated: clean
 		     -o -name "*_schematic.svg" \
 		     -o -name "reset.rst" -o -name "*_reset.rst" -o -name "*_reset.dot" \
 		     -o -name "registers.rst" \
+		     -o -name "synthesis.rst" \
 		     -o -name "*.dot"  -o -name "*.rst" -path "*/processes/*" \
 		| xargs rm -f 2>/dev/null; \
 		find $(AUTODOC_SOURCEDIR)/modules -maxdepth 2 -name "processes" -type d \

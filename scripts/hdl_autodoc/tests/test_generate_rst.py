@@ -215,3 +215,38 @@ def test_index_rst_includes_registers_when_modules_present():
     entity = {"name": "top", "brief": "Top.", "file": "top.vhd", "ports": []}
     rst = index_rst([entity], "MyProject", modules_with_regs=["top"])
     assert "registers" in rst
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# has_synthesis — module_index_rst
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_module_index_includes_synthesis_when_has_synthesis_true():
+    """synthesis is added to the module toctree when has_synthesis=True."""
+    rst = module_index_rst(_make_entity(), children=[], shared_children=set(),
+                           has_synthesis=True)
+    assert "synthesis" in rst
+
+
+def test_module_index_omits_synthesis_when_has_synthesis_false():
+    """synthesis is NOT added to the module toctree when has_synthesis=False."""
+    rst = module_index_rst(_make_entity(), children=[], shared_children=set(),
+                           has_synthesis=False)
+    assert "synthesis" not in rst
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# has_synthesis — index_rst (top-level)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_top_index_has_implementation_section_when_has_synthesis_true():
+    """synthesis/index is included and 'Implementation' caption present."""
+    rst = index_rst([_make_entity()], "MyProject", has_synthesis=True)
+    assert "synthesis/index" in rst
+    assert "Implementation" in rst
+
+
+def test_top_index_no_implementation_section_when_has_synthesis_false():
+    """synthesis/index is NOT present when has_synthesis=False."""
+    rst = index_rst([_make_entity()], "MyProject", has_synthesis=False)
+    assert "synthesis/index" not in rst
