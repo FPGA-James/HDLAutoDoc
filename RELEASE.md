@@ -1,5 +1,97 @@
 # Release Notes
 
+## v3.5.0
+
+### Template Repo Restructure
+
+The repository has been reorganised into a reusable template layout:
+
+| Directory | Contents |
+|---|---|
+| `src/` | Canonical tool — pipeline scripts, Sphinx config, Makefile, requirements.txt |
+| `example/` | Self-contained working demo — traffic light + PWM controller HDL with registers and dummy synthesis reports |
+
+**`install.sh`** — new helper script that copies the tool into any target HDL project:
+
+```bash
+./install.sh /path/to/your/hdl-project
+```
+
+Re-running is safe: `scripts/` and `docs/hdl_autodoc/` are always overwritten with the latest version; `Makefile` and `requirements.txt` are skipped if they already exist.
+
+**`.gitignore`** has been updated to exclude all auto-generated Sphinx files (`modules/`, `synthesis/`, `hierarchy.json`, `_static/registers/`, `_build/`) under any nested `docs/hdl_autodoc/` tree.
+
+#### Breaking changes
+
+- `scripts/`, `docs/hdl_autodoc/`, `registers/`, `Makefile`, `requirements.txt`, and `filelist.f` no longer live at the repository root. Use `install.sh` to place them in your project.
+
+---
+
+## v3.4.0
+
+### Synthesis Reports
+
+`make reports` ingests post-synthesis and post-route report files from a `reports/` directory and writes an **Implementation** section into the documentation sidebar.
+
+**Supported toolchains:**
+
+| Toolchain | Utilization file | Timing file |
+|---|---|---|
+| Vivado (Xilinx) | `reports/vivado/utilization_placed.rpt` (falls back to `utilization_synth.rpt`) | `reports/vivado/timing_summary_routed.rpt` |
+| Yosys + nextpnr (Lattice ECP5, iCE40) | `reports/yosys/stat.txt` | `reports/yosys/nextpnr.log` |
+
+**New scripts:**
+
+- `parse_utilization.py` — parses Vivado ASCII utilization tables (including hierarchical breakdown with depth tracking) and Yosys `stat.txt` cell counts into a common `ModuleUtilization` dataclass.
+- `parse_timing.py` — parses Vivado `WNS` + `Period` into achieved fmax, and nextpnr `Max frequency` lines. Strips nextpnr infrastructure prefixes (`$glbnet$`, `gbuf`, `clkbuf`) from clock names.
+- `extract_reports.py` — orchestrates both parsers and writes `docs/hdl_autodoc/synthesis/index.rst` (top-level timing + utilization tables) and `docs/hdl_autodoc/modules/<n>/synthesis.rst` (per-module resource counts).
+
+**Utilization table** — modules shown with hierarchy indentation (`└─ submodule`) and available resource counts in column headers (Vivado only).
+
+**Timing table** — clock name, target frequency (MHz), achieved fmax (MHz), constraint period (ns), and WNS (ns) for Vivado; clock name, fmax, target, and PASS/FAIL status for nextpnr.
+
+`generate_rst.py` detects the presence of `synthesis/index.rst` and adds an **Implementation** toctree section to the top-level sidebar when reports are available. A placeholder page is always written so the section remains visible even when no reports are present.
+
+**Test coverage:** `test_parse_utilization.py` (9 tests), `test_parse_timing.py` (8 tests), `test_extract_reports.py` (7 tests), 4 new tests in `test_generate_rst.py`.
+
+### Furo Theme
+
+Migrated from `sphinx-rtd-theme` to [Furo](https://pradyunsg.me/furo/):
+
+- Built-in dark/light toggle — top-right button, `localStorage` persistence, respects OS `prefers-color-scheme` on first visit.
+- `Ctrl+K` / `Cmd+K` keyboard shortcut focuses the sidebar search input (via `_static/search-hotkey.js`).
+- Wider content column and responsive sidebar that collapses cleanly on mobile.
+- `docutils` pinned to `>=0.18,<0.21` for `sphinx-vhdl` compatibility.
+
+---
+
+## v3.3.0
+
+### RTL Schematics
+
+Gate-level netlists rendered inside each module's block diagram page. Enabled with `make html SCHEMATICS=1`; off by default.
+
+`generate_schematic.py` synthesises each module with `yosys` to a JSON netlist, then renders a clean SVG schematic with `netlistsvg`. The SVG is embedded as an *RTL Schematic* section at the bottom of the block diagram page.
+
+**Tool requirements:**
+
+| Module type | Required tools |
+|---|---|
+| SystemVerilog | `yosys`, `netlistsvg` |
+| VHDL | `yosys`, `netlistsvg`, `ghdl`, `ghdl-yosys-plugin` (via OSS CAD Suite) |
+
+Missing tools produce a warning and the build continues without schematics. Mixed-language top-level modules and modules with unconnected ports or non-synthesisable constructs are skipped cleanly.
+
+### `make venv` Target
+
+Creates a `.venv/` virtualenv and installs all Python dependencies in one step. Subsequent `make` commands auto-detect `.venv/bin/python3`, keeping the project isolated from system Python and tools like OSS CAD Suite on `PATH`.
+
+### Sphinx Invocation Fix
+
+Sphinx is now invoked as `$(PYTHON) -m sphinx` rather than the `sphinx-build` binary, preventing `PATH` shadowing issues when OSS CAD Suite installs its own `sphinx-build` wrapper.
+
+---
+
 ## v3.2.0
 
 ### Block Diagrams
