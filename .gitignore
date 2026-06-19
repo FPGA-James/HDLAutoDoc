@@ -3,5 +3,26 @@ __pycache__/
 *.pyc
 *.pyo
 .venv/
-docs/hdl_autodoc/_build/
+.DS_Store
 
+# Sphinx build output (under any docs/ tree)
+docs/*/_build/
+**/docs/hdl_autodoc/_build/
+
+# Auto-generated Sphinx doc files (re-created by `make html`)
+**/docs/hdl_autodoc/hierarchy.json
+**/docs/hdl_autodoc/hierarchy.dot
+**/docs/hdl_autodoc/hierarchy.rst
+**/docs/hdl_autodoc/index.rst
+**/docs/hdl_autodoc/overview.rst
+**/docs/hdl_autodoc/registers.rst
+**/docs/hdl_autodoc/coverage.rst
+**/docs/hdl_autodoc/modules/
+**/docs/hdl_autodoc/synthesis/
+**/docs/hdl_autodoc/.extract_cache.json
+
+# Generated register artifacts copied into _static (re-created by `make html`)
+**/docs/hdl_autodoc/_static/registers/
+
+# pyenv
+.python-version

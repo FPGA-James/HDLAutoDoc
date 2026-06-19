@@ -2,7 +2,7 @@
 
 > **Turn your VHDL and SystemVerilog source into beautiful, navigable documentation — automatically.**
 
-HDL AutoDoc is a zero-boilerplate documentation pipeline for hardware design projects. Drop your source files in, run `make html`, and get a fully structured Sphinx site with block diagrams, FSM diagrams, timing waveforms, process pages, a hierarchy tree, a CDC analysis page per module, and an embedded register map — all extracted directly from your HDL source.
+HDL AutoDoc is a zero-boilerplate documentation pipeline for hardware design projects. Drop your source files in, run `make html`, and get a fully structured Sphinx site with block diagrams, FSM diagrams, timing waveforms, process pages, a hierarchy tree, a CDC analysis page per module, an embedded register map, and synthesis/place-and-route reports — all extracted directly from your HDL source and CI artifacts.
 
 No separate doc files to maintain. No manual diagrams to draw. If it's in the source, it's in the docs.
 
@@ -24,8 +24,9 @@ No separate doc files to maintain. No manual diagrams to draw. If it's in the so
 | **Shared components** | Documented once, linked from every parent |
 | **VHDL + SystemVerilog** | Mixed-language designs work out of the box |
 | **Register map** | Auto-embeds `registers/generated/*.html` — any register builder output supported |
-| **Dark / light mode** | Catppuccin Latte (light) and Mocha (dark) — toggle persists across sessions |
-| **Fluid layout** | Scales to any screen width using `clamp()` — no hardcoded breakpoints |
+| **Synthesis reports** | Ingests Vivado and Yosys/nextpnr reports from CI — utilization per module (with hierarchy indent) and top-level timing/fmax |
+| **Dark / light mode** | Built-in Furo toggle — persists across sessions, respects OS preference |
+| **Ctrl+K search** | Keyboard shortcut focuses the sidebar search input |
 | **PDF output** | Full LaTeX PDF via `make pdf` |
 
 ---
@@ -34,9 +35,11 @@ No separate doc files to maintain. No manual diagrams to draw. If it's in the so
 
 ```
 docs/
-├── index.rst                       ← project root
+├── index.rst                       ← project root (Design + Implementation toctrees)
 ├── overview.rst                    ← module summary table
 ├── hierarchy.rst                   ← instantiation tree diagram + module list
+├── synthesis/
+│   └── index.rst                   ← Implementation page: timing + utilization tables
 └── modules/
     └── top/
         ├── index.rst               ← module toctree + submodules
@@ -46,6 +49,7 @@ docs/
         ├── timing.rst              ← all wavedrom diagrams for this module
         ├── cdc.rst                 ← clock domain crossing analysis + diagram
         ├── registers.rst           ← embedded register map (if present)
+        ├── synthesis.rst           ← per-module utilization (if reports present)
         ├── processes/
         │   ├── index.rst           ← process summary table
         │   ├── p_state_reg.rst     ← per-process: description, waveform, source
@@ -117,11 +121,22 @@ If yosys or the GHDL plugin is absent, schematic generation is **skipped silentl
 
 ## 🚀 Getting started
 
-### Install
+### Install into your HDL project
+
+Clone this repo and run `install.sh`, pointing it at your existing HDL project:
 
 ```bash
 git clone https://github.com/your-org/hdl-autodoc.git
 cd hdl-autodoc
+./install.sh /path/to/your/hdl-project
+```
+
+This copies the pipeline scripts, Sphinx config, Makefile, and `requirements.txt` into your project. Re-running is safe — scripts are always overwritten with the latest version; Makefile and `requirements.txt` are skipped if they already exist.
+
+### Bootstrap your environment
+
+```bash
+cd /path/to/your/hdl-project
 make venv
 ```
 
@@ -131,7 +146,7 @@ This creates a `.venv/` virtualenv and installs all Python dependencies into it.
 
 ### Point it at your design
 
-Edit `filelist.f` — list your source files, leaves first:
+Create or edit `filelist.f` — list your source files, leaves first:
 
 ```
 # filelist.f
@@ -144,8 +159,8 @@ src/top.vhd          ← top-level auto-detected
 ### Build
 
 ```bash
-make html   # → docs/_build/html/index.html
-make pdf    # → docs/_build/latex/<project>.pdf
+make html   # → docs/hdl_autodoc/_build/html/index.html
+make pdf    # → docs/hdl_autodoc/_build/latex/<project>.pdf
 ```
 
 Optionally set a project name:
@@ -154,11 +169,22 @@ Optionally set a project name:
 make html PROJECT="My FPGA Design"
 ```
 
+### Try the example
+
+A fully working example design (traffic light controller + PWM controller) lives in `example/`. It is a self-contained project with HDL sources, register definitions, and dummy synthesis reports:
+
+```bash
+cd example
+make venv && make html
+```
+
+Then open `example/docs/hdl_autodoc/_build/html/index.html`.
+
 ---
 
 ## 🔧 How it works
 
-The build runs in four steps, all driven by a single `make html`:
+The build runs in steps, all driven by a single `make html`:
 
 ```
 filelist.f
@@ -166,7 +192,7 @@ filelist.f
     ▼
 parse_hierarchy.py     Reads the filelist, extracts module names,
     │                  parses instantiations, detects the top-level,
-    │                  writes docs/hierarchy.json
+    │                  writes docs/hdl_autodoc/hierarchy.json
     ▼
 generate_rst.py        Scaffolds docs/modules/<n>/ for each module.
     │                  Always-regenerated: index, block, fsm, timing, cdc pages.
@@ -182,9 +208,13 @@ include_registers.py   Checks registers/generated/*.html. Copies it
     ▼
 generate_rst.py        Second pass: timing pages now aggregate all
     │                  wavedrom blocks from the extracted process files.
+    │                  Detects synthesis.rst files and adds Implementation
+    │                  toctree section if present.
     ▼
 sphinx-build           Renders HTML (or PDF via latexpdf).
 ```
+
+Synthesis reports are ingested separately with `make reports` (see below) and picked up by the next `make html`.
 
 ---
 
@@ -273,6 +303,51 @@ Modules with a single clock domain show a "No CDC" note. Purely combinational mo
 
 ---
 
+## 📊 Synthesis reports
+
+HDL AutoDoc can ingest post-synthesis and post-route reports from CI and publish them as an **Implementation** section in the sidebar.
+
+### Supported tools
+
+| Toolchain | Utilization file | Timing file |
+|---|---|---|
+| **Vivado** (Xilinx) | `utilization_placed.rpt` (falls back to `utilization_synth.rpt`) | `timing_summary_routed.rpt` |
+| **Yosys + nextpnr** (Lattice ECP5, iCE40) | `stat.txt` | `nextpnr.log` |
+
+### Setup
+
+Drop report files from CI into a `reports/` directory at the project root:
+
+```
+reports/
+├── vivado/
+│   ├── utilization_placed.rpt
+│   └── timing_summary_routed.rpt
+└── yosys/
+    ├── stat.txt
+    └── nextpnr.log
+```
+
+Then run:
+
+```bash
+make reports   # ingest reports → writes synthesis RST files
+make html      # build docs (picks up the new RST)
+```
+
+### What you get
+
+**Top-level Implementation page** (`synthesis/index.rst`):
+
+- *Timing table* — clock name, target frequency, achieved fmax, constraint period, WNS (Vivado) or PASS/FAIL status (nextpnr)
+- *Utilization table* — LUTs, FFs, BRAMs, DSPs per module with hierarchy indentation and available resource counts (Vivado)
+
+**Per-module synthesis page** — LUT/FF/BRAM/DSP counts for that instance.
+
+If no report files are present, a placeholder page is still shown so the Implementation section is always visible in the sidebar.
+
+---
+
 ## 🗺 Register map integration
 
 Place your register map HTML export under `registers/generated/`:
@@ -301,28 +376,21 @@ make html AUTODOC_REG_ENTRY=regmap.html
 
 ## 🎨 Theme
 
-HDL AutoDoc ships with a custom [Catppuccin](https://catppuccin.com) theme:
+HDL AutoDoc uses the [Furo](https://pradyunsg.me/furo/) Sphinx theme:
 
-| Mode | Flavour | Background | Accent |
-|---|---|---|---|
-| Light | Latte | `#eff1f5` warm white | `#1e66f5` blue |
-| Dark | Mocha | `#1e1e2e` deep slate | `#89b4fa` blue |
-
-Toggle between modes using the floating pill button fixed to the bottom-right of every page. Your preference is saved to `localStorage` and survives navigation and browser restarts. On first visit the OS `prefers-color-scheme` setting is respected automatically.
+- **Dark / light toggle** — top-right button, `localStorage` persistence, respects OS `prefers-color-scheme` on first visit
+- **Ctrl+K / Cmd+K** — focuses the sidebar search input
+- **Responsive layout** — sidebar collapses on mobile; content column fills available width
 
 ### Customising the theme
 
-All design tokens live at the top of `docs/_static/custom.css`. To change the accent colour across the entire site, update one variable in each flavour block:
+Minor layout overrides live in `docs/hdl_autodoc/_static/custom.css`. Furo exposes CSS variable hooks for future colour theming via `html_theme_options` in `conf.py`:
 
-```css
-:root               { --ctp-blue: #1e66f5; }   /* Latte  */
-[data-theme="dark"] { --ctp-blue: #89b4fa; }   /* Mocha  */
-```
-
-Content width is fluid by default and scales to your screen:
-
-```css
---content-max: clamp(640px, calc(100vw - 300px), 1800px);
+```python
+html_theme_options = {
+    "light_css_variables": { "--color-brand-primary": "#1e66f5" },
+    "dark_css_variables":  { "--color-brand-primary": "#89b4fa" },
+}
 ```
 
 ---
@@ -335,6 +403,7 @@ Content width is fluid by default and scales to your screen:
 | `make hierarchy` | Parse `filelist.f` → `hierarchy.json` |
 | `make scaffold` | Generate RST shells (runs hierarchy first) |
 | `make extract` | Extract FSM + process + CDC + block docs (runs scaffold first) |
+| `make reports` | Ingest synthesis/PnR reports from `reports/` → writes synthesis RST files |
 | `make regs` | Generate register artifacts from `registers/regs_*.toml` |
 | `make html` | Full build → `docs/_build/html/` |
 | `make html SCHEMATICS=1` | Full build with RTL schematics (requires yosys) |
@@ -353,7 +422,7 @@ Installed automatically by `make install`:
 | Package | Purpose |
 |---|---|
 | [Sphinx](https://www.sphinx-doc.org) | Documentation engine |
-| [sphinx-rtd-theme](https://sphinx-rtd-theme.readthedocs.io) | ReadTheDocs HTML theme |
+| [furo](https://pradyunsg.me/furo/) | Modern Sphinx theme with dark/light toggle and Ctrl+K search |
 | [sphinx-vhdl](https://pypi.org/project/sphinx-vhdl/) | VHDL entity autodoc domain |
 | [sphinxcontrib-wavedrom](https://sphinxcontrib-wavedrom.readthedocs.io) | `.. wavedrom::` directive |
 | [Graphviz](https://graphviz.org) | FSM, hierarchy, CDC, and block diagram renderer |
@@ -362,41 +431,64 @@ Installed automatically by `make install`:
 
 ---
 
-## 📁 Project layout
+## 📁 Repository layout
+
+This repository is a **template** — the tool lives in `src/` and a working demo lives in `example/`.
+
+### Template (`src/`)
 
 ```
-hdl-autodoc/
-├── filelist.f                  ← your source file list (edit this)
+src/
 ├── Makefile
 ├── requirements.txt
-├── src/                        ← your HDL source files
-├── registers/
-│   ├── config.yml              ← bus config (width, protocol)
-│   ├── regs_<name>.toml        ← register definitions
-│   └── generated/              ← register map HTML output (auto-generated)
 ├── scripts/
 │   ├── hdl_autodoc/            ← drop-in pipeline, reusable across projects
 │   │   ├── __init__.py
-│   │   ├── parse_hierarchy.py  ← reads filelist.f → hierarchy.json
-│   │   ├── generate_rst.py     ← scaffolds RST structure
-│   │   ├── extract_fsm.py      ← extracts FSM case blocks → dot + rst
-│   │   ├── extract_processes.py← extracts labeled processes → rst pages
-│   │   ├── extract_cdc.py      ← extracts CDC analysis → dot + rst
-│   │   ├── extract_block.py    ← extracts block diagram + port/generics tables → dot + rst
+│   │   ├── parse_hierarchy.py   ← reads filelist.f → hierarchy.json
+│   │   ├── generate_rst.py      ← scaffolds RST structure
+│   │   ├── extract_fsm.py       ← extracts FSM case blocks → dot + rst
+│   │   ├── extract_processes.py ← extracts labeled processes → rst pages
+│   │   ├── extract_cdc.py       ← extracts CDC analysis → dot + rst
+│   │   ├── extract_block.py     ← extracts block diagram + port/generics tables → dot + rst
+│   │   ├── extract_reports.py   ← ingests synthesis reports → synthesis rst pages
+│   │   ├── parse_utilization.py ← Vivado + Yosys utilization parser
+│   │   ├── parse_timing.py      ← Vivado timing summary + nextpnr log parser
 │   │   ├── generate_schematic.py← generates RTL schematic via yosys (optional, SCHEMATICS=1)
-│   │   ├── run_extract.py      ← orchestrates extraction for all modules
-│   │   └── include_registers.py← copies register map + writes rst page
+│   │   ├── run_extract.py       ← orchestrates extraction for all modules
+│   │   └── include_registers.py ← copies register map + writes rst page
 │   └── registers/
 │       └── generate.py         ← generates VHDL, C header, and HTML from register TOML
 └── docs/
-    ├── conf.py                 ← Sphinx config (edit project metadata here)
-    ├── _static/
-    │   ├── custom.css          ← Catppuccin Latte/Mocha theme
-    │   ├── theme.js            ← dark mode toggle + OS preference detection
-    │   └── logo.svg            ← replace with your own logo
-    └── _templates/
-        ├── layout.html         ← sidebar brand + footer
-        └── breadcrumbs.html    ← version badge in breadcrumb bar
+    └── hdl_autodoc/
+        ├── conf.py             ← Sphinx config (edit project metadata here)
+        ├── _static/
+        │   ├── custom.css      ← layout overrides
+        │   ├── search-hotkey.js← Ctrl+K sidebar search shortcut
+        │   └── logo.svg        ← replace with your own logo
+        └── _templates/
+            └── page.html       ← footer attribution override
+```
+
+### In your project (after `./install.sh`)
+
+```
+your-project/
+├── filelist.f                  ← your source file list
+├── Makefile                    ← copied from src/
+├── requirements.txt            ← copied from src/
+├── src/                        ← your HDL source files
+├── registers/                  ← optional: register definitions
+│   ├── config.yml
+│   ├── regs_<name>.toml
+│   └── generated/
+├── reports/                    ← optional: CI synthesis report drop zone
+│   ├── vivado/
+│   └── yosys/
+├── scripts/                    ← copied from src/
+└── docs/
+    └── hdl_autodoc/            ← copied from src/
+        ├── conf.py             ← edit project name/author here
+        └── _build/html/        ← build output (gitignored)
 ```
 
 ---
@@ -407,28 +499,28 @@ hdl-autodoc/
 |---|---|---|
 | `filelist.f` | ✍️ Edit freely | Your source manifest |
 | `src/*.vhd`, `src/*.sv` | ✍️ Edit freely | Your HDL — single source of truth |
-| `docs/conf.py` | ✍️ Edit freely | Project name, author, version |
-| `docs/_static/custom.css` | ✍️ Edit freely | Theme tokens and visual overrides |
-| `docs/_static/logo.svg` | ✍️ Replace | Swap in your own logo |
-| `docs/modules/<n>/entity.rst` | ✍️ Safe to edit | Written once, never overwritten |
-| `docs/modules/<n>/index.rst` | 🔄 Auto-generated | Regenerated every build |
-| `docs/modules/<n>/fsm.rst` | 🔄 Auto-generated | Regenerated every build |
-| `docs/modules/<n>/timing.rst` | 🔄 Auto-generated | Aggregated from process wavedrom blocks |
-| `docs/modules/<n>/block.rst` | 🔄 Auto-generated | Regenerated every build |
-| `docs/modules/<n>/cdc.rst` | 🔄 Auto-generated | Regenerated every build |
-| `docs/modules/<n>/processes/` | 🔄 Auto-generated | Regenerated every build |
-| `docs/registers.rst` | 🔄 Auto-generated | Written by `include_registers.py` |
-| `docs/_static/registers.html` | 🔄 Auto-generated | Copied from `registers/generated/` |
-| `docs/hierarchy.json` | 🔄 Auto-generated | Do not edit |
-| `docs/index.rst` | 🔄 Auto-generated | Regenerated every build |
-| `docs/overview.rst` | 🔄 Auto-generated | Regenerated every build |
+| `docs/hdl_autodoc/conf.py` | ✍️ Edit freely | Project name, author, version |
+| `docs/hdl_autodoc/_static/custom.css` | ✍️ Edit freely | Layout overrides |
+| `docs/hdl_autodoc/_static/logo.svg` | ✍️ Replace | Swap in your own logo |
+| `docs/hdl_autodoc/modules/<n>/entity.rst` | ✍️ Safe to edit | Written once, never overwritten |
+| `docs/hdl_autodoc/modules/<n>/index.rst` | 🔄 Auto-generated | Regenerated every build |
+| `docs/hdl_autodoc/modules/<n>/fsm.rst` | 🔄 Auto-generated | Regenerated every build |
+| `docs/hdl_autodoc/modules/<n>/timing.rst` | 🔄 Auto-generated | Aggregated from process wavedrom blocks |
+| `docs/hdl_autodoc/modules/<n>/block.rst` | 🔄 Auto-generated | Regenerated every build |
+| `docs/hdl_autodoc/modules/<n>/cdc.rst` | 🔄 Auto-generated | Regenerated every build |
+| `docs/hdl_autodoc/modules/<n>/processes/` | 🔄 Auto-generated | Regenerated every build |
+| `docs/hdl_autodoc/registers.rst` | 🔄 Auto-generated | Written by `include_registers.py` |
+| `docs/hdl_autodoc/_static/registers/` | 🔄 Auto-generated | Copied from `registers/generated/` |
+| `docs/hdl_autodoc/hierarchy.json` | 🔄 Auto-generated | Do not edit |
+| `docs/hdl_autodoc/index.rst` | 🔄 Auto-generated | Regenerated every build |
+| `docs/hdl_autodoc/overview.rst` | 🔄 Auto-generated | Regenerated every build |
 
 ---
 
 ## 🧩 Adding a new module
 
-1. Add your source file to `src/`
-2. Add it to `filelist.f`
+1. Add your source file (e.g. `src/my_module.vhd`)
+2. Add it to `filelist.f` (dependency-first order)
 3. Run `make html`
 
 Done. The new module appears in the hierarchy, navigation, overview table, hierarchy diagram, and gets its own block diagram and CDC analysis page automatically.
@@ -474,6 +566,19 @@ Done. The new module appears in the hierarchy, navigation, overview table, hiera
 ---
 
 ## 📋 Release notes
+
+### v3.5.0
+
+#### Breaking changes
+
+- **Template repo restructure** — the pipeline scripts and Sphinx config have moved to `src/`. Use `./install.sh <target>` to drop the tool into your HDL project. An `example/` directory provides a fully working demo (traffic light + PWM controller).
+
+### v3.4.0
+
+#### New features
+
+- **Synthesis reports** — `make reports` ingests Vivado (`utilization_placed.rpt`, `timing_summary_routed.rpt`) and Yosys/nextpnr (`stat.txt`, `nextpnr.log`) report files from a `reports/` directory. Writes an **Implementation** toctree section with a top-level timing + utilization page and a per-module synthesis page. Utilization tables show hierarchy indentation (`└─ submodule`) and available resource counts. Timing tables show target frequency alongside achieved fmax. A placeholder page is always present so the Implementation sidebar section never disappears.
+- **Furo theme** — migrated from `sphinx-rtd-theme` to [Furo](https://pradyunsg.me/furo/) for a modern two-column layout with a built-in dark/light toggle and responsive sidebar. `Ctrl+K` / `Cmd+K` focuses the sidebar search input.
 
 ### v3.3.0
 
@@ -561,6 +666,9 @@ scripts/hdl_autodoc/
 ├── extract_processes.py  <file.vhd|sv>      → p_*.rst + index.rst
 ├── extract_cdc.py        <file.vhd|sv>      → <module>_cdc.dot + <module>_cdc.rst
 ├── extract_block.py      <file.vhd|sv>      → <module>_block.dot + <module>_block.rst
+├── extract_reports.py    reports/           → synthesis/index.rst + modules/*/synthesis.rst
+├── parse_utilization.py  util report        → list[ModuleUtilization]
+├── parse_timing.py       timing report      → list[ClockTiming]
 ├── generate_schematic.py <file.vhd|sv>      → <module>_schematic.svg  (optional, SCHEMATICS=1)
 ├── run_extract.py        hierarchy.json     → orchestrates above
 └── include_registers.py  registers/         → docs/registers.rst + _static/
