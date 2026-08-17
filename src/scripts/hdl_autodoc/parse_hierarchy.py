@@ -190,6 +190,13 @@ def build_hierarchy(source_files: list[Path]) -> dict:
             continue
         insts = extract_instantiations(src, known - {name})
         for child in insts:
+            # Direct `entity lib.name` instantiations are matched regardless of
+            # `known_names` (see extract_instantiations_vhdl), so a child may
+            # reference an external/third-party entity whose defining file was
+            # never part of source_files. Treat those as external leaves rather
+            # than crashing on an uninitialised parents_of/children_of entry.
+            if child not in known:
+                continue
             if child not in children_of[name]:
                 children_of[name].append(child)
             if name not in parents_of[child]:
