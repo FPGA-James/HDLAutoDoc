@@ -13,7 +13,7 @@ THIS_DIR = Path(__file__).parents[2] / "registers"
 OUTPUT_DIR = THIS_DIR / "generated"
 
 
-def generate(register_list, output_folder):
+def generate( register_list, output_folder):
     output_folder.mkdir(parents=True, exist_ok=True)
 
     # VHDL: register address/field constants package

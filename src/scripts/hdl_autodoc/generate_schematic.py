@@ -2,18 +2,24 @@
 """
 generate_schematic.py
 ---------------------
-Generates an RTL schematic for a VHDL or SystemVerilog module using yosys
-and netlistsvg.
+Generates an RTL schematic for a VHDL or SystemVerilog module using yosys.
 
 Pipeline:
   yosys (synthesis + opt) → write_json → netlistsvg → <module>_schematic.svg
 
+netlistsvg gives the nicest rendering (proper mux/DFF symbols) but is an
+`npm install -g netlistsvg` dependency that's easy to miss. If it's missing,
+or its render fails, this falls back to yosys's own `show -format svg`
+renderer, which only needs graphviz `dot` (already a hard dependency of
+this pipeline's other diagrams).
+
 For VHDL modules, requires yosys with the ghdl-yosys-plugin (OSS CAD Suite).
 For SystemVerilog modules, requires yosys with native SV support.
-netlistsvg is required for both: install with `npm install -g netlistsvg`.
 
 Writes:
-  <module_name>_schematic.svg  — clean gate-level schematic
+  <module_name>_schematic.svg  — gate-level schematic (netlistsvg or yosys-show)
+  <module_name>_schematic.pdf  — PDF sibling for LaTeX builds (needs rsvg-convert;
+                                 skipped, non-fatally, if unavailable)
 
 Usage:
     python generate_schematic.py <file.vhd|file.sv> <module_name> <output_dir>
@@ -49,11 +55,17 @@ def _run_yosys(args: list[str]) -> tuple[bool, str]:
     return r.returncode == 0, r.stderr[:600] if r.stderr else ""
 
 
-def _synth_vhdl(src: Path, module_name: str, json_path: Path,
-                extra_srcs: list[Path]) -> bool:
+def _build_prefix_vhdl(src: Path, module_name: str,
+                       extra_srcs: list[Path]) -> tuple[str, list[str]] | None:
+    """Build the read+elaborate yosys script prefix for a VHDL module.
+
+    Returns (script_prefix, extra_yosys_args), or None if this design can't
+    be elaborated at all (missing ghdl plugin, or a SystemVerilog dependency
+    ghdl can't read) — the caller should treat that as a schematic skip.
+    """
     if not _have_ghdl_plugin():
         print(f"  ! SCHEMATIC [{module_name}]: ghdl-yosys-plugin not available — skipping")
-        return False
+        return None
 
     # Collect all VHDL files: extra deps first (leaves before top), then src.
     # Deduplicate while preserving order so ghdl sees units before they're used.
@@ -75,26 +87,16 @@ def _synth_vhdl(src: Path, module_name: str, json_path: Path,
         sv_names = ", ".join(sv_deps)
         print(f"  ! SCHEMATIC [{module_name}]: mixed-language design "
               f"(SystemVerilog deps: {sv_names}) — ghdl cannot elaborate, skipping")
-        return False
+        return None
 
     files_str = " ".join(str(f) for f in vhdl_files)
-    script = (
-        f"ghdl --std=08 {files_str} -e {module_name}; "
-        f"proc; opt; "
-        f"write_json {json_path}"
-    )
-    ok, err = _run_yosys(["-m", "ghdl", "-p", script])
-    if not ok:
-        print(f"  ! SCHEMATIC [{module_name}]: yosys/ghdl synthesis failed")
-        if err:
-            print("    " + err.replace("\n", "\n    "))
-    return ok
+    script_prefix = f"ghdl --std=08 {files_str} -e {module_name}; proc; opt;"
+    return script_prefix, ["-m", "ghdl"]
 
 
-def _synth_sv(src: Path, module_name: str, json_path: Path,
-              extra_srcs: list[Path]) -> bool:
-    # For SV, read all SV files (extra deps first), then elaborate the target module.
-    seen = set()
+def _build_prefix_sv(src: Path, extra_srcs: list[Path]) -> tuple[str, list[str]]:
+    """Build the read+elaborate yosys script prefix for a SystemVerilog module."""
+    seen: set[Path] = set()
     sv_files: list[Path] = []
     for f in extra_srcs + [src]:
         if f not in seen and f.suffix.lower() in (".sv", ".svh"):
@@ -102,17 +104,8 @@ def _synth_sv(src: Path, module_name: str, json_path: Path,
             sv_files.append(f)
 
     read_cmds = " ".join(f"read_verilog -sv {f};" for f in sv_files)
-    script = (
-        f"{read_cmds} "
-        f"proc; opt; "
-        f"write_json {json_path}"
-    )
-    ok, err = _run_yosys(["-p", script])
-    if not ok:
-        print(f"  ! SCHEMATIC [{module_name}]: yosys synthesis failed")
-        if err:
-            print("    " + err.replace("\n", "\n    "))
-    return ok
+    script_prefix = f"{read_cmds} proc; opt;"
+    return script_prefix, []
 
 
 def _run_netlistsvg(json_path: Path, svg_path: Path, module_name: str) -> bool:
@@ -129,6 +122,87 @@ def _run_netlistsvg(json_path: Path, svg_path: Path, module_name: str) -> bool:
     return True
 
 
+def _run_yosys_show(script_prefix: str, yosys_args: list[str], module_name: str,
+                    svg_prefix: Path) -> bool:
+    """Fallback renderer: ask yosys to render the current design itself via
+    `show`, instead of handing a JSON netlist to netlistsvg. Needs graphviz
+    `dot` on PATH (yosys shells out to it). Writes `<svg_prefix>.svg`."""
+    tail = f"show -format svg -viewer none -prefix {svg_prefix} {module_name}"
+    ok, err = _run_yosys(yosys_args + ["-p", f"{script_prefix} {tail}"])
+    if not ok:
+        print(f"  ! SCHEMATIC [{module_name}]: yosys show failed")
+        if err:
+            print("    " + err.replace("\n", "\n    "))
+    return ok
+
+
+def _run_rsvg_convert(svg_path: Path, pdf_path: Path) -> bool:
+    """Render a PDF sibling of the schematic so PDF builds (which can't embed
+    raw SVG) have a candidate to fall back to. Best-effort; PDF builds simply
+    omit the schematic if this — or rsvg-convert itself — isn't available."""
+    if not _have("rsvg-convert"):
+        return False
+    r = subprocess.run(
+        ["rsvg-convert", "-f", "pdf", "-o", str(pdf_path), str(svg_path)],
+        capture_output=True,
+        text=True,
+    )
+    return r.returncode == 0
+
+
+def render_schematic(src_path: Path, module_name: str, extra_srcs: list[Path],
+                     json_path: Path, svg_path: Path) -> bool:
+    """Render the RTL schematic, preferring netlistsvg and falling back to
+    yosys's own `show` renderer if netlistsvg is missing or its render fails."""
+    ext = src_path.suffix.lower()
+    if ext in (".vhd", ".vhdl"):
+        built = _build_prefix_vhdl(src_path, module_name, extra_srcs)
+    elif ext in (".sv", ".svh"):
+        built = _build_prefix_sv(src_path, extra_srcs)
+    else:
+        print(f"  ! SCHEMATIC [{module_name}]: unsupported file type '{ext}' — skipping")
+        return False
+    if built is None:
+        return False
+    script_prefix, yosys_args = built
+
+    have_netlistsvg = _have("netlistsvg")
+    have_dot = _have("dot")
+    if not have_netlistsvg and not have_dot:
+        print(f"  ! SCHEMATIC [{module_name}]: no schematic renderer available — skipping")
+        print("    Install netlistsvg (npm install -g netlistsvg), "
+              "or graphviz for the yosys-show fallback")
+        return False
+
+    if have_netlistsvg:
+        ok, err = _run_yosys(yosys_args + ["-p", f"{script_prefix} write_json {json_path}"])
+        if not ok:
+            print(f"  ! SCHEMATIC [{module_name}]: yosys/ghdl synthesis failed")
+            if err:
+                print("    " + err.replace("\n", "\n    "))
+        if ok:
+            ok = _run_netlistsvg(json_path, svg_path, module_name)
+        if json_path.exists():
+            json_path.unlink()
+        if ok:
+            print(f"  → {svg_path}")
+            return True
+        if have_dot:
+            print(f"  ! SCHEMATIC [{module_name}]: falling back to yosys show")
+
+    if have_dot:
+        ok = _run_yosys_show(script_prefix, yosys_args, module_name, svg_path.with_suffix(""))
+        # yosys `show -prefix` always writes a .dot intermediate alongside the SVG.
+        dot_path = svg_path.with_suffix(".dot")
+        if dot_path.exists():
+            dot_path.unlink()
+        if ok:
+            print(f"  → {svg_path} (yosys show fallback)")
+            return True
+
+    return False
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 4:
         sys.exit("Usage: generate_schematic.py <file.vhd|file.sv> <module_name> <output_dir>")
@@ -142,32 +216,13 @@ if __name__ == "__main__":
         print(f"  ! SCHEMATIC [{module_name}]: yosys not found — skipping")
         sys.exit(0)
 
-    if not _have("netlistsvg"):
-        print(f"  ! SCHEMATIC [{module_name}]: netlistsvg not found — skipping")
-        print(f"    Install with: npm install -g netlistsvg")
-        sys.exit(0)
-
     extra_srcs = [Path(f) for f in sys.argv[4:]]
     json_path  = output_dir / f"{module_name}_schematic.json"
     svg_path   = output_dir / f"{module_name}_schematic.svg"
-    ext        = src_path.suffix.lower()
+    pdf_path   = output_dir / f"{module_name}_schematic.pdf"
 
-    if ext in (".vhd", ".vhdl"):
-        ok = _synth_vhdl(src_path, module_name, json_path, extra_srcs)
-    elif ext in (".sv", ".svh"):
-        ok = _synth_sv(src_path, module_name, json_path, extra_srcs)
-    else:
-        print(f"  ! SCHEMATIC [{module_name}]: unsupported file type '{ext}' — skipping")
-        sys.exit(0)
-
-    if ok:
-        ok = _run_netlistsvg(json_path, svg_path, module_name)
-
-    # Remove intermediate JSON regardless of outcome
-    if json_path.exists():
-        json_path.unlink()
-
-    if ok and svg_path.exists():
-        print(f"  → {svg_path}")
+    if render_schematic(src_path, module_name, extra_srcs, json_path, svg_path):
+        if _run_rsvg_convert(svg_path, pdf_path):
+            print(f"  → {pdf_path}")
 
     sys.exit(0)  # Always non-fatal
