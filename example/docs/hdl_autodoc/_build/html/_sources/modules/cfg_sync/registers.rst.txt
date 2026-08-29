@@ -1,0 +1,95 @@
+cfg_sync — Register Map
+=======================
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 15 15 50
+   :class: register-table
+
+   * - Register
+     - Offset
+     - Access
+     - Description
+   * - ctrl
+     - 0x00
+     - r/w
+     - Control register. Written by the config-bus master to configure blinky and PWM behaviour.
+   * - pwm
+     - 0x04
+     - r/w
+     - PWM duty-cycle register. Controls the PWM output driven by pwm_controller.
+   * - status
+     - 0x08
+     - r
+     - Read-back register. Reflects the synchronised values visible in the sys_clk domain.
+
+ctrl (0x00)
+-----------
+
+.. list-table::
+   :header-rows: 1
+   :widths: 15 20 20 45
+   :class: register-table
+
+   * - Field
+     - Type
+     - Default
+     - Description
+   * - ``enable``
+     - bit
+     - 0
+     - Assert to enable blinky LED output. Deassert to force LED off.
+   * - ``mode_sel``
+     - enumeration
+     - blinky
+     - Selects the blinky operating mode synchronised into the sys_clk domain.
+
+       .. list-table::
+          :header-rows: 1
+          :widths: 50 50
+
+          * - Value
+            - Description
+          * - ``blinky``
+            - LED blinks at the configured rate.
+          * - ``static``
+            - LED driven to a constant on or off state.
+
+
+pwm (0x04)
+----------
+
+.. list-table::
+   :header-rows: 1
+   :widths: 15 20 20 45
+   :class: register-table
+
+   * - Field
+     - Type
+     - Default
+     - Description
+   * - ``duty_cycle``
+     - bit_vector(8)
+     - 0x00
+     - PWM duty cycle. 0x00 = 0 %, 0xFF = 100 %. Crosses into sys_clk domain (unsynchronised — use a stable write window).
+
+status (0x08)
+-------------
+
+.. list-table::
+   :header-rows: 1
+   :widths: 15 20 20 45
+   :class: register-table
+
+   * - Field
+     - Type
+     - Default
+     - Description
+   * - ``blinky_en``
+     - bit
+     - 
+     - Synchronised value of ctrl.enable as seen in the sys_clk domain (two-flop output).
+   * - ``pwm_duty``
+     - bit_vector(8)
+     - 
+     - Current pwm_duty value in the sys_clk domain (raw crossing, may be metastable during transitions).

@@ -1,0 +1,1 @@
+.. include:: traffic_light.rst

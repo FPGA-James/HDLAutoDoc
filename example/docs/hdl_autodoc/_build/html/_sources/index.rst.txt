@@ -1,0 +1,17 @@
+Example
+=======
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Design
+
+   overview
+   modules/top/index
+   hierarchy
+   registers
+
+Indices
+-------
+
+* :ref:`genindex`
+* :ref:`search`

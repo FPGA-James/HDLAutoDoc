@@ -6,8 +6,8 @@ __pycache__/
 .DS_Store
 
 # Sphinx build output (under any docs/ tree)
-docs/*/_build/
-**/docs/hdl_autodoc/_build/
+#docs/*/_build/
+#**/docs/hdl_autodoc/_build/
 
 # Auto-generated Sphinx doc files (re-created by `make html`)
 **/docs/hdl_autodoc/hierarchy.json

@@ -1,0 +1,9 @@
+{ "signal": [
+{ "name": "clk",       "wave": "P........." },
+{ "name": "timer_exp", "wave": "0.1.1.1.1." },
+{ "name": "state",     "wave": "=.=.=.=.=.",
+"data": ["RED","RED_AMB","GREEN","AMBER","RED"] },
+{ "name": "red_out",   "wave": "1.1.0.0.1." },
+{ "name": "amber_out", "wave": "0.1.0.1.0." },
+{ "name": "green_out", "wave": "0.0.1.0.0." }
+]}

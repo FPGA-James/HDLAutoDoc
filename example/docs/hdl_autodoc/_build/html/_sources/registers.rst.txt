@@ -1,0 +1,7 @@
+Register Maps
+=============
+
+.. toctree::
+   :maxdepth: 1
+
+   modules/cfg_sync/registers

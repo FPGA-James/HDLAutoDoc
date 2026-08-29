@@ -1,0 +1,7 @@
+{ "signal": [
+{ "name": "clk",   "wave": "P......." },
+{ "name": "rst",   "wave": "1.0....." },
+{ "name": "en",    "wave": "0......." },
+{ "name": "state", "wave": "=.=.....", "data": ["(any)","IDLE"] },
+{ "name": "pwm_o", "wave": "x.0....." }
+]}
