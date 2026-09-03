@@ -2,7 +2,7 @@ CLAUDE.md
 __pycache__/
 *.pyc
 *.pyo
-.venv/
+# .venv/
 .DS_Store
 
 # Sphinx build output (under any docs/ tree)
