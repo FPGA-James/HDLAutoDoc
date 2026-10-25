@@ -576,6 +576,12 @@ Done. The new module appears in the hierarchy, navigation, overview table, hiera
 
 ## 📋 Release notes
 
+### v3.6.1
+
+#### Fixes
+
+- **SystemVerilog descriptions on existing projects** — an unedited `entity.rst` from an older version is now upgraded automatically so the module description appears; hand-edited pages are left untouched.
+
 ### v3.6.0
 
 #### Breaking changes
@@ -587,7 +593,7 @@ Done. The new module appears in the hierarchy, navigation, overview table, hiera
 
 #### New features
 
-- **SystemVerilog module descriptions** — the `//` comment block directly above `module <name>` is rendered as the description on the entity page, matching what `vhdl:autoentity` does for VHDL. `entity.rst` is write-once, so delete an existing SV `entity.rst` to pick it up.
+- **SystemVerilog module descriptions** — the `//` comment block directly above `module <name>` is rendered as the description on the entity page, matching what `vhdl:autoentity` does for VHDL. Unedited `entity.rst` shells from older versions are upgraded automatically.
 - **Breadcrumbs** on every page, and the **sidebar keeps its scroll position** between pages.
 
 #### Improvements

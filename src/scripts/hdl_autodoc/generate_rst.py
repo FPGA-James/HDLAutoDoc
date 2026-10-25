@@ -142,6 +142,17 @@ def write_if_missing(path: Path, content: str) -> str:
     return f"  → {path}"
 
 
+def write_if_missing_or_pristine(path: Path, content: str, pristine: str) -> str:
+    """
+    Like write_if_missing, but also upgrades a shell that is byte-identical to
+    what an older version generated (`pristine`), so hand-edited files are kept.
+    """
+    if path.exists() and path.read_text() == pristine and pristine != content:
+        path.write_text(content)
+        return f"  → (upgraded unedited shell) {path}"
+    return write_if_missing(path, content)
+
+
 def write_always(path: Path, content: str) -> str:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content)
@@ -664,9 +675,10 @@ if __name__ == "__main__":
         # not to docs_dir — compute relpath from mod_dir to src_dir.
         import os as _os
         src_rel = _os.path.relpath(src_dir.resolve(), mod_dir.resolve())
-        results.append(write_if_missing(
+        results.append(write_if_missing_or_pristine(
             mod_dir / "entity.rst",
-            entity_rst(entity, src_rel_to_docs=src_rel, src_dir=src_dir)
+            entity_rst(entity, src_rel_to_docs=src_rel, src_dir=src_dir),
+            pristine=entity_rst(entity, src_rel_to_docs=src_rel),
         ))
 
     # Top-level always-regenerated

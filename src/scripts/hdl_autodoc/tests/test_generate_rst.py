@@ -22,6 +22,7 @@ import pytest
 from generate_rst import (
     cdc_rst,
     entity_rst,
+    write_if_missing_or_pristine,
     fsm_rst,
     index_rst,
     module_index_rst,
@@ -270,3 +271,15 @@ def test_top_index_no_implementation_section_when_has_synthesis_false():
     """synthesis/index is NOT present when has_synthesis=False."""
     rst = index_rst([_make_entity()], "MyProject", has_synthesis=False)
     assert "synthesis/index" not in rst
+
+
+def test_unedited_entity_shell_is_upgraded_but_edits_are_kept(tmp_path):
+    """An untouched old shell gains the SV description; a hand-edited one is left alone."""
+    old, new = "old shell\n", "new shell\n"
+    f = tmp_path / "entity.rst"
+    f.write_text(old)
+    write_if_missing_or_pristine(f, new, pristine=old)
+    assert f.read_text() == new
+    f.write_text("my edits\n")
+    write_if_missing_or_pristine(f, new, pristine=old)
+    assert f.read_text() == "my edits\n"

@@ -1,5 +1,13 @@
 # Release Notes
 
+## v3.6.1
+
+### Fixes
+
+- **SystemVerilog descriptions on existing projects** — `entity.rst` is write-once, so projects generated before v3.6.0 never showed the new module description. An `entity.rst` that is byte-identical to what the previous version generated is now upgraded automatically (the build prints `upgraded unedited shell`); hand-edited pages are still left untouched.
+
+---
+
 ## v3.6.0
 
 ### Single-source Makefile
@@ -30,7 +38,7 @@ Run `make doc-help` for the full list.
 
 ### SystemVerilog module descriptions
 
-The `//` comment block directly above `module <name>` is now rendered as the entity description, as `vhdl:autoentity` does for VHDL. `entity.rst` is written once, so delete an existing SV `entity.rst` to regenerate it.
+The `//` comment block directly above `module <name>` is now rendered as the entity description, as `vhdl:autoentity` does for VHDL. Unedited `entity.rst` shells from older versions are upgraded automatically (v3.6.1).
 
 ### Other changes
 
