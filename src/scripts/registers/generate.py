@@ -9,7 +9,9 @@ from hdl_registers.generator.vhdl.axi_lite.wrapper import VhdlAxiLiteWrapperGene
 from hdl_registers.generator.c.header import CHeaderGenerator
 from hdl_registers.generator.html.page import HtmlPageGenerator
 
-THIS_DIR = Path(__file__).parents[2] / "registers"
+# Resolved from the working directory (project root under make) so the script
+# also works when it lives in a shared checkout outside the project.
+THIS_DIR = Path.cwd() / "registers"
 OUTPUT_DIR = THIS_DIR / "generated"
 
 

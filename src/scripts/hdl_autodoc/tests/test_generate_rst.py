@@ -102,6 +102,26 @@ def test_entity_rst_sv_uses_literalinclude():
     assert "vhdl:autoentity" not in rst
 
 
+def test_entity_rst_sv_includes_module_description(tmp_path):
+    """The // block above `module` is rendered as the SV entity description."""
+    (tmp_path / "my_mod.sv").write_text(
+        "// My module.\n//\n// Does a thing.\n"
+        "module my_mod (input logic clk);\nendmodule\n"
+    )
+    entity = _make_entity(name="my_mod", filename="my_mod.sv")
+    rst = entity_rst(entity, src_dir=tmp_path)
+    assert "My module.\n\nDoes a thing." in rst
+    assert rst.index("Does a thing.") < rst.index("Annotated Source")
+
+
+def test_entity_rst_sv_no_description_when_no_comment(tmp_path):
+    """No stray text is emitted when the module has no leading comment."""
+    (tmp_path / "my_mod.sv").write_text("module my_mod (input logic clk);\nendmodule\n")
+    entity = _make_entity(name="my_mod", filename="my_mod.sv")
+    with_src = entity_rst(entity, src_dir=tmp_path)
+    assert with_src == entity_rst(entity)
+
+
 def test_entity_rst_contains_source_filename():
     """The entity page mentions the HDL source filename."""
     entity = _make_entity(filename="counter.vhd")
