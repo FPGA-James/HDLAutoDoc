@@ -16,3 +16,18 @@
     <a href="https://graphviz.org" target="_blank">Graphviz</a>
   </div>
 {% endblock %}
+
+{% block content %}
+  {%- if parents %}
+  <nav class="hdl-breadcrumbs" aria-label="Breadcrumb">
+    <a href="{{ pathto(master_doc) }}">{{ project }}</a>
+    {%- for doc in parents %}
+    <span class="sep">&rsaquo;</span>
+    <a href="{{ doc.link|e }}">{{ doc.title }}</a>
+    {%- endfor %}
+    <span class="sep">&rsaquo;</span>
+    <span class="current">{{ title|striptags }}</span>
+  </nav>
+  {%- endif %}
+  {{ super() }}
+{% endblock %}

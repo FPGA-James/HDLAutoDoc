@@ -574,3 +574,24 @@ table.register-table td {
   overflow-wrap: break-word;
   word-break: break-word;
 }
+
+
+/* ── Breadcrumbs ──────────────────────────────────────────────────────────── */
+.hdl-breadcrumbs {
+  font-size: var(--font-size--small);
+  color: var(--color-foreground-muted);
+  margin-bottom: 1rem;
+}
+.hdl-breadcrumbs a {
+  color: var(--color-foreground-secondary);
+  text-decoration: none;
+}
+.hdl-breadcrumbs a:hover {
+  text-decoration: underline;
+}
+.hdl-breadcrumbs .sep {
+  margin: 0 0.4em;
+}
+.hdl-breadcrumbs .current {
+  color: var(--color-foreground-primary);
+}
