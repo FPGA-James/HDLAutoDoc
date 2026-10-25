@@ -4,10 +4,12 @@ import os
 from datetime import date
 
 # ── Project metadata ─────────────────────────────────────────────────────────
-project   = "Traffic Light Controller"
-author    = "HDL Team"
-copyright = f"{date.today().year}, HDL Team"
-release   = "1.0.0"
+# autodoc.mk passes these through the environment; the defaults apply when
+# conf.py is used standalone.
+project   = os.environ.get("AUTODOC_PROJECT") or "Traffic Light Controller"
+author    = os.environ.get("AUTODOC_AUTHOR") or "HDL Team"
+copyright = f"{date.today().year}, {author}"
+release   = os.environ.get("AUTODOC_RELEASE") or "1.0.0"
 
 # ── Extensions ───────────────────────────────────────────────────────────────
 extensions = [
@@ -25,20 +27,17 @@ online_skin_js_url     = "https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.3.0/
 graphviz_output_format = "svg"
 
 # ── sphinx-vhdl ──────────────────────────────────────────────────────────────
-# Walk up from conf.py to find src/ — works regardless of how deep docs/ is
-_conf_dir = os.path.dirname(os.path.abspath(__file__))
-_root = _conf_dir
-for _ in range(6):
-    _candidate = os.path.join(_root, "src")
-    if os.path.isdir(_candidate):
-        break
-    _root = os.path.dirname(_root)
+# conf.py may live outside the project (shared tool checkout) and Sphinx chdirs to
+# its confdir while loading it, so autodoc.mk passes absolute project paths.
+_candidate = os.path.abspath(os.environ.get("AUTODOC_SRC") or "src")
 # sphinx-vhdl requires a list, not a bare string
 vhdl_autodoc_source_path = [_candidate]
 
 # ── HTML output ──────────────────────────────────────────────────────────────
 html_theme          = "furo"
-html_static_path    = ["_static"]
+# Tool assets first, then the project's own _static (generated register pages
+# land there). Sphinx ignores entries that do not exist.
+html_static_path    = ["_static", os.path.abspath(os.path.join(os.environ.get("AUTODOC_SOURCEDIR") or "docs/hdl_autodoc", "_static"))]
 templates_path      = ["_templates"]
 html_css_files      = ["custom.css"]
 html_js_files       = ["search-hotkey.js", "sidebar-scroll.js"]

@@ -211,7 +211,31 @@ def module_index_rst(entity: dict, children: list[str],
     return "\n".join(lines)
 
 
-def entity_rst(entity: dict, src_rel_to_docs: str = "../../src") -> str:
+def sv_module_description(text: str, name: str) -> str:
+    """
+    Return the ``//`` comment block directly above ``module <name>`` as RST text.
+
+    sphinx-vhdl does this for VHDL entities; SystemVerilog has no equivalent, so
+    read the comment block ourselves.  Bare ``//`` lines become paragraph breaks
+    and purely decorative banner lines (``//-----``, ``//=====``) are dropped.
+    """
+    lines = text.splitlines()
+    idx = next((i for i, l in enumerate(lines)
+                if re.match(rf"\s*(?:module|macromodule)\s+{re.escape(name)}\b", l)), None)
+    if idx is None:
+        return ""
+    block = []
+    i = idx - 1
+    while i >= 0 and lines[i].strip().startswith("//"):
+        block.append(re.sub(r"^\s*//\s?", "", lines[i]).rstrip())
+        i -= 1
+    block.reverse()
+    block = ["" if not re.search(r"\w", l) else l for l in block]
+    return "\n".join(block).strip()
+
+
+def entity_rst(entity: dict, src_rel_to_docs: str = "../../src",
+               src_dir: Path = None) -> str:
     name  = entity["name"]
     fname = entity["file"]
     ext   = fname.rsplit(".", 1)[-1].lower()
@@ -224,6 +248,14 @@ def entity_rst(entity: dict, src_rel_to_docs: str = "../../src") -> str:
     if not is_sv:
         # sphinx-vhdl only handles VHDL entities
         lines += [f".. vhdl:autoentity:: {name}", ""]
+    elif src_dir is not None:
+        try:
+            desc = sv_module_description(
+                (Path(src_dir) / fname).read_text(errors="replace"), name)
+        except OSError:
+            desc = ""
+        if desc:
+            lines += [desc, ""]
 
     lines += [
         "Annotated Source",
@@ -634,7 +666,7 @@ if __name__ == "__main__":
         src_rel = _os.path.relpath(src_dir.resolve(), mod_dir.resolve())
         results.append(write_if_missing(
             mod_dir / "entity.rst",
-            entity_rst(entity, src_rel_to_docs=src_rel)
+            entity_rst(entity, src_rel_to_docs=src_rel, src_dir=src_dir)
         ))
 
     # Top-level always-regenerated
