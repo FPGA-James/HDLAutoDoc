@@ -2,7 +2,7 @@
 
 > **Turn your VHDL and SystemVerilog source into beautiful, navigable documentation — automatically.**
 
-HDL AutoDoc is a zero-boilerplate documentation pipeline for hardware design projects. Drop your source files in, run `make html`, and get a fully structured Sphinx site with block diagrams, FSM diagrams, timing waveforms, process pages, a hierarchy tree, a CDC analysis page per module, an embedded register map, and synthesis/place-and-route reports — all extracted directly from your HDL source and CI artifacts.
+HDL AutoDoc is a zero-boilerplate documentation pipeline for hardware design projects. Drop your source files in, run `make doc-html`, and get a fully structured Sphinx site with block diagrams, FSM diagrams, timing waveforms, process pages, a hierarchy tree, a CDC analysis page per module, an embedded register map, and synthesis/place-and-route reports — all extracted directly from your HDL source and CI artifacts.
 
 No separate doc files to maintain. No manual diagrams to draw. If it's in the source, it's in the docs.
 
@@ -27,7 +27,7 @@ No separate doc files to maintain. No manual diagrams to draw. If it's in the so
 | **Synthesis reports** | Ingests Vivado and Yosys/nextpnr reports from CI — utilization per module (with hierarchy indent) and top-level timing/fmax |
 | **Dark / light mode** | Built-in Furo toggle — persists across sessions, respects OS preference |
 | **Ctrl+K search** | Keyboard shortcut focuses the sidebar search input |
-| **PDF output** | Full LaTeX PDF via `make pdf` |
+| **PDF output** | Full LaTeX PDF via `make doc-pdf` |
 
 ---
 
@@ -70,17 +70,17 @@ docs/
 |---|---|---|
 | **Python 3.11+** | Pipeline scripts and Sphinx | [python.org](https://python.org) or `brew install python` |
 | **Graphviz** | Renders FSM, hierarchy, CDC, and block diagrams | `brew install graphviz` / `apt install graphviz` |
-| Python packages | Sphinx, wavedrom, etc. | `make install` (reads `requirements.txt`) |
+| Python packages | Sphinx, wavedrom, etc. | `make doc-install` (reads `requirements.txt`) |
 
 ### Optional — PDF output
 
 | Tool | Purpose | Install |
 |---|---|---|
-| **TeX Live** / **MacTeX** | LaTeX PDF via `make pdf` | [tug.org/texlive](https://tug.org/texlive/) or `brew install --cask mactex` |
+| **TeX Live** / **MacTeX** | LaTeX PDF via `make doc-pdf` | [tug.org/texlive](https://tug.org/texlive/) or `brew install --cask mactex` |
 
 ### Optional — RTL schematics (`SCHEMATICS=1`)
 
-Gate-level netlists rendered inside each module's block diagram page. Enabled with `make html SCHEMATICS=1`.
+Gate-level netlists rendered inside each module's block diagram page. Enabled with `make doc-html SCHEMATICS=1`.
 
 All modules require **netlistsvg** to render the schematic SVG:
 
@@ -123,26 +123,34 @@ If yosys or the GHDL plugin is absent, schematic generation is **skipped silentl
 
 ### Install into your HDL project
 
-Clone this repo and run `install.sh`, pointing it at your existing HDL project:
+The tool is **not copied into your project**. It lives in `third_party/hdl_autodoc/` (a git submodule) and your project's Makefile includes one file from it, so every documentation target has a single source. From a checkout of this repo:
 
 ```bash
-git clone https://github.com/your-org/hdl-autodoc.git
-cd hdl-autodoc
-./install.sh /path/to/your/hdl-project
+git clone https://github.com/FPGA-James/files.git hdl-autodoc
+./hdl-autodoc/install.sh /path/to/your/hdl-project            # git submodule
+./hdl-autodoc/install.sh /path/to/your/hdl-project --vendor   # or copy src/ in (no git needed)
 ```
 
-This copies the pipeline scripts, Sphinx config, Makefile, and `requirements.txt` into your project. Re-running is safe — scripts are always overwritten with the latest version; Makefile and `requirements.txt` are skipped if they already exist.
+This places the tool at `third_party/hdl_autodoc` and appends one line to your `Makefile` (creating it if there is none):
+
+```make
+include third_party/hdl_autodoc/src/autodoc.mk
+```
+
+Re-running is safe. To update the tool, update the submodule (`git submodule update --remote third_party/hdl_autodoc`) — your Makefile, `conf.py` and generated files are never touched. Everything else (Sphinx config, theme, templates, scripts) is read from the submodule.
+
+All targets are prefixed `doc-` so they cannot collide with your own targets. Run `make doc-help` for the list.
 
 ### Bootstrap your environment
 
 ```bash
 cd /path/to/your/hdl-project
-make venv
+make doc-venv
 ```
 
-This creates a `.venv/` virtualenv and installs all Python dependencies into it. Subsequent `make` commands automatically use `.venv/bin/python3`, keeping the project isolated from your system Python and any other tools (e.g. OSS CAD Suite) on your PATH.
+This creates a `.venv/` virtualenv and installs all Python dependencies into it. Subsequent `make doc-*` commands automatically use `.venv/bin/python3`, keeping the project isolated from your system Python and any other tools (e.g. OSS CAD Suite) on your PATH.
 
-> If you prefer to manage your own environment, `make install` installs into whatever Python is currently active instead.
+> If you prefer to manage your own environment, `make doc-install` installs into whatever Python is currently active instead.
 
 ### Point it at your design
 
@@ -159,14 +167,14 @@ src/top.vhd          ← top-level auto-detected
 ### Build
 
 ```bash
-make html   # → docs/hdl_autodoc/_build/html/index.html
-make pdf    # → docs/hdl_autodoc/_build/latex/<project>.pdf
+make doc-html   # → docs/hdl_autodoc/_build/html/index.html
+make doc-pdf    # → docs/hdl_autodoc/_build/latex/<project>.pdf
 ```
 
 Optionally set a project name:
 
 ```bash
-make html PROJECT="My FPGA Design"
+make doc-html PROJECT="My FPGA Design"
 ```
 
 ### Try the example
@@ -175,7 +183,7 @@ A fully working example design (traffic light controller + PWM controller) lives
 
 ```bash
 cd example
-make venv && make html
+make doc-venv && make doc-html
 ```
 
 Then open `example/docs/hdl_autodoc/_build/html/index.html`.
@@ -184,7 +192,7 @@ Then open `example/docs/hdl_autodoc/_build/html/index.html`.
 
 ## 🔧 How it works
 
-The build runs in steps, all driven by a single `make html`:
+The build runs in steps, all driven by a single `make doc-html`:
 
 ```
 filelist.f
@@ -214,7 +222,7 @@ generate_rst.py        Second pass: timing pages now aggregate all
 sphinx-build           Renders HTML (or PDF via latexpdf).
 ```
 
-Synthesis reports are ingested separately with `make reports` (see below) and picked up by the next `make html`.
+Synthesis reports are ingested separately with `make doc-reports` (see below) and picked up by the next `make doc-html`.
 
 ---
 
@@ -331,8 +339,8 @@ reports/
 Then run:
 
 ```bash
-make reports   # ingest reports → writes synthesis RST files
-make html      # build docs (picks up the new RST)
+make doc-reports   # ingest reports → writes synthesis RST files
+make doc-html      # build docs (picks up the new RST)
 ```
 
 ### What you get
@@ -364,12 +372,12 @@ registers/
         └── reg_status.html
 ```
 
-Run `make html`. The entire directory is copied to `docs/_static/registers/` and embedded as a full-screen iframe, preserving all internal links and CSS. If no export is found a clear placeholder page is shown instead with instructions.
+Run `make doc-html`. The entire directory is copied to `docs/_static/registers/` and embedded as a full-screen iframe, preserving all internal links and CSS. If no export is found a clear placeholder page is shown instead with instructions.
 
 Override the entry point filename if your tool produces a different name:
 
 ```bash
-make html AUTODOC_REG_ENTRY=regmap.html
+make doc-html AUTODOC_REG_ENTRY=regmap.html
 ```
 
 ---
@@ -384,7 +392,7 @@ HDL AutoDoc uses the [Furo](https://pradyunsg.me/furo/) Sphinx theme:
 
 ### Customising the theme
 
-Minor layout overrides live in `docs/hdl_autodoc/_static/custom.css`. Furo exposes CSS variable hooks for future colour theming via `html_theme_options` in `conf.py`:
+The theme lives in the tool (`src/docs/hdl_autodoc/_static/custom.css` and `conf.py`) and is shared by every project, including a sticky sidebar scroll position and page breadcrumbs. Furo exposes CSS variable hooks for colour theming via `html_theme_options` in `conf.py`:
 
 ```python
 html_theme_options = {
@@ -399,25 +407,27 @@ html_theme_options = {
 
 | Target | Description |
 |---|---|
-| `make install` | Install Python dependencies |
-| `make hierarchy` | Parse `filelist.f` → `hierarchy.json` |
-| `make scaffold` | Generate RST shells (runs hierarchy first) |
-| `make extract` | Extract FSM + process + CDC + block docs (runs scaffold first) |
-| `make reports` | Ingest synthesis/PnR reports from `reports/` → writes synthesis RST files |
-| `make regs` | Generate register artifacts from `registers/regs_*.toml` |
-| `make html` | Full build → `docs/_build/html/` |
-| `make html SCHEMATICS=1` | Full build with RTL schematics (requires yosys) |
-| `make pdf` | Full build → LaTeX PDF |
-| `make doc` | Run `regs` + `html` + `pdf` |
-| `make clean` | Remove Sphinx build output only |
-| `make clean-generated` | Remove all auto-generated RST + static files |
-| `make clean-all` | ⚠️ Nuclear reset — removes everything including hand-editable shells |
+| `make doc-help` | List all targets |
+| `make doc-venv` | Create `.venv` and install Python dependencies |
+| `make doc-install` | Install Python dependencies into the active environment |
+| `make doc-hierarchy` | Parse `filelist.f` → `hierarchy.json` |
+| `make doc-scaffold` | Generate RST shells (runs hierarchy first) |
+| `make doc-extract` | Extract FSM + process + CDC + block docs (runs scaffold first) |
+| `make doc-reports` | Ingest synthesis/PnR reports from `reports/` → writes synthesis RST files |
+| `make doc-regs` | Generate register artifacts from `registers/regs_*.toml` |
+| `make doc-html` | Full build → `docs/hdl_autodoc/_build/html/` |
+| `make doc-html SCHEMATICS=1` | Full build with RTL schematics (requires yosys) |
+| `make doc-pdf` | Full build → LaTeX PDF |
+| `make doc-all` | Run `doc-regs` + `doc-html` + `doc-pdf` |
+| `make doc-clean` | Remove Sphinx build output only |
+| `make doc-clean-generated` | Remove all auto-generated RST + static files |
+| `make doc-clean-all` | ⚠️ Nuclear reset — removes everything including hand-editable shells |
 
 ---
 
 ## 📦 Python packages
 
-Installed automatically by `make install`:
+Installed automatically by `make doc-install`:
 
 | Package | Purpose |
 |---|---|
@@ -433,13 +443,13 @@ Installed automatically by `make install`:
 
 ## 📁 Repository layout
 
-This repository is a **template** — the tool lives in `src/` and a working demo lives in `example/`.
+This repository is the **tool** — it lives in `src/`, is consumed by projects through `third_party/hdl_autodoc` (see `install.sh`), and a working demo lives in `example/`.
 
 ### Template (`src/`)
 
 ```
 src/
-├── Makefile
+├── autodoc.mk                  ← all make targets; included from your project Makefile
 ├── requirements.txt
 ├── scripts/
 │   ├── hdl_autodoc/            ← drop-in pipeline, reusable across projects
@@ -460,7 +470,7 @@ src/
 │       └── generate.py         ← generates VHDL, C header, and HTML from register TOML
 └── docs/
     └── hdl_autodoc/
-        ├── conf.py             ← Sphinx config (edit project metadata here)
+        ├── conf.py             ← Sphinx config (read in place via `sphinx -c`; metadata comes from make variables)
         ├── _static/
         │   ├── custom.css      ← layout overrides
         │   ├── search-hotkey.js← Ctrl+K sidebar search shortcut
@@ -473,10 +483,10 @@ src/
 
 ```
 your-project/
+├── Makefile                    ← your own; one line: include third_party/hdl_autodoc/src/autodoc.mk
 ├── filelist.f                  ← your source file list
-├── Makefile                    ← copied from src/
-├── requirements.txt            ← copied from src/
 ├── src/                        ← your HDL source files
+├── third_party/hdl_autodoc/    ← this repository (git submodule, or --vendor copy)
 ├── registers/                  ← optional: register definitions
 │   ├── config.yml
 │   ├── regs_<name>.toml
@@ -484,12 +494,12 @@ your-project/
 ├── reports/                    ← optional: CI synthesis report drop zone
 │   ├── vivado/
 │   └── yosys/
-├── scripts/                    ← copied from src/
 └── docs/
-    └── hdl_autodoc/            ← copied from src/
-        ├── conf.py             ← edit project name/author here
+    └── hdl_autodoc/            ← generated RST + build output only
         └── _build/html/        ← build output (gitignored)
 ```
+
+Nothing from the tool is copied into the project tree, so there are no stale copies to drift.
 
 ---
 
@@ -499,9 +509,8 @@ your-project/
 |---|---|---|
 | `filelist.f` | ✍️ Edit freely | Your source manifest |
 | `src/*.vhd`, `src/*.sv` | ✍️ Edit freely | Your HDL — single source of truth |
-| `docs/hdl_autodoc/conf.py` | ✍️ Edit freely | Project name, author, version |
-| `docs/hdl_autodoc/_static/custom.css` | ✍️ Edit freely | Layout overrides |
-| `docs/hdl_autodoc/_static/logo.svg` | ✍️ Replace | Swap in your own logo |
+| `Makefile` | ✍️ Edit freely | Set `PROJECT`, `AUTODOC_AUTHOR`, `AUTODOC_RELEASE` before the `include` |
+| `third_party/hdl_autodoc/` | 🔒 Tool | Update via the submodule; do not edit in place |
 | `docs/hdl_autodoc/modules/<n>/entity.rst` | ✍️ Safe to edit | Written once, never overwritten |
 | `docs/hdl_autodoc/modules/<n>/index.rst` | 🔄 Auto-generated | Regenerated every build |
 | `docs/hdl_autodoc/modules/<n>/fsm.rst` | 🔄 Auto-generated | Regenerated every build |
@@ -521,7 +530,7 @@ your-project/
 
 1. Add your source file (e.g. `src/my_module.vhd`)
 2. Add it to `filelist.f` (dependency-first order)
-3. Run `make html`
+3. Run `make doc-html`
 
 Done. The new module appears in the hierarchy, navigation, overview table, hierarchy diagram, and gets its own block diagram and CDC analysis page automatically.
 
@@ -556,7 +565,7 @@ Done. The new module appears in the hierarchy, navigation, overview table, hiera
 
 ### Entity documentation
 
-- `vhdl:autoentity` only works for VHDL. SystemVerilog modules get a `literalinclude` source listing instead.
+- `vhdl:autoentity` only works for VHDL. SystemVerilog modules get the `//` comment block above `module` as their description, followed by a `literalinclude` source listing. `/* ... */` header comments are not picked up.
 
 ### Output formats
 
@@ -566,6 +575,27 @@ Done. The new module appears in the hierarchy, navigation, overview table, hiera
 ---
 
 ## 📋 Release notes
+
+### v3.6.0
+
+#### Breaking changes
+
+- **Single-source Makefile** — `src/Makefile` is now `src/autodoc.mk`, included from your own Makefile instead of copied. All targets are prefixed `doc-` (`doc-html`, `doc-pdf`, `doc-regs`, `doc-clean`, …) so they cannot clash with host targets; `make doc` is now `make doc-all`. Run `make doc-help` for the list.
+- **`install.sh` rewritten** — adds the tool as a git submodule at `third_party/hdl_autodoc` (or copies `src/` with `--vendor`) and appends the `include` line to your Makefile. Scripts and Sphinx config are no longer copied into the project. Existing projects: delete their copied `scripts/` and `docs/hdl_autodoc/{conf.py,_static,_templates}`, then re-run the installer.
+- Project metadata (`PROJECT`, `AUTODOC_AUTHOR`, `AUTODOC_RELEASE`) now comes from make variables instead of editing `conf.py`.
+- `SCHEMATICS` now defaults to `0`, as documented.
+
+#### New features
+
+- **SystemVerilog module descriptions** — the `//` comment block directly above `module <name>` is rendered as the description on the entity page, matching what `vhdl:autoentity` does for VHDL. `entity.rst` is write-once, so delete an existing SV `entity.rst` to pick it up.
+- **Breadcrumbs** on every page, and the **sidebar keeps its scroll position** between pages.
+
+#### Improvements
+
+- `Sphinx` reads `conf.py`, static files and templates from the tool via `-c`; the project's own `docs/hdl_autodoc/_static` is added for generated register pages.
+- Remaining bare `python` calls use `$(PYTHON)`, so the `.venv` is honoured everywhere.
+- `scripts/registers/generate.py` resolves `registers/` from the working directory, so it works from a shared checkout.
+- `example/` is now just a Makefile include plus sources, replacing its stale copy of the tool.
 
 ### v3.5.0
 

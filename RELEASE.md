@@ -1,5 +1,46 @@
 # Release Notes
 
+## v3.6.0
+
+### Single-source Makefile
+
+All documentation targets now live in one file, `src/autodoc.mk`, which a project includes instead of copying a Makefile:
+
+```make
+PROJECT ?= My FPGA Design
+include third_party/hdl_autodoc/src/autodoc.mk
+```
+
+`install.sh` sets this up: it adds the tool as a git submodule at `third_party/hdl_autodoc` (or copies `src/` with `--vendor`) and appends the `include` line to your Makefile. Sphinx reads `conf.py`, static assets and templates from the tool via `-c`, so theme and pipeline updates arrive with a submodule update and nothing is copied into the project.
+
+| Before | After |
+|---|---|
+| `make html`, `make pdf`, `make regs` | `make doc-html`, `make doc-pdf`, `make doc-regs` |
+| `make doc` | `make doc-all` |
+| `make clean`, `clean-generated`, `clean-all` | `make doc-clean`, `doc-clean-generated`, `doc-clean-all` |
+| edit `conf.py` for title/author/version | `PROJECT`, `AUTODOC_AUTHOR`, `AUTODOC_RELEASE` make variables |
+
+Run `make doc-help` for the full list.
+
+#### Breaking changes
+
+- All targets renamed with a `doc-` prefix (see table).
+- `install.sh` no longer copies `scripts/`, `docs/hdl_autodoc/` or a Makefile. Existing projects should delete those copies and re-run the installer.
+- `SCHEMATICS` defaults to `0` (it was documented as off but set to `1`).
+
+### SystemVerilog module descriptions
+
+The `//` comment block directly above `module <name>` is now rendered as the entity description, as `vhdl:autoentity` does for VHDL. `entity.rst` is written once, so delete an existing SV `entity.rst` to regenerate it.
+
+### Other changes
+
+- Breadcrumbs on every page; the sidebar keeps its scroll position between pages.
+- Remaining bare `python` calls use `$(PYTHON)` so the `.venv` is honoured everywhere.
+- `scripts/registers/generate.py` resolves `registers/` from the working directory.
+- `example/` is reduced to a Makefile include plus sources; its stale copy of the tool is removed.
+
+---
+
 ## v3.5.0
 
 ### Template Repo Restructure
