@@ -577,11 +577,27 @@ Done. The new module appears in the overview (tree and table), navigation, and g
 
 ## 📋 Release notes
 
-### Unreleased
+### v3.7.0
+
+#### Behaviour changes
+
+- **Schematics are on by default** — `SCHEMATICS` now defaults to `1` (it was `0` in v3.6.x). They are skipped silently when yosys is not installed; `make doc-html SCHEMATICS=0` turns them off.
+- **Design Hierarchy merged into Overview** — the instantiation tree, shared-component list and parent/child columns now live on the single Overview page; the separate `hierarchy.rst` page is gone (an old one is deleted automatically on the next build).
+
+#### New features
 
 - **`ANNOTATED_SOURCE` switch** — `make doc-html ANNOTATED_SOURCE=0` drops the full source listing from entity pages (default on, as before). The listing now lives in an always-regenerated `<module>_source.rst` that `entity.rst` includes, so the switch works on existing pages too. Unedited older `entity.rst` shells are upgraded automatically; a hand-edited one that still contains the listing inline keeps it until you replace it with `.. include:: <module>_source.rst`.
-- **Incremental-build fix** — works around a sphinx-vhdl bug where rebuilding after an HDL edit warned "Entity … not found" and dropped the ports/generics from VHDL entity pages.
-- **Design Hierarchy merged into Overview** — the instantiation tree, shared-component list and parent/child columns now live on the single Overview page; the separate `hierarchy.rst` page is gone (an old one is deleted automatically on the next build).
+- **Black-box SystemVerilog children** — a VHDL module that instantiates SystemVerilog is no longer skipped as "mixed-language". A generated port-only VHDL stub stands in for each SV child, which is drawn as a black-box instance. ghdl's generic-value suffixes (`pwm_controller_8`) are stripped from box labels.
+- **Restyled schematics** — a bundled netlistsvg skin (soft colours, sans-serif font, dark-mode palette, slightly wider layout spacing).
+- **RTL Detail section** — the schematic sits under a collapsed "RTL Detail" disclosure on the block page in HTML, so the page leads with the block diagram. In the PDF each schematic gets its own landscape page, rotated 90° and fitted to the page.
+- **Navigation** — breadcrumbs on every page, and the left sidebar now scrolls to the current page (it keeps its position after a click inside the sidebar).
+
+#### Fixes
+
+- VHDL modules in a project that also contains SystemVerilog files now get schematics: only a module's own dependencies are passed to ghdl, not every file in the project.
+- netlistsvg drew the wrong module for hierarchical designs; the requested module is now moved to the front of the netlist.
+- Incremental rebuilds after an HDL edit no longer warn "Entity … not found" and drop the ports and generics from VHDL entity pages (a sphinx-vhdl bug, worked around in `conf.py`).
+- SystemVerilog descriptions now also appear on projects generated before v3.6.0 (unedited `entity.rst` shells are upgraded).
 
 ### v3.6.1
 
