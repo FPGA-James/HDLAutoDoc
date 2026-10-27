@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from hdl_registers.parser.toml import from_toml
@@ -9,9 +10,18 @@ from hdl_registers.generator.vhdl.axi_lite.wrapper import VhdlAxiLiteWrapperGene
 from hdl_registers.generator.c.header import CHeaderGenerator
 from hdl_registers.generator.html.page import HtmlPageGenerator
 
-# Resolved from the working directory (project root under make) so the script
-# also works when it lives in a shared checkout outside the project.
-THIS_DIR = Path.cwd() / "registers"
+def registers_dir() -> Path:
+    """$AUTODOC_REGISTERS_DIR if set, else registers/ in the working directory.
+
+    The working directory (project root under make) is used rather than the
+    script location so the script also works from a shared checkout outside the
+    project.
+    """
+    override = os.environ.get("AUTODOC_REGISTERS_DIR", "").strip()
+    return Path(override) if override else Path.cwd() / "registers"
+
+
+THIS_DIR = registers_dir()
 OUTPUT_DIR = THIS_DIR / "generated"
 
 
@@ -44,10 +54,11 @@ def generate( register_list, output_folder):
     ).create()
 
 
-# --- Parse from TOML ---
-regs_toml = from_toml(name="counter", toml_file=THIS_DIR / "regs_counter.toml")
-generate(regs_toml, OUTPUT_DIR )
+if __name__ == "__main__":
+    # --- Parse from TOML ---
+    regs_toml = from_toml(name="counter", toml_file=THIS_DIR / "regs_counter.toml")
+    generate(regs_toml, OUTPUT_DIR)
 
-# --- Parse from YAML (produces identical output) ---
-# regs_yaml = from_yaml(name="counter", yaml_file=THIS_DIR / "regs_counter.yaml")
-# generate(regs_yaml, OUTPUT_DIR / "from_yaml")
+    # --- Parse from YAML (produces identical output) ---
+    # regs_yaml = from_yaml(name="counter", yaml_file=THIS_DIR / "regs_counter.yaml")
+    # generate(regs_yaml, OUTPUT_DIR / "from_yaml")

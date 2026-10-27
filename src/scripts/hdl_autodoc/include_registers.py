@@ -3,7 +3,8 @@
 include_registers.py
 --------------------
 Looks for a Questa Register Assistant export at:
-    <project_root>/registers/generated/
+    $AUTODOC_REGISTERS_DIR/generated/    (when AUTODOC_REGISTERS_DIR is set)
+    <project_root>/registers/generated/  (default)
 
 Expected structure (Questa Register Assistant output):
     generated/
@@ -28,26 +29,43 @@ Usage:
     python scripts/include_registers.py <project_root> <docs_dir>
 """
 
+import os
 import shutil
 import sys
 from pathlib import Path
 
+REGISTERS_DIR_ENV = "AUTODOC_REGISTERS_DIR"
 
-REGISTERS_RST_PLACEHOLDER = """\
+
+def registers_base_dir(project_root: Path) -> Path:
+    """Registers directory: $AUTODOC_REGISTERS_DIR if set, else <project_root>/registers."""
+    override = os.environ.get(REGISTERS_DIR_ENV, "").strip()
+    return Path(override) if override else project_root / "registers"
+
+
+def _shown(path: Path, root: Path) -> str:
+    """`path` relative to `root` for messages; absolute if it lies outside it."""
+    try:
+        return str(path.relative_to(root))
+    except ValueError:
+        return str(path)
+
+
+REGISTERS_RST_PLACEHOLDER_TEMPLATE = """\
 Registers
 =========
 
 .. admonition:: Register map not yet generated
    :class: warning
 
-   No Questa Register Assistant export was found at ``registers/generated/``.
+   No Questa Register Assistant export was found at ``{generated_dir}/``.
 
    To generate it, run Register Assistant and export HTML output, then
-   re-run ``make html``.
+   re-run ``make doc-html``.
 
    Expected location::
 
-       registers/
+       {registers_dir}/
        └── generated/
            ├── index.html
            ├── index2.html
@@ -57,6 +75,11 @@ Registers
                └── <register_block>.html
 
 """
+
+# Default text (registers/ under the project root), kept for callers that want a
+# fixed string.
+REGISTERS_RST_PLACEHOLDER = REGISTERS_RST_PLACEHOLDER_TEMPLATE.format(
+    generated_dir="registers/generated", registers_dir="registers")
 
 REGISTERS_RST_TEMPLATE = """\
 Registers
@@ -165,7 +188,7 @@ if __name__ == "__main__":
     static_dir    = docs_dir / "_static"
     registers_rst = docs_dir / "registers.rst"
 
-    src_dir  = project_root / "registers" / "generated"
+    src_dir  = registers_base_dir(project_root) / "generated"
     dest_dir = static_dir / "registers"
 
     if src_dir.exists() and (forced_entry or find_entry_point(src_dir)):
@@ -194,15 +217,18 @@ if __name__ == "__main__":
 
         registers_rst.write_text(REGISTERS_RST_TEMPLATE.format(entry_filename=entry.name))
 
-        print(f"  → registers: copied {src_dir.relative_to(project_root)} "
+        print(f"  → registers: copied {_shown(src_dir, project_root)} "
               f"({html_count} HTML files, {reg_count} register blocks)")
         print(f"  → entry point: {entry.name}")
         print(f"  → {registers_rst}")
 
     else:
-        registers_rst.write_text(REGISTERS_RST_PLACEHOLDER)
+        registers_rst.write_text(REGISTERS_RST_PLACEHOLDER_TEMPLATE.format(
+            generated_dir=_shown(src_dir, project_root),
+            registers_dir=_shown(registers_base_dir(project_root), project_root)))
         if src_dir.exists():
             print(f"  → registers: directory found but no HTML entry point detected")
         else:
-            print(f"  → registers: no export found at registers/generated/ — writing placeholder")
+            print(f"  → registers: no export found at {_shown(src_dir, project_root)}/ "
+                  f"— writing placeholder")
         print(f"  → {registers_rst}")

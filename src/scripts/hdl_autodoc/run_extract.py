@@ -17,6 +17,7 @@ Flags:
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -35,6 +36,16 @@ def run(cmd: list[str]) -> None:
     result = subprocess.run(cmd)
     if result.returncode != 0:
         sys.exit(result.returncode)
+
+
+def registers_dir_for(docs_dir: Path) -> Path:
+    """
+    Directory holding regs_<module>.toml: $AUTODOC_REGISTERS_DIR if set, else
+    registers/ two levels above docs_dir.  That fallback assumes the
+    docs/hdl_autodoc layout and is kept for callers that do not set the variable.
+    """
+    override = os.environ.get("AUTODOC_REGISTERS_DIR", "").strip()
+    return Path(override) if override else docs_dir.parent.parent / "registers"
 
 
 def dependency_files(hierarchy: dict, name: str) -> list[str]:
@@ -118,7 +129,7 @@ def main(
     save_cache(updated_cache, cache_path)
 
     # Register map extraction — always re-run (independent of HDL cache)
-    registers_dir = docs_dir.parent.parent / "registers"
+    registers_dir = registers_dir_for(docs_dir)
     for name in hierarchy["modules"]:
         regs_toml = registers_dir / f"regs_{name}.toml"
         if regs_toml.exists():

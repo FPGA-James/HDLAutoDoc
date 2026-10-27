@@ -357,7 +357,7 @@ If no report files are present, a placeholder page is still shown so the Impleme
 
 ## 🗺 Register map integration
 
-Place your register map HTML export under `registers/generated/`:
+Place your register map HTML export under `registers/generated/` (or `$AUTODOC_REGISTERS_DIR/generated/` if you have relocated the registers directory — see [Make variables](#make-variables)):
 
 ```
 registers/
@@ -413,7 +413,7 @@ html_theme_options = {
 | `make doc-scaffold` | Generate RST shells (runs hierarchy first) |
 | `make doc-extract` | Extract FSM + process + CDC + block docs (runs scaffold first) |
 | `make doc-reports` | Ingest synthesis/PnR reports from `reports/` → writes synthesis RST files |
-| `make doc-regs` | Generate register artifacts from `registers/regs_*.toml` |
+| `make doc-regs` | Generate register artifacts from `registers/regs_*.toml` (or `$AUTODOC_REGISTERS_DIR`) |
 | `make doc-html` | Full build → `docs/hdl_autodoc/_build/html/` |
 | `make doc-html ANNOTATED_SOURCE=0` | Omit the "Annotated Source" listing from entity pages (on by default) |
 | `make doc-html SCHEMATICS=0` | Full build without RTL schematics (they are on by default and need yosys) |
@@ -422,6 +422,18 @@ html_theme_options = {
 | `make doc-clean` | Remove Sphinx build output only |
 | `make doc-clean-generated` | Remove all auto-generated RST + static files |
 | `make doc-clean-all` | ⚠️ Nuclear reset — removes everything including hand-editable shells |
+
+### Make variables
+
+Set these on the command line (`make doc-html SCHEMATICS=0`) or in your Makefile **before** the `include` line.
+
+| Variable | Default | Effect |
+|---|---|---|
+| `PROJECT` | parent directory name | Documentation title |
+| `AUTODOC_AUTHOR`, `AUTODOC_RELEASE` | `HDL Team`, `1.0.0` | Author and release shown in the docs |
+| `SCHEMATICS` | `1` | `0` skips RTL schematics |
+| `ANNOTATED_SOURCE` | `1` | `0` omits the "Annotated Source" listing from entity pages |
+| `AUTODOC_REGISTERS_DIR` | `registers` | Directory holding `regs_*.toml`, `config.yml` and the generated `generated/` and `out/` output. Relocate it, e.g. `AUTODOC_REGISTERS_DIR=out/registers`. Relative paths are taken from the project root. |
 
 ---
 
@@ -487,7 +499,7 @@ your-project/
 ├── filelist.f                  ← your source file list
 ├── src/                        ← your HDL source files
 ├── third_party/hdl_autodoc/    ← this repository (git submodule, or --vendor copy)
-├── registers/                  ← optional: register definitions
+├── registers/                  ← optional: register definitions (location set by AUTODOC_REGISTERS_DIR)
 │   ├── config.yml
 │   ├── regs_<name>.toml
 │   └── generated/
@@ -576,6 +588,17 @@ Done. The new module appears in the overview (tree and table), navigation, and g
 ---
 
 ## 📋 Release notes
+
+### v3.8.0
+
+#### New features
+
+- **Configurable registers directory** — the register pipeline no longer assumes a top-level `registers/`. Set `AUTODOC_REGISTERS_DIR` (default `registers`) to relocate it, for example under `out/`: `make doc-html AUTODOC_REGISTERS_DIR=out/registers`. It moves `regs_*.toml` and `config.yml`, the `generated/` and `out/` output of `make doc-regs`, and the `generated/` export that `include_registers.py` looks for. `autodoc.mk` passes the variable to `run_extract.py` and `generate.py` as well as Sphinx.
+
+#### Compatibility
+
+- Backwards compatible. With the variable unset, every script keeps its previous default, including the `docs/hdl_autodoc`-relative fallback in `run_extract.py`. Through `make` the default resolves to `<project root>/registers`, which is the same directory for the standard layout.
+- The "no register export found" notice now names the configured directory, and says `make doc-html` rather than `make html`.
 
 ### v3.7.0
 

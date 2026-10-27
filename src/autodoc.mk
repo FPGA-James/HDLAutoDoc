@@ -34,7 +34,8 @@ AUTODOC_AUTHOR        ?=
 AUTODOC_RELEASE       ?=
 AUTODOC_ENV            = AUTODOC_PROJECT="$(PROJECT)" AUTODOC_AUTHOR="$(AUTODOC_AUTHOR)" \
                          AUTODOC_RELEASE="$(AUTODOC_RELEASE)" AUTODOC_SRC="$(abspath $(AUTODOC_SRCDIR))" \
-                         AUTODOC_SOURCEDIR="$(abspath $(AUTODOC_SOURCEDIR))"
+                         AUTODOC_SOURCEDIR="$(abspath $(AUTODOC_SOURCEDIR))" \
+                         AUTODOC_REGISTERS_DIR="$(abspath $(AUTODOC_REGISTERS_DIR))"
 AUTODOC_SPHINXBUILD    = $(PYTHON) -m sphinx
 AUTODOC_SOURCEDIR      = docs/hdl_autodoc
 AUTODOC_BUILDDIR       = $(AUTODOC_SOURCEDIR)/_build
@@ -64,8 +65,11 @@ AUTODOC_REGGEN     ?= $(AUTODOC_HOME)/scripts/registers/generate.py
 # =============================================================================
 # Register generation variables
 # =============================================================================
-REGS_GENERATED_DIR := registers/generated
-REGS_OUT_DIR       := registers/out
+# Base directory for register definitions and their generated output.
+# Relocate it (e.g. under out/) with:  make doc-html AUTODOC_REGISTERS_DIR=out/registers
+AUTODOC_REGISTERS_DIR ?= registers
+REGS_GENERATED_DIR := $(AUTODOC_REGISTERS_DIR)/generated
+REGS_OUT_DIR       := $(AUTODOC_REGISTERS_DIR)/out
 
 
 .PHONY: doc-help doc-venv doc-install doc-hierarchy doc-scaffold doc-extract \
@@ -114,7 +118,7 @@ doc-scaffold: doc-hierarchy
 # run_extract.py reads hierarchy.json — no hardcoded module names here.
 # Pass --schematics when SCHEMATICS=1 to enable yosys RTL schematic generation.
 doc-extract: doc-scaffold
-	$(PYTHON) $(AUTODOC_SCRIPTDIR)/run_extract.py \
+	$(AUTODOC_ENV) $(PYTHON) $(AUTODOC_SCRIPTDIR)/run_extract.py \
 		$(AUTODOC_HIERARCHY_JSON) $(AUTODOC_SOURCEDIR) $(AUTODOC_SCRIPTDIR) \
 		$(if $(filter 1,$(SCHEMATICS)),--schematics) $(if $(FORCE),--force)
 	@echo "Regenerating timing pages..."
@@ -199,7 +203,7 @@ doc-clean-all: doc-clean-generated
 
 ## doc-regs : Generate registers from the register map
 doc-regs: $(REGS_OUT_DIR)
-	$(PYTHON) $(AUTODOC_REGGEN)
+	$(AUTODOC_ENV) $(PYTHON) $(AUTODOC_REGGEN)
 
 $(REGS_OUT_DIR):
 	mkdir -p $(REGS_OUT_DIR)

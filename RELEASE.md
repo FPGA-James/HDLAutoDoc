@@ -1,5 +1,18 @@
 # Release Notes
 
+## v3.8.0
+
+#### New features
+
+- **Configurable registers directory** — the register pipeline no longer assumes a top-level `registers/`. Set `AUTODOC_REGISTERS_DIR` (default `registers`) to relocate it, for example under `out/`: `make doc-html AUTODOC_REGISTERS_DIR=out/registers`. It moves `regs_*.toml` and `config.yml`, the `generated/` and `out/` output of `make doc-regs`, and the `generated/` export that `include_registers.py` looks for. `autodoc.mk` passes the variable to `run_extract.py` and `generate.py` as well as Sphinx.
+
+#### Compatibility
+
+- Backwards compatible. With the variable unset, every script keeps its previous default, including the `docs/hdl_autodoc`-relative fallback in `run_extract.py`. Through `make` the default resolves to `<project root>/registers`, which is the same directory for the standard layout.
+- The "no register export found" notice now names the configured directory, and says `make doc-html` rather than `make html`.
+
+---
+
 ## v3.7.0
 
 #### Behaviour changes
