@@ -58,6 +58,7 @@ latex_elements = {
     'fncychap':   '',
     'printindex': '',
     'preamble': r"""
+\usepackage{pdflscape}   % full-page rotated RTL schematics
 \makeatletter
 \@ifpackageloaded{wrapfig}{}{%
   \newenvironment{wrapfigure}[2][]{\begin{figure}[htbp]}{\end{figure}}%

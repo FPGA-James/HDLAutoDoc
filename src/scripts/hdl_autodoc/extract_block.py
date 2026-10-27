@@ -650,8 +650,9 @@ def write_rst_block(module_name: str, src_filename: str,
         # Wildcard extension lets Sphinx pick the right candidate per builder:
         # SVG for HTML, the PDF sibling (if generate_schematic.py produced one) for LaTeX.
         schematic_image = f"{module_name}_schematic.*"
-        # Secondary detail: collapsed in HTML (a <details> disclosure) so the page
-        # leads with the block diagram; always shown in LaTeX/PDF.
+        # Secondary detail.  HTML: collapsed <details> disclosure so the page leads
+        # with the block diagram.  LaTeX/PDF: the schematic gets its own landscape
+        # (rotated 90 degrees) page; Sphinx scales the image to fit the text area.
         lines += [
             "",
             "RTL Detail", "----------", "",
@@ -660,11 +661,24 @@ def write_rst_block(module_name: str, src_filename: str,
             "   .. raw:: html", "",
             "      <details class=\"hdl-rtl-detail\">",
             "      <summary>Show RTL schematic</summary>", "",
-            f".. image:: {schematic_image}",
-            "   :align: center", "",
-            ".. only:: html", "",
+            f"   .. image:: {schematic_image}",
+            "      :align: center", "",
             "   .. raw:: html", "",
             "      </details>", "",
+            ".. only:: latex", "",
+            "   .. raw:: latex", "",
+            "      \\begin{landscape}",
+            # Sphinx caps image height at \spx@image@maxheight, fixed at document
+            # start to the *portrait* text height -- taller than a landscape page.
+            # Reset it from the landscape \textheight (minus room for spacing);
+            # the assignment is local to the landscape environment.
+            "      \\makeatletter",
+            "      \\spx@image@maxheight=\\dimexpr\\textheight-4\\baselineskip\\relax",
+            "      \\makeatother", "",
+            f"   .. image:: {schematic_image}",
+            "      :align: center", "",
+            "   .. raw:: latex", "",
+            "      \\end{landscape}", "",
         ]
 
     return "\n".join(lines)

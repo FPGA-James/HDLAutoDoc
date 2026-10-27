@@ -564,3 +564,14 @@ def test_rtl_schematic_is_a_collapsed_detail_section():
 def test_no_rtl_detail_section_without_schematic():
     rst = write_rst_block("m", "m.vhd", [], [], [], include_schematic=False)
     assert "RTL Detail" not in rst and "<details" not in rst
+
+
+def test_rtl_schematic_gets_a_landscape_page_in_latex():
+    """PDF output rotates the schematic onto its own page and fits it to that page."""
+    rst = write_rst_block("m", "m.vhd", [], [], [], include_schematic=True)
+    latex = rst[rst.index(".. only:: latex"):]
+    assert "\\begin{landscape}" in latex and "\\end{landscape}" in latex
+    # Sphinx's image height cap is portrait-sized; it must be reset inside the block.
+    assert "\\spx@image@maxheight" in latex
+    assert latex.index("\\begin{landscape}") < latex.index(".. image:: m_schematic.*") \
+        < latex.index("\\end{landscape}")
