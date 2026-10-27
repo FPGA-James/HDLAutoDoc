@@ -558,7 +558,7 @@ Done. The new module appears in the hierarchy, navigation, overview table, hiera
 
 ### RTL schematics (on by default)
 
-- **Mixed-language top levels** — if a VHDL module instantiates SystemVerilog submodules, ghdl cannot elaborate it. The schematic for that module is skipped cleanly; leaf-level schematics are unaffected.
+- **Mixed-language top levels** — ghdl cannot read SystemVerilog, so a VHDL module that instantiates SystemVerilog submodules is elaborated with a generated port-only VHDL stub standing in for each SV child (outputs tied low). The child is drawn as a black-box instance; its internals are not shown. Headers the stub generator cannot convert (e.g. multi-dimensional packed ports) fall back to skipping that module's schematic.
 - **Unconnected ports** — ghdl is stricter than synthesis tools and will fail if any port is left unconnected in the design under test. The schematic is skipped for that module.
 - **Non-synthesisable constructs** — `wait` statements, file I/O, or other simulation-only VHDL will cause yosys/ghdl to fail. Affected modules are skipped.
 - **Tool availability** — requires yosys and netlistsvg (all modules) plus ghdl + ghdl-yosys-plugin for VHDL. Missing tools produce a warning and the build continues without schematics.

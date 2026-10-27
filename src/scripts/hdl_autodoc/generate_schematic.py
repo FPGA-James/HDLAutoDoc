@@ -29,6 +29,8 @@ non-fatal.  The build continues; the block diagram RST simply omits the
 schematic section if the SVG was not produced.
 """
 
+import json
+import re
 import shutil
 import subprocess
 import sys
@@ -55,8 +57,64 @@ def _run_yosys(args: list[str]) -> tuple[bool, str]:
     return r.returncode == 0, r.stderr[:600] if r.stderr else ""
 
 
+def sv_module_stub_vhdl(sv_file: Path) -> str | None:
+    """
+    Build a VHDL entity with the same generics and ports as a SystemVerilog
+    module, and an architecture that only ties its outputs low, so ghdl can elaborate a VHDL parent that
+    instantiates it.  The child then shows up as a black-box instance.
+
+    Returns None if the header uses something this simple converter does not
+    handle (packed multi-dimensional ports, no module found).
+    """
+    from extract_block import extract_params_sv, extract_ports_sv
+
+    text = sv_file.read_text(errors="replace")
+    m = re.search(r"^\s*(?:module|macromodule)\s+(\w+)", text, re.MULTILINE)
+    if not m:
+        return None
+    name = m.group(1)
+
+    ports = extract_ports_sv(text)
+    if not ports:
+        return None
+    generics = [p for p in extract_params_sv(text) if p["kind"] == "parameter"]
+
+    port_lines = []
+    drivers = []
+    for p in ports:
+        rng = p["range"]
+        if rng:
+            parts = rng.split(":")
+            if len(parts) != 2 or "[" in rng:
+                return None
+            vtype = f"std_logic_vector({parts[0].strip()} downto {parts[1].strip()})"
+        else:
+            vtype = "std_logic"
+        port_lines.append(f"    {p['name']} : {p['dir']} {vtype}")
+        if p["dir"] == "out":
+            # Drive outputs: undriven bits become 'x' in the netlist, which
+            # netlistsvg's schema rejects.
+            zero = "(others => '0')" if rng else "'0'"
+            drivers.append(f"  {p['name']} <= {zero};")
+
+    out = ["library ieee;", "use ieee.std_logic_1164.all;", "",
+           f"entity {name} is"]
+    if generics:
+        out.append("  generic (")
+        out.append(";\n".join(
+            f"    {g['name']} : integer := {g['default'] or 0}" for g in generics))
+        out.append("  );")
+    out.append("  port (")
+    out.append(";\n".join(port_lines))
+    out += ["  );", f"end entity {name};", "",
+            f"architecture stub of {name} is", "begin", *drivers,
+            "end architecture stub;", ""]
+    return "\n".join(out)
+
+
 def _build_prefix_vhdl(src: Path, module_name: str,
-                       extra_srcs: list[Path]) -> tuple[str, list[str]] | None:
+                       extra_srcs: list[Path],
+                       stub_dir: Path | None = None) -> tuple[str, list[str]] | None:
     """Build the read+elaborate yosys script prefix for a VHDL module.
 
     Returns (script_prefix, extra_yosys_args), or None if this design can't
@@ -72,6 +130,7 @@ def _build_prefix_vhdl(src: Path, module_name: str,
     seen: set[Path] = set()
     vhdl_files: list[Path] = []
     sv_deps: list[str] = []
+    sv_files: list[Path] = []
     for f in extra_srcs + [src]:
         if f in seen:
             continue
@@ -80,14 +139,25 @@ def _build_prefix_vhdl(src: Path, module_name: str,
             vhdl_files.append(f)
         elif f.suffix.lower() in (".sv", ".svh"):
             sv_deps.append(f.stem)
+            sv_files.append(f)
 
-    # If this module instantiates SystemVerilog submodules, ghdl cannot
-    # elaborate it — skip cleanly rather than dumping a synthesis error.
+    # ghdl cannot read SystemVerilog.  Stand in a port-only VHDL stub for each
+    # SV child so the parent elaborates and the child is drawn as a black box.
+    # Without a stub directory (or if a header can't be converted), skip cleanly.
     if sv_deps:
-        sv_names = ", ".join(sv_deps)
-        print(f"  ! SCHEMATIC [{module_name}]: mixed-language design "
-              f"(SystemVerilog deps: {sv_names}) — ghdl cannot elaborate, skipping")
-        return None
+        stubs: list[Path] = []
+        for sv_file in sv_files:
+            stub = sv_module_stub_vhdl(sv_file) if stub_dir is not None else None
+            if stub is None:
+                sv_names = ", ".join(f.stem for f in sv_files)
+                print(f"  ! SCHEMATIC [{module_name}]: mixed-language design "
+                      f"(SystemVerilog deps: {sv_names}) — ghdl cannot elaborate, skipping")
+                return None
+            stub_dir.mkdir(parents=True, exist_ok=True)
+            stub_path = stub_dir / f"{sv_file.stem}_stub.vhd"
+            stub_path.write_text(stub)
+            stubs.append(stub_path)
+        vhdl_files = stubs + vhdl_files
 
     files_str = " ".join(str(f) for f in vhdl_files)
     script_prefix = f"ghdl --std=08 {files_str} -e {module_name}; proc; opt;"
@@ -111,6 +181,44 @@ def _build_prefix_sv(src: Path, extra_srcs: list[Path]) -> tuple[str, list[str]]
 # Custom netlistsvg skin (colours, font, light/dark palette). Optional: if the
 # file is missing netlistsvg falls back to its bundled default skin.
 NETLISTSVG_SKIN = Path(__file__).with_name("netlistsvg_skin.svg")
+
+
+_GENERIC_SUFFIX_RE = re.compile(r"^(?P<base>.+?)(?:_\d+)+$")
+
+
+def _prepare_netlist(json_path: Path, module_name: str, known: set[str]) -> None:
+    """
+    Tidy a hierarchical yosys netlist for netlistsvg.
+
+    * netlistsvg draws the first module, so move the requested one to the front
+      (the others stay so its instances resolve to their port lists).
+    * ghdl names entities specialised by generics ``pwm_controller_8`` or
+      ``traffic_light_50000000_5000_2000``; strip the generic-value suffix when
+      the base is a known entity name, so boxes carry the entity name.
+    """
+    try:
+        data = json.loads(json_path.read_text())
+    except (OSError, ValueError):
+        return  # cosmetic only — let netlistsvg try the netlist as written
+    modules = data.get("modules", {})
+
+    rename: dict[str, str] = {}
+    for key in modules:
+        m = _GENERIC_SUFFIX_RE.match(key)
+        if m and m["base"] in known and m["base"] not in modules:
+            rename[key] = m["base"]
+    if rename:
+        modules = {rename.get(k, k): v for k, v in modules.items()}
+        for mod in modules.values():
+            for cell in mod.get("cells", {}).values():
+                cell["type"] = rename.get(cell.get("type"), cell.get("type"))
+
+    top = next((k for k in modules if k.lower() == module_name.lower()), None)
+    if top is not None and next(iter(modules)) != top:
+        modules = {top: modules[top], **{k: v for k, v in modules.items() if k != top}}
+
+    data["modules"] = modules
+    json_path.write_text(json.dumps(data))
 
 
 def _run_netlistsvg(json_path: Path, svg_path: Path, module_name: str) -> bool:
@@ -162,9 +270,18 @@ def render_schematic(src_path: Path, module_name: str, extra_srcs: list[Path],
                      json_path: Path, svg_path: Path) -> bool:
     """Render the RTL schematic, preferring netlistsvg and falling back to
     yosys's own `show` renderer if netlistsvg is missing or its render fails."""
+    stub_dir = json_path.parent / f".{module_name}_sv_stubs"
+    try:
+        return _render(src_path, module_name, extra_srcs, json_path, svg_path, stub_dir)
+    finally:
+        shutil.rmtree(stub_dir, ignore_errors=True)
+
+
+def _render(src_path: Path, module_name: str, extra_srcs: list[Path],
+            json_path: Path, svg_path: Path, stub_dir: Path) -> bool:
     ext = src_path.suffix.lower()
     if ext in (".vhd", ".vhdl"):
-        built = _build_prefix_vhdl(src_path, module_name, extra_srcs)
+        built = _build_prefix_vhdl(src_path, module_name, extra_srcs, stub_dir)
     elif ext in (".sv", ".svh"):
         built = _build_prefix_sv(src_path, extra_srcs)
     else:
@@ -189,6 +306,8 @@ def render_schematic(src_path: Path, module_name: str, extra_srcs: list[Path],
             if err:
                 print("    " + err.replace("\n", "\n    "))
         if ok:
+            _prepare_netlist(json_path, module_name,
+                             {module_name} | {p.stem for p in [src_path, *extra_srcs]})
             ok = _run_netlistsvg(json_path, svg_path, module_name)
         if json_path.exists():
             json_path.unlink()
