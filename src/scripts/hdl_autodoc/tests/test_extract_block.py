@@ -551,3 +551,16 @@ def test_bus_group_with_remaining_ports():
     # remaining ports appear as plain rows (outside <details>)
     assert "<code>clk</code>" in rst
     assert "<code>rst</code>" in rst
+
+
+def test_rtl_schematic_is_a_collapsed_detail_section():
+    """The schematic sits in a collapsed <details> block (HTML) under 'RTL Detail'."""
+    rst = write_rst_block("m", "m.vhd", [], [], [], include_schematic=True)
+    assert "RTL Detail" in rst
+    assert "<details" in rst and "</details>" in rst
+    assert rst.index("<details") < rst.index(".. image:: m_schematic.*") < rst.index("</details>")
+
+
+def test_no_rtl_detail_section_without_schematic():
+    rst = write_rst_block("m", "m.vhd", [], [], [], include_schematic=False)
+    assert "RTL Detail" not in rst and "<details" not in rst
