@@ -21,6 +21,10 @@ PROJECT        ?=
 #   make doc-html SCHEMATICS=0   (skip schematics)
 SCHEMATICS     ?= 1
 
+# Set to 0 to omit the "Annotated Source" listing from each entity page.
+#   make doc-html ANNOTATED_SOURCE=0
+ANNOTATED_SOURCE ?= 1
+
 # =============================================================================
 # HDL AutoDoc (Sphinx pipeline) variables
 # =============================================================================
@@ -38,6 +42,8 @@ AUTODOC_SCRIPTDIR      = $(AUTODOC_HOME)/scripts/hdl_autodoc
 # Sphinx config (conf.py, _static, _templates) is read from the tool, not the project.
 AUTODOC_CONFDIR        = $(AUTODOC_HOME)/docs/hdl_autodoc
 AUTODOC_SRCDIR         = src
+# Extra flags for generate_rst.py
+AUTODOC_GENRST_FLAGS   = $(if $(filter 0,$(ANNOTATED_SOURCE)),--no-source)
 AUTODOC_FILELIST       = filelist.f
 AUTODOC_HIERARCHY_JSON = $(AUTODOC_SOURCEDIR)/hierarchy.json
 # Entry point filename for the register map HTML output.
@@ -77,6 +83,7 @@ doc-help:
 	@echo "  make doc-coverage              Generate documentation coverage report"
 	@echo "  make doc-html                 Build HTML documentation"
 	@echo "  make doc-html SCHEMATICS=0    Build HTML without RTL schematics (default: on, needs yosys)"
+	@echo "  make doc-html ANNOTATED_SOURCE=0  Omit the annotated source listing (default: on)"
 	@echo "  make doc-pdf                  Build PDF documentation"
 	@echo "  make doc-clean                Remove Sphinx build output only"
 	@echo "  make doc-clean-generated      Remove always-regenerated files"
@@ -101,7 +108,7 @@ doc-hierarchy:
 # ── Step 2: doc-scaffold RST shells from hierarchy ────────────────────────────────
 doc-scaffold: doc-hierarchy
 	@echo "Scaffolding RST files..."
-	$(PYTHON) $(AUTODOC_SCRIPTDIR)/generate_rst.py $(AUTODOC_SRCDIR) $(AUTODOC_SOURCEDIR) "$(PROJECT)"
+	$(PYTHON) $(AUTODOC_SCRIPTDIR)/generate_rst.py $(AUTODOC_SRCDIR) $(AUTODOC_SOURCEDIR) "$(PROJECT)" $(AUTODOC_GENRST_FLAGS)
 
 # ── Step 3: doc-extract FSM + processes for every module ─────────────────────────
 # run_extract.py reads hierarchy.json — no hardcoded module names here.
@@ -111,7 +118,7 @@ doc-extract: doc-scaffold
 		$(AUTODOC_HIERARCHY_JSON) $(AUTODOC_SOURCEDIR) $(AUTODOC_SCRIPTDIR) \
 		$(if $(filter 1,$(SCHEMATICS)),--schematics) $(if $(FORCE),--force)
 	@echo "Regenerating timing pages..."
-	$(PYTHON) $(AUTODOC_SCRIPTDIR)/generate_rst.py $(AUTODOC_SRCDIR) $(AUTODOC_SOURCEDIR) "$(PROJECT)"
+	$(PYTHON) $(AUTODOC_SCRIPTDIR)/generate_rst.py $(AUTODOC_SRCDIR) $(AUTODOC_SOURCEDIR) "$(PROJECT)" $(AUTODOC_GENRST_FLAGS)
 
 # ── Step 3b: doc-coverage report (opt-in, runs independently after extract) ──────
 doc-coverage: doc-hierarchy
@@ -124,7 +131,7 @@ doc-reports: doc-hierarchy
 	$(PYTHON) $(AUTODOC_SCRIPTDIR)/extract_reports.py \
 		$(AUTODOC_HIERARCHY_JSON) $(AUTODOC_SOURCEDIR) reports
 	@echo "Regenerating RST for implementation pages..."
-	$(PYTHON) $(AUTODOC_SCRIPTDIR)/generate_rst.py $(AUTODOC_SRCDIR) $(AUTODOC_SOURCEDIR) "$(PROJECT)"
+	$(PYTHON) $(AUTODOC_SCRIPTDIR)/generate_rst.py $(AUTODOC_SRCDIR) $(AUTODOC_SOURCEDIR) "$(PROJECT)" $(AUTODOC_GENRST_FLAGS)
 
 # ── Step 4: build HTML ────────────────────────────────────────────────────────
 doc-html: doc-extract
@@ -172,6 +179,7 @@ doc-clean-generated: doc-clean
 		find $(AUTODOC_SOURCEDIR)/modules -maxdepth 2 \
 		     -name "index.rst" -o -name "fsm.rst" -o -name "timing.rst" \
 		     -o -name "cdc.rst" -o -name "*_cdc.rst" -o -name "*_cdc.dot" \
+		     -o -name "*_source.rst" \
 		     -o -name "block.rst" -o -name "*_block.rst" -o -name "*_block.dot" \
 		     -o -name "*_schematic.svg" \
 		     -o -name "reset.rst" -o -name "*_reset.rst" -o -name "*_reset.dot" \

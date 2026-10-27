@@ -72,3 +72,15 @@ latex_elements = {
 source_suffix    = ".rst"
 master_doc       = "index"
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+
+# ── sphinx-vhdl incremental-build workaround ─────────────────────────────────
+# sphinx-vhdl keeps "VHDL files already parsed" in the pickled environment, but
+# the parsed entities live in memory.  On an incremental build (a fresh process
+# reusing the pickle) it skips parsing, so every vhdl:autoentity of a re-read
+# page warns "not found" and renders empty.  Reset the flag so each run parses.
+def _reset_vhdl_parse_flag(app):
+    app.env.domaindata.get("vhdl", {})["autodoc_initialized"] = False
+
+
+def setup(app):
+    app.connect("builder-inited", _reset_vhdl_parse_flag)

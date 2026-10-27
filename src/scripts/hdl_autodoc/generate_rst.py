@@ -141,12 +141,14 @@ def write_if_missing(path: Path, content: str) -> str:
     return f"  → {path}"
 
 
-def write_if_missing_or_pristine(path: Path, content: str, pristine: str) -> str:
+def write_if_missing_or_pristine(path: Path, content: str, pristine) -> str:
     """
     Like write_if_missing, but also upgrades a shell that is byte-identical to
-    what an older version generated (`pristine`), so hand-edited files are kept.
+    what an older version generated, so hand-edited files are kept.  `pristine`
+    is one string or an iterable of strings (every shape older versions wrote).
     """
-    if path.exists() and path.read_text() == pristine and pristine != content:
+    pristines = {pristine} if isinstance(pristine, str) else set(pristine)
+    if path.exists() and path.read_text() in pristines and content not in pristines:
         path.write_text(content)
         return f"  → (upgraded unedited shell) {path}"
     return write_if_missing(path, content)
@@ -244,13 +246,12 @@ def sv_module_description(text: str, name: str) -> str:
     return "\n".join(block).strip()
 
 
-def entity_rst(entity: dict, src_rel_to_docs: str = "../../src",
-               src_dir: Path = None) -> str:
+def _entity_head(entity: dict, src_dir: Path = None) -> list[str]:
+    """Title, source-file line, and the module description (everything above
+    the annotated source)."""
     name  = entity["name"]
     fname = entity["file"]
-    ext   = fname.rsplit(".", 1)[-1].lower()
-    is_sv = ext in ("sv", "svh")
-    lang  = "systemverilog" if is_sv else "vhdl"
+    is_sv = fname.rsplit(".", 1)[-1].lower() in ("sv", "svh")
     title = f"{name} — Entity"
 
     lines = [title, "=" * len(title), "", f"Source file: ``src/{fname}``.", ""]
@@ -266,8 +267,13 @@ def entity_rst(entity: dict, src_rel_to_docs: str = "../../src",
             desc = ""
         if desc:
             lines += [desc, ""]
+    return lines
 
-    lines += [
+
+def _annotated_source_section(entity: dict, src_rel_to_docs: str) -> list[str]:
+    fname = entity["file"]
+    lang  = "systemverilog" if fname.rsplit(".", 1)[-1].lower() in ("sv", "svh") else "vhdl"
+    return [
         "Annotated Source",
         "----------------", "",
         f".. literalinclude:: {src_rel_to_docs}/{fname}",
@@ -276,7 +282,32 @@ def entity_rst(entity: dict, src_rel_to_docs: str = "../../src",
         f"   :caption: src/{fname}",
         "",
     ]
-    return "\n".join(lines)
+
+
+def entity_rst(entity: dict, src_rel_to_docs: str = "../../src",
+               src_dir: Path = None) -> str:
+    """
+    Write-once entity page.  The annotated source is pulled in from a separate,
+    always-regenerated ``<name>_source.rst`` (see source_rst) so the
+    ``ANNOTATED_SOURCE`` switch works on pages that already exist.
+    """
+    return "\n".join(_entity_head(entity, src_dir)
+                     + [f".. include:: {entity['name']}_source.rst", ""])
+
+
+def source_rst(entity: dict, src_rel_to_docs: str = "../../src",
+               enabled: bool = True) -> str:
+    """Always-regenerated annotated-source section; just a comment when disabled."""
+    if not enabled:
+        return ".. Annotated source disabled (ANNOTATED_SOURCE=0).\n"
+    return "\n".join(_annotated_source_section(entity, src_rel_to_docs))
+
+
+def legacy_entity_rsts(entity: dict, src_rel_to_docs: str, src_dir: Path = None) -> set[str]:
+    """Every entity.rst shape earlier versions generated (annotated source inline),
+    so an unedited one can be upgraded to the include form."""
+    section = _annotated_source_section(entity, src_rel_to_docs)
+    return {"\n".join(_entity_head(entity, d) + section) for d in (None, src_dir)}
 
 
 def reset_rst(entity: dict, module_dir: Path = None) -> str:
@@ -557,18 +588,21 @@ def overview_rst(entities: list[dict], project_name: str,
 # ─────────────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        sys.exit("Usage: generate_rst.py <src_dir> <docs_dir> [project_name]")
+    flags   = {a for a in sys.argv[1:] if a.startswith("--")}
+    args    = [a for a in sys.argv[1:] if not a.startswith("--")]
+    no_source = "--no-source" in flags
+    if len(args) < 2:
+        sys.exit("Usage: generate_rst.py <src_dir> <docs_dir> [project_name] [--no-source]")
 
-    src_dir  = Path(sys.argv[1])
-    docs_dir = Path(sys.argv[2])
+    src_dir  = Path(args[0])
+    docs_dir = Path(args[1])
 
     # Project name — from argument, or derived from parent folder name
     GENERIC_NAMES = {"src", "docs", "files", "hdl", "rtl", "vhdl", "verilog",
                      "source", "sources", "project", "projects", "workspace"}
 
-    if len(sys.argv) > 3 and sys.argv[3].strip():
-        project_name = sys.argv[3].strip()
+    if len(args) > 2 and args[2].strip():
+        project_name = args[2].strip()
     else:
         candidate = docs_dir.resolve().parent
         for _ in range(4):
@@ -659,7 +693,12 @@ if __name__ == "__main__":
         results.append(write_if_missing_or_pristine(
             mod_dir / "entity.rst",
             entity_rst(entity, src_rel_to_docs=src_rel, src_dir=src_dir),
-            pristine=entity_rst(entity, src_rel_to_docs=src_rel),
+            pristine=legacy_entity_rsts(entity, src_rel, src_dir),
+        ))
+        # Always regenerated, so ANNOTATED_SOURCE can be toggled at any time.
+        results.append(write_always(
+            mod_dir / f"{entity['name']}_source.rst",
+            source_rst(entity, src_rel_to_docs=src_rel, enabled=not no_source),
         ))
 
     # Top-level always-regenerated

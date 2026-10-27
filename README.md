@@ -415,6 +415,7 @@ html_theme_options = {
 | `make doc-reports` | Ingest synthesis/PnR reports from `reports/` → writes synthesis RST files |
 | `make doc-regs` | Generate register artifacts from `registers/regs_*.toml` |
 | `make doc-html` | Full build → `docs/hdl_autodoc/_build/html/` |
+| `make doc-html ANNOTATED_SOURCE=0` | Omit the "Annotated Source" listing from entity pages (on by default) |
 | `make doc-html SCHEMATICS=0` | Full build without RTL schematics (they are on by default and need yosys) |
 | `make doc-pdf` | Full build → LaTeX PDF |
 | `make doc-all` | Run `doc-regs` + `doc-html` + `doc-pdf` |
@@ -510,7 +511,8 @@ Nothing from the tool is copied into the project tree, so there are no stale cop
 | `src/*.vhd`, `src/*.sv` | ✍️ Edit freely | Your HDL — single source of truth |
 | `Makefile` | ✍️ Edit freely | Set `PROJECT`, `AUTODOC_AUTHOR`, `AUTODOC_RELEASE` before the `include` |
 | `third_party/hdl_autodoc/` | 🔒 Tool | Update via the submodule; do not edit in place |
-| `docs/hdl_autodoc/modules/<n>/entity.rst` | ✍️ Safe to edit | Written once, never overwritten |
+| `docs/hdl_autodoc/modules/<n>/entity.rst` | ✍️ Safe to edit | Written once, never overwritten (keep its `.. include:: <n>_source.rst` line to honour `ANNOTATED_SOURCE`) |
+| `docs/hdl_autodoc/modules/<n>/<n>_source.rst` | 🔄 Auto-generated | The annotated source section; empty when `ANNOTATED_SOURCE=0` |
 | `docs/hdl_autodoc/modules/<n>/index.rst` | 🔄 Auto-generated | Regenerated every build |
 | `docs/hdl_autodoc/modules/<n>/fsm.rst` | 🔄 Auto-generated | Regenerated every build |
 | `docs/hdl_autodoc/modules/<n>/timing.rst` | 🔄 Auto-generated | Aggregated from process wavedrom blocks |
@@ -577,6 +579,8 @@ Done. The new module appears in the overview (tree and table), navigation, and g
 
 ### Unreleased
 
+- **`ANNOTATED_SOURCE` switch** — `make doc-html ANNOTATED_SOURCE=0` drops the full source listing from entity pages (default on, as before). The listing now lives in an always-regenerated `<module>_source.rst` that `entity.rst` includes, so the switch works on existing pages too. Unedited older `entity.rst` shells are upgraded automatically; a hand-edited one that still contains the listing inline keeps it until you replace it with `.. include:: <module>_source.rst`.
+- **Incremental-build fix** — works around a sphinx-vhdl bug where rebuilding after an HDL edit warned "Entity … not found" and dropped the ports/generics from VHDL entity pages.
 - **Design Hierarchy merged into Overview** — the instantiation tree, shared-component list and parent/child columns now live on the single Overview page; the separate `hierarchy.rst` page is gone (an old one is deleted automatically on the next build).
 
 ### v3.6.1
