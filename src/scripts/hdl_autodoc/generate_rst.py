@@ -16,7 +16,6 @@ Per-module files under docs/modules/<name>/:
 Top-level:
   docs/index.rst          — always regenerated
   docs/overview.rst       — always regenerated
-  docs/hierarchy.rst      — always regenerated (when hierarchy present)
 
 Usage:
     python scripts/generate_rst.py <src_dir> <docs_dir>
@@ -431,51 +430,6 @@ def hierarchy_dot(hierarchy: dict) -> str:
     return "\n".join(lines)
 
 
-def hierarchy_rst(hierarchy: dict) -> str:
-    top     = hierarchy["top"]
-    modules = hierarchy["modules"]
-    shared  = [n for n, m in modules.items() if m["shared"]]
-    title   = "Design Hierarchy"
-
-    lines = [
-        title, "=" * len(title), "",
-        f"Top-level module: ``{top}``",
-        f"Total modules: {len(modules)}",
-        "",
-        "Instantiation Tree", "-------------------", "",
-        ".. graphviz:: hierarchy.dot", "",
-    ]
-
-    if shared:
-        lines += [
-            "Shared Components", "-----------------", "",
-            "The following modules are instantiated by more than one parent:", "",
-        ]
-        for name in shared:
-            parents = modules[name]["parents"]
-            lines.append(f"- ``{name}`` — instantiated by: "
-                         + ", ".join(f"``{p}``" for p in parents))
-        lines.append("")
-
-    lines += [
-        "Module List", "-----------", "",
-        ".. list-table::", "   :header-rows: 1", "",
-        "   * - Module", "     - Source File", "     - Parents", "     - Children",
-        "",
-    ]
-    for name in sorted(modules.keys()):
-        mod = modules[name]
-        parents  = ", ".join(f"``{p}``" for p in mod["parents"])  or "*(top)*"
-        children = ", ".join(f"``{c}``" for c in mod["children"]) or "—"
-        lines.append(f"   * - :doc:`modules/{name}/index`")
-        lines.append(f"     - ``{mod['file']}``")
-        lines.append(f"     - {parents}")
-        lines.append(f"     - {children}")
-        lines.append("")
-
-    return "\n".join(lines)
-
-
 def registers_rst(modules_with_regs: list[str]) -> str:
     """Top-level registers index page listing all modules with register maps."""
     title = "Register Maps"
@@ -508,7 +462,6 @@ def index_rst(entities: list[dict], project_name: str,
         top = hierarchy["top"]
         lines += [
             f"   modules/{top}/index",
-            "   hierarchy",
         ]
         if modules_with_regs:
             lines.append("   registers")
@@ -543,6 +496,11 @@ def index_rst(entities: list[dict], project_name: str,
 
 def overview_rst(entities: list[dict], project_name: str,
                  hierarchy: dict = None) -> str:
+    """
+    Single landing page: summary, instantiation tree (hierarchy.dot), shared
+    components, and one module table.  With a hierarchy the table also shows
+    each module's parents and children.
+    """
     title = f"{project_name} — Overview"
     lines = [
         title, "=" * len(title), "",
@@ -551,21 +509,44 @@ def overview_rst(entities: list[dict], project_name: str,
         "",
     ]
 
+    modules = hierarchy["modules"] if hierarchy else {}
+
     if hierarchy:
         top = hierarchy["top"]
         lines += [
             f"Top-level module: :doc:`modules/{top}/index`", "",
+            "Instantiation Tree", "------------------", "",
+            ".. graphviz:: hierarchy.dot", "",
         ]
+        shared = [n for n, m in modules.items() if m["shared"]]
+        if shared:
+            lines += [
+                "Shared Components", "-----------------", "",
+                "The following modules are instantiated by more than one parent:", "",
+            ]
+            for name in shared:
+                lines.append(f"- ``{name}`` — instantiated by: "
+                             + ", ".join(f"``{p}``" for p in modules[name]["parents"]))
+            lines.append("")
 
+    header = ["Module", "Source File", "Description"]
+    if hierarchy:
+        header += ["Instantiated by", "Instantiates"]
     lines += [
         "Modules", "-------", "",
         ".. list-table::", "   :header-rows: 1", "",
-        "   * - Module", "     - Source File", "     - Description", "",
-    ]
+        f"   * - {header[0]}",
+    ] + [f"     - {h}" for h in header[1:]] + [""]
     for e in entities:
         lines.append(f"   * - :doc:`modules/{e['name']}/index`")
         lines.append(f"     - ``{e['file']}``")
         lines.append(f"     - {e['brief']}")
+        if hierarchy and e["name"] in modules:
+            mod = modules[e["name"]]
+            lines.append("     - " + (", ".join(f"``{p}``" for p in mod["parents"]) or "*(top)*"))
+            lines.append("     - " + (", ".join(f"``{c}``" for c in mod["children"]) or "—"))
+        elif hierarchy:
+            lines += ["     - —", "     - —"]
         lines.append("")
 
     return "\n".join(lines)
@@ -705,10 +686,11 @@ if __name__ == "__main__":
             docs_dir / "hierarchy.dot",
             hierarchy_dot(hierarchy)
         ))
-        results.append(write_always(
-            docs_dir / "hierarchy.rst",
-            hierarchy_rst(hierarchy)
-        ))
+        # Merged into overview.rst; remove the page older versions generated so
+        # Sphinx does not warn about a document missing from the toctree.
+        stale = docs_dir / "hierarchy.rst"
+        if stale.exists():
+            stale.unlink()
 
     for r in results:
         print(r)

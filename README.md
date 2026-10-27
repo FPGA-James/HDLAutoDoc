@@ -36,8 +36,7 @@ No separate doc files to maintain. No manual diagrams to draw. If it's in the so
 ```
 docs/
 ├── index.rst                       ← project root (Design + Implementation toctrees)
-├── overview.rst                    ← module summary table
-├── hierarchy.rst                   ← instantiation tree diagram + module list
+├── overview.rst                    ← instantiation tree, shared components, module table
 ├── synthesis/
 │   └── index.rst                   ← Implementation page: timing + utilization tables
 └── modules/
@@ -532,7 +531,7 @@ Nothing from the tool is copied into the project tree, so there are no stale cop
 2. Add it to `filelist.f` (dependency-first order)
 3. Run `make doc-html`
 
-Done. The new module appears in the hierarchy, navigation, overview table, hierarchy diagram, and gets its own block diagram and CDC analysis page automatically.
+Done. The new module appears in the overview (tree and table), navigation, and gets its own block diagram and CDC analysis page automatically.
 
 ---
 
@@ -575,6 +574,10 @@ Done. The new module appears in the hierarchy, navigation, overview table, hiera
 ---
 
 ## 📋 Release notes
+
+### Unreleased
+
+- **Design Hierarchy merged into Overview** — the instantiation tree, shared-component list and parent/child columns now live on the single Overview page; the separate `hierarchy.rst` page is gone (an old one is deleted automatically on the next build).
 
 ### v3.6.1
 

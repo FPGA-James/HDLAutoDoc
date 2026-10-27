@@ -22,6 +22,7 @@ import pytest
 from generate_rst import (
     cdc_rst,
     entity_rst,
+    overview_rst,
     write_if_missing_or_pristine,
     fsm_rst,
     index_rst,
@@ -283,3 +284,32 @@ def test_unedited_entity_shell_is_upgraded_but_edits_are_kept(tmp_path):
     f.write_text("my edits\n")
     write_if_missing_or_pristine(f, new, pristine=old)
     assert f.read_text() == "my edits\n"
+
+
+_H = {"top": "top", "modules": {
+    "top":   {"file": "src/top.vhd",   "parents": [],      "children": ["leaf", "other"], "shared": False},
+    "leaf":  {"file": "src/leaf.vhd",  "parents": ["top"], "children": [],                "shared": False},
+    "other": {"file": "src/other.vhd", "parents": ["top"], "children": ["leaf"],          "shared": False},
+}}
+_E = [{"name": n, "file": m["file"], "brief": f"{n} brief."} for n, m in _H["modules"].items()]
+
+
+def test_overview_includes_tree_and_parent_child_columns():
+    """The overview carries what the old Design Hierarchy page showed."""
+    rst = overview_rst(_E, "P", _H)
+    assert ".. graphviz:: hierarchy.dot" in rst
+    assert "Instantiated by" in rst and "Instantiates" in rst
+    assert "*(top)*" in rst
+    assert "``leaf``, ``other``" in rst
+    assert "top brief." in rst  # descriptions are still there
+
+
+def test_overview_without_hierarchy_keeps_the_plain_table():
+    rst = overview_rst(_E, "P", None)
+    assert "graphviz" not in rst and "Instantiates" not in rst
+
+
+def test_index_toctree_has_no_separate_hierarchy_page():
+    rst = index_rst(_E, "P", _H)
+    assert "   overview" in rst
+    assert "\n   hierarchy\n" not in rst

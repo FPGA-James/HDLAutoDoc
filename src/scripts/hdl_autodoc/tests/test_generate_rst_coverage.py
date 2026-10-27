@@ -16,8 +16,8 @@ def test_coverage_in_toctree_when_has_coverage_true():
     assert "   coverage" in rst
 
 
-def test_coverage_entry_position_after_hierarchy():
+def test_coverage_entry_position_after_top_module():
     rst = index_rst(_ENTITIES, "TestProject", _HIERARCHY, has_coverage=True)
-    pos_hierarchy = rst.index("   hierarchy")
-    pos_coverage  = rst.index("   coverage")
-    assert pos_coverage > pos_hierarchy
+    pos_top      = rst.index("   modules/blinky/index")
+    pos_coverage = rst.index("   coverage")
+    assert pos_coverage > pos_top
