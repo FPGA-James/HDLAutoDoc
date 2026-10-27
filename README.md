@@ -568,6 +568,7 @@ Done. The new module appears in the overview (tree and table), navigation, and g
 - VHDL `component`-style instantiation (without `entity work.` prefix) is matched by name — ambiguous names in large designs may need verification.
 - SV named parameter overrides (`#(.PARAM(val))` style) are not extracted; use positional style or inline comments.
 - Generics with no default value show a blank default in the table.
+- **SystemVerilog interface ports** are listed only when the interface is defined in a support file (a file with no module, listed in `filelist.f`) or in the module's own file, and only in one-port-per-line headers. Parameters in member widths are shown as written, not evaluated.
 
 ### RTL schematics (on by default)
 
@@ -589,6 +590,29 @@ Done. The new module appears in the overview (tree and table), navigation, and g
 ---
 
 ## 📋 Release notes
+
+### v3.10.0
+
+#### New features
+
+- **SystemVerilog interface ports in block diagrams and port tables** — ports typed as an interface (`axil_if.slave s_axil`, `axis_if.master m_axis`, or a bare `axis_if s_dbg`) are no longer skipped. A module with AXI-Lite / AXI-Stream interface ports now shows them next to `clk`/`rst`:
+  - **Port table:** one row per interface port. *Direction* is the modport (`slave`, `master`, or — if there is none), *Type* is the interface name, and the description comes from the preceding or inline comment like any other port.
+  - **Block diagram:** one bus-style port per interface, labelled `name (interface)`. Master-like modports (`master`, `manager`, `initiator`, `source`/`src`, `mst`, `tx`, `producer`, `driver`, `out`) are drawn on the right; every other port (`slave`, `subordinate`, `target`, `sink`/`snk`, `rx`, an unrecognised modport, or none) is on the left.
+  - **Interfaces section:** a new "Interfaces" heading lists the members of each interface a module uses (type, width and description), with a direction column for each modport the module's ports use.
+  - A type name counts as an interface only if an `interface ... endinterface` of that name is defined in one of the `support_files` (see v3.9.0) or in the module's own file, so an ordinary type name is never mistaken for one.
+- `generate_rst.py`'s flat-mode port list recognises interface ports the same way (it finds interface definitions across the source tree).
+
+#### Compatibility
+
+- Backwards compatible. Modules without interface ports produce byte-identical block pages, and `extract_block.py`'s new `--support` option is optional.
+- VHDL is unchanged: record-typed ports already appear as ordinary typed ports.
+
+#### Notes
+
+- Interface ports are read from the module header, one per line (the style the existing port extractor already assumes). An interface *instance* inside the module body is not a port. Interfaces defined in a file that also defines modules are found only for that file's own modules.
+- Interface members and widths are shown as written (`logic[W-1:0]`); parameters are not evaluated.
+- Support files are not part of a module's extraction cache key; after editing an interface run `make doc-extract FORCE=1`.
+- A *modport-less* interface port (`axis_if s_dbg`) makes the RTL schematic fall back to yosys's own renderer, because yosys marks its members `inout` and netlistsvg accepts only `input`/`output`. The block page is unaffected.
 
 ### v3.9.0
 
@@ -698,7 +722,7 @@ Done. The new module appears in the overview (tree and table), navigation, and g
 
 #### New features
 
-- **Block diagrams** — `extract_block.py` generates a `block.rst` page per module. The diagram uses a TerosHDL-inspired style: a green box for generics/parameters (with default values) stacked above a yellow box for ports (inputs left with `►`, outputs right with `◄`, bus widths annotated). Both VHDL `generic` and SV `parameter`/`localparam` declarations are extracted.
+- **Block diagrams** — `extract_block.py` generates a `block.rst` page per module. The diagram uses a TerosHDL-inspired style: a green box for generics/parameters (with default values) stacked above a yellow box for ports (inputs left with `►`, outputs right with `◄`, bus widths annotated). Both VHDL `generic` and SV `parameter`/`localparam` declarations are extracted. SystemVerilog interface-typed ports (`axil_if.slave s_axil`) get one table row and one `name (interface)` port each — slave-style modports on the left, master-style on the right — and an "Interfaces" section lists each interface's members.
 - **Port and generics/parameters tables** — the block page includes a full port table (name, direction, type, description) and a generics/parameters table (name, type, default, description). Comments from preceding lines and same-line inline comments are both captured.
 
 ### v3.1.0

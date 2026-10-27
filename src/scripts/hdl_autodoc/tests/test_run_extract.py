@@ -156,3 +156,20 @@ def test_schematics_tolerate_a_hierarchy_without_support_files(tmp_path):
     """Older hierarchy.json files lack the key: no --support arguments, no error."""
     (call,) = _schematic_calls(tmp_path, {})
     assert "--support" not in call
+
+
+def test_extract_block_gets_the_support_files_too(tmp_path):
+    """extract_block needs the interface definitions to recognise interface ports."""
+    src_file = tmp_path / "blinky.sv"
+    src_file.write_text("module blinky; endmodule")
+    h_json = tmp_path / "hierarchy.json"
+    h_json.write_text(json.dumps({
+        "modules": {"blinky": {"file": str(src_file), "children": [], "parents": []}},
+        "support_files": ["src/axis_if.sv"]}))
+    docs_dir = tmp_path / "docs" / "hdl_autodoc"
+    (docs_dir / "modules" / "blinky").mkdir(parents=True)
+    calls = []
+    with patch("run_extract.run", side_effect=lambda cmd: calls.append(cmd)):
+        main(h_json, docs_dir, Path(__file__).parents[1], force=True)
+    (block,) = [c for c in calls if c[1].endswith("extract_block.py")]
+    assert block[-2:] == ["--support", "src/axis_if.sv"]

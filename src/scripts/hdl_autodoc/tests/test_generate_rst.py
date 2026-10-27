@@ -22,6 +22,8 @@ import pytest
 from generate_rst import (
     cdc_rst,
     entity_rst,
+    extract_entities,
+    scan_src,
     legacy_entity_rsts,
     overview_rst,
     source_rst,
@@ -342,3 +344,43 @@ def test_legacy_inline_shells_are_upgraded_to_the_include_form(tmp_path):
     f.write_text("hand edited\n")
     write_if_missing_or_pristine(f, new, pristine=legacy_entity_rsts(entity, "../src", tmp_path))
     assert f.read_text() == "hand edited\n"
+
+
+_IFACE_MOD = """\
+// Bridge.
+module bridge (
+    input  logic    clk,
+    axil_if.slave   s_axil,
+    axis_if.master  m_axis,
+    axis_if         s_dbg
+);
+endmodule
+"""
+
+
+def test_extract_entities_lists_interface_ports(tmp_path):
+    src = tmp_path / "bridge.sv"
+    src.write_text(_IFACE_MOD)
+    (ent,) = extract_entities(src, {"axil_if", "axis_if"})
+    by_name = {p["name"]: p for p in ent["ports"]}
+    assert list(by_name) == ["clk", "s_axil", "m_axis", "s_dbg"]
+    assert by_name["s_axil"]["kind"] == "interface"
+    assert by_name["s_axil"]["interface"] == "axil_if" and by_name["s_axil"]["dir"] == "slave"
+    assert by_name["s_dbg"]["modport"] == "" and by_name["s_dbg"]["dir"] == "\u2014"
+    assert by_name["clk"]["dir"] == "input"      # ordinary ports unchanged
+
+
+def test_extract_entities_without_interface_names_skips_interface_ports(tmp_path):
+    src = tmp_path / "bridge.sv"
+    src.write_text(_IFACE_MOD)
+    (ent,) = extract_entities(src)
+    assert [p["name"] for p in ent["ports"]] == ["clk"]
+
+
+def test_scan_src_discovers_interfaces_from_any_file(tmp_path):
+    """Flat fallback mode: interface definitions in the tree identify interface ports."""
+    (tmp_path / "axil_if.sv").write_text("interface axil_if; logic a; endinterface\n")
+    (tmp_path / "axis_if.sv").write_text("interface axis_if; logic b; endinterface\n")
+    (tmp_path / "bridge.sv").write_text(_IFACE_MOD)
+    ents = {e["name"]: e for e in scan_src(tmp_path)}
+    assert [p["name"] for p in ents["bridge"]["ports"]] == ["clk", "s_axil", "m_axis", "s_dbg"]

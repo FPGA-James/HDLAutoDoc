@@ -26,6 +26,8 @@ import re
 import sys
 from pathlib import Path
 
+from sv_interfaces import find_interface_names, find_interface_port
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # VHDL / SV entity extraction (used for flat fallback mode)
@@ -40,7 +42,16 @@ PORT_RE    = re.compile(
 )
 
 
-def extract_entities(src_path: Path) -> list[dict]:
+def extract_entities(src_path: Path,
+                     interface_names: set[str] | None = None) -> list[dict]:
+    """
+    Entities/modules in one file, with a brief and a best-effort port list.
+
+    `interface_names` (known SystemVerilog `interface` definitions) enables
+    interface-typed ports (`axis_if.master m_axis`): they are listed with
+    kind="interface", the interface name and modport; `dir` is the modport
+    ("\u2014" if none).  Without it only input/output/inout ports are returned.
+    """
     lines  = src_path.read_text().splitlines()
     is_sv  = src_path.suffix.lower() in (".sv", ".svh")
     pat    = MODULE_RE if is_sv else ENTITY_RE
@@ -83,9 +94,15 @@ def extract_entities(src_path: Path) -> list[dict]:
                 break
             if is_sv:
                 pm = sv_port.search(lines[k])
+                hit = None if pm else find_interface_port(lines[k], interface_names or set())
                 if pm:
                     ports.append({"name": pm.group(2), "dir": pm.group(1).lower(),
                                   "type": "logic"})
+                elif hit:
+                    ifc, modport, pname = hit
+                    ports.append({"name": pname, "dir": modport or "\u2014",
+                                  "type": ifc, "kind": "interface",
+                                  "interface": ifc, "modport": modport})
             else:
                 pm = PORT_RE.match(lines[k])
                 if pm:
@@ -99,10 +116,16 @@ def extract_entities(src_path: Path) -> list[dict]:
 
 
 def scan_src(src_dir: Path) -> list[dict]:
+    paths = [p for p in sorted(src_dir.glob("**/*"))
+             if p.suffix.lower() in (".vhd", ".vhdl", ".sv", ".svh")]
+    # Interface definitions anywhere in the tree identify interface-typed ports.
+    interface_names: set[str] = set()
+    for path in paths:
+        if path.suffix.lower() in (".sv", ".svh"):
+            interface_names |= find_interface_names(path.read_text(errors="replace"))
     entities = []
-    for path in sorted(src_dir.glob("**/*")):
-        if path.suffix.lower() in (".vhd", ".vhdl", ".sv", ".svh"):
-            entities.extend(extract_entities(path))
+    for path in paths:
+        entities.extend(extract_entities(path, interface_names))
     return entities
 
 

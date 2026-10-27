@@ -18,6 +18,7 @@ import pytest
 
 from extract_block import (
     _width_label,
+    interface_side,
     extract_generics_vhdl,
     extract_params_sv,
     extract_ports_sv,
@@ -575,3 +576,147 @@ def test_rtl_schematic_gets_a_landscape_page_in_latex():
     assert "\\spx@image@maxheight" in latex
     assert latex.index("\\begin{landscape}") < latex.index(".. image:: m_schematic.*") \
         < latex.index("\\end{landscape}")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SystemVerilog interface-typed ports
+# ─────────────────────────────────────────────────────────────────────────────
+
+_IFACES = {"axil_if", "axis_if"}
+
+_BRIDGE_SV = """\
+module bridge #(
+    parameter int DEPTH = 4
+)(
+    // System clock.
+    input  logic       clk,
+    // Register write interface.
+    axil_if.slave      s_axil,
+    // Outgoing byte stream.
+    axis_if.master     m_axis,
+    axis_if            s_dbg       // Debug tap.
+);
+    axis_if inner (.clk(clk));
+endmodule
+"""
+
+
+def test_interface_ports_are_extracted_in_declaration_order():
+    ports = extract_ports_sv(_BRIDGE_SV, _IFACES)
+    assert [p["name"] for p in ports] == ["clk", "s_axil", "m_axis", "s_dbg"]
+
+
+def test_interface_port_fields():
+    ports = {p["name"]: p for p in extract_ports_sv(_BRIDGE_SV, _IFACES)}
+    s_axil = ports["s_axil"]
+    assert s_axil["kind"] == "interface"
+    assert s_axil["interface"] == "axil_if" and s_axil["modport"] == "slave"
+    assert s_axil["dir"] == "slave" and s_axil["type"] == "axil_if" and s_axil["range"] == ""
+    assert s_axil["comment"] == "Register write interface."
+    assert ports["m_axis"]["modport"] == "master"
+    assert ports["s_dbg"]["modport"] == "" and ports["s_dbg"]["dir"] == "\u2014"
+    assert ports["s_dbg"]["comment"] == "Debug tap."          # inline comment
+    assert "kind" not in ports["clk"]                         # ordinary ports unchanged
+
+
+def test_interface_instance_in_the_module_body_is_not_a_port():
+    names = [p["name"] for p in extract_ports_sv(_BRIDGE_SV, _IFACES)]
+    assert "inner" not in names
+
+
+def test_interface_ports_need_a_known_interface_name():
+    """A plain type name, or an unknown interface, is not listed."""
+    text = "module m (\n    input logic clk,\n    foo_t data,\n    other_if.slave o\n);\nendmodule\n"
+    assert [p["name"] for p in extract_ports_sv(text, _IFACES)] == ["clk"]
+
+
+def test_without_interface_names_behaviour_is_unchanged():
+    assert [p["name"] for p in extract_ports_sv(_BRIDGE_SV)] == ["clk"]
+    assert [p["name"] for p in extract_ports_sv(_BRIDGE_SV, set())] == ["clk"]
+
+
+def test_interface_ports_after_a_parameter_list_are_found():
+    text = "module m #(parameter int W = (4 + 4)) (\n    axis_if.master out_s\n);\nendmodule\n"
+    assert [p["name"] for p in extract_ports_sv(text, _IFACES)] == ["out_s"]
+
+
+def test_interface_side_rule():
+    assert interface_side({"modport": "master"}) == "right"
+    assert interface_side({"modport": "src"}) == "right"
+    assert interface_side({"modport": "mp_manager"}) == "right"
+    assert interface_side({"modport": "slave"}) == "left"
+    assert interface_side({"modport": "snk"}) == "left"
+    assert interface_side({"modport": ""}) == "left"
+    assert interface_side({"modport": "weird"}) == "left"
+
+
+def test_diagram_places_interface_ports_by_modport_and_labels_them():
+    ports = extract_ports_sv(_BRIDGE_SV, _IFACES)
+    dot = write_dot_block("bridge", ports, [])
+    assert 'PORT="i_s_axil"' in dot and "s_axil (interface)" in dot    # slave: left
+    assert 'PORT="i_s_dbg"' in dot                                     # no modport: left
+    assert 'PORT="o_m_axis"' in dot and "m_axis (interface)" in dot    # master: right
+    assert 'PORT="i_m_axis"' not in dot
+
+
+def test_diagram_modport_named_in_or_out_is_not_mistaken_for_a_plain_port():
+    ports = [
+        {"name": "clk", "dir": "in", "type": "logic", "range": "", "comment": ""},
+        {"name": "bus", "dir": "out", "type": "x_if", "range": "", "comment": "",
+         "kind": "interface", "interface": "x_if", "modport": "out"},
+    ]
+    dot = write_dot_block("m", ports, [])
+    assert "bus (interface)" in dot
+    assert dot.count('PORT="o_bus"') == 1 and 'PORT="i_bus"' not in dot
+
+
+def test_port_table_has_one_row_per_interface_port():
+    ports = extract_ports_sv(_BRIDGE_SV, _IFACES)
+    rst = write_rst_block("bridge", "bridge.sv", ports, [], [])
+    assert "   * - ``s_axil``\n     - ``slave``\n     - ``axil_if``\n     - Register write interface." in rst
+    assert "   * - ``m_axis``\n     - ``master``\n     - ``axis_if``" in rst
+    assert "   * - ``s_dbg``\n     - \u2014\n     - ``axis_if``" in rst
+
+
+def test_interface_ports_are_not_swallowed_by_bus_grouping():
+    """Several ports sharing a prefix form a bus group; an interface port never does."""
+    ports = [
+        {"name": f"s_axi_{n}", "dir": "in", "type": "logic", "range": "", "comment": ""}
+        for n in ("awvalid", "awready", "awaddr", "wvalid", "wready", "wdata",
+                  "bvalid", "bready", "bresp", "arvalid")
+    ] + [
+        {"name": "s_axi", "dir": "slave", "type": "axil_if", "range": "", "comment": "",
+         "kind": "interface", "interface": "axil_if", "modport": "slave"},
+    ]
+    rst = write_rst_block("m", "m.sv", ports, [], [])
+    assert "port-table" in rst and "bus-group-row" in rst          # the flat ports did group
+    assert "AXI4-Lite" in rst
+    # ...and the interface port is its own plain row, not inside the group.
+    assert "<td><code>s_axi</code></td>" in rst
+    assert "<td><code>axil_if</code></td>" in rst
+    group_html = rst[rst.index("<details>"):rst.index("</details>")]
+    assert "<code>s_axi</code>" not in group_html
+
+
+_AXIS_DEF = {"name": "axis_if", "members": [
+    {"name": "tdata", "type": "logic", "range": "7:0", "comment": "Payload."},
+    {"name": "tready", "type": "logic", "range": "", "comment": ""},
+], "modports": {"master": {"tdata": "out", "tready": "in"}, "slave": {"tdata": "in"}}}
+
+
+def test_interfaces_section_lists_members_with_widths_and_modport_directions():
+    ports = [{"name": "m_axis", "dir": "master", "type": "axis_if", "range": "", "comment": "",
+              "kind": "interface", "interface": "axis_if", "modport": "master"}]
+    rst = write_rst_block("m", "m.sv", ports, [], [], interfaces={"axis_if": _AXIS_DEF})
+    assert "Interfaces\n----------" in rst
+    assert "``axis_if`` \u2014 used by ``m_axis``." in rst
+    assert "``tdata``\n     - ``logic[7:0]``\n     - out\n     - Payload." in rst
+    assert "``tready``\n     - ``logic``\n     - in\n" in rst
+    # Only the modport this module uses gets a column.
+    assert "     - master" in rst and "     - slave" not in rst
+
+
+def test_no_interfaces_section_without_interface_ports():
+    ports = [{"name": "clk", "dir": "in", "type": "logic", "range": "", "comment": ""}]
+    rst = write_rst_block("m", "m.sv", ports, [], [], interfaces={"axis_if": _AXIS_DEF})
+    assert "Interfaces" not in rst

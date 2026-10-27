@@ -1,5 +1,30 @@
 # Release Notes
 
+## v3.10.0
+
+#### New features
+
+- **SystemVerilog interface ports in block diagrams and port tables** — ports typed as an interface (`axil_if.slave s_axil`, `axis_if.master m_axis`, or a bare `axis_if s_dbg`) are no longer skipped. A module with AXI-Lite / AXI-Stream interface ports now shows them next to `clk`/`rst`:
+  - **Port table:** one row per interface port. *Direction* is the modport (`slave`, `master`, or — if there is none), *Type* is the interface name, and the description comes from the preceding or inline comment like any other port.
+  - **Block diagram:** one bus-style port per interface, labelled `name (interface)`. Master-like modports (`master`, `manager`, `initiator`, `source`/`src`, `mst`, `tx`, `producer`, `driver`, `out`) are drawn on the right; every other port (`slave`, `subordinate`, `target`, `sink`/`snk`, `rx`, an unrecognised modport, or none) is on the left.
+  - **Interfaces section:** a new "Interfaces" heading lists the members of each interface a module uses (type, width and description), with a direction column for each modport the module's ports use.
+  - A type name counts as an interface only if an `interface ... endinterface` of that name is defined in one of the `support_files` (see v3.9.0) or in the module's own file, so an ordinary type name is never mistaken for one.
+- `generate_rst.py`'s flat-mode port list recognises interface ports the same way (it finds interface definitions across the source tree).
+
+#### Compatibility
+
+- Backwards compatible. Modules without interface ports produce byte-identical block pages, and `extract_block.py`'s new `--support` option is optional.
+- VHDL is unchanged: record-typed ports already appear as ordinary typed ports.
+
+#### Notes
+
+- Interface ports are read from the module header, one per line (the style the existing port extractor already assumes). An interface *instance* inside the module body is not a port. Interfaces defined in a file that also defines modules are found only for that file's own modules.
+- Interface members and widths are shown as written (`logic[W-1:0]`); parameters are not evaluated.
+- Support files are not part of a module's extraction cache key; after editing an interface run `make doc-extract FORCE=1`.
+- A *modport-less* interface port (`axis_if s_dbg`) makes the RTL schematic fall back to yosys's own renderer, because yosys marks its members `inout` and netlistsvg accepts only `input`/`output`. The block page is unaffected.
+
+---
+
 ## v3.9.0
 
 #### New features

@@ -17,13 +17,25 @@ Port comments are captured from:
 Bus widths are computed from the port range where possible and shown as edge
 labels on the diagram (e.g. "8" for std_logic_vector(7 downto 0)).
 
+SystemVerilog interface ports (`axil_if.slave s_axil`, `axis_if m_axis`) are listed
+when their interface is known — defined in a support file or the module's own file.
+Each is one row in the port table (Direction = modport, Type = interface name) and
+one bus-style port on the diagram labelled `name (interface)`.  Placement rule: a
+port whose modport is master-like (master, manager, initiator, source/src, mst, tx,
+producer, driver, out) is drawn on the right; every other interface port (slave,
+subordinate, target, sink/snk, rx, ..., or no modport) is drawn on the left.  The
+members of each interface used are listed under an "Interfaces" heading.
+
 Usage:
     python scripts/hdl_autodoc/extract_block.py <file.vhd|file.sv> <module_name> <output_dir>
+        [--bus-groups <path>] [--support <support_file> ...]
 """
 
 import re
 import sys
 from pathlib import Path
+
+from sv_interfaces import collect_interfaces, find_interface_port
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -191,17 +203,91 @@ _SV_PARAM_RE = re.compile(
 )
 
 
-def extract_ports_sv(text: str) -> list[dict]:
+def _match_paren(s: str, i: int) -> int:
+    """Index of the `)` matching the `(` at s[i], or -1."""
+    depth = 0
+    for j in range(i, len(s)):
+        if s[j] == "(":
+            depth += 1
+        elif s[j] == ")":
+            depth -= 1
+            if depth == 0:
+                return j
+    return -1
+
+
+def _sv_port_list_spans(text: str) -> list[tuple[int, int]]:
+    """
+    (start, end) character offsets of each module header's port list, i.e. the
+    `( ... )` after `module name` and any `#( ... )` parameter list.  Interface
+    ports are only looked for here, so an interface *instance* in a module body
+    (`stream_if s (.clk(clk));`) is never read as a port.
+    """
+    blank = lambda m: re.sub(r"[^\n]", " ", m.group(0))
+    stripped = re.sub(r"/\*.*?\*/", blank, text, flags=re.DOTALL)
+    stripped = re.sub(r"//[^\n]*", blank, stripped)
+    spans: list[tuple[int, int]] = []
+    for m in re.finditer(r"\b(?:module|macromodule)\s+(?:automatic\s+|static\s+)?\w+\s*",
+                         stripped):
+        i = m.end()
+        if stripped[i:i + 1] == "#":
+            i += 1
+            i += len(stripped[i:]) - len(stripped[i:].lstrip())
+            if stripped[i:i + 1] != "(":
+                continue
+            j = _match_paren(stripped, i)
+            if j < 0:
+                continue
+            i = j + 1
+            i += len(stripped[i:]) - len(stripped[i:].lstrip())
+        if stripped[i:i + 1] == "(":
+            j = _match_paren(stripped, i)
+            if j > 0:
+                spans.append((i + 1, j))
+    return spans
+
+
+def extract_ports_sv(text: str, interface_names: set[str] | None = None) -> list[dict]:
     """
     Extract port declarations from a SystemVerilog module.
     Returns list of {name, dir, type, range, comment}.
+
+    With `interface_names` (the known `interface` definitions), interface-typed
+    ports in the module header (`axil_if.slave s_axil`, `axis_if m_axis`) are also
+    returned, in declaration order, with kind="interface", the `interface` name and
+    its `modport` ("" if none); `dir` holds the modport ("—" if none) and `type`
+    the interface name.  Without it behaviour is unchanged.
     """
     lines = text.splitlines()
     ports = []
 
+    spans: list[tuple[int, int]] = []
+    line_starts: list[int] = []
+    if interface_names:
+        spans = _sv_port_list_spans(text)
+        pos = 0
+        for l in lines:
+            line_starts.append(pos)
+            pos += len(l) + 1
+
     for idx, line in enumerate(lines):
         m = _SV_PORT_RE.match(line)
         if not m:
+            if spans and any(s <= line_starts[idx] < e for s, e in spans):
+                hit = find_interface_port(line, interface_names)
+                if hit:
+                    ifc, modport, pname = hit
+                    ports.append({
+                        "name":      pname,
+                        "dir":       modport or "\u2014",
+                        "type":      ifc,
+                        "range":     "",
+                        "comment":   _inline_comment_sv(line)
+                                     or _preceding_comment(lines, idx, "//"),
+                        "kind":      "interface",
+                        "interface": ifc,
+                        "modport":   modport,
+                    })
             continue
 
         comment = _inline_comment_sv(line) or _preceding_comment(lines, idx, "//")
@@ -374,6 +460,19 @@ def _safe(name: str) -> str:
     return re.sub(r"\W", "_", name)
 
 
+# Modport-name tokens that mean "this port drives the bus": drawn on the right.
+# Everything else (slave, subordinate, target, sink/snk, rx, no modport, ...) is
+# drawn on the left, like an input.
+_MASTER_LIKE = {"master", "manager", "initiator", "source", "src", "mst", "tx",
+                "producer", "driver", "out"}
+
+
+def interface_side(port: dict) -> str:
+    """'right' for a master-like modport, else 'left' (see _MASTER_LIKE)."""
+    tokens = [t for t in re.split(r"[^a-z]+", (port.get("modport") or "").lower()) if t]
+    return "right" if any(t in _MASTER_LIKE for t in tokens) else "left"
+
+
 def write_dot_block(module_name: str, ports: list[dict],
                     generics: list[dict]) -> str:
     """
@@ -391,10 +490,14 @@ def write_dot_block(module_name: str, ports: list[dict],
     an invisible edge orders gen_box above port_box.
     """
     safe_mod   = _safe(module_name)
-    inputs     = [p for p in ports if p["dir"] == "in"]
-    outputs    = [p for p in ports if p["dir"] == "out"]
-    inouts     = [p for p in ports if p["dir"] == "inout"]
-    left_ports = inputs + inouts
+    # A modport can be called "in"/"out", so classify plain ports by kind first.
+    plain      = [p for p in ports if p.get("kind") != "interface"]
+    iface      = [p for p in ports if p.get("kind") == "interface"]
+    inputs     = [p for p in plain if p["dir"] == "in"]
+    outputs    = [p for p in plain if p["dir"] == "out"]
+    inouts     = [p for p in plain if p["dir"] == "inout"]
+    left_ports = inputs + inouts + [p for p in iface if interface_side(p) == "left"]
+    outputs    = outputs + [p for p in iface if interface_side(p) == "right"]
     n_rows     = max(len(left_ports), len(outputs), 1)
     _ONE_BIT   = {"1", "integer", "natural", "positive", "real", "int"}
 
@@ -440,7 +543,13 @@ def write_dot_block(module_name: str, ports: list[dict],
         lp = left_ports[i] if i < len(left_ports) else None
         rp = outputs[i]    if i < len(outputs)    else None
 
-        if lp:
+        if lp and lp.get("kind") == "interface":
+            # One bus-style port for the whole interface bundle.
+            left_td = (
+                f'<TD PORT="i_{_safe(lp["name"])}" ALIGN="LEFT" CELLPADDING="5">'
+                f'&#x25B8;&#x25B8; {_html.escape(lp["name"])} (interface)</TD>'
+            )
+        elif lp:
             w     = _width_label(lp)
             sym   = "&#x25C2;&#x25B8;" if lp["dir"] == "inout" else "&#x25B8;"
             # _width_label returns "[expr]" for parametric, bare number for numeric
@@ -453,7 +562,12 @@ def write_dot_block(module_name: str, ports: list[dict],
         else:
             left_td = '<TD CELLPADDING="5"> </TD>'
 
-        if rp:
+        if rp and rp.get("kind") == "interface":
+            right_td = (
+                f'<TD PORT="o_{_safe(rp["name"])}" ALIGN="RIGHT" CELLPADDING="5">'
+                f'{_html.escape(rp["name"])} (interface) &#x25C2;&#x25C2;</TD>'
+            )
+        elif rp:
             right_td = (
                 f'<TD PORT="o_{_safe(rp["name"])}" ALIGN="RIGHT" CELLPADDING="5">'
                 f'{_html.escape(rp["name"])} &#x25C2;</TD>'
@@ -556,6 +670,13 @@ def _html_port_table(bus_groups: list, remaining: list[dict]) -> str:
 _DIR_RST = {"in": "``in``", "out": "``out``", "inout": "``inout``"}
 
 
+def _dir_rst(port: dict) -> str:
+    """Direction cell: in/out/inout, or the modport for an interface port."""
+    if port.get("kind") == "interface":
+        return f"``{port['modport']}``" if port.get("modport") else "\u2014"
+    return _DIR_RST.get(port["dir"], port["dir"])
+
+
 def _type_str(port: dict) -> str:
     """
     Format port type + range as a readable string.
@@ -563,6 +684,8 @@ def _type_str(port: dict) -> str:
     SV uses square brackets:  logic[7:0]
     Detected from whether the range contains 'downto'/'to' (VHDL) or ':' (SV).
     """
+    if port.get("kind") == "interface":
+        return f"``{port['interface']}``"
     t = port["type"]
     r = port["range"]
     if r:
@@ -572,11 +695,53 @@ def _type_str(port: dict) -> str:
     return f"``{t}``"
 
 
+def _interfaces_rst(ports: list[dict], interfaces: dict[str, dict]) -> list[str]:
+    """
+    "Interfaces" section: one members table per interface used by an interface
+    port (in port order).  The modport columns show each member's direction as
+    seen through the modports this module's ports use.  Empty if there is nothing
+    to show.
+    """
+    used: list[str] = []
+    for p in ports:
+        if p.get("kind") == "interface" and p["interface"] in interfaces \
+                and p["interface"] not in used:
+            used.append(p["interface"])
+    if not used:
+        return []
+
+    lines = ["", "Interfaces", "----------", ""]
+    for name in used:
+        iface = interfaces[name]
+        modports: list[str] = []
+        for p in ports:
+            if p.get("kind") == "interface" and p["interface"] == name \
+                    and p["modport"] and p["modport"] in iface["modports"] \
+                    and p["modport"] not in modports:
+                modports.append(p["modport"])
+        users = ", ".join(f"``{p['name']}``" for p in ports
+                          if p.get("kind") == "interface" and p["interface"] == name)
+        lines += [f"``{name}`` — used by {users}.", ""]
+        if not iface["members"]:
+            lines += ["*(no members found)*", ""]
+            continue
+        header = ["Signal", "Type"] + [f"{m}" for m in modports] + ["Description"]
+        lines += [".. list-table::", "   :header-rows: 1", "",
+                  f"   * - {header[0]}"] + [f"     - {h}" for h in header[1:]] + [""]
+        for mem in iface["members"]:
+            row = [f"``{mem['name']}``", _type_str(mem)]
+            row += [iface["modports"][m].get(mem["name"], "\u2014") for m in modports]
+            row += [mem["comment"] or "\u2014"]
+            lines += [f"   * - {row[0]}"] + [f"     - {c}" for c in row[1:]] + [""]
+    return lines
+
+
 def write_rst_block(module_name: str, src_filename: str,
                     ports: list[dict], generics: list[dict],
                     signals: list[dict],
                     include_schematic: bool = False,
-                    toml_path: Path | None = None) -> str:
+                    toml_path: Path | None = None,
+                    interfaces: dict[str, dict] | None = None) -> str:
     dot_file = f"{module_name}_block.dot"
     title    = f"{module_name} — Block Diagram"
     lines    = [title, "=" * len(title), "",
@@ -586,7 +751,13 @@ def write_rst_block(module_name: str, src_filename: str,
     # ── Port table ──────────────────────────────────────────────────────────
     if ports:
         from detect_buses import group_ports
-        bus_groups, remaining = group_ports(ports, toml_path)
+        # Interface ports are single bundled ports, never members of a name-prefix
+        # bus group; keep them out of grouping and back in declaration order.
+        plain = [p for p in ports if p.get("kind") != "interface"]
+        bus_groups, remaining_plain = group_ports(plain, toml_path)
+        remaining = [p for p in ports
+                     if p.get("kind") == "interface"
+                     or any(p is r for r in remaining_plain)]
         if bus_groups:
             lines += ["Ports", "-----", "", ".. raw:: html", ""]
             lines.append(_html_port_table(bus_groups, remaining))
@@ -600,11 +771,14 @@ def write_rst_block(module_name: str, src_filename: str,
             for p in ports:
                 lines += [
                     f'   * - ``{p["name"]}``',
-                    f'     - {_DIR_RST.get(p["dir"], p["dir"])}',
+                    f'     - {_dir_rst(p)}',
                     f'     - {_type_str(p)}',
                     f'     - {p["comment"] or "—"}',
                     "",
                 ]
+
+    # ── Interfaces: members of each interface used by a port ─────────────────
+    lines += _interfaces_rst(ports, interfaces or {})
 
     # ── Generics / parameters table ──────────────────────────────────────────
     if generics:
@@ -691,7 +865,7 @@ def write_rst_block(module_name: str, src_filename: str,
 if __name__ == "__main__":
     if len(sys.argv) < 4:
         sys.exit("Usage: extract_block.py <file.vhd|file.sv> <module_name> <output_dir> "
-                 "[--bus-groups <path>]")
+                 "[--bus-groups <path>] [--support <support_file> ...]")
 
     src_path    = Path(sys.argv[1])
     module_name = sys.argv[2]
@@ -706,15 +880,22 @@ if __name__ == "__main__":
             sys.exit("ERROR: --bus-groups requires a path argument")
         toml_path = Path(args[idx + 1])
 
+    # Support files (packages, interfaces) from hierarchy.json; their `interface`
+    # definitions, plus any in the module's own file, identify interface ports.
+    support = [Path(args[i + 1]) for i, a in enumerate(args)
+               if a == "--support" and i + 1 < len(args)]
+
     text = src_path.read_text()
     ext  = src_path.suffix.lower()
+    interfaces: dict[str, dict] = {}
 
     if ext in (".vhd", ".vhdl"):
         ports    = extract_ports_vhdl(text)
         generics = extract_generics_vhdl(text)
         signals  = extract_signals_vhdl(text)
     elif ext in (".sv", ".svh"):
-        ports    = extract_ports_sv(text)
+        interfaces = collect_interfaces([*support, src_path])
+        ports    = extract_ports_sv(text, set(interfaces))
         generics = extract_params_sv(text)
         signals  = extract_signals_sv(text)
     else:
@@ -731,5 +912,5 @@ if __name__ == "__main__":
     print(f"  → {dot_path}")
 
     rst_path.write_text(write_rst_block(module_name, src_path.name, ports, generics, signals,
-                                        include_schematic, toml_path))
+                                        include_schematic, toml_path, interfaces))
     print(f"  → {rst_path}")

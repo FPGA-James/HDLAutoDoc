@@ -107,22 +107,25 @@ def main(
         run(["python", str(scripts_dir / "extract_cdc.py"),
              src_file, name, str(module_dir)])
 
+        # SystemVerilog support files (packages, interfaces), in filelist order.
+        # Schematics read them first; extract_block uses their `interface`
+        # definitions to recognise interface-typed ports.  VHDL ignores them.
+        support_args = [a for f in hierarchy.get("support_files", [])
+                        for a in ("--support", f)]
+
         # Generate RTL schematic before extract_block so the SVG is available
         # for inclusion in the block diagram RST.  Only this module's own
         # dependencies are passed (not every file in the project), so a VHDL
         # module is not mistaken for a mixed-language design just because an
-        # unrelated SystemVerilog file exists elsewhere.  SystemVerilog support
-        # files (packages, interfaces) are passed to every module; VHDL ignores them.
+        # unrelated SystemVerilog file exists elsewhere.
         if schematics:
-            support = [a for f in hierarchy.get("support_files", [])
-                       for a in ("--support", f)]
             run(["python", str(scripts_dir / "generate_schematic.py"),
                  src_file, name, str(module_dir)]
-                + dependency_files(hierarchy, name) + support)
+                + dependency_files(hierarchy, name) + support_args)
 
         run(["python", str(scripts_dir / "extract_block.py"),
              src_file, name, str(module_dir),
-             "--bus-groups", str(docs_dir / "bus_groups.toml")])
+             "--bus-groups", str(docs_dir / "bus_groups.toml")] + support_args)
 
         run(["python", str(scripts_dir / "extract_reset.py"),
              src_file, name, str(module_dir)])
