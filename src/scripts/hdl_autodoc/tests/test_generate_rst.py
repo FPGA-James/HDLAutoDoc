@@ -22,6 +22,9 @@ import pytest
 from generate_rst import (
     cdc_rst,
     entity_rst,
+    legacy_entity_rsts,
+    overview_rst,
+    source_rst,
     write_if_missing_or_pristine,
     fsm_rst,
     index_rst,
@@ -95,12 +98,15 @@ def test_entity_rst_vhdl_uses_autoentity():
     assert "vhdl:autoentity" in rst
 
 
-def test_entity_rst_sv_uses_literalinclude():
-    """SystemVerilog entity pages use literalinclude (no sphinx-vhdl support for SV)."""
-    entity = _make_entity(filename="my_mod.sv")
+def test_entity_rst_sv_has_no_autoentity_and_includes_the_source_section():
+    """SV has no sphinx-vhdl support; the listing comes from the included source page."""
+    entity = _make_entity(name="my_mod", filename="my_mod.sv")
     rst = entity_rst(entity)
-    assert "literalinclude" in rst
     assert "vhdl:autoentity" not in rst
+    assert ".. include:: my_mod_source.rst" in rst
+    assert "literalinclude" not in rst   # lives in <name>_source.rst now
+    assert "literalinclude" in source_rst(entity)
+    assert ":language: systemverilog" in source_rst(entity)
 
 
 def test_entity_rst_sv_includes_module_description(tmp_path):
@@ -112,7 +118,7 @@ def test_entity_rst_sv_includes_module_description(tmp_path):
     entity = _make_entity(name="my_mod", filename="my_mod.sv")
     rst = entity_rst(entity, src_dir=tmp_path)
     assert "My module.\n\nDoes a thing." in rst
-    assert rst.index("Does a thing.") < rst.index("Annotated Source")
+    assert rst.index("Does a thing.") < rst.index(".. include:: my_mod_source.rst")
 
 
 def test_entity_rst_sv_no_description_when_no_comment(tmp_path):
@@ -283,3 +289,56 @@ def test_unedited_entity_shell_is_upgraded_but_edits_are_kept(tmp_path):
     f.write_text("my edits\n")
     write_if_missing_or_pristine(f, new, pristine=old)
     assert f.read_text() == "my edits\n"
+
+
+_H = {"top": "top", "modules": {
+    "top":   {"file": "src/top.vhd",   "parents": [],      "children": ["leaf", "other"], "shared": False},
+    "leaf":  {"file": "src/leaf.vhd",  "parents": ["top"], "children": [],                "shared": False},
+    "other": {"file": "src/other.vhd", "parents": ["top"], "children": ["leaf"],          "shared": False},
+}}
+_E = [{"name": n, "file": m["file"], "brief": f"{n} brief."} for n, m in _H["modules"].items()]
+
+
+def test_overview_includes_tree_and_parent_child_columns():
+    """The overview carries what the old Design Hierarchy page showed."""
+    rst = overview_rst(_E, "P", _H)
+    assert ".. graphviz:: hierarchy.dot" in rst
+    assert "Instantiated by" in rst and "Instantiates" in rst
+    assert "*(top)*" in rst
+    assert "``leaf``, ``other``" in rst
+    assert "top brief." in rst  # descriptions are still there
+
+
+def test_overview_without_hierarchy_keeps_the_plain_table():
+    rst = overview_rst(_E, "P", None)
+    assert "graphviz" not in rst and "Instantiates" not in rst
+
+
+def test_index_toctree_has_no_separate_hierarchy_page():
+    rst = index_rst(_E, "P", _H)
+    assert "   overview" in rst
+    assert "\n   hierarchy\n" not in rst
+
+
+def test_source_rst_is_a_comment_only_when_disabled():
+    """ANNOTATED_SOURCE=0 leaves an empty (comment) include, so no listing renders."""
+    entity = _make_entity(name="my_mod", filename="my_mod.vhd")
+    on, off = source_rst(entity, enabled=True), source_rst(entity, enabled=False)
+    assert "Annotated Source" in on and "literalinclude" in on
+    assert "Annotated Source" not in off and "literalinclude" not in off
+    assert off.startswith("..")
+
+
+def test_legacy_inline_shells_are_upgraded_to_the_include_form(tmp_path):
+    """An unedited pre-split entity.rst (with or without an SV description) is upgraded."""
+    (tmp_path / "my_mod.sv").write_text("// Desc.\nmodule my_mod (input logic clk);\nendmodule\n")
+    entity = _make_entity(name="my_mod", filename="my_mod.sv")
+    new = entity_rst(entity, "../src", src_dir=tmp_path)
+    for legacy in legacy_entity_rsts(entity, "../src", tmp_path):
+        f = tmp_path / "entity.rst"
+        f.write_text(legacy)
+        write_if_missing_or_pristine(f, new, pristine=legacy_entity_rsts(entity, "../src", tmp_path))
+        assert f.read_text() == new
+    f.write_text("hand edited\n")
+    write_if_missing_or_pristine(f, new, pristine=legacy_entity_rsts(entity, "../src", tmp_path))
+    assert f.read_text() == "hand edited\n"

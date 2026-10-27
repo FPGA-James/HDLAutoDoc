@@ -16,7 +16,6 @@ Per-module files under docs/modules/<name>/:
 Top-level:
   docs/index.rst          — always regenerated
   docs/overview.rst       — always regenerated
-  docs/hierarchy.rst      — always regenerated (when hierarchy present)
 
 Usage:
     python scripts/generate_rst.py <src_dir> <docs_dir>
@@ -142,12 +141,14 @@ def write_if_missing(path: Path, content: str) -> str:
     return f"  → {path}"
 
 
-def write_if_missing_or_pristine(path: Path, content: str, pristine: str) -> str:
+def write_if_missing_or_pristine(path: Path, content: str, pristine) -> str:
     """
     Like write_if_missing, but also upgrades a shell that is byte-identical to
-    what an older version generated (`pristine`), so hand-edited files are kept.
+    what an older version generated, so hand-edited files are kept.  `pristine`
+    is one string or an iterable of strings (every shape older versions wrote).
     """
-    if path.exists() and path.read_text() == pristine and pristine != content:
+    pristines = {pristine} if isinstance(pristine, str) else set(pristine)
+    if path.exists() and path.read_text() in pristines and content not in pristines:
         path.write_text(content)
         return f"  → (upgraded unedited shell) {path}"
     return write_if_missing(path, content)
@@ -245,13 +246,12 @@ def sv_module_description(text: str, name: str) -> str:
     return "\n".join(block).strip()
 
 
-def entity_rst(entity: dict, src_rel_to_docs: str = "../../src",
-               src_dir: Path = None) -> str:
+def _entity_head(entity: dict, src_dir: Path = None) -> list[str]:
+    """Title, source-file line, and the module description (everything above
+    the annotated source)."""
     name  = entity["name"]
     fname = entity["file"]
-    ext   = fname.rsplit(".", 1)[-1].lower()
-    is_sv = ext in ("sv", "svh")
-    lang  = "systemverilog" if is_sv else "vhdl"
+    is_sv = fname.rsplit(".", 1)[-1].lower() in ("sv", "svh")
     title = f"{name} — Entity"
 
     lines = [title, "=" * len(title), "", f"Source file: ``src/{fname}``.", ""]
@@ -267,8 +267,13 @@ def entity_rst(entity: dict, src_rel_to_docs: str = "../../src",
             desc = ""
         if desc:
             lines += [desc, ""]
+    return lines
 
-    lines += [
+
+def _annotated_source_section(entity: dict, src_rel_to_docs: str) -> list[str]:
+    fname = entity["file"]
+    lang  = "systemverilog" if fname.rsplit(".", 1)[-1].lower() in ("sv", "svh") else "vhdl"
+    return [
         "Annotated Source",
         "----------------", "",
         f".. literalinclude:: {src_rel_to_docs}/{fname}",
@@ -277,7 +282,32 @@ def entity_rst(entity: dict, src_rel_to_docs: str = "../../src",
         f"   :caption: src/{fname}",
         "",
     ]
-    return "\n".join(lines)
+
+
+def entity_rst(entity: dict, src_rel_to_docs: str = "../../src",
+               src_dir: Path = None) -> str:
+    """
+    Write-once entity page.  The annotated source is pulled in from a separate,
+    always-regenerated ``<name>_source.rst`` (see source_rst) so the
+    ``ANNOTATED_SOURCE`` switch works on pages that already exist.
+    """
+    return "\n".join(_entity_head(entity, src_dir)
+                     + [f".. include:: {entity['name']}_source.rst", ""])
+
+
+def source_rst(entity: dict, src_rel_to_docs: str = "../../src",
+               enabled: bool = True) -> str:
+    """Always-regenerated annotated-source section; just a comment when disabled."""
+    if not enabled:
+        return ".. Annotated source disabled (ANNOTATED_SOURCE=0).\n"
+    return "\n".join(_annotated_source_section(entity, src_rel_to_docs))
+
+
+def legacy_entity_rsts(entity: dict, src_rel_to_docs: str, src_dir: Path = None) -> set[str]:
+    """Every entity.rst shape earlier versions generated (annotated source inline),
+    so an unedited one can be upgraded to the include form."""
+    section = _annotated_source_section(entity, src_rel_to_docs)
+    return {"\n".join(_entity_head(entity, d) + section) for d in (None, src_dir)}
 
 
 def reset_rst(entity: dict, module_dir: Path = None) -> str:
@@ -431,51 +461,6 @@ def hierarchy_dot(hierarchy: dict) -> str:
     return "\n".join(lines)
 
 
-def hierarchy_rst(hierarchy: dict) -> str:
-    top     = hierarchy["top"]
-    modules = hierarchy["modules"]
-    shared  = [n for n, m in modules.items() if m["shared"]]
-    title   = "Design Hierarchy"
-
-    lines = [
-        title, "=" * len(title), "",
-        f"Top-level module: ``{top}``",
-        f"Total modules: {len(modules)}",
-        "",
-        "Instantiation Tree", "-------------------", "",
-        ".. graphviz:: hierarchy.dot", "",
-    ]
-
-    if shared:
-        lines += [
-            "Shared Components", "-----------------", "",
-            "The following modules are instantiated by more than one parent:", "",
-        ]
-        for name in shared:
-            parents = modules[name]["parents"]
-            lines.append(f"- ``{name}`` — instantiated by: "
-                         + ", ".join(f"``{p}``" for p in parents))
-        lines.append("")
-
-    lines += [
-        "Module List", "-----------", "",
-        ".. list-table::", "   :header-rows: 1", "",
-        "   * - Module", "     - Source File", "     - Parents", "     - Children",
-        "",
-    ]
-    for name in sorted(modules.keys()):
-        mod = modules[name]
-        parents  = ", ".join(f"``{p}``" for p in mod["parents"])  or "*(top)*"
-        children = ", ".join(f"``{c}``" for c in mod["children"]) or "—"
-        lines.append(f"   * - :doc:`modules/{name}/index`")
-        lines.append(f"     - ``{mod['file']}``")
-        lines.append(f"     - {parents}")
-        lines.append(f"     - {children}")
-        lines.append("")
-
-    return "\n".join(lines)
-
-
 def registers_rst(modules_with_regs: list[str]) -> str:
     """Top-level registers index page listing all modules with register maps."""
     title = "Register Maps"
@@ -508,7 +493,6 @@ def index_rst(entities: list[dict], project_name: str,
         top = hierarchy["top"]
         lines += [
             f"   modules/{top}/index",
-            "   hierarchy",
         ]
         if modules_with_regs:
             lines.append("   registers")
@@ -543,6 +527,11 @@ def index_rst(entities: list[dict], project_name: str,
 
 def overview_rst(entities: list[dict], project_name: str,
                  hierarchy: dict = None) -> str:
+    """
+    Single landing page: summary, instantiation tree (hierarchy.dot), shared
+    components, and one module table.  With a hierarchy the table also shows
+    each module's parents and children.
+    """
     title = f"{project_name} — Overview"
     lines = [
         title, "=" * len(title), "",
@@ -551,21 +540,44 @@ def overview_rst(entities: list[dict], project_name: str,
         "",
     ]
 
+    modules = hierarchy["modules"] if hierarchy else {}
+
     if hierarchy:
         top = hierarchy["top"]
         lines += [
             f"Top-level module: :doc:`modules/{top}/index`", "",
+            "Instantiation Tree", "------------------", "",
+            ".. graphviz:: hierarchy.dot", "",
         ]
+        shared = [n for n, m in modules.items() if m["shared"]]
+        if shared:
+            lines += [
+                "Shared Components", "-----------------", "",
+                "The following modules are instantiated by more than one parent:", "",
+            ]
+            for name in shared:
+                lines.append(f"- ``{name}`` — instantiated by: "
+                             + ", ".join(f"``{p}``" for p in modules[name]["parents"]))
+            lines.append("")
 
+    header = ["Module", "Source File", "Description"]
+    if hierarchy:
+        header += ["Instantiated by", "Instantiates"]
     lines += [
         "Modules", "-------", "",
         ".. list-table::", "   :header-rows: 1", "",
-        "   * - Module", "     - Source File", "     - Description", "",
-    ]
+        f"   * - {header[0]}",
+    ] + [f"     - {h}" for h in header[1:]] + [""]
     for e in entities:
         lines.append(f"   * - :doc:`modules/{e['name']}/index`")
         lines.append(f"     - ``{e['file']}``")
         lines.append(f"     - {e['brief']}")
+        if hierarchy and e["name"] in modules:
+            mod = modules[e["name"]]
+            lines.append("     - " + (", ".join(f"``{p}``" for p in mod["parents"]) or "*(top)*"))
+            lines.append("     - " + (", ".join(f"``{c}``" for c in mod["children"]) or "—"))
+        elif hierarchy:
+            lines += ["     - —", "     - —"]
         lines.append("")
 
     return "\n".join(lines)
@@ -576,18 +588,21 @@ def overview_rst(entities: list[dict], project_name: str,
 # ─────────────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        sys.exit("Usage: generate_rst.py <src_dir> <docs_dir> [project_name]")
+    flags   = {a for a in sys.argv[1:] if a.startswith("--")}
+    args    = [a for a in sys.argv[1:] if not a.startswith("--")]
+    no_source = "--no-source" in flags
+    if len(args) < 2:
+        sys.exit("Usage: generate_rst.py <src_dir> <docs_dir> [project_name] [--no-source]")
 
-    src_dir  = Path(sys.argv[1])
-    docs_dir = Path(sys.argv[2])
+    src_dir  = Path(args[0])
+    docs_dir = Path(args[1])
 
     # Project name — from argument, or derived from parent folder name
     GENERIC_NAMES = {"src", "docs", "files", "hdl", "rtl", "vhdl", "verilog",
                      "source", "sources", "project", "projects", "workspace"}
 
-    if len(sys.argv) > 3 and sys.argv[3].strip():
-        project_name = sys.argv[3].strip()
+    if len(args) > 2 and args[2].strip():
+        project_name = args[2].strip()
     else:
         candidate = docs_dir.resolve().parent
         for _ in range(4):
@@ -678,7 +693,12 @@ if __name__ == "__main__":
         results.append(write_if_missing_or_pristine(
             mod_dir / "entity.rst",
             entity_rst(entity, src_rel_to_docs=src_rel, src_dir=src_dir),
-            pristine=entity_rst(entity, src_rel_to_docs=src_rel),
+            pristine=legacy_entity_rsts(entity, src_rel, src_dir),
+        ))
+        # Always regenerated, so ANNOTATED_SOURCE can be toggled at any time.
+        results.append(write_always(
+            mod_dir / f"{entity['name']}_source.rst",
+            source_rst(entity, src_rel_to_docs=src_rel, enabled=not no_source),
         ))
 
     # Top-level always-regenerated
@@ -705,10 +725,11 @@ if __name__ == "__main__":
             docs_dir / "hierarchy.dot",
             hierarchy_dot(hierarchy)
         ))
-        results.append(write_always(
-            docs_dir / "hierarchy.rst",
-            hierarchy_rst(hierarchy)
-        ))
+        # Merged into overview.rst; remove the page older versions generated so
+        # Sphinx does not warn about a document missing from the toctree.
+        stale = docs_dir / "hierarchy.rst"
+        if stale.exists():
+            stale.unlink()
 
     for r in results:
         print(r)

@@ -37,6 +37,28 @@ def run(cmd: list[str]) -> None:
         sys.exit(result.returncode)
 
 
+def dependency_files(hierarchy: dict, name: str) -> list[str]:
+    """
+    Source files of every module `name` instantiates, directly or indirectly,
+    leaves first (the order ghdl needs).  Excludes `name` itself and anything
+    not in the hierarchy (external leaves).
+    """
+    modules = hierarchy["modules"]
+    order: list[str] = []
+    seen: set[str] = {name}
+
+    def visit(mod: str) -> None:
+        for child in modules.get(mod, {}).get("children", []):
+            if child in seen or child not in modules:
+                continue
+            seen.add(child)
+            visit(child)
+            order.append(modules[child]["file"])
+
+    visit(name)
+    return order
+
+
 def main(
     hierarchy_path: Path,
     docs_dir: Path,
@@ -75,13 +97,14 @@ def main(
              src_file, name, str(module_dir)])
 
         # Generate RTL schematic before extract_block so the SVG is available
-        # for inclusion in the block diagram RST.  All source files are passed
-        # so that ghdl can resolve cross-unit references (e.g. top-level entities
-        # that instantiate submodules).
+        # for inclusion in the block diagram RST.  Only this module's own
+        # dependencies are passed (not every file in the project), so a VHDL
+        # module is not mistaken for a mixed-language design just because an
+        # unrelated SystemVerilog file exists elsewhere.
         if schematics:
-            all_src = [m["file"] for m in hierarchy["modules"].values()]
             run(["python", str(scripts_dir / "generate_schematic.py"),
-                 src_file, name, str(module_dir)] + all_src)
+                 src_file, name, str(module_dir)]
+                + dependency_files(hierarchy, name))
 
         run(["python", str(scripts_dir / "extract_block.py"),
              src_file, name, str(module_dir),

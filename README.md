@@ -14,7 +14,7 @@ No separate doc files to maintain. No manual diagrams to draw. If it's in the so
 |---|---|
 | **Auto-discovered ports & entities** | Extracted from `entity`/`module` declarations |
 | **Block diagrams** | TerosHDL-style port diagram (green generics box + yellow ports box) with bus widths, auto-generated per module |
-| **RTL schematics** | Gate-level netlist diagram via `yosys`, inserted into each block diagram page — optional, `SCHEMATICS=1` |
+| **RTL schematics** | Gate-level netlist diagram via `yosys`, inserted into each block diagram page — on by default (`SCHEMATICS=0` to skip) |
 | **Generics / parameters table** | Name, type, default value, and description extracted from VHDL `generic` and SV `parameter`/`localparam` declarations |
 | **FSM state diagrams** | Parsed from `case` blocks, rendered with [Graphviz](https://graphviz.org) |
 | **Timing waveforms** | `.. wavedrom::` blocks in source comments, rendered with [WaveDrom](https://wavedrom.com) |
@@ -36,8 +36,7 @@ No separate doc files to maintain. No manual diagrams to draw. If it's in the so
 ```
 docs/
 ├── index.rst                       ← project root (Design + Implementation toctrees)
-├── overview.rst                    ← module summary table
-├── hierarchy.rst                   ← instantiation tree diagram + module list
+├── overview.rst                    ← instantiation tree, shared components, module table
 ├── synthesis/
 │   └── index.rst                   ← Implementation page: timing + utilization tables
 └── modules/
@@ -78,9 +77,9 @@ docs/
 |---|---|---|
 | **TeX Live** / **MacTeX** | LaTeX PDF via `make doc-pdf` | [tug.org/texlive](https://tug.org/texlive/) or `brew install --cask mactex` |
 
-### Optional — RTL schematics (`SCHEMATICS=1`)
+### Optional — RTL schematics (on by default; `SCHEMATICS=0` to skip)
 
-Gate-level netlists rendered inside each module's block diagram page. Enabled with `make doc-html SCHEMATICS=1`.
+Gate-level netlists rendered inside each module's block diagram page. Enabled by default; if yosys is not installed they are skipped silently. Disable with `make doc-html SCHEMATICS=0`.
 
 All modules require **netlistsvg** to render the schematic SVG:
 
@@ -416,7 +415,8 @@ html_theme_options = {
 | `make doc-reports` | Ingest synthesis/PnR reports from `reports/` → writes synthesis RST files |
 | `make doc-regs` | Generate register artifacts from `registers/regs_*.toml` |
 | `make doc-html` | Full build → `docs/hdl_autodoc/_build/html/` |
-| `make doc-html SCHEMATICS=1` | Full build with RTL schematics (requires yosys) |
+| `make doc-html ANNOTATED_SOURCE=0` | Omit the "Annotated Source" listing from entity pages (on by default) |
+| `make doc-html SCHEMATICS=0` | Full build without RTL schematics (they are on by default and need yosys) |
 | `make doc-pdf` | Full build → LaTeX PDF |
 | `make doc-all` | Run `doc-regs` + `doc-html` + `doc-pdf` |
 | `make doc-clean` | Remove Sphinx build output only |
@@ -463,7 +463,7 @@ src/
 │   │   ├── extract_reports.py   ← ingests synthesis reports → synthesis rst pages
 │   │   ├── parse_utilization.py ← Vivado + Yosys utilization parser
 │   │   ├── parse_timing.py      ← Vivado timing summary + nextpnr log parser
-│   │   ├── generate_schematic.py← generates RTL schematic via yosys (optional, SCHEMATICS=1)
+│   │   ├── generate_schematic.py← generates RTL schematic via yosys (optional, on by default)
 │   │   ├── run_extract.py       ← orchestrates extraction for all modules
 │   │   └── include_registers.py ← copies register map + writes rst page
 │   └── registers/
@@ -511,7 +511,8 @@ Nothing from the tool is copied into the project tree, so there are no stale cop
 | `src/*.vhd`, `src/*.sv` | ✍️ Edit freely | Your HDL — single source of truth |
 | `Makefile` | ✍️ Edit freely | Set `PROJECT`, `AUTODOC_AUTHOR`, `AUTODOC_RELEASE` before the `include` |
 | `third_party/hdl_autodoc/` | 🔒 Tool | Update via the submodule; do not edit in place |
-| `docs/hdl_autodoc/modules/<n>/entity.rst` | ✍️ Safe to edit | Written once, never overwritten |
+| `docs/hdl_autodoc/modules/<n>/entity.rst` | ✍️ Safe to edit | Written once, never overwritten (keep its `.. include:: <n>_source.rst` line to honour `ANNOTATED_SOURCE`) |
+| `docs/hdl_autodoc/modules/<n>/<n>_source.rst` | 🔄 Auto-generated | The annotated source section; empty when `ANNOTATED_SOURCE=0` |
 | `docs/hdl_autodoc/modules/<n>/index.rst` | 🔄 Auto-generated | Regenerated every build |
 | `docs/hdl_autodoc/modules/<n>/fsm.rst` | 🔄 Auto-generated | Regenerated every build |
 | `docs/hdl_autodoc/modules/<n>/timing.rst` | 🔄 Auto-generated | Aggregated from process wavedrom blocks |
@@ -532,7 +533,7 @@ Nothing from the tool is copied into the project tree, so there are no stale cop
 2. Add it to `filelist.f` (dependency-first order)
 3. Run `make doc-html`
 
-Done. The new module appears in the hierarchy, navigation, overview table, hierarchy diagram, and gets its own block diagram and CDC analysis page automatically.
+Done. The new module appears in the overview (tree and table), navigation, and gets its own block diagram and CDC analysis page automatically.
 
 ---
 
@@ -556,9 +557,9 @@ Done. The new module appears in the hierarchy, navigation, overview table, hiera
 - SV named parameter overrides (`#(.PARAM(val))` style) are not extracted; use positional style or inline comments.
 - Generics with no default value show a blank default in the table.
 
-### RTL schematics (`SCHEMATICS=1`)
+### RTL schematics (on by default)
 
-- **Mixed-language top levels** — if a VHDL module instantiates SystemVerilog submodules, ghdl cannot elaborate it. The schematic for that module is skipped cleanly; leaf-level schematics are unaffected.
+- **Mixed-language top levels** — ghdl cannot read SystemVerilog, so a VHDL module that instantiates SystemVerilog submodules is elaborated with a generated port-only VHDL stub standing in for each SV child (outputs tied low). The child is drawn as a black-box instance; its internals are not shown. Headers the stub generator cannot convert (e.g. multi-dimensional packed ports) fall back to skipping that module's schematic.
 - **Unconnected ports** — ghdl is stricter than synthesis tools and will fail if any port is left unconnected in the design under test. The schematic is skipped for that module.
 - **Non-synthesisable constructs** — `wait` statements, file I/O, or other simulation-only VHDL will cause yosys/ghdl to fail. Affected modules are skipped.
 - **Tool availability** — requires yosys and netlistsvg (all modules) plus ghdl + ghdl-yosys-plugin for VHDL. Missing tools produce a warning and the build continues without schematics.
@@ -575,6 +576,12 @@ Done. The new module appears in the hierarchy, navigation, overview table, hiera
 ---
 
 ## 📋 Release notes
+
+### Unreleased
+
+- **`ANNOTATED_SOURCE` switch** — `make doc-html ANNOTATED_SOURCE=0` drops the full source listing from entity pages (default on, as before). The listing now lives in an always-regenerated `<module>_source.rst` that `entity.rst` includes, so the switch works on existing pages too. Unedited older `entity.rst` shells are upgraded automatically; a hand-edited one that still contains the listing inline keeps it until you replace it with `.. include:: <module>_source.rst`.
+- **Incremental-build fix** — works around a sphinx-vhdl bug where rebuilding after an HDL edit warned "Entity … not found" and dropped the ports/generics from VHDL entity pages.
+- **Design Hierarchy merged into Overview** — the instantiation tree, shared-component list and parent/child columns now live on the single Overview page; the separate `hierarchy.rst` page is gone (an old one is deleted automatically on the next build).
 
 ### v3.6.1
 
@@ -705,7 +712,7 @@ scripts/hdl_autodoc/
 ├── extract_reports.py    reports/           → synthesis/index.rst + modules/*/synthesis.rst
 ├── parse_utilization.py  util report        → list[ModuleUtilization]
 ├── parse_timing.py       timing report      → list[ClockTiming]
-├── generate_schematic.py <file.vhd|sv>      → <module>_schematic.svg  (optional, SCHEMATICS=1)
+├── generate_schematic.py <file.vhd|sv>      → <module>_schematic.svg  (optional, on by default)
 ├── run_extract.py        hierarchy.json     → orchestrates above
 └── include_registers.py  registers/         → docs/registers.rst + _static/
 ```

@@ -10,7 +10,7 @@ from extract_cache import (
     compute_file_hash,
     save_cache,
 )
-from run_extract import main
+from run_extract import dependency_files, main
 
 
 def _make_hierarchy(tmp_path: Path, src_file: Path) -> Path:
@@ -73,3 +73,16 @@ def test_skip_line_printed_for_unchanged_module(tmp_path, capsys):
     captured = capsys.readouterr()
     assert "Skipping:" in captured.out
     assert len(extracted) == 0
+
+
+def test_dependency_files_are_transitive_leaves_first_and_exclude_unrelated():
+    """Only a module's own (indirect) children are passed on, deepest first."""
+    h = {"top": "top", "modules": {
+        "top":  {"file": "src/top.vhd",  "children": ["mid", "ext"]},
+        "mid":  {"file": "src/mid.vhd",  "children": ["leaf"]},
+        "leaf": {"file": "src/leaf.vhd", "children": []},
+        "sv":   {"file": "src/sv.sv",    "children": []},   # unrelated to top's VHDL chain
+    }}
+    assert dependency_files(h, "top") == ["src/leaf.vhd", "src/mid.vhd"]
+    assert dependency_files(h, "leaf") == []
+    assert "src/sv.sv" not in dependency_files(h, "mid")
