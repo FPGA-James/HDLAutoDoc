@@ -24,7 +24,10 @@ one bus-style port on the diagram labelled `name (interface)`.  Placement rule: 
 port whose modport is master-like (master, manager, initiator, source/src, mst, tx,
 producer, driver, out) is drawn on the right; every other interface port (slave,
 subordinate, target, sink/snk, rx, ..., or no modport) is drawn on the left.  The
-members of each interface used are listed under an "Interfaces" heading.
+members of each interface used are listed under an "Interfaces" heading.  Interfaces
+a module *instantiates* in its body (`axis_if m_axis (.clk(clk));`) are covered by the
+same section ("instantiated here as ..."); on the diagram they get their own blue
+box below the ports box, since they are internal and not ports.
 
 Usage:
     python scripts/hdl_autodoc/extract_block.py <file.vhd|file.sv> <module_name> <output_dir>
@@ -305,6 +308,39 @@ def extract_ports_sv(text: str, interface_names: set[str] | None = None) -> list
     return ports
 
 
+_SV_IFACE_INST_RE = re.compile(
+    r"^\s*(?P<ifc>\w+)\s*(?:#\s*\(.*?\)\s*)?(?P<name>\w+)\s*\(")
+
+
+def extract_interface_instances_sv(text: str,
+                                   interface_names: set[str] | None = None) -> list[dict]:
+    """
+    Interfaces instantiated in a module body: `axis_if m_axis (.clk(clk));`,
+    `axil_if #(8) bus ();`.  Returns [{name, interface, comment}] in source order.
+    Only known interface names match, and header port lists are skipped, so an
+    ordinary module instance or a port is never read as one.
+    """
+    if not interface_names:
+        return []
+    lines = text.splitlines()
+    spans = _sv_port_list_spans(text)
+    found: list[dict] = []
+    pos = 0
+    for idx, line in enumerate(lines):
+        start, pos = pos, pos + len(line) + 1
+        if any(s <= start < e for s, e in spans):
+            continue
+        m = _SV_IFACE_INST_RE.match(re.sub(r"//.*$", "", line))
+        if m and m.group("ifc") in interface_names:
+            found.append({
+                "name":      m.group("name"),
+                "interface": m.group("ifc"),
+                "comment":   _inline_comment_sv(line)
+                             or _preceding_comment(lines, idx, "//"),
+            })
+    return found
+
+
 def extract_params_sv(text: str) -> list[dict]:
     """
     Extract parameter and localparam declarations from a SystemVerilog module.
@@ -474,7 +510,8 @@ def interface_side(port: dict) -> str:
 
 
 def write_dot_block(module_name: str, ports: list[dict],
-                    generics: list[dict]) -> str:
+                    generics: list[dict],
+                    interface_instances: list[dict] | None = None) -> str:
     """
     Generate a TerosHDL-inspired block diagram using Graphviz HTML table labels.
 
@@ -483,11 +520,13 @@ def write_dot_block(module_name: str, ports: list[dict],
       - Yellow box (below): port interface.
           Left column  — inputs  (► name [width])
           Right column — outputs (name ◄)
+      - Blue box (bottom): interfaces the module instantiates internally,
+          one `name : interface` row each.  Only drawn when there are any.
       - Thick black stub lines on both sides; bus width labels on output stubs.
 
-    Two separate flat-table nodes are used so that PORT attributes work for
+    Separate flat-table nodes are used so that PORT attributes work for
     precise per-row edge attachment.  rank=same keeps them in one column;
-    an invisible edge orders gen_box above port_box.
+    invisible edges order gen_box above port_box above iface_box.
     """
     safe_mod   = _safe(module_name)
     # A modport can be called "in"/"out", so classify plain ports by kind first.
@@ -592,14 +631,36 @@ def write_dot_block(module_name: str, ports: list[dict],
         "",
     ]
 
-    # ── Stack gen_box above port_box (rank=same + invisible ordering edge) ────
-    if generics:
+    # ── Internal interfaces box (blue) ────────────────────────────────────────
+    instances = interface_instances or []
+    if instances:
+        inst_rows = [
+            f'<TR><TD PORT="n_{_safe(i["name"])}" ALIGN="LEFT" CELLPADDING="5">'
+            f'{_html.escape(i["name"])} : {_html.escape(i["interface"])}</TD></TR>'
+            for i in instances
+        ]
+        inst_label = (
+            '<\n        '
+            '<TABLE BORDER="2" CELLBORDER="0" CELLSPACING="3" CELLPADDING="0"'
+            ' BGCOLOR="#dbeafe" COLOR="#1e3a8a">\n          '
+            '<TR><TD ALIGN="LEFT" CELLPADDING="5"><I>interfaces</I></TD></TR>\n          '
+            + "\n          ".join(inst_rows)
+            + "\n        </TABLE>>"
+        )
         lines += [
-            f"    {{ rank=same; gen_box_{safe_mod}; port_box_{safe_mod} }}",
-            f"    gen_box_{safe_mod} -> port_box_{safe_mod}"
-            f' [style=invis, weight=100];',
+            f"    // Internal interfaces box",
+            f"    iface_box_{safe_mod} [label={inst_label}];",
             "",
         ]
+
+    # ── Stack gen_box / port_box / iface_box (rank=same + invisible edges) ────
+    stack = ([f"gen_box_{safe_mod}"] if generics else []) + [f"port_box_{safe_mod}"] \
+            + ([f"iface_box_{safe_mod}"] if instances else [])
+    if len(stack) > 1:
+        lines.append(f"    {{ rank=same; {'; '.join(stack)} }}")
+        for upper, lower in zip(stack, stack[1:]):
+            lines.append(f"    {upper} -> {lower} [style=invis, weight=100];")
+        lines.append("")
 
     lines.append("}")
     return "\n".join(lines)
@@ -695,18 +756,25 @@ def _type_str(port: dict) -> str:
     return f"``{t}``"
 
 
-def _interfaces_rst(ports: list[dict], interfaces: dict[str, dict]) -> list[str]:
+def _interfaces_rst(ports: list[dict], interfaces: dict[str, dict],
+                    instances: list[dict] | None = None) -> list[str]:
     """
-    "Interfaces" section: one members table per interface used by an interface
-    port (in port order).  The modport columns show each member's direction as
-    seen through the modports this module's ports use.  Empty if there is nothing
-    to show.
+    "Interfaces" section: one members table per interface the module uses, either
+    as an interface port (listed first, in port order) or by instantiating it in
+    its body.  The modport columns show each member's direction as seen through
+    the modports this module's ports use; for an interface used only internally
+    (no port names a modport) every modport the interface defines is shown.
+    Empty if there is nothing to show.
     """
+    instances = instances or []
     used: list[str] = []
     for p in ports:
         if p.get("kind") == "interface" and p["interface"] in interfaces \
                 and p["interface"] not in used:
             used.append(p["interface"])
+    for inst in instances:
+        if inst["interface"] in interfaces and inst["interface"] not in used:
+            used.append(inst["interface"])
     if not used:
         return []
 
@@ -719,9 +787,17 @@ def _interfaces_rst(ports: list[dict], interfaces: dict[str, dict]) -> list[str]
                     and p["modport"] and p["modport"] in iface["modports"] \
                     and p["modport"] not in modports:
                 modports.append(p["modport"])
-        users = ", ".join(f"``{p['name']}``" for p in ports
-                          if p.get("kind") == "interface" and p["interface"] == name)
-        lines += [f"``{name}`` — used by {users}.", ""]
+        if not modports:
+            modports = list(iface["modports"])
+        port_users = [f"``{p['name']}``" for p in ports
+                      if p.get("kind") == "interface" and p["interface"] == name]
+        inst_users = [f"``{i['name']}``" for i in instances if i["interface"] == name]
+        parts = []
+        if port_users:
+            parts.append("used by " + ", ".join(port_users))
+        if inst_users:
+            parts.append("instantiated here as " + ", ".join(inst_users))
+        lines += [f"``{name}`` — " + "; ".join(parts) + ".", ""]
         if not iface["members"]:
             lines += ["*(no members found)*", ""]
             continue
@@ -741,7 +817,8 @@ def write_rst_block(module_name: str, src_filename: str,
                     signals: list[dict],
                     include_schematic: bool = False,
                     toml_path: Path | None = None,
-                    interfaces: dict[str, dict] | None = None) -> str:
+                    interfaces: dict[str, dict] | None = None,
+                    interface_instances: list[dict] | None = None) -> str:
     dot_file = f"{module_name}_block.dot"
     title    = f"{module_name} — Block Diagram"
     lines    = [title, "=" * len(title), "",
@@ -778,7 +855,7 @@ def write_rst_block(module_name: str, src_filename: str,
                 ]
 
     # ── Interfaces: members of each interface used by a port ─────────────────
-    lines += _interfaces_rst(ports, interfaces or {})
+    lines += _interfaces_rst(ports, interfaces or {}, interface_instances)
 
     # ── Generics / parameters table ──────────────────────────────────────────
     if generics:
@@ -888,6 +965,7 @@ if __name__ == "__main__":
     text = src_path.read_text()
     ext  = src_path.suffix.lower()
     interfaces: dict[str, dict] = {}
+    iface_instances: list[dict] = []
 
     if ext in (".vhd", ".vhdl"):
         ports    = extract_ports_vhdl(text)
@@ -896,6 +974,7 @@ if __name__ == "__main__":
     elif ext in (".sv", ".svh"):
         interfaces = collect_interfaces([*support, src_path])
         ports    = extract_ports_sv(text, set(interfaces))
+        iface_instances = extract_interface_instances_sv(text, set(interfaces))
         generics = extract_params_sv(text)
         signals  = extract_signals_sv(text)
     else:
@@ -908,9 +987,10 @@ if __name__ == "__main__":
     schematic_svg = output_dir / f"{module_name}_schematic.svg"
     include_schematic = schematic_svg.exists()
 
-    dot_path.write_text(write_dot_block(module_name, ports, generics))
+    dot_path.write_text(write_dot_block(module_name, ports, generics, iface_instances))
     print(f"  → {dot_path}")
 
     rst_path.write_text(write_rst_block(module_name, src_path.name, ports, generics, signals,
-                                        include_schematic, toml_path, interfaces))
+                                        include_schematic, toml_path, interfaces,
+                                        iface_instances))
     print(f"  → {rst_path}")

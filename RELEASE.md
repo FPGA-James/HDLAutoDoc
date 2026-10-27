@@ -1,5 +1,23 @@
 # Release Notes
 
+## v3.11.0
+
+#### New features
+
+- **Interfaces a module instantiates are documented and drawn** — a module that wires interfaces together without having interface ports of its own (a typical top level) is no longer silent about them. The block page's "Interfaces" section now also covers interfaces declared in a module's body (`axis_if m_axis (.clk(clk));`), shown as "instantiated here as ...", with each interface's members and widths. For an interface used only internally, every modport it defines gets a direction column. On the diagram they appear in a separate blue **interfaces** box (`name : interface`, one row each) below the ports box, since they are internal rather than ports.
+- **`make doc-check-env`** — `doc-html` and `doc-pdf` now first check that the Sphinx packages are importable and, if not, stop with "run `make doc-venv`" instead of a Sphinx `no theme named 'furo'` traceback.
+- **`example_sv/`** — a small SystemVerilog example with a package, two interfaces, and a module with interface ports (`make doc-venv && make doc-html` from that directory).
+
+#### Compatibility
+
+- Backwards compatible. Modules that neither have interface ports nor instantiate interfaces produce byte-identical block pages and diagrams.
+
+#### Notes
+
+- Interface instances are found by the same rules as interface ports: the interface must be defined in a support file or the module's own file, and ordinary module instances are never read as interfaces.
+
+---
+
 ## v3.10.0
 
 #### New features

@@ -20,6 +20,7 @@ from extract_block import (
     _width_label,
     interface_side,
     extract_generics_vhdl,
+    extract_interface_instances_sv,
     extract_params_sv,
     extract_ports_sv,
     extract_ports_vhdl,
@@ -720,3 +721,122 @@ def test_no_interfaces_section_without_interface_ports():
     ports = [{"name": "clk", "dir": "in", "type": "logic", "range": "", "comment": ""}]
     rst = write_rst_block("m", "m.sv", ports, [], [], interfaces={"axis_if": _AXIS_DEF})
     assert "Interfaces" not in rst
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Interfaces instantiated inside a module body
+# ─────────────────────────────────────────────────────────────────────────────
+
+_TOP_SV = """\
+module top (
+    input  logic clk,
+    axis_if.slave   s_in               // a port, not an instance
+);
+    // Stream to the bridge.
+    axis_if m_axis (.clk(clk));
+    axil_if #(8) bus ();
+    axis_if dbg    (.clk(clk));   // Debug tap.
+    bridge u_bridge (.clk(clk), .m_axis(m_axis));
+    other_if x (.clk(clk));
+endmodule
+"""
+
+
+def test_interface_instances_are_found_in_source_order():
+    found = extract_interface_instances_sv(_TOP_SV, _IFACES)
+    assert [(i["name"], i["interface"]) for i in found] == [
+        ("m_axis", "axis_if"), ("bus", "axil_if"), ("dbg", "axis_if")]
+
+
+def test_interface_instances_ignore_ports_module_instances_and_unknown_types():
+    names = [i["name"] for i in extract_interface_instances_sv(_TOP_SV, _IFACES)]
+    assert "s_in" not in names          # header port
+    assert "u_bridge" not in names      # module instance
+    assert "x" not in names             # not a known interface
+
+
+def test_interface_instance_comments():
+    found = {i["name"]: i for i in extract_interface_instances_sv(_TOP_SV, _IFACES)}
+    assert found["m_axis"]["comment"] == "Stream to the bridge."   # preceding line
+    assert found["dbg"]["comment"] == "Debug tap."                 # inline
+
+
+def test_interface_instances_empty_without_names():
+    assert extract_interface_instances_sv(_TOP_SV) == []
+    assert extract_interface_instances_sv(_TOP_SV, set()) == []
+
+
+def test_interfaces_section_covers_instance_only_modules_with_all_modports():
+    """A module with no interface ports still documents the interfaces it instantiates."""
+    ports = [{"name": "clk", "dir": "in", "type": "logic", "range": "", "comment": ""}]
+    instances = [{"name": "m_axis", "interface": "axis_if", "comment": ""},
+                 {"name": "dbg", "interface": "axis_if", "comment": ""}]
+    rst = write_rst_block("top", "top.sv", ports, [], [], interfaces={"axis_if": _AXIS_DEF},
+                          interface_instances=instances)
+    assert "Interfaces\n----------" in rst
+    assert "``axis_if`` \u2014 instantiated here as ``m_axis``, ``dbg``." in rst
+    # No port names a modport, so every modport the interface defines is a column.
+    assert "     - master" in rst and "     - slave" in rst
+
+
+def test_interfaces_section_combines_ports_and_instances():
+    ports = [{"name": "m_axis", "dir": "master", "type": "axis_if", "range": "", "comment": "",
+              "kind": "interface", "interface": "axis_if", "modport": "master"}]
+    instances = [{"name": "loop", "interface": "axis_if", "comment": ""}]
+    rst = write_rst_block("m", "m.sv", ports, [], [], interfaces={"axis_if": _AXIS_DEF},
+                          interface_instances=instances)
+    assert "``axis_if`` \u2014 used by ``m_axis``; instantiated here as ``loop``." in rst
+    # A port names a modport, so only that one is shown (as before).
+    assert "     - master" in rst and "     - slave" not in rst
+
+
+def test_instances_of_unknown_interfaces_are_not_listed():
+    rst = write_rst_block("m", "m.sv", [], [], [], interfaces={},
+                          interface_instances=[{"name": "x", "interface": "gone_if", "comment": ""}])
+    assert "Interfaces" not in rst
+
+
+# ── Internal interfaces box on the diagram ───────────────────────────────────
+
+_INSTANCES = [{"name": "m_axis", "interface": "axis_if", "comment": ""},
+              {"name": "dbg", "interface": "axis_if", "comment": ""}]
+_CLK = [{"name": "clk", "dir": "in", "type": "logic", "range": "", "comment": ""}]
+
+
+def test_diagram_draws_internal_interfaces_in_their_own_box():
+    dot = write_dot_block("top", _CLK, [], _INSTANCES)
+    assert "iface_box_top" in dot and "#dbeafe" in dot
+    assert "m_axis : axis_if" in dot and "dbg : axis_if" in dot
+    assert "<I>interfaces</I>" in dot
+    # They are not ports: nothing on the ports box refers to them.
+    assert 'PORT="i_m_axis"' not in dot and 'PORT="o_m_axis"' not in dot
+
+
+def test_diagram_stacks_generics_ports_and_interfaces_in_order():
+    generics = [{"name": "W", "type": "int", "default": "8", "comment": ""}]
+    dot = write_dot_block("top", _CLK, generics, _INSTANCES)
+    assert "rank=same; gen_box_top; port_box_top; iface_box_top" in dot
+    assert "gen_box_top -> port_box_top [style=invis" in dot
+    assert "port_box_top -> iface_box_top [style=invis" in dot
+
+
+def test_diagram_without_instances_is_unchanged():
+    """No interface box, and the generics stacking text is exactly as before."""
+    generics = [{"name": "W", "type": "int", "default": "8", "comment": ""}]
+    dot = write_dot_block("m", _CLK, generics)
+    assert "iface_box" not in dot
+    assert "{ rank=same; gen_box_m; port_box_m }" in dot
+    assert "gen_box_m -> port_box_m [style=invis, weight=100];" in dot
+    assert write_dot_block("m", _CLK, generics, []) == dot
+    assert write_dot_block("m", _CLK, generics, None) == dot
+
+
+def test_diagram_interface_box_alone_stacks_below_the_ports():
+    dot = write_dot_block("top", _CLK, [], _INSTANCES)
+    assert "{ rank=same; port_box_top; iface_box_top }" in dot
+    assert "gen_box" not in dot
+
+
+def test_diagram_escapes_interface_instance_names():
+    dot = write_dot_block("m", _CLK, [], [{"name": "a<b", "interface": "x&y", "comment": ""}])
+    assert "a&lt;b : x&amp;y" in dot

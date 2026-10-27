@@ -409,6 +409,7 @@ html_theme_options = {
 | `make doc-help` | List all targets |
 | `make doc-venv` | Create `.venv` and install Python dependencies |
 | `make doc-install` | Install Python dependencies into the active environment |
+| `make doc-check-env` | Check the Sphinx packages are importable (run automatically before `doc-html` / `doc-pdf`; tells you to run `make doc-venv` if not) |
 | `make doc-hierarchy` | Parse `filelist.f` → `hierarchy.json` |
 | `make doc-scaffold` | Generate RST shells (runs hierarchy first) |
 | `make doc-extract` | Extract FSM + process + CDC + block docs (runs scaffold first) |
@@ -591,6 +592,22 @@ Done. The new module appears in the overview (tree and table), navigation, and g
 
 ## 📋 Release notes
 
+### v3.11.0
+
+#### New features
+
+- **Interfaces a module instantiates are documented and drawn** — a module that wires interfaces together without having interface ports of its own (a typical top level) is no longer silent about them. The block page's "Interfaces" section now also covers interfaces declared in a module's body (`axis_if m_axis (.clk(clk));`), shown as "instantiated here as ...", with each interface's members and widths. For an interface used only internally, every modport it defines gets a direction column. On the diagram they appear in a separate blue **interfaces** box (`name : interface`, one row each) below the ports box, since they are internal rather than ports.
+- **`make doc-check-env`** — `doc-html` and `doc-pdf` now first check that the Sphinx packages are importable and, if not, stop with "run `make doc-venv`" instead of a Sphinx `no theme named 'furo'` traceback.
+- **`example_sv/`** — a small SystemVerilog example with a package, two interfaces, and a module with interface ports (`make doc-venv && make doc-html` from that directory).
+
+#### Compatibility
+
+- Backwards compatible. Modules that neither have interface ports nor instantiate interfaces produce byte-identical block pages and diagrams.
+
+#### Notes
+
+- Interface instances are found by the same rules as interface ports: the interface must be defined in a support file or the module's own file, and ordinary module instances are never read as interfaces.
+
 ### v3.10.0
 
 #### New features
@@ -722,7 +739,7 @@ Done. The new module appears in the overview (tree and table), navigation, and g
 
 #### New features
 
-- **Block diagrams** — `extract_block.py` generates a `block.rst` page per module. The diagram uses a TerosHDL-inspired style: a green box for generics/parameters (with default values) stacked above a yellow box for ports (inputs left with `►`, outputs right with `◄`, bus widths annotated). Both VHDL `generic` and SV `parameter`/`localparam` declarations are extracted. SystemVerilog interface-typed ports (`axil_if.slave s_axil`) get one table row and one `name (interface)` port each — slave-style modports on the left, master-style on the right — and an "Interfaces" section lists each interface's members.
+- **Block diagrams** — `extract_block.py` generates a `block.rst` page per module. The diagram uses a TerosHDL-inspired style: a green box for generics/parameters (with default values) stacked above a yellow box for ports (inputs left with `►`, outputs right with `◄`, bus widths annotated). Both VHDL `generic` and SV `parameter`/`localparam` declarations are extracted. SystemVerilog interface-typed ports (`axil_if.slave s_axil`) get one table row and one `name (interface)` port each — slave-style modports on the left, master-style on the right — and an "Interfaces" section lists each interface's members. Interfaces a module instantiates internally appear in a blue box under the ports.
 - **Port and generics/parameters tables** — the block page includes a full port table (name, direction, type, description) and a generics/parameters table (name, type, default, description). Comments from preceding lines and same-line inline comments are both captured.
 
 ### v3.1.0

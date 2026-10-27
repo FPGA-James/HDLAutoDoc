@@ -72,7 +72,7 @@ REGS_GENERATED_DIR := $(AUTODOC_REGISTERS_DIR)/generated
 REGS_OUT_DIR       := $(AUTODOC_REGISTERS_DIR)/out
 
 
-.PHONY: doc-help doc-venv doc-install doc-hierarchy doc-scaffold doc-extract \
+.PHONY: doc-help doc-venv doc-install doc-check-env doc-hierarchy doc-scaffold doc-extract \
         doc-reports doc-html doc-pdf doc-coverage doc-regs doc-all \
         doc-clean doc-clean-generated doc-clean-all
 
@@ -103,6 +103,16 @@ doc-venv:
 
 doc-install:
 	$(PYTHON) -m pip install -r $(AUTODOC_HOME)/requirements.txt
+
+## ── Pre-flight: are the Sphinx packages importable? ───────────────────────────
+# Fails early with the fix instead of a Sphinx "no theme named 'furo'" traceback
+# when no .venv exists and the system Python lacks the dependencies.
+doc-check-env:
+	@$(PYTHON) -c "import sphinx, furo, sphinxcontrib.wavedrom, sphinxvhdl" 2>/dev/null || { \
+		echo "ERROR: the Python packages HDL AutoDoc needs are not installed for $(PYTHON)."; \
+		echo "       Run 'make doc-venv' (creates .venv and installs them), then re-run."; \
+		echo "       Or 'make doc-install' to install into the active environment."; \
+		exit 1; }
 
 ## ── Step 1: parse filelist.f → hierarchy.json ─────────────────────────────────
 doc-hierarchy:
@@ -138,14 +148,14 @@ doc-reports: doc-hierarchy
 	$(PYTHON) $(AUTODOC_SCRIPTDIR)/generate_rst.py $(AUTODOC_SRCDIR) $(AUTODOC_SOURCEDIR) "$(PROJECT)" $(AUTODOC_GENRST_FLAGS)
 
 # ── Step 4: build HTML ────────────────────────────────────────────────────────
-doc-html: doc-extract
+doc-html: doc-check-env doc-extract
 	mkdir -p $(AUTODOC_SOURCEDIR)/_static
 	$(AUTODOC_ENV) $(AUTODOC_SPHINXBUILD) -M html $(AUTODOC_SOURCEDIR) $(AUTODOC_BUILDDIR) -c $(AUTODOC_CONFDIR) $(AUTODOC_SPHINXOPTS)
 	@echo ""
 	@echo "Documentation built: $(AUTODOC_BUILDDIR)/html/index.html"
 
 # ── PDF build ─────────────────────────────────────────────────────────────────
-doc-pdf: doc-extract
+doc-pdf: doc-check-env doc-extract
 	$(AUTODOC_ENV) $(AUTODOC_SPHINXBUILD) -M latexpdf $(AUTODOC_SOURCEDIR) $(AUTODOC_BUILDDIR) -c $(AUTODOC_CONFDIR) $(AUTODOC_SPHINXOPTS)
 
 # -- make all docs, html and pdf
