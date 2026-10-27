@@ -574,3 +574,36 @@ table.register-table td {
   overflow-wrap: break-word;
   word-break: break-word;
 }
+
+
+/* ── Breadcrumbs ──────────────────────────────────────────────────────────── */
+.hdl-breadcrumbs {
+  font-size: var(--font-size--small);
+  color: var(--color-foreground-muted);
+  margin-bottom: 1rem;
+}
+.hdl-breadcrumbs a {
+  color: var(--color-foreground-secondary);
+  text-decoration: none;
+}
+.hdl-breadcrumbs a:hover {
+  text-decoration: underline;
+}
+.hdl-breadcrumbs .sep {
+  margin: 0 0.4em;
+}
+.hdl-breadcrumbs .current {
+  color: var(--color-foreground-primary);
+}
+
+
+/* ── RTL schematic disclosure (block diagram page) ───────────────────────── */
+details.hdl-rtl-detail > summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-link);
+  margin: 0.5rem 0 1rem;
+}
+details.hdl-rtl-detail[open] > summary {
+  margin-bottom: 0.5rem;
+}

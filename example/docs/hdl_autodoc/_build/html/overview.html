@@ -4,16 +4,16 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="top" href="modules/top/index.html"><link rel="prev" title="Example" href="index.html">
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="top" href="modules/top/index.html"><link rel="prev" title="Traffic Light Controller" href="index.html">
         <link rel="prefetch" href="_static/logo.svg" as="image">
 
     <link rel="shortcut icon" href="_static/logo.svg"><!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
-        <title>Example — Overview - Traffic Light Controller</title>
+        <title>Traffic Light Controller — Overview - Traffic Light Controller</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=53d25e9c" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=f3d2df7a" />
     
     
 
@@ -203,7 +203,7 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Design</span></p>
 <ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Example — Overview</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Traffic Light Controller — Overview</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="modules/top/index.html">top</a><input aria-label="Toggle navigation of top" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="modules/top/entity.html">top — Entity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/top/block.html">top — Block Diagram</a></li>
@@ -275,7 +275,6 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="hierarchy.html">Design Hierarchy</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="registers.html">Register Maps</a><input aria-label="Toggle navigation of Register Maps" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="modules/cfg_sync/registers.html">cfg_sync — Register Map</a></li>
 </ul>
@@ -312,10 +311,27 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="example-overview">
-<h1>Example — Overview<a class="headerlink" href="#example-overview" title="Link to this heading">¶</a></h1>
+          
+  <section id="traffic-light-controller-overview">
+<h1>Traffic Light Controller — Overview<a class="headerlink" href="#traffic-light-controller-overview" title="Link to this heading">¶</a></h1>
 <p>This project contains 5 VHDL/SV modules.</p>
 <p>Top-level module: <a class="reference internal" href="modules/top/index.html"><span class="doc">top</span></a></p>
+<section id="instantiation-tree">
+<h2>Instantiation Tree<a class="headerlink" href="#instantiation-tree" title="Link to this heading">¶</a></h2>
+<div class="graphviz"><object data="_images/graphviz-a6e2d9f7333d2a93d7ecc7a876ca1ac5d520bd34.svg" type="image/svg+xml" class="graphviz">
+<p class="warning">digraph hierarchy {
+    rankdir=TB;
+    node [shape=box, style=filled, fillcolor=lightblue,
+          fontname=Helvetica, fontsize=12];
+    edge [fontname=Helvetica, fontsize=10];
+
+
+    top -&gt; blinky;
+    top -&gt; cfg_sync;
+    top -&gt; pwm_controller;
+    top -&gt; traffic_light;
+}</p></object></div>
+</section>
 <section id="modules">
 <h2>Modules<a class="headerlink" href="#modules" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper docutils container">
@@ -324,34 +340,47 @@
 <tr class="row-odd"><th class="head"><p>Module</p></th>
 <th class="head"><p>Source File</p></th>
 <th class="head"><p>Description</p></th>
+<th class="head"><p>Instantiated by</p></th>
+<th class="head"><p>Instantiates</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><a class="reference internal" href="modules/top/index.html"><span class="doc">top</span></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">top.vhd</span></code></p></td>
 <td><p>top entity.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/pwm_controller/index.html"><span class="doc">pwm_controller</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">pwm_controller.sv</span></code></p></td>
-<td><p>PWM controller module. Generates a variable duty-cycle PWM signal using a 3-state FSM:</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="modules/cfg_sync/index.html"><span class="doc">cfg_sync</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">cfg_sync.vhd</span></code></p></td>
-<td><p>cfg_sync entity.</p></td>
+<td><p><em>(top)</em></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">blinky</span></code>, <code class="docutils literal notranslate"><span class="pre">cfg_sync</span></code>, <code class="docutils literal notranslate"><span class="pre">pwm_controller</span></code>, <code class="docutils literal notranslate"><span class="pre">traffic_light</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="modules/traffic_light/index.html"><span class="doc">traffic_light</span></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">traffic_light.vhd</span></code></p></td>
 <td><p>Traffic light controller. Implements a standard UK traffic light sequencer with four states:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
+<td><p>—</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="modules/blinky/index.html"><span class="doc">blinky</span></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">blinky.vhd</span></code></p></td>
 <td><p>Blinky LED controller. Implements a 3-state FSM that drives an LED through a repeating</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/cfg_sync/index.html"><span class="doc">cfg_sync</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cfg_sync.vhd</span></code></p></td>
+<td><p>cfg_sync entity.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/pwm_controller/index.html"><span class="doc">pwm_controller</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pwm_controller.sv</span></code></p></td>
+<td><p>PWM controller module. Generates a variable duty-cycle PWM signal using a 3-state FSM:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
+<td><p>—</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </section>
 </section>
+
 
         </article>
       </div>
@@ -379,7 +408,8 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Example — Overview</a><ul>
+<li><a class="reference internal" href="#">Traffic Light Controller — Overview</a><ul>
+<li><a class="reference internal" href="#instantiation-tree">Instantiation Tree</a></li>
 <li><a class="reference internal" href="#modules">Modules</a></li>
 </ul>
 </li>
@@ -397,5 +427,6 @@
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="_static/search-hotkey.js?v=b12262db"></script>
+    <script src="_static/sidebar-scroll.js?v=618d0e01"></script>
     </body>
 </html>

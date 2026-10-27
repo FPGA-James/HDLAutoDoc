@@ -3,10 +3,10 @@ pwm_controller — Entity
 
 Source file: ``src/pwm_controller.sv``.
 
-Annotated Source
-----------------
+PWM controller module.
 
-.. literalinclude:: ../../../../src/pwm_controller.sv
-   :language: systemverilog
-   :linenos:
-   :caption: src/pwm_controller.sv
+Generates a variable duty-cycle PWM signal using a 3-state FSM:
+IDLE -> COUNTING -> DONE. The duty cycle is set via the duty_i port.
+The period is fixed at 256 clock cycles.
+
+.. include:: pwm_controller_source.rst

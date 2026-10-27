@@ -1,5 +1,5 @@
-Example
-=======
+Traffic Light Controller
+========================
 
 .. toctree::
    :maxdepth: 4
@@ -7,7 +7,6 @@ Example
 
    overview
    modules/top/index
-   hierarchy
    registers
 
 Indices

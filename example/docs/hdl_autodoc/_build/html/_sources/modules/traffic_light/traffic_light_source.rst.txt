@@ -1,0 +1,1 @@
+.. Annotated source disabled (ANNOTATED_SOURCE=0).
