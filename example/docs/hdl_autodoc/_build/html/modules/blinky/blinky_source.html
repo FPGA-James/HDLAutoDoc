@@ -8,7 +8,7 @@
         <link rel="prefetch" href="../../_static/logo.svg" as="image">
 
     <link rel="shortcut icon" href="../../_static/logo.svg"><!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
-        <title>&lt;no title&gt; - Traffic Light Controller</title>
+        <title>Annotated Source - Traffic Light Controller</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
@@ -312,7 +312,161 @@
         </div>
         <article role="main" id="furo-main-content">
           
-  
+  <section id="annotated-source">
+<h1>Annotated Source<a class="headerlink" href="#annotated-source" title="Link to this heading">¶</a></h1>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">src/blinky.vhd</span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="k">library</span><span class="w"> </span><span class="nn">ieee</span><span class="p">;</span>
+<span class="linenos">  2</span><span class="k">use</span><span class="w"> </span><span class="nn">ieee.std_logic_1164.</span><span class="k">all</span><span class="p">;</span>
+<span class="linenos">  3</span><span class="k">use</span><span class="w"> </span><span class="nn">ieee.numeric_std.</span><span class="k">all</span><span class="p">;</span>
+<span class="linenos">  4</span>
+<span class="linenos">  5</span><span class="c1">-- Blinky LED controller.</span>
+<span class="linenos">  6</span><span class="c1">--</span>
+<span class="linenos">  7</span><span class="c1">-- Implements a 3-state FSM that drives an LED through a repeating</span>
+<span class="linenos">  8</span><span class="c1">-- ON -&gt; FADE -&gt; OFF sequence. Each state is held for a configurable</span>
+<span class="linenos">  9</span><span class="c1">-- number of clock cycles determined by an external timer pulse.</span>
+<span class="linenos"> 10</span><span class="c1">--</span>
+<span class="linenos"> 11</span><span class="c1">-- State sequence: ON -&gt; FADE -&gt; OFF -&gt; ON -&gt; ...</span>
+<span class="linenos"> 12</span><span class="k">entity</span><span class="w"> </span><span class="nc">blinky</span><span class="w"> </span><span class="k">is</span>
+<span class="linenos"> 13</span><span class="w">    </span><span class="k">port</span><span class="w"> </span><span class="p">(</span>
+<span class="linenos"> 14</span><span class="w">        </span><span class="c1">-- System clock, rising-edge triggered.</span>
+<span class="linenos"> 15</span><span class="w">        </span><span class="n">clk</span><span class="w">       </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic</span><span class="p">;</span>
+<span class="linenos"> 16</span><span class="w">        </span><span class="c1">-- Synchronous active-high reset. Returns FSM to OFF state.</span>
+<span class="linenos"> 17</span><span class="w">        </span><span class="n">rst</span><span class="w">       </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic</span><span class="p">;</span>
+<span class="linenos"> 18</span><span class="w">        </span><span class="c1">-- Enable signal. FSM only advances when en is asserted.</span>
+<span class="linenos"> 19</span><span class="w">        </span><span class="n">en</span><span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic</span><span class="p">;</span>
+<span class="linenos"> 20</span><span class="w">        </span><span class="c1">-- Phase timer expiry pulse. Must be high for exactly one cycle.</span>
+<span class="linenos"> 21</span><span class="w">        </span><span class="n">timer_exp</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic</span><span class="p">;</span>
+<span class="linenos"> 22</span><span class="w">        </span><span class="c1">-- LED full-brightness drive.</span>
+<span class="linenos"> 23</span><span class="w">        </span><span class="n">led_on</span><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span>
+<span class="linenos"> 24</span><span class="w">        </span><span class="c1">-- LED half-brightness PWM drive (fade effect).</span>
+<span class="linenos"> 25</span><span class="w">        </span><span class="n">led_fade</span><span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span>
+<span class="linenos"> 26</span><span class="w">        </span><span class="c1">-- LED off indicator (all drives deasserted).</span>
+<span class="linenos"> 27</span><span class="w">        </span><span class="n">led_off</span><span class="w">   </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span>
+<span class="linenos"> 28</span><span class="w">    </span><span class="p">);</span>
+<span class="linenos"> 29</span><span class="k">end</span><span class="w"> </span><span class="k">entity</span><span class="w"> </span><span class="nc">blinky</span><span class="p">;</span>
+<span class="linenos"> 30</span>
+<span class="linenos"> 31</span><span class="c1">-- RTL implementation using a 3-process Moore FSM style.</span>
+<span class="linenos"> 32</span><span class="k">architecture</span><span class="w"> </span><span class="nc">rtl</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="nc">blinky</span><span class="w"> </span><span class="k">is</span>
+<span class="linenos"> 33</span>
+<span class="linenos"> 34</span><span class="w">    </span><span class="c1">-- FSM state type encoding the three LED phases.</span>
+<span class="linenos"> 35</span><span class="w">    </span><span class="k">type</span><span class="w"> </span><span class="n">t_state</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="p">(</span>
+<span class="linenos"> 36</span><span class="w">        </span><span class="c1">-- LED fully illuminated.</span>
+<span class="linenos"> 37</span><span class="w">        </span><span class="n">ON_STATE</span><span class="p">,</span>
+<span class="linenos"> 38</span><span class="w">        </span><span class="c1">-- LED dimming via PWM (fade transition).</span>
+<span class="linenos"> 39</span><span class="w">        </span><span class="n">FADE_STATE</span><span class="p">,</span>
+<span class="linenos"> 40</span><span class="w">        </span><span class="c1">-- LED completely off.</span>
+<span class="linenos"> 41</span><span class="w">        </span><span class="n">OFF_STATE</span>
+<span class="linenos"> 42</span><span class="w">    </span><span class="p">);</span>
+<span class="linenos"> 43</span>
+<span class="linenos"> 44</span><span class="w">    </span><span class="c1">-- Current state register, initialised to OFF at power-on.</span>
+<span class="linenos"> 45</span><span class="w">    </span><span class="k">signal</span><span class="w"> </span><span class="n">state</span><span class="w">      </span><span class="o">:</span><span class="w"> </span><span class="n">t_state</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">OFF_STATE</span><span class="p">;</span>
+<span class="linenos"> 46</span><span class="w">    </span><span class="c1">-- Next state combinational signal.</span>
+<span class="linenos"> 47</span><span class="w">    </span><span class="k">signal</span><span class="w"> </span><span class="n">next_state</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">t_state</span><span class="p">;</span>
+<span class="linenos"> 48</span>
+<span class="linenos"> 49</span><span class="k">begin</span>
+<span class="linenos"> 50</span>
+<span class="linenos"> 51</span><span class="w">    </span><span class="c1">-- p_state_reg: Clocked state register.</span>
+<span class="linenos"> 52</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos"> 53</span><span class="w">    </span><span class="c1">-- Captures next_state on each rising edge of clk.</span>
+<span class="linenos"> 54</span><span class="w">    </span><span class="c1">-- Synchronous reset drives state back to OFF_STATE.</span>
+<span class="linenos"> 55</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos"> 56</span><span class="w">    </span><span class="c1">-- .. wavedrom::</span>
+<span class="linenos"> 57</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos"> 58</span><span class="w">    </span><span class="c1">--    { "signal": [</span>
+<span class="linenos"> 59</span><span class="w">    </span><span class="c1">--      { "name": "clk",       "wave": "P......." },</span>
+<span class="linenos"> 60</span><span class="w">    </span><span class="c1">--      { "name": "rst",       "wave": "1.0....." },</span>
+<span class="linenos"> 61</span><span class="w">    </span><span class="c1">--      { "name": "en",        "wave": "0......." },</span>
+<span class="linenos"> 62</span><span class="w">    </span><span class="c1">--      { "name": "state",     "wave": "=.=.....", "data": ["(any)","OFF"] },</span>
+<span class="linenos"> 63</span><span class="w">    </span><span class="c1">--      { "name": "led_on",    "wave": "x.0....." },</span>
+<span class="linenos"> 64</span><span class="w">    </span><span class="c1">--      { "name": "led_fade",  "wave": "x.0....." },</span>
+<span class="linenos"> 65</span><span class="w">    </span><span class="c1">--      { "name": "led_off",   "wave": "x.1....." }</span>
+<span class="linenos"> 66</span><span class="w">    </span><span class="c1">--    ]}</span>
+<span class="linenos"> 67</span><span class="w">    </span><span class="n">p_state_reg</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">process</span><span class="p">(</span><span class="n">clk</span><span class="p">)</span>
+<span class="linenos"> 68</span><span class="w">    </span><span class="k">begin</span>
+<span class="linenos"> 69</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">rising_edge</span><span class="p">(</span><span class="n">clk</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos"> 70</span><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">rst</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">'1'</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos"> 71</span><span class="w">                </span><span class="n">state</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">OFF_STATE</span><span class="p">;</span>
+<span class="linenos"> 72</span><span class="w">            </span><span class="k">else</span>
+<span class="linenos"> 73</span><span class="w">                </span><span class="n">state</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">next_state</span><span class="p">;</span>
+<span class="linenos"> 74</span><span class="w">            </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="p">;</span>
+<span class="linenos"> 75</span><span class="w">        </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="p">;</span>
+<span class="linenos"> 76</span><span class="w">    </span><span class="k">end</span><span class="w"> </span><span class="k">process</span><span class="w"> </span><span class="nc">p_state_reg</span><span class="p">;</span>
+<span class="linenos"> 77</span>
+<span class="linenos"> 78</span><span class="w">    </span><span class="c1">-- p_next_state: Combinational next-state logic.</span>
+<span class="linenos"> 79</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos"> 80</span><span class="w">    </span><span class="c1">-- FSM only advances when both en and timer_exp are asserted.</span>
+<span class="linenos"> 81</span><span class="w">    </span><span class="c1">-- If en is deasserted the state holds regardless of timer_exp.</span>
+<span class="linenos"> 82</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos"> 83</span><span class="w">    </span><span class="c1">-- Transitions:</span>
+<span class="linenos"> 84</span><span class="w">    </span><span class="c1">--   OFF_STATE  + en + timer_exp -&gt; ON_STATE</span>
+<span class="linenos"> 85</span><span class="w">    </span><span class="c1">--   ON_STATE   + en + timer_exp -&gt; FADE_STATE</span>
+<span class="linenos"> 86</span><span class="w">    </span><span class="c1">--   FADE_STATE + en + timer_exp -&gt; OFF_STATE</span>
+<span class="linenos"> 87</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos"> 88</span><span class="w">    </span><span class="c1">-- .. wavedrom::</span>
+<span class="linenos"> 89</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos"> 90</span><span class="w">    </span><span class="c1">--    { "signal": [</span>
+<span class="linenos"> 91</span><span class="w">    </span><span class="c1">--      { "name": "clk",       "wave": "P............." },</span>
+<span class="linenos"> 92</span><span class="w">    </span><span class="c1">--      { "name": "en",        "wave": "01...........0" },</span>
+<span class="linenos"> 93</span><span class="w">    </span><span class="c1">--      { "name": "timer_exp", "wave": "0..1..1..1..0." },</span>
+<span class="linenos"> 94</span><span class="w">    </span><span class="c1">--      { "name": "state",     "wave": "=..=..=..=..=.",</span>
+<span class="linenos"> 95</span><span class="w">    </span><span class="c1">--        "data": ["OFF","ON","FADE","OFF","OFF"] },</span>
+<span class="linenos"> 96</span><span class="w">    </span><span class="c1">--      { "name": "led_on",    "wave": "0..1..0..0..0." },</span>
+<span class="linenos"> 97</span><span class="w">    </span><span class="c1">--      { "name": "led_fade",  "wave": "0..0..1..0..0." },</span>
+<span class="linenos"> 98</span><span class="w">    </span><span class="c1">--      { "name": "led_off",   "wave": "1..0..0..1..1." }</span>
+<span class="linenos"> 99</span><span class="w">    </span><span class="c1">--    ]}</span>
+<span class="linenos">100</span><span class="w">    </span><span class="n">p_next_state</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">process</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="n">en</span><span class="p">,</span><span class="w"> </span><span class="n">timer_exp</span><span class="p">)</span>
+<span class="linenos">101</span><span class="w">    </span><span class="k">begin</span>
+<span class="linenos">102</span><span class="w">        </span><span class="n">next_state</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">state</span><span class="p">;</span>
+<span class="linenos">103</span>
+<span class="linenos">104</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">en</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">'1'</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">timer_exp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">'1'</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">105</span><span class="w">            </span><span class="k">case</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="k">is</span>
+<span class="linenos">106</span><span class="w">                </span><span class="k">when</span><span class="w"> </span><span class="n">OFF_STATE</span><span class="w">  </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">next_state</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">ON_STATE</span><span class="p">;</span>
+<span class="linenos">107</span><span class="w">                </span><span class="k">when</span><span class="w"> </span><span class="n">ON_STATE</span><span class="w">   </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">next_state</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">FADE_STATE</span><span class="p">;</span>
+<span class="linenos">108</span><span class="w">                </span><span class="k">when</span><span class="w"> </span><span class="n">FADE_STATE</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">next_state</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">OFF_STATE</span><span class="p">;</span>
+<span class="linenos">109</span><span class="w">            </span><span class="k">end</span><span class="w"> </span><span class="k">case</span><span class="p">;</span>
+<span class="linenos">110</span><span class="w">        </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="p">;</span>
+<span class="linenos">111</span><span class="w">    </span><span class="k">end</span><span class="w"> </span><span class="k">process</span><span class="w"> </span><span class="nc">p_next_state</span><span class="p">;</span>
+<span class="linenos">112</span>
+<span class="linenos">113</span><span class="w">    </span><span class="c1">-- p_outputs: Combinational Moore output decode.</span>
+<span class="linenos">114</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos">115</span><span class="w">    </span><span class="c1">-- Drives LED outputs based solely on current state.</span>
+<span class="linenos">116</span><span class="w">    </span><span class="c1">-- All outputs default to 0 before the case statement to</span>
+<span class="linenos">117</span><span class="w">    </span><span class="c1">-- prevent latches during synthesis.</span>
+<span class="linenos">118</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos">119</span><span class="w">    </span><span class="c1">-- Output truth table:</span>
+<span class="linenos">120</span><span class="w">    </span><span class="c1">--   OFF_STATE  -&gt; led_on=0 led_fade=0 led_off=1</span>
+<span class="linenos">121</span><span class="w">    </span><span class="c1">--   ON_STATE   -&gt; led_on=1 led_fade=0 led_off=0</span>
+<span class="linenos">122</span><span class="w">    </span><span class="c1">--   FADE_STATE -&gt; led_on=0 led_fade=1 led_off=0</span>
+<span class="linenos">123</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos">124</span><span class="w">    </span><span class="c1">-- .. wavedrom::</span>
+<span class="linenos">125</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos">126</span><span class="w">    </span><span class="c1">--    { "signal": [</span>
+<span class="linenos">127</span><span class="w">    </span><span class="c1">--      { "name": "state",    "wave": "=.=.=.=.",</span>
+<span class="linenos">128</span><span class="w">    </span><span class="c1">--        "data": ["OFF","ON","FADE","OFF"] },</span>
+<span class="linenos">129</span><span class="w">    </span><span class="c1">--      { "name": "led_on",   "wave": "0.1.0.0." },</span>
+<span class="linenos">130</span><span class="w">    </span><span class="c1">--      { "name": "led_fade", "wave": "0.0.1.0." },</span>
+<span class="linenos">131</span><span class="w">    </span><span class="c1">--      { "name": "led_off",  "wave": "1.0.0.1." }</span>
+<span class="linenos">132</span><span class="w">    </span><span class="c1">--    ]}</span>
+<span class="linenos">133</span><span class="w">    </span><span class="n">p_outputs</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">process</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+<span class="linenos">134</span><span class="w">    </span><span class="k">begin</span>
+<span class="linenos">135</span><span class="w">        </span><span class="n">led_on</span><span class="w">   </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">'0'</span><span class="p">;</span>
+<span class="linenos">136</span><span class="w">        </span><span class="n">led_fade</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">'0'</span><span class="p">;</span>
+<span class="linenos">137</span><span class="w">        </span><span class="n">led_off</span><span class="w">  </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">'0'</span><span class="p">;</span>
+<span class="linenos">138</span>
+<span class="linenos">139</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="k">is</span>
+<span class="linenos">140</span><span class="w">            </span><span class="k">when</span><span class="w"> </span><span class="n">OFF_STATE</span><span class="w">  </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">led_off</span><span class="w">  </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">'1'</span><span class="p">;</span>
+<span class="linenos">141</span><span class="w">            </span><span class="k">when</span><span class="w"> </span><span class="n">ON_STATE</span><span class="w">   </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">led_on</span><span class="w">   </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">'1'</span><span class="p">;</span>
+<span class="linenos">142</span><span class="w">            </span><span class="k">when</span><span class="w"> </span><span class="n">FADE_STATE</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">led_fade</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">'1'</span><span class="p">;</span>
+<span class="linenos">143</span><span class="w">        </span><span class="k">end</span><span class="w"> </span><span class="k">case</span><span class="p">;</span>
+<span class="linenos">144</span><span class="w">    </span><span class="k">end</span><span class="w"> </span><span class="k">process</span><span class="w"> </span><span class="nc">p_outputs</span><span class="p">;</span>
+<span class="linenos">145</span>
+<span class="linenos">146</span><span class="k">end</span><span class="w"> </span><span class="k">architecture</span><span class="w"> </span><span class="nc">rtl</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</section>
+
 
         </article>
       </div>

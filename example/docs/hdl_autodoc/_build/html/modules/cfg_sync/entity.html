@@ -180,7 +180,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
@@ -306,7 +306,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
@@ -397,6 +397,127 @@ Synchronised blinky enable (two-flop).</p></td>
 </div>
 </dd></dl>
 
+<section id="annotated-source">
+<h2>Annotated Source<a class="headerlink" href="#annotated-source" title="Link to this heading">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">src/cfg_sync.vhd</span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="c1">-- Configuration synchroniser.</span>
+<span class="linenos">  2</span><span class="c1">--</span>
+<span class="linenos">  3</span><span class="c1">-- Receives runtime configuration from a slow config bus clock domain</span>
+<span class="linenos">  4</span><span class="c1">-- (cfg_clk, e.g. 10 MHz from an external microcontroller) and makes it</span>
+<span class="linenos">  5</span><span class="c1">-- available in the main system clock domain (sys_clk, 50 MHz).</span>
+<span class="linenos">  6</span><span class="c1">--</span>
+<span class="linenos">  7</span><span class="c1">-- mode_sel   crosses via a two-flop synchroniser (safe).</span>
+<span class="linenos">  8</span><span class="c1">-- duty_cycle crosses as a raw multi-bit bus with no synchronisation</span>
+<span class="linenos">  9</span><span class="c1">--            (unsafe — included to demonstrate CDC detection; a real</span>
+<span class="linenos"> 10</span><span class="c1">--            design should use a handshake or grey-code scheme here).</span>
+<span class="linenos"> 11</span><span class="k">library</span><span class="w"> </span><span class="nn">ieee</span><span class="p">;</span>
+<span class="linenos"> 12</span><span class="k">use</span><span class="w"> </span><span class="nn">ieee.std_logic_1164.</span><span class="k">all</span><span class="p">;</span>
+<span class="linenos"> 13</span>
+<span class="linenos"> 14</span><span class="k">entity</span><span class="w"> </span><span class="nc">cfg_sync</span><span class="w"> </span><span class="k">is</span>
+<span class="linenos"> 15</span><span class="w">    </span><span class="k">port</span><span class="w"> </span><span class="p">(</span>
+<span class="linenos"> 16</span><span class="w">        </span><span class="c1">-- System clock domain (50 MHz).</span>
+<span class="linenos"> 17</span><span class="w">        </span><span class="n">sys_clk</span><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic</span><span class="p">;</span>
+<span class="linenos"> 18</span><span class="w">        </span><span class="c1">-- Synchronous active-high reset (sys_clk domain).</span>
+<span class="linenos"> 19</span><span class="w">        </span><span class="n">sys_rst</span><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic</span><span class="p">;</span>
+<span class="linenos"> 20</span><span class="w">        </span><span class="c1">-- Config clock domain (slow bus clock).</span>
+<span class="linenos"> 21</span><span class="w">        </span><span class="n">cfg_clk</span><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic</span><span class="p">;</span>
+<span class="linenos"> 22</span><span class="w">        </span><span class="c1">-- Synchronous active-high reset (cfg_clk domain).</span>
+<span class="linenos"> 23</span><span class="w">        </span><span class="n">cfg_rst</span><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic</span><span class="p">;</span>
+<span class="linenos"> 24</span><span class="w">        </span><span class="c1">-- Config inputs (cfg_clk domain).</span>
+<span class="linenos"> 25</span><span class="w">        </span><span class="c1">-- Blinky enable: 1 = blinky LED active.</span>
+<span class="linenos"> 26</span><span class="w">        </span><span class="n">mode_sel</span><span class="w">   </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic</span><span class="p">;</span>
+<span class="linenos"> 27</span><span class="w">        </span><span class="c1">-- PWM duty cycle: 0x00 = 0 %, 0xFF = 100 %.</span>
+<span class="linenos"> 28</span><span class="w">        </span><span class="n">duty_cycle</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">7</span><span class="w"> </span><span class="k">downto</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="linenos"> 29</span><span class="w">        </span><span class="c1">-- Outputs (sys_clk domain).</span>
+<span class="linenos"> 30</span><span class="w">        </span><span class="c1">-- Synchronised blinky enable (two-flop).</span>
+<span class="linenos"> 31</span><span class="w">        </span><span class="n">blinky_en</span><span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span>
+<span class="linenos"> 32</span><span class="w">        </span><span class="c1">-- PWM duty cycle (unsynchronised crossing).</span>
+<span class="linenos"> 33</span><span class="w">        </span><span class="n">pwm_duty</span><span class="w">   </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">7</span><span class="w"> </span><span class="k">downto</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="linenos"> 34</span><span class="w">    </span><span class="p">);</span>
+<span class="linenos"> 35</span><span class="k">end</span><span class="w"> </span><span class="k">entity</span><span class="w"> </span><span class="nc">cfg_sync</span><span class="p">;</span>
+<span class="linenos"> 36</span>
+<span class="linenos"> 37</span><span class="k">architecture</span><span class="w"> </span><span class="nc">rtl</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="nc">cfg_sync</span><span class="w"> </span><span class="k">is</span>
+<span class="linenos"> 38</span>
+<span class="linenos"> 39</span><span class="w">    </span><span class="c1">-- cfg_clk domain registers</span>
+<span class="linenos"> 40</span><span class="w">    </span><span class="k">signal</span><span class="w"> </span><span class="n">mode_sel_r</span><span class="w">   </span><span class="o">:</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span>
+<span class="linenos"> 41</span><span class="w">    </span><span class="k">signal</span><span class="w"> </span><span class="n">duty_cycle_r</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">7</span><span class="w"> </span><span class="k">downto</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="linenos"> 42</span>
+<span class="linenos"> 43</span><span class="w">    </span><span class="c1">-- sys_clk domain: two-flop synchroniser pipeline for mode_sel_r</span>
+<span class="linenos"> 44</span><span class="w">    </span><span class="k">signal</span><span class="w"> </span><span class="n">mode_meta</span><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span>
+<span class="linenos"> 45</span><span class="w">    </span><span class="k">signal</span><span class="w"> </span><span class="n">mode_sync_r</span><span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span>
+<span class="linenos"> 46</span>
+<span class="linenos"> 47</span><span class="k">begin</span>
+<span class="linenos"> 48</span>
+<span class="linenos"> 49</span><span class="w">    </span><span class="c1">-- p_cfg_reg: Register config inputs in the cfg_clk domain.</span>
+<span class="linenos"> 50</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos"> 51</span><span class="w">    </span><span class="c1">-- Provides a stable registered version of mode_sel and duty_cycle</span>
+<span class="linenos"> 52</span><span class="w">    </span><span class="c1">-- before they cross into the sys_clk domain.</span>
+<span class="linenos"> 53</span><span class="w">    </span><span class="n">p_cfg_reg</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">process</span><span class="p">(</span><span class="n">cfg_clk</span><span class="p">)</span><span class="w"> </span><span class="k">is</span>
+<span class="linenos"> 54</span><span class="w">    </span><span class="k">begin</span>
+<span class="linenos"> 55</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">rising_edge</span><span class="p">(</span><span class="n">cfg_clk</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos"> 56</span><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">cfg_rst</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">'1'</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos"> 57</span><span class="w">                </span><span class="n">mode_sel_r</span><span class="w">   </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">'0'</span><span class="p">;</span>
+<span class="linenos"> 58</span><span class="w">                </span><span class="n">duty_cycle_r</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="p">(</span><span class="k">others</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="sc">'0'</span><span class="p">);</span>
+<span class="linenos"> 59</span><span class="w">            </span><span class="k">else</span>
+<span class="linenos"> 60</span><span class="w">                </span><span class="n">mode_sel_r</span><span class="w">   </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">mode_sel</span><span class="p">;</span>
+<span class="linenos"> 61</span><span class="w">                </span><span class="n">duty_cycle_r</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">duty_cycle</span><span class="p">;</span>
+<span class="linenos"> 62</span><span class="w">            </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="p">;</span>
+<span class="linenos"> 63</span><span class="w">        </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="p">;</span>
+<span class="linenos"> 64</span><span class="w">    </span><span class="k">end</span><span class="w"> </span><span class="k">process</span><span class="w"> </span><span class="nc">p_cfg_reg</span><span class="p">;</span>
+<span class="linenos"> 65</span>
+<span class="linenos"> 66</span><span class="w">    </span><span class="c1">-- p_mode_sync: Two-flop synchroniser for mode_sel_r (cfg_clk → sys_clk).</span>
+<span class="linenos"> 67</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos"> 68</span><span class="w">    </span><span class="c1">-- mode_sel_r is sampled twice in the sys_clk domain to resolve</span>
+<span class="linenos"> 69</span><span class="w">    </span><span class="c1">-- metastability before the signal is used by downstream logic.</span>
+<span class="linenos"> 70</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos"> 71</span><span class="w">    </span><span class="c1">-- .. wavedrom::</span>
+<span class="linenos"> 72</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos"> 73</span><span class="w">    </span><span class="c1">--    { "signal": [</span>
+<span class="linenos"> 74</span><span class="w">    </span><span class="c1">--      { "name": "cfg_clk",    "wave": "p........" },</span>
+<span class="linenos"> 75</span><span class="w">    </span><span class="c1">--      { "name": "sys_clk",    "wave": "P........" },</span>
+<span class="linenos"> 76</span><span class="w">    </span><span class="c1">--      { "name": "mode_sel_r", "wave": "0...1...." },</span>
+<span class="linenos"> 77</span><span class="w">    </span><span class="c1">--      { "name": "mode_meta",  "wave": "0....1..." },</span>
+<span class="linenos"> 78</span><span class="w">    </span><span class="c1">--      { "name": "mode_sync_r","wave": "0.....1.." }</span>
+<span class="linenos"> 79</span><span class="w">    </span><span class="c1">--    ]}</span>
+<span class="linenos"> 80</span><span class="w">    </span><span class="n">p_mode_sync</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">process</span><span class="p">(</span><span class="n">sys_clk</span><span class="p">)</span><span class="w"> </span><span class="k">is</span>
+<span class="linenos"> 81</span><span class="w">    </span><span class="k">begin</span>
+<span class="linenos"> 82</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">rising_edge</span><span class="p">(</span><span class="n">sys_clk</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos"> 83</span><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">sys_rst</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">'1'</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos"> 84</span><span class="w">                </span><span class="n">mode_meta</span><span class="w">   </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">'0'</span><span class="p">;</span>
+<span class="linenos"> 85</span><span class="w">                </span><span class="n">mode_sync_r</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">'0'</span><span class="p">;</span>
+<span class="linenos"> 86</span><span class="w">            </span><span class="k">else</span>
+<span class="linenos"> 87</span><span class="w">                </span><span class="n">mode_meta</span><span class="w">   </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">mode_sel_r</span><span class="p">;</span>
+<span class="linenos"> 88</span><span class="w">                </span><span class="n">mode_sync_r</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">mode_meta</span><span class="p">;</span>
+<span class="linenos"> 89</span><span class="w">            </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="p">;</span>
+<span class="linenos"> 90</span><span class="w">        </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="p">;</span>
+<span class="linenos"> 91</span><span class="w">    </span><span class="k">end</span><span class="w"> </span><span class="k">process</span><span class="w"> </span><span class="nc">p_mode_sync</span><span class="p">;</span>
+<span class="linenos"> 92</span>
+<span class="linenos"> 93</span><span class="w">    </span><span class="c1">-- p_duty_capture: Capture duty_cycle_r directly in the sys_clk domain.</span>
+<span class="linenos"> 94</span><span class="w">    </span><span class="c1">--</span>
+<span class="linenos"> 95</span><span class="w">    </span><span class="c1">-- WARNING: This is an unsynchronised multi-bit crossing. duty_cycle_r is</span>
+<span class="linenos"> 96</span><span class="w">    </span><span class="c1">-- driven in the cfg_clk domain and sampled here without a handshake or</span>
+<span class="linenos"> 97</span><span class="w">    </span><span class="c1">-- grey-code scheme. Glitches are possible if both bits change together</span>
+<span class="linenos"> 98</span><span class="w">    </span><span class="c1">-- near a sys_clk edge. A proper implementation should use a handshake</span>
+<span class="linenos"> 99</span><span class="w">    </span><span class="c1">-- protocol or an async FIFO.</span>
+<span class="linenos">100</span><span class="w">    </span><span class="n">p_duty_capture</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">process</span><span class="p">(</span><span class="n">sys_clk</span><span class="p">)</span><span class="w"> </span><span class="k">is</span>
+<span class="linenos">101</span><span class="w">    </span><span class="k">begin</span>
+<span class="linenos">102</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">rising_edge</span><span class="p">(</span><span class="n">sys_clk</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">103</span><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">sys_rst</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">'1'</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">104</span><span class="w">                </span><span class="n">pwm_duty</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="p">(</span><span class="k">others</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="sc">'0'</span><span class="p">);</span>
+<span class="linenos">105</span><span class="w">            </span><span class="k">else</span>
+<span class="linenos">106</span><span class="w">                </span><span class="n">pwm_duty</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">duty_cycle_r</span><span class="p">;</span>
+<span class="linenos">107</span><span class="w">            </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="p">;</span>
+<span class="linenos">108</span><span class="w">        </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="p">;</span>
+<span class="linenos">109</span><span class="w">    </span><span class="k">end</span><span class="w"> </span><span class="k">process</span><span class="w"> </span><span class="nc">p_duty_capture</span><span class="p">;</span>
+<span class="linenos">110</span>
+<span class="linenos">111</span><span class="w">    </span><span class="n">blinky_en</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">mode_sync_r</span><span class="p">;</span>
+<span class="linenos">112</span>
+<span class="linenos">113</span><span class="k">end</span><span class="w"> </span><span class="k">architecture</span><span class="w"> </span><span class="nc">rtl</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</section>
 </section>
 
 
@@ -414,8 +535,27 @@ Synchronised blinky enable (two-flop).</p></td>
 
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">cfg_sync — Entity</a><ul>
+<li><a class="reference internal" href="#annotated-source">Annotated Source</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

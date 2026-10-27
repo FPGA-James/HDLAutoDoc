@@ -1,7 +1,0 @@
-{ "signal": [
-{ "name": "state",    "wave": "=.=.=.=.",
-"data": ["OFF","ON","FADE","OFF"] },
-{ "name": "led_on",   "wave": "0.1.0.0." },
-{ "name": "led_fade", "wave": "0.0.1.0." },
-{ "name": "led_off",  "wave": "1.0.0.1." }
-]}

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.6)  27 OCT 2026 21:42
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.6)  27 OCT 2026 21:57
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -887,6 +887,16 @@ Underfull \hbox (badness 10000) in paragraph at lines 219--219
  []
 
 
+Overfull \hbox (31.93013pt too wide) in paragraph at lines 219--219
+[][][]\T1/qtm/m/it/10 pwm_controller[][]| 
+ []
+
+
+Overfull \hbox (33.92336pt too wide) in paragraph at lines 219--219
+[]\T1/txtt/m/n/10 pwm_controller.
+ []
+
+
 Underfull \hbox (badness 10000) in paragraph at lines 219--219
 []\T1/txtt/m/n/10 blinky\T1/qtm/m/n/10 , \T1/txtt/m/n/10 cfg_sync\T1/qtm/m/n/10
  ,
@@ -895,26 +905,6 @@ Underfull \hbox (badness 10000) in paragraph at lines 219--219
 
 Underfull \hbox (badness 10000) in paragraph at lines 219--219
 \T1/txtt/m/n/10 pwm_controller\T1/qtm/m/n/10 ,
- []
-
-
-Overfull \hbox (2.86014pt too wide) in paragraph at lines 219--219
-[][][]\T1/qtm/m/it/10 cfg_sync[][]| 
- []
-
-
-Overfull \hbox (2.42345pt too wide) in paragraph at lines 219--219
-[]\T1/txtt/m/n/10 cfg_sync.
- []
-
-
-Overfull \hbox (31.93013pt too wide) in paragraph at lines 219--219
-[][][]\T1/qtm/m/it/10 pwm_controller[][]| 
- []
-
-
-Overfull \hbox (33.92336pt too wide) in paragraph at lines 219--219
-[]\T1/txtt/m/n/10 pwm_controller.
  []
 
 
@@ -930,6 +920,16 @@ Overfull \hbox (1.02013pt too wide) in paragraph at lines 219--219
 
 Overfull \hbox (28.67337pt too wide) in paragraph at lines 219--219
 []\T1/txtt/m/n/10 traffic_light.
+ []
+
+
+Overfull \hbox (2.86014pt too wide) in paragraph at lines 219--219
+[][][]\T1/qtm/m/it/10 cfg_sync[][]| 
+ []
+
+
+Overfull \hbox (2.42345pt too wide) in paragraph at lines 219--219
+[]\T1/txtt/m/n/10 cfg_sync.
  []
 
 [1
@@ -1045,72 +1045,72 @@ pdf)
 Package pdftex.def Info: graphviz-3980ef6e3625b9a55d89d5f99103a9d00e818ae4.pdf 
  used on input line 1408.
 (pdftex.def)             Requested size: 469.76834pt x 192.919pt.
-<wavedrom-634c9ef2-3e41-471a-80e7-485b7764ad95.pdf, id=818, 511.9125pt x 158.09
+<wavedrom-ee2452a4-cf88-426a-8530-8a9bd9f6279e.pdf, id=818, 511.9125pt x 158.09
 062pt>
-File: wavedrom-634c9ef2-3e41-471a-80e7-485b7764ad95.pdf Graphic file (type pdf)
+File: wavedrom-ee2452a4-cf88-426a-8530-8a9bd9f6279e.pdf Graphic file (type pdf)
 
-<use wavedrom-634c9ef2-3e41-471a-80e7-485b7764ad95.pdf>
-Package pdftex.def Info: wavedrom-634c9ef2-3e41-471a-80e7-485b7764ad95.pdf  use
+<use wavedrom-ee2452a4-cf88-426a-8530-8a9bd9f6279e.pdf>
+Package pdftex.def Info: wavedrom-ee2452a4-cf88-426a-8530-8a9bd9f6279e.pdf  use
 d on input line 1545.
 (pdftex.def)             Requested size: 469.75449pt x 145.08087pt.
  [13
 
  <./graphviz-3980ef6e3625b9a55d89d5f99103a9d00e818ae4.pdf>]
-<wavedrom-1f25b8e0-c186-4901-839f-e628c9943103.pdf, id=837, 316.18124pt x 90.33
+<wavedrom-1d28c0b1-cbca-4162-a729-b4d32ab7da78.pdf, id=837, 316.18124pt x 90.33
 75pt>
-File: wavedrom-1f25b8e0-c186-4901-839f-e628c9943103.pdf Graphic file (type pdf)
+File: wavedrom-1d28c0b1-cbca-4162-a729-b4d32ab7da78.pdf Graphic file (type pdf)
 
-<use wavedrom-1f25b8e0-c186-4901-839f-e628c9943103.pdf>
-Package pdftex.def Info: wavedrom-1f25b8e0-c186-4901-839f-e628c9943103.pdf  use
+<use wavedrom-1d28c0b1-cbca-4162-a729-b4d32ab7da78.pdf>
+Package pdftex.def Info: wavedrom-1d28c0b1-cbca-4162-a729-b4d32ab7da78.pdf  use
 d on input line 1550.
 (pdftex.def)             Requested size: 316.18047pt x 90.33727pt.
-<wavedrom-b91b411c-95a5-40dc-9b80-6b6d8480e5b5.pdf, id=838, 316.18124pt x 158.0
+<wavedrom-8d3f658f-1b09-4115-b495-8dab6b29b9f9.pdf, id=838, 316.18124pt x 158.0
 9062pt>
-File: wavedrom-b91b411c-95a5-40dc-9b80-6b6d8480e5b5.pdf Graphic file (type pdf)
+File: wavedrom-8d3f658f-1b09-4115-b495-8dab6b29b9f9.pdf Graphic file (type pdf)
 
-<use wavedrom-b91b411c-95a5-40dc-9b80-6b6d8480e5b5.pdf>
-Package pdftex.def Info: wavedrom-b91b411c-95a5-40dc-9b80-6b6d8480e5b5.pdf  use
+<use wavedrom-8d3f658f-1b09-4115-b495-8dab6b29b9f9.pdf>
+Package pdftex.def Info: wavedrom-8d3f658f-1b09-4115-b495-8dab6b29b9f9.pdf  use
 d on input line 1555.
 (pdftex.def)             Requested size: 316.18047pt x 158.09023pt.
- [14 <./wavedrom-634c9ef2-3e41-471a-80e7-485b7764ad95.pdf> <./wavedrom-1f25b8e0
--c186-4901-839f-e628c9943103.pdf
+ [14 <./wavedrom-ee2452a4-cf88-426a-8530-8a9bd9f6279e.pdf> <./wavedrom-1d28c0b1
+-cbca-4162-a729-b4d32ab7da78.pdf
 
-pdfTeX warning: pdflatex (file ./wavedrom-1f25b8e0-c186-4901-839f-e628c9943103.
+pdfTeX warning: pdflatex (file ./wavedrom-1d28c0b1-cbca-4162-a729-b4d32ab7da78.
 pdf): PDF inclusion: multiple pdfs with page group included in a single page
-> <./wavedrom-b91b411c-95a5-40dc-9b80-6b6d8480e5b5.pdf
+> <./wavedrom-8d3f658f-1b09-4115-b495-8dab6b29b9f9.pdf
 
-pdfTeX warning: pdflatex (file ./wavedrom-b91b411c-95a5-40dc-9b80-6b6d8480e5b5.
+pdfTeX warning: pdflatex (file ./wavedrom-8d3f658f-1b09-4115-b495-8dab6b29b9f9.
 pdf): PDF inclusion: multiple pdfs with page group included in a single page
 >]
-<wavedrom-e7094fe8-c410-4872-9d6f-db54b3100525.pdf, id=866, 316.18124pt x 158.0
+<wavedrom-811e5b4f-2e43-471d-a842-7038e12e34c9.pdf, id=866, 316.18124pt x 158.0
 9062pt>
-File: wavedrom-e7094fe8-c410-4872-9d6f-db54b3100525.pdf Graphic file (type pdf)
+File: wavedrom-811e5b4f-2e43-471d-a842-7038e12e34c9.pdf Graphic file (type pdf)
 
-<use wavedrom-e7094fe8-c410-4872-9d6f-db54b3100525.pdf>
-Package pdftex.def Info: wavedrom-e7094fe8-c410-4872-9d6f-db54b3100525.pdf  use
+<use wavedrom-811e5b4f-2e43-471d-a842-7038e12e34c9.pdf>
+Package pdftex.def Info: wavedrom-811e5b4f-2e43-471d-a842-7038e12e34c9.pdf  use
 d on input line 1585.
 (pdftex.def)             Requested size: 316.18047pt x 158.09023pt.
-<wavedrom-6ff1fc0f-8906-44f2-8e6e-3276a929c0aa.pdf, id=867, 511.9125pt x 158.09
+<wavedrom-a4ad0d6c-ad59-4d26-b8b6-beb863867d90.pdf, id=867, 511.9125pt x 158.09
 062pt>
-File: wavedrom-6ff1fc0f-8906-44f2-8e6e-3276a929c0aa.pdf Graphic file (type pdf)
+File: wavedrom-a4ad0d6c-ad59-4d26-b8b6-beb863867d90.pdf Graphic file (type pdf)
 
-<use wavedrom-6ff1fc0f-8906-44f2-8e6e-3276a929c0aa.pdf>
-Package pdftex.def Info: wavedrom-6ff1fc0f-8906-44f2-8e6e-3276a929c0aa.pdf  use
+<use wavedrom-a4ad0d6c-ad59-4d26-b8b6-beb863867d90.pdf>
+Package pdftex.def Info: wavedrom-a4ad0d6c-ad59-4d26-b8b6-beb863867d90.pdf  use
 d on input line 1632.
 (pdftex.def)             Requested size: 469.75449pt x 145.08087pt.
- [15 <./wavedrom-e7094fe8-c410-4872-9d6f-db54b3100525.pdf>]
-<wavedrom-7fe45214-b0b4-46ed-b220-17370bd9bc56.pdf, id=881, 316.18124pt x 90.33
+ [15 <./wavedrom-811e5b4f-2e43-471d-a842-7038e12e34c9.pdf>]
+<wavedrom-ed471a20-b207-463d-a869-625f4f955033.pdf, id=881, 316.18124pt x 90.33
 75pt>
-File: wavedrom-7fe45214-b0b4-46ed-b220-17370bd9bc56.pdf Graphic file (type pdf)
+File: wavedrom-ed471a20-b207-463d-a869-625f4f955033.pdf Graphic file (type pdf)
 
-<use wavedrom-7fe45214-b0b4-46ed-b220-17370bd9bc56.pdf>
-Package pdftex.def Info: wavedrom-7fe45214-b0b4-46ed-b220-17370bd9bc56.pdf  use
+<use wavedrom-ed471a20-b207-463d-a869-625f4f955033.pdf>
+Package pdftex.def Info: wavedrom-ed471a20-b207-463d-a869-625f4f955033.pdf  use
 d on input line 1682.
 (pdftex.def)             Requested size: 316.18047pt x 90.33727pt.
- [16 <./wavedrom-6ff1fc0f-8906-44f2-8e6e-3276a929c0aa.pdf> <./wavedrom-7fe45214
--b0b4-46ed-b220-17370bd9bc56.pdf
+ [16 <./wavedrom-a4ad0d6c-ad59-4d26-b8b6-beb863867d90.pdf> <./wavedrom-ed471a20
+-b207-463d-a869-625f4f955033.pdf
 
-pdfTeX warning: pdflatex (file ./wavedrom-7fe45214-b0b4-46ed-b220-17370bd9bc56.
+pdfTeX warning: pdflatex (file ./wavedrom-ed471a20-b207-463d-a869-625f4f955033.
 pdf): PDF inclusion: multiple pdfs with page group included in a single page
 >] [17]
 Overfull \hbox (3.94827pt too wide) in paragraph at lines 2049--2049
@@ -1208,26 +1208,26 @@ Package pdftex.def Info: cfg_sync_schematic.pdf  used on input line 2394.
  [23
 
  <./cfg_sync_schematic.pdf>]
-<wavedrom-460a95ea-4e53-4c85-93c8-2ad413614290.pdf, id=982, 376.40625pt x 112.9
+<wavedrom-6046b51d-83e6-4a26-b02b-42b1068541b1.pdf, id=982, 376.40625pt x 112.9
 2188pt>
-File: wavedrom-460a95ea-4e53-4c85-93c8-2ad413614290.pdf Graphic file (type pdf)
+File: wavedrom-6046b51d-83e6-4a26-b02b-42b1068541b1.pdf Graphic file (type pdf)
 
-<use wavedrom-460a95ea-4e53-4c85-93c8-2ad413614290.pdf>
-Package pdftex.def Info: wavedrom-460a95ea-4e53-4c85-93c8-2ad413614290.pdf  use
+<use wavedrom-6046b51d-83e6-4a26-b02b-42b1068541b1.pdf>
+Package pdftex.def Info: wavedrom-6046b51d-83e6-4a26-b02b-42b1068541b1.pdf  use
 d on input line 2424.
 (pdftex.def)             Requested size: 376.40532pt x 112.92159pt.
  [24
 
- <./wavedrom-460a95ea-4e53-4c85-93c8-2ad413614290.pdf>]
-<wavedrom-716d9aa4-5d50-474d-9a68-920334283171.pdf, id=995, 376.40625pt x 112.9
+ <./wavedrom-6046b51d-83e6-4a26-b02b-42b1068541b1.pdf>]
+<wavedrom-d15af642-ebd5-4864-8f0c-7192eda3a603.pdf, id=995, 376.40625pt x 112.9
 2188pt>
-File: wavedrom-716d9aa4-5d50-474d-9a68-920334283171.pdf Graphic file (type pdf)
+File: wavedrom-d15af642-ebd5-4864-8f0c-7192eda3a603.pdf Graphic file (type pdf)
 
-<use wavedrom-716d9aa4-5d50-474d-9a68-920334283171.pdf>
-Package pdftex.def Info: wavedrom-716d9aa4-5d50-474d-9a68-920334283171.pdf  use
+<use wavedrom-d15af642-ebd5-4864-8f0c-7192eda3a603.pdf>
+Package pdftex.def Info: wavedrom-d15af642-ebd5-4864-8f0c-7192eda3a603.pdf  use
 d on input line 2492.
 (pdftex.def)             Requested size: 376.40532pt x 112.92159pt.
-[25 <./wavedrom-716d9aa4-5d50-474d-9a68-920334283171.pdf>]
+[25 <./wavedrom-d15af642-ebd5-4864-8f0c-7192eda3a603.pdf>]
 <graphviz-5a791f3e04122653b5abf1d5071ed5c3f73a1f6a.pdf, id=1014, 380.42125pt x 
 235.88126pt>
 File: graphviz-5a791f3e04122653b5abf1d5071ed5c3f73a1f6a.pdf Graphic file (type 
@@ -1286,74 +1286,74 @@ pdf)
 Package pdftex.def Info: graphviz-16816bcd5aea38aa875e2a74fcf8d3e6e89ad750.pdf 
  used on input line 3478.
 (pdftex.def)             Requested size: 469.75862pt x 203.27127pt.
-<wavedrom-a2b81c12-d371-4fa4-9bd7-bb26a13273b7.pdf, id=1149, 526.96875pt x 112.
+<wavedrom-9f8dde49-9175-4b0d-8fe5-3fcd48620914.pdf, id=1149, 526.96875pt x 112.
 92188pt>
-File: wavedrom-a2b81c12-d371-4fa4-9bd7-bb26a13273b7.pdf Graphic file (type pdf)
+File: wavedrom-9f8dde49-9175-4b0d-8fe5-3fcd48620914.pdf Graphic file (type pdf)
 
-<use wavedrom-a2b81c12-d371-4fa4-9bd7-bb26a13273b7.pdf>
-Package pdftex.def Info: wavedrom-a2b81c12-d371-4fa4-9bd7-bb26a13273b7.pdf  use
+<use wavedrom-9f8dde49-9175-4b0d-8fe5-3fcd48620914.pdf>
+Package pdftex.def Info: wavedrom-9f8dde49-9175-4b0d-8fe5-3fcd48620914.pdf  use
 d on input line 3603.
 (pdftex.def)             Requested size: 469.78067pt x 100.66727pt.
  [35
 
  <./graphviz-16816bcd5aea38aa875e2a74fcf8d3e6e89ad750.pdf>]
-<wavedrom-a00e2af2-35df-430d-b5fd-ffd2690395fc.pdf, id=1177, 286.06876pt x 112.
+<wavedrom-09fc5703-1f50-476e-a5b4-15beaedc4698.pdf, id=1177, 286.06876pt x 112.
 92188pt>
-File: wavedrom-a00e2af2-35df-430d-b5fd-ffd2690395fc.pdf Graphic file (type pdf)
+File: wavedrom-09fc5703-1f50-476e-a5b4-15beaedc4698.pdf Graphic file (type pdf)
 
-<use wavedrom-a00e2af2-35df-430d-b5fd-ffd2690395fc.pdf>
-Package pdftex.def Info: wavedrom-a00e2af2-35df-430d-b5fd-ffd2690395fc.pdf  use
+<use wavedrom-09fc5703-1f50-476e-a5b4-15beaedc4698.pdf>
+Package pdftex.def Info: wavedrom-09fc5703-1f50-476e-a5b4-15beaedc4698.pdf  use
 d on input line 3608.
 (pdftex.def)             Requested size: 286.06805pt x 112.92159pt.
-<wavedrom-0ccfcac2-674f-438f-ac93-3def5828d272.pdf, id=1178, 316.18124pt x 112.
+<wavedrom-a78773fe-d6e7-4e04-8491-02966b36b368.pdf, id=1178, 316.18124pt x 112.
 92188pt>
-File: wavedrom-0ccfcac2-674f-438f-ac93-3def5828d272.pdf Graphic file (type pdf)
+File: wavedrom-a78773fe-d6e7-4e04-8491-02966b36b368.pdf Graphic file (type pdf)
 
-<use wavedrom-0ccfcac2-674f-438f-ac93-3def5828d272.pdf>
-Package pdftex.def Info: wavedrom-0ccfcac2-674f-438f-ac93-3def5828d272.pdf  use
+<use wavedrom-a78773fe-d6e7-4e04-8491-02966b36b368.pdf>
+Package pdftex.def Info: wavedrom-a78773fe-d6e7-4e04-8491-02966b36b368.pdf  use
 d on input line 3613.
 (pdftex.def)             Requested size: 316.18047pt x 112.92159pt.
- [36 <./wavedrom-a2b81c12-d371-4fa4-9bd7-bb26a13273b7.pdf> <./wavedrom-a00e2af2
--35df-430d-b5fd-ffd2690395fc.pdf
+ [36 <./wavedrom-9f8dde49-9175-4b0d-8fe5-3fcd48620914.pdf> <./wavedrom-09fc5703
+-1f50-476e-a5b4-15beaedc4698.pdf
 
-pdfTeX warning: pdflatex (file ./wavedrom-a00e2af2-35df-430d-b5fd-ffd2690395fc.
+pdfTeX warning: pdflatex (file ./wavedrom-09fc5703-1f50-476e-a5b4-15beaedc4698.
 pdf): PDF inclusion: multiple pdfs with page group included in a single page
-> <./wavedrom-0ccfcac2-674f-438f-ac93-3def5828d272.pdf
+> <./wavedrom-a78773fe-d6e7-4e04-8491-02966b36b368.pdf
 
-pdfTeX warning: pdflatex (file ./wavedrom-0ccfcac2-674f-438f-ac93-3def5828d272.
+pdfTeX warning: pdflatex (file ./wavedrom-a78773fe-d6e7-4e04-8491-02966b36b368.
 pdf): PDF inclusion: multiple pdfs with page group included in a single page
 >]
-<wavedrom-fac8d787-548d-43f7-8f0c-320fdcc66e78.pdf, id=1206, 316.18124pt x 112.
+<wavedrom-e2398a3c-e7d8-4eb1-b8f5-f0a3e7ed3977.pdf, id=1206, 316.18124pt x 112.
 92188pt>
-File: wavedrom-fac8d787-548d-43f7-8f0c-320fdcc66e78.pdf Graphic file (type pdf)
+File: wavedrom-e2398a3c-e7d8-4eb1-b8f5-f0a3e7ed3977.pdf Graphic file (type pdf)
 
-<use wavedrom-fac8d787-548d-43f7-8f0c-320fdcc66e78.pdf>
-Package pdftex.def Info: wavedrom-fac8d787-548d-43f7-8f0c-320fdcc66e78.pdf  use
+<use wavedrom-e2398a3c-e7d8-4eb1-b8f5-f0a3e7ed3977.pdf>
+Package pdftex.def Info: wavedrom-e2398a3c-e7d8-4eb1-b8f5-f0a3e7ed3977.pdf  use
 d on input line 3644.
 (pdftex.def)             Requested size: 316.18047pt x 112.92159pt.
-<wavedrom-8dc2d828-b678-4c50-b57a-d44e62cf8155.pdf, id=1207, 526.96875pt x 112.
+<wavedrom-2352c269-9e6c-4884-9a0d-ed6eb1139ced.pdf, id=1207, 526.96875pt x 112.
 92188pt>
-File: wavedrom-8dc2d828-b678-4c50-b57a-d44e62cf8155.pdf Graphic file (type pdf)
+File: wavedrom-2352c269-9e6c-4884-9a0d-ed6eb1139ced.pdf Graphic file (type pdf)
 
-<use wavedrom-8dc2d828-b678-4c50-b57a-d44e62cf8155.pdf>
-Package pdftex.def Info: wavedrom-8dc2d828-b678-4c50-b57a-d44e62cf8155.pdf  use
+<use wavedrom-2352c269-9e6c-4884-9a0d-ed6eb1139ced.pdf>
+Package pdftex.def Info: wavedrom-2352c269-9e6c-4884-9a0d-ed6eb1139ced.pdf  use
 d on input line 3693.
 (pdftex.def)             Requested size: 469.78067pt x 100.66727pt.
- [37 <./wavedrom-fac8d787-548d-43f7-8f0c-320fdcc66e78.pdf> <./wavedrom-8dc2d828
--b678-4c50-b57a-d44e62cf8155.pdf
+ [37 <./wavedrom-e2398a3c-e7d8-4eb1-b8f5-f0a3e7ed3977.pdf> <./wavedrom-2352c269
+-9e6c-4884-9a0d-ed6eb1139ced.pdf
 
-pdfTeX warning: pdflatex (file ./wavedrom-8dc2d828-b678-4c50-b57a-d44e62cf8155.
+pdfTeX warning: pdflatex (file ./wavedrom-2352c269-9e6c-4884-9a0d-ed6eb1139ced.
 pdf): PDF inclusion: multiple pdfs with page group included in a single page
 >]
-<wavedrom-657b1fe4-8d56-491a-b150-cecdd7c74d76.pdf, id=1227, 286.06876pt x 112.
+<wavedrom-65ee856a-bfcf-4f31-ad86-b788afd1e1a8.pdf, id=1227, 286.06876pt x 112.
 92188pt>
-File: wavedrom-657b1fe4-8d56-491a-b150-cecdd7c74d76.pdf Graphic file (type pdf)
+File: wavedrom-65ee856a-bfcf-4f31-ad86-b788afd1e1a8.pdf Graphic file (type pdf)
 
-<use wavedrom-657b1fe4-8d56-491a-b150-cecdd7c74d76.pdf>
-Package pdftex.def Info: wavedrom-657b1fe4-8d56-491a-b150-cecdd7c74d76.pdf  use
+<use wavedrom-65ee856a-bfcf-4f31-ad86-b788afd1e1a8.pdf>
+Package pdftex.def Info: wavedrom-65ee856a-bfcf-4f31-ad86-b788afd1e1a8.pdf  use
 d on input line 3739.
 (pdftex.def)             Requested size: 286.06805pt x 112.92159pt.
- [38 <./wavedrom-657b1fe4-8d56-491a-b150-cecdd7c74d76.pdf>]
+ [38 <./wavedrom-65ee856a-bfcf-4f31-ad86-b788afd1e1a8.pdf>]
 Overfull \hbox (9.61304pt too wide) in paragraph at lines 4023--4023
 []\T1/qtm/m/n/10 CLK_FREQ_HZ| 
  []
@@ -1538,74 +1538,74 @@ pdf)
 Package pdftex.def Info: graphviz-1b1fd1f28babf652a7356498f48becf7356644e8.pdf 
  used on input line 4632.
 (pdftex.def)             Requested size: 469.75848pt x 148.05617pt.
-<wavedrom-eee28583-9c09-4b38-b63d-cd4b50fc570b.pdf, id=1325, 391.4625pt x 135.5
+<wavedrom-35c1fe8d-0f2e-402b-8290-75e55157c0cb.pdf, id=1325, 391.4625pt x 135.5
 0626pt>
-File: wavedrom-eee28583-9c09-4b38-b63d-cd4b50fc570b.pdf Graphic file (type pdf)
+File: wavedrom-35c1fe8d-0f2e-402b-8290-75e55157c0cb.pdf Graphic file (type pdf)
 
-<use wavedrom-eee28583-9c09-4b38-b63d-cd4b50fc570b.pdf>
-Package pdftex.def Info: wavedrom-eee28583-9c09-4b38-b63d-cd4b50fc570b.pdf  use
+<use wavedrom-35c1fe8d-0f2e-402b-8290-75e55157c0cb.pdf>
+Package pdftex.def Info: wavedrom-35c1fe8d-0f2e-402b-8290-75e55157c0cb.pdf  use
 d on input line 4792.
 (pdftex.def)             Requested size: 391.46153pt x 135.5059pt.
  [47
 
  <./graphviz-1b1fd1f28babf652a7356498f48becf7356644e8.pdf>]
-<wavedrom-c940ea1a-5516-4ea6-96c2-4a69d82ddf34.pdf, id=1353, 331.2375pt x 90.33
+<wavedrom-716ee136-778e-401c-b958-7688e314c298.pdf, id=1353, 331.2375pt x 90.33
 75pt>
-File: wavedrom-c940ea1a-5516-4ea6-96c2-4a69d82ddf34.pdf Graphic file (type pdf)
+File: wavedrom-716ee136-778e-401c-b958-7688e314c298.pdf Graphic file (type pdf)
 
-<use wavedrom-c940ea1a-5516-4ea6-96c2-4a69d82ddf34.pdf>
-Package pdftex.def Info: wavedrom-c940ea1a-5516-4ea6-96c2-4a69d82ddf34.pdf  use
+<use wavedrom-716ee136-778e-401c-b958-7688e314c298.pdf>
+Package pdftex.def Info: wavedrom-716ee136-778e-401c-b958-7688e314c298.pdf  use
 d on input line 4797.
 (pdftex.def)             Requested size: 331.23668pt x 90.33727pt.
-<wavedrom-27785d54-300f-4a25-929a-a0ff2fd19c23.pdf, id=1354, 301.125pt x 90.337
+<wavedrom-6548c9b7-e6c3-46c4-887e-146819acaee9.pdf, id=1354, 301.125pt x 90.337
 5pt>
-File: wavedrom-27785d54-300f-4a25-929a-a0ff2fd19c23.pdf Graphic file (type pdf)
+File: wavedrom-6548c9b7-e6c3-46c4-887e-146819acaee9.pdf Graphic file (type pdf)
 
-<use wavedrom-27785d54-300f-4a25-929a-a0ff2fd19c23.pdf>
-Package pdftex.def Info: wavedrom-27785d54-300f-4a25-929a-a0ff2fd19c23.pdf  use
+<use wavedrom-6548c9b7-e6c3-46c4-887e-146819acaee9.pdf>
+Package pdftex.def Info: wavedrom-6548c9b7-e6c3-46c4-887e-146819acaee9.pdf  use
 d on input line 4802.
 (pdftex.def)             Requested size: 301.12425pt x 90.33727pt.
-<wavedrom-3a3d5757-de44-4c77-8655-f8d513050c47.pdf, id=1355, 301.125pt x 90.337
+<wavedrom-310ea39a-6fb5-4ad9-88a1-4033da80e3dd.pdf, id=1355, 301.125pt x 90.337
 5pt>
-File: wavedrom-3a3d5757-de44-4c77-8655-f8d513050c47.pdf Graphic file (type pdf)
+File: wavedrom-310ea39a-6fb5-4ad9-88a1-4033da80e3dd.pdf Graphic file (type pdf)
 
-<use wavedrom-3a3d5757-de44-4c77-8655-f8d513050c47.pdf>
-Package pdftex.def Info: wavedrom-3a3d5757-de44-4c77-8655-f8d513050c47.pdf  use
+<use wavedrom-310ea39a-6fb5-4ad9-88a1-4033da80e3dd.pdf>
+Package pdftex.def Info: wavedrom-310ea39a-6fb5-4ad9-88a1-4033da80e3dd.pdf  use
 d on input line 4833.
 (pdftex.def)             Requested size: 301.12425pt x 90.33727pt.
- [48 <./wavedrom-eee28583-9c09-4b38-b63d-cd4b50fc570b.pdf> <./wavedrom-c940ea1a
--5516-4ea6-96c2-4a69d82ddf34.pdf
+ [48 <./wavedrom-35c1fe8d-0f2e-402b-8290-75e55157c0cb.pdf> <./wavedrom-716ee136
+-778e-401c-b958-7688e314c298.pdf
 
-pdfTeX warning: pdflatex (file ./wavedrom-c940ea1a-5516-4ea6-96c2-4a69d82ddf34.
+pdfTeX warning: pdflatex (file ./wavedrom-716ee136-778e-401c-b958-7688e314c298.
 pdf): PDF inclusion: multiple pdfs with page group included in a single page
-> <./wavedrom-27785d54-300f-4a25-929a-a0ff2fd19c23.pdf
+> <./wavedrom-6548c9b7-e6c3-46c4-887e-146819acaee9.pdf
 
-pdfTeX warning: pdflatex (file ./wavedrom-27785d54-300f-4a25-929a-a0ff2fd19c23.
+pdfTeX warning: pdflatex (file ./wavedrom-6548c9b7-e6c3-46c4-887e-146819acaee9.
 pdf): PDF inclusion: multiple pdfs with page group included in a single page
 >]
-<wavedrom-cfa895da-23d9-4640-89ee-f363af105a98.pdf, id=1382, 391.4625pt x 135.5
+<wavedrom-29400e0f-262d-4c64-bb3d-b130ac36090a.pdf, id=1382, 391.4625pt x 135.5
 0626pt>
-File: wavedrom-cfa895da-23d9-4640-89ee-f363af105a98.pdf Graphic file (type pdf)
+File: wavedrom-29400e0f-262d-4c64-bb3d-b130ac36090a.pdf Graphic file (type pdf)
 
-<use wavedrom-cfa895da-23d9-4640-89ee-f363af105a98.pdf>
-Package pdftex.def Info: wavedrom-cfa895da-23d9-4640-89ee-f363af105a98.pdf  use
+<use wavedrom-29400e0f-262d-4c64-bb3d-b130ac36090a.pdf>
+Package pdftex.def Info: wavedrom-29400e0f-262d-4c64-bb3d-b130ac36090a.pdf  use
 d on input line 4882.
 (pdftex.def)             Requested size: 391.46153pt x 135.5059pt.
- [49 <./wavedrom-3a3d5757-de44-4c77-8655-f8d513050c47.pdf> <./wavedrom-cfa895da
--23d9-4640-89ee-f363af105a98.pdf
+ [49 <./wavedrom-310ea39a-6fb5-4ad9-88a1-4033da80e3dd.pdf> <./wavedrom-29400e0f
+-262d-4c64-bb3d-b130ac36090a.pdf
 
-pdfTeX warning: pdflatex (file ./wavedrom-cfa895da-23d9-4640-89ee-f363af105a98.
+pdfTeX warning: pdflatex (file ./wavedrom-29400e0f-262d-4c64-bb3d-b130ac36090a.
 pdf): PDF inclusion: multiple pdfs with page group included in a single page
 >]
-<wavedrom-347d97d7-0117-4e06-83bb-837a6a382070.pdf, id=1402, 331.2375pt x 90.33
+<wavedrom-0ea99183-1245-4b75-8167-2b41440fc778.pdf, id=1402, 331.2375pt x 90.33
 75pt>
-File: wavedrom-347d97d7-0117-4e06-83bb-837a6a382070.pdf Graphic file (type pdf)
+File: wavedrom-0ea99183-1245-4b75-8167-2b41440fc778.pdf Graphic file (type pdf)
 
-<use wavedrom-347d97d7-0117-4e06-83bb-837a6a382070.pdf>
-Package pdftex.def Info: wavedrom-347d97d7-0117-4e06-83bb-837a6a382070.pdf  use
+<use wavedrom-0ea99183-1245-4b75-8167-2b41440fc778.pdf>
+Package pdftex.def Info: wavedrom-0ea99183-1245-4b75-8167-2b41440fc778.pdf  use
 d on input line 4997.
 (pdftex.def)             Requested size: 331.23668pt x 90.33727pt.
- [50] [51 <./wavedrom-347d97d7-0117-4e06-83bb-837a6a382070.pdf>]
+ [50] [51 <./wavedrom-0ea99183-1245-4b75-8167-2b41440fc778.pdf>]
 <graphviz-c08a50fb905d87605775bb153dc04b175805e92a.pdf, id=1428, 327.2225pt x 1
 70.6375pt>
 File: graphviz-c08a50fb905d87605775bb153dc04b175805e92a.pdf Graphic file (type 
@@ -1671,7 +1671,7 @@ fonts/t1xbtt.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/tx
 fonts/t1xtt.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/txf
 onts/t1xtt.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/txfo
 nts/tcxtt.pfb>
-Output written on trafficlightcontroller.pdf (61 pages, 751765 bytes).
+Output written on trafficlightcontroller.pdf (61 pages, 751754 bytes).
 PDF statistics:
  1588 PDF objects out of 1728 (max. 8388607)
  1297 compressed objects within 13 object streams
