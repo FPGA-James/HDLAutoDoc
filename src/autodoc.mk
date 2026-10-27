@@ -18,8 +18,8 @@ PROJECT        ?=
 # Set to 1 to generate RTL schematics via yosys (requires yosys, and
 # ghdl-yosys-plugin for VHDL modules).  Schematics are inserted into each
 # module's block diagram page.
-#   make doc-html SCHEMATICS=1
-SCHEMATICS     ?= 0
+#   make doc-html SCHEMATICS=0   (skip schematics)
+SCHEMATICS     ?= 1
 
 # =============================================================================
 # HDL AutoDoc (Sphinx pipeline) variables
@@ -76,7 +76,7 @@ doc-help:
 	@echo "  make doc-extract FORCE=1      Force re-extraction of all modules (bypass cache)"
 	@echo "  make doc-coverage              Generate documentation coverage report"
 	@echo "  make doc-html                 Build HTML documentation"
-	@echo "  make doc-html SCHEMATICS=1    Build HTML with RTL schematics (requires yosys)"
+	@echo "  make doc-html SCHEMATICS=0    Build HTML without RTL schematics (default: on, needs yosys)"
 	@echo "  make doc-pdf                  Build PDF documentation"
 	@echo "  make doc-clean                Remove Sphinx build output only"
 	@echo "  make doc-clean-generated      Remove always-regenerated files"

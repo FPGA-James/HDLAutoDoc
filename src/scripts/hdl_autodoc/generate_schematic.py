@@ -108,9 +108,17 @@ def _build_prefix_sv(src: Path, extra_srcs: list[Path]) -> tuple[str, list[str]]
     return script_prefix, []
 
 
+# Custom netlistsvg skin (colours, font, light/dark palette). Optional: if the
+# file is missing netlistsvg falls back to its bundled default skin.
+NETLISTSVG_SKIN = Path(__file__).with_name("netlistsvg_skin.svg")
+
+
 def _run_netlistsvg(json_path: Path, svg_path: Path, module_name: str) -> bool:
+    cmd = ["netlistsvg", str(json_path), "-o", str(svg_path)]
+    if NETLISTSVG_SKIN.is_file():
+        cmd += ["--skin", str(NETLISTSVG_SKIN)]
     r = subprocess.run(
-        ["netlistsvg", str(json_path), "-o", str(svg_path)],
+        cmd,
         capture_output=True,
         text=True,
     )

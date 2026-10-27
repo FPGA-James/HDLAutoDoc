@@ -1,7 +1,9 @@
 """Tests for generate_schematic.py's netlistsvg -> yosys-show renderer fallback."""
 
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
+
+import generate_schematic
 
 from generate_schematic import render_schematic
 
@@ -103,3 +105,18 @@ def test_returns_false_for_unsupported_extension(tmp_path):
 
     assert ok is False
     run_yosys.assert_not_called()
+
+
+def test_netlistsvg_is_given_the_custom_skin(tmp_path):
+    """The bundled skin is passed to netlistsvg, and dropped if the file is absent."""
+    ok = MagicMock(returncode=0, stderr="")
+    with patch("generate_schematic.subprocess.run", return_value=ok) as run:
+        assert generate_schematic._run_netlistsvg(tmp_path / "a.json", tmp_path / "a.svg", "m")
+    cmd = run.call_args[0][0]
+    assert cmd[cmd.index("--skin") + 1] == str(generate_schematic.NETLISTSVG_SKIN)
+    assert generate_schematic.NETLISTSVG_SKIN.is_file()
+
+    with patch("generate_schematic.NETLISTSVG_SKIN", tmp_path / "missing.svg"), \
+         patch("generate_schematic.subprocess.run", return_value=ok) as run:
+        generate_schematic._run_netlistsvg(tmp_path / "a.json", tmp_path / "a.svg", "m")
+    assert "--skin" not in run.call_args[0][0]
