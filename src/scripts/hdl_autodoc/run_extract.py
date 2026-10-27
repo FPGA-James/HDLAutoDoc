@@ -111,11 +111,14 @@ def main(
         # for inclusion in the block diagram RST.  Only this module's own
         # dependencies are passed (not every file in the project), so a VHDL
         # module is not mistaken for a mixed-language design just because an
-        # unrelated SystemVerilog file exists elsewhere.
+        # unrelated SystemVerilog file exists elsewhere.  SystemVerilog support
+        # files (packages, interfaces) are passed to every module; VHDL ignores them.
         if schematics:
+            support = [a for f in hierarchy.get("support_files", [])
+                       for a in ("--support", f)]
             run(["python", str(scripts_dir / "generate_schematic.py"),
                  src_file, name, str(module_dir)]
-                + dependency_files(hierarchy, name))
+                + dependency_files(hierarchy, name) + support)
 
         run(["python", str(scripts_dir / "extract_block.py"),
              src_file, name, str(module_dir),

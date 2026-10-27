@@ -572,6 +572,7 @@ Done. The new module appears in the overview (tree and table), navigation, and g
 ### RTL schematics (on by default)
 
 - **Mixed-language top levels** — ghdl cannot read SystemVerilog, so a VHDL module that instantiates SystemVerilog submodules is elaborated with a generated port-only VHDL stub standing in for each SV child (outputs tied low). The child is drawn as a black-box instance; its internals are not shown. Headers the stub generator cannot convert (e.g. multi-dimensional packed ports) fall back to skipping that module's schematic.
+- **SystemVerilog packages and interfaces** — files that define no module (packages, interfaces) are listed as `support_files` in `hierarchy.json` and read before every SystemVerilog schematic, in filelist order — so list a package before the files that use it. yosys' own frontend limits still apply: no `return` in functions, no `import` inside a module body (use the module header or `pkg::name`), and only basic interfaces with modports. After editing a package or interface run `make doc-extract FORCE=1`, since support files are not part of a module's extraction cache key.
 - **Unconnected ports** — ghdl is stricter than synthesis tools and will fail if any port is left unconnected in the design under test. The schematic is skipped for that module.
 - **Non-synthesisable constructs** — `wait` statements, file I/O, or other simulation-only VHDL will cause yosys/ghdl to fail. Affected modules are skipped.
 - **Tool availability** — requires yosys and netlistsvg (all modules) plus ghdl + ghdl-yosys-plugin for VHDL. Missing tools produce a warning and the build continues without schematics.
@@ -588,6 +589,23 @@ Done. The new module appears in the overview (tree and table), navigation, and g
 ---
 
 ## 📋 Release notes
+
+### v3.9.0
+
+#### New features
+
+- **SystemVerilog packages and interfaces in schematics** — files that define no module (packages, interfaces) are now recorded in `hierarchy.json` as `support_files`, in filelist order, instead of only triggering a "could not extract module name" warning. RTL schematic generation reads them first, in that order (so a package precedes its users), then the module's dependencies, then the module itself, and runs `hierarchy -top <module>` before `proc; opt`. This fixes `Can't resolve function name pkg::...` and package-scoped syntax errors from yosys, and the netlistsvg failure on interface-typed ports (yosys now flattens the interface into plain signals).
+- **Cleaner schematic labels** — interface members appear as `if_name_signal` instead of falling back to a generic `output` label, and yosys's per-interface copies (`producer$interfaces$stream_if`) are labelled with the module name.
+
+#### Compatibility
+
+- Backwards compatible. `support_files` is an addition to `hierarchy.json` (an older file without it still works), VHDL modules ignore it, and projects with no packages or interfaces get the same schematics as before. VHDL package files are unaffected.
+- `generate_schematic.py` accepts `--support <file>` (repeatable) after its dependency arguments.
+
+#### Notes
+
+- yosys's native SystemVerilog frontend still applies: no `return` statements in functions, no `import` inside a module body (import in the module header or use `pkg::name`), and only basic interface/modport support. Modules that use unsupported constructs are skipped with a message, as before.
+- Support files are not part of a module's extraction cache key (neither are its dependencies). After editing a package or interface, run `make doc-extract FORCE=1` to refresh the schematics.
 
 ### v3.8.0
 

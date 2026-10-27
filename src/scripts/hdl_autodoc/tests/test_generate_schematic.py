@@ -159,3 +159,118 @@ def test_prepare_netlist_puts_module_first_and_strips_generic_suffixes(tmp_path)
     data = json.loads(j.read_text())
     assert list(data["modules"]) == ["top", "child", "my_fifo_2"]
     assert data["modules"]["top"]["cells"]["u"]["type"] == "child"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SystemVerilog support files (packages / interfaces) and hierarchy -top
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _read_order(prefix: str) -> list[str]:
+    """File names in the order the prefix reads them."""
+    import re
+    return [Path(f).name for f in re.findall(r"read_verilog -sv (\S+?);", prefix)]
+
+
+def test_sv_prefix_reads_support_then_deps_then_module_then_hierarchy_top():
+    """Package-before-use: support files, then dependencies, then the module itself."""
+    prefix, args = generate_schematic._build_prefix_sv(
+        Path("src/top.sv"),
+        [Path("src/child.sv")],
+        [Path("src/aes_pkg.sv"), Path("src/bus_if.sv")],
+        "top",
+    )
+    assert _read_order(prefix) == ["aes_pkg.sv", "bus_if.sv", "child.sv", "top.sv"]
+    assert prefix.endswith("hierarchy -top top; proc; opt;")
+    assert prefix.index("hierarchy -top") > prefix.rindex("read_verilog")
+    assert args == []
+
+
+def test_sv_prefix_without_support_files_keeps_the_old_read_order():
+    prefix, _ = generate_schematic._build_prefix_sv(
+        Path("src/top.sv"), [Path("src/child.sv")], module_name="top")
+    assert _read_order(prefix) == ["child.sv", "top.sv"]
+    assert "hierarchy -top top; proc; opt;" in prefix
+
+
+def test_sv_prefix_dedupes_and_ignores_non_sv_support_files():
+    prefix, _ = generate_schematic._build_prefix_sv(
+        Path("src/top.sv"),
+        [Path("src/pkg.sv")],                      # also a support file
+        [Path("src/pkg.sv"), Path("src/other.vhd")],
+        "top",
+    )
+    assert _read_order(prefix) == ["pkg.sv", "top.sv"]
+
+
+def test_sv_top_uses_the_modules_real_spelling(tmp_path):
+    """hierarchy.json lower-cases names but `hierarchy -top` is case-sensitive."""
+    src = tmp_path / "mymod.sv"
+    src.write_text("module MyMod (input logic clk);\nendmodule\n")
+    prefix, _ = generate_schematic._build_prefix_sv(src, [], [], "mymod")
+    assert "hierarchy -top MyMod;" in prefix
+
+
+def test_render_passes_support_files_to_the_sv_prefix(tmp_path):
+    """render_schematic hands the support files to the SV prefix builder."""
+    src = _sv_src(tmp_path)
+    with patch("generate_schematic._build_prefix_sv", return_value=None) as build:
+        render_schematic(src, "pwm_controller", [Path("dep.sv")],
+                         tmp_path / "a.json", tmp_path / "a.svg",
+                         [Path("pkg.sv")])
+    build.assert_called_once_with(src, [Path("dep.sv")], [Path("pkg.sv")], "pwm_controller")
+
+
+def test_vhdl_prefix_ignores_support_files(tmp_path):
+    """VHDL behaviour is unchanged: support files never reach the ghdl prefix."""
+    src = tmp_path / "blinky.vhd"
+    src.write_text("entity blinky is end entity;")
+    with patch("generate_schematic._build_prefix_vhdl", return_value=None) as build, \
+         patch("generate_schematic._build_prefix_sv") as build_sv:
+        render_schematic(src, "blinky", [Path("dep.vhd")],
+                         tmp_path / "a.json", tmp_path / "a.svg",
+                         [Path("pkg.sv")])
+    build_sv.assert_not_called()
+    args = build.call_args[0]
+    assert args[:3] == (src, "blinky", [Path("dep.vhd")])
+    assert Path("pkg.sv") not in args[2]
+
+
+def test_parse_source_args_splits_dependencies_from_support_files():
+    extras, support = generate_schematic.parse_source_args(
+        ["dep1.sv", "--support", "pkg.sv", "dep2.sv", "--support", "if.sv"])
+    assert extras == [Path("dep1.sv"), Path("dep2.sv")]
+    assert support == [Path("pkg.sv"), Path("if.sv")]
+    assert generate_schematic.parse_source_args([]) == ([], [])
+
+
+def test_prepare_netlist_labels_interface_copies_and_undots_port_names(tmp_path):
+    """`mod$interfaces$if` boxes get the module name; dotted interface ports lose the dot."""
+    import json
+    j = tmp_path / "n.json"
+    j.write_text(json.dumps({"modules": {
+        "producer$interfaces$stream_if": {"ports": {}, "cells": {}},
+        "producer": {"ports": {"out_if.data": {"bits": [2]}, "clk": {"bits": [3]}},
+                     "cells": {}},
+        "top": {"ports": {"q": {"bits": [4]}},
+                "cells": {"p": {"type": "producer$interfaces$stream_if"}}},
+    }}))
+    generate_schematic._prepare_netlist(j, "producer", {"producer", "top"})
+    data = json.loads(j.read_text())
+    assert next(iter(data["modules"])) == "producer"
+    assert set(data["modules"]["producer"]["ports"]) == {"out_if_data", "clk"}
+    # `producer` already exists, so the derived copy keeps its distinct name.
+    assert "producer$interfaces$stream_if" in data["modules"]
+    assert data["modules"]["top"]["cells"]["p"]["type"] == "producer$interfaces$stream_if"
+
+
+def test_prepare_netlist_strips_interface_suffix_when_the_name_is_free(tmp_path):
+    import json
+    j = tmp_path / "n.json"
+    j.write_text(json.dumps({"modules": {
+        "consumer$interfaces$stream_if": {"ports": {}, "cells": {}},
+        "top": {"ports": {}, "cells": {"c": {"type": "consumer$interfaces$stream_if"}}},
+    }}))
+    generate_schematic._prepare_netlist(j, "top", {"top"})
+    data = json.loads(j.read_text())
+    assert "consumer" in data["modules"]
+    assert data["modules"]["top"]["cells"]["c"]["type"] == "consumer"

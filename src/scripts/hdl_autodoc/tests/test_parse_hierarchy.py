@@ -181,3 +181,58 @@ def test_build_hierarchy_no_children(tmp_path):
     h = build_hierarchy([f])
     assert h["top"] == "solo"
     assert h["modules"]["solo"]["children"] == []
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# support_files (SystemVerilog packages / interfaces)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _sv_project(tmp_path):
+    pkg = tmp_path / "aes_pkg.sv"
+    pkg.write_text("package aes_pkg;\n  typedef logic [7:0] byte_t;\nendpackage\n")
+    ifc = tmp_path / "bus_if.sv"
+    ifc.write_text("interface bus_if (input logic clk);\n  logic v;\nendinterface\n")
+    leaf = tmp_path / "leaf.sv"
+    leaf.write_text("module leaf (input logic clk);\nendmodule\n")
+    top = tmp_path / "top.sv"
+    top.write_text("module top (input logic clk);\n  leaf u (.clk(clk));\nendmodule\n")
+    return pkg, ifc, leaf, top
+
+
+def test_module_less_sv_files_are_recorded_as_support_files_in_filelist_order(tmp_path):
+    """Packages and interfaces land in support_files, in the filelist's order."""
+    pkg, ifc, leaf, top = _sv_project(tmp_path)
+    h = build_hierarchy([pkg, ifc, leaf, top])
+    assert h["support_files"] == [str(pkg), str(ifc)]
+
+
+def test_support_files_are_not_hierarchy_modules(tmp_path):
+    """Support files do not become modules, and the real hierarchy is unaffected."""
+    pkg, ifc, leaf, top = _sv_project(tmp_path)
+    h = build_hierarchy([pkg, ifc, leaf, top])
+    assert set(h["modules"]) == {"leaf", "top"}
+    assert h["top"] == "top"
+    assert h["modules"]["top"]["children"] == ["leaf"]
+
+
+def test_support_files_is_present_and_empty_when_there_are_none(tmp_path):
+    """The key always exists so readers need no special case for module-only projects."""
+    pkg, ifc, leaf, top = _sv_project(tmp_path)
+    assert build_hierarchy([leaf, top])["support_files"] == []
+
+
+def test_non_sv_files_without_a_module_are_not_support_files(tmp_path):
+    """VHDL (and unknown-extension) files with no entity keep the old warning path."""
+    pkg = tmp_path / "pkg.vhd"
+    pkg.write_text("package p is end package;\n")
+    leaf = tmp_path / "leaf.sv"
+    leaf.write_text("module leaf (input logic clk);\nendmodule\n")
+    h = build_hierarchy([pkg, leaf])
+    assert h["support_files"] == []
+
+
+def test_support_file_note_goes_to_stderr_not_a_warning(tmp_path, capsys):
+    pkg, ifc, leaf, top = _sv_project(tmp_path)
+    build_hierarchy([pkg, leaf, top])
+    err = capsys.readouterr().err
+    assert "support file" in err and "could not extract module name" not in err

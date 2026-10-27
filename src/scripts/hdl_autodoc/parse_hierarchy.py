@@ -27,8 +27,15 @@ hierarchy.json structure:
       "parents": ["top"],
       "shared": false          ← true if parents > 1
     }
-  }
+  },
+  "support_files": ["src/aes_pkg.sv", "src/bus_if.sv"]
 }
+
+"support_files" lists SystemVerilog files that define no module (packages,
+interfaces, ...), in filelist order.  The filelist is dependency-ordered, so
+reading them in this order satisfies package-before-use.  RTL schematic
+generation reads them ahead of the module being drawn.  Always present (empty
+when there are none); readers should tolerate its absence in older files.
 
 Usage:
     python scripts/parse_hierarchy.py filelist.f docs/hierarchy.json
@@ -170,10 +177,18 @@ def extract_instantiations(src: Path, known_names: set[str]) -> list[str]:
 def build_hierarchy(source_files: list[Path]) -> dict:
     # Pass 1: extract all module names
     name_to_file = {}
+    support_files: list[str] = []
     for src in source_files:
         name = extract_module_name(src)
         if name:
             name_to_file[name] = str(src)
+        elif src.suffix.lower() in (".sv", ".svh"):
+            # A SystemVerilog file with no module is a package, interface or
+            # similar.  It is not a hierarchy node, but tools that elaborate the
+            # modules (RTL schematics) must read it first.
+            support_files.append(str(src))
+            print(f"  NOTE: {src} defines no module — recorded as a "
+                  f"SystemVerilog support file", file=sys.stderr)
         else:
             print(f"  WARNING: could not extract module name from {src}",
                   file=sys.stderr)
@@ -225,7 +240,7 @@ def build_hierarchy(source_files: list[Path]) -> dict:
             "shared":   len(parents_of[name]) > 1,
         }
 
-    return {"top": top, "modules": modules}
+    return {"top": top, "modules": modules, "support_files": support_files}
 
 
 # ─────────────────────────────────────────────────────────────────────────────

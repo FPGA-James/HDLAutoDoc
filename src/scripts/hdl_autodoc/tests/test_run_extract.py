@@ -129,3 +129,30 @@ def test_main_extracts_registers_from_overridden_dir(tmp_path, monkeypatch):
     reg_calls = [c for c in calls if c[1].endswith("extract_registers.py")]
     assert len(reg_calls) == 1
     assert reg_calls[0][2] == str(custom / "regs_blinky.toml")
+
+
+def _schematic_calls(tmp_path, hierarchy_extra: dict) -> list[list[str]]:
+    src_file = tmp_path / "blinky.sv"
+    src_file.write_text("module blinky; endmodule")
+    hierarchy = {"modules": {"blinky": {"file": str(src_file), "children": [], "parents": []}},
+                 **hierarchy_extra}
+    h_json = tmp_path / "hierarchy.json"
+    h_json.write_text(json.dumps(hierarchy))
+    docs_dir = tmp_path / "docs" / "hdl_autodoc"
+    (docs_dir / "modules" / "blinky").mkdir(parents=True)
+    calls = []
+    with patch("run_extract.run", side_effect=lambda cmd: calls.append(cmd)):
+        main(h_json, docs_dir, Path(__file__).parents[1], schematics=True, force=True)
+    return [c for c in calls if c[1].endswith("generate_schematic.py")]
+
+
+def test_schematics_get_support_files_in_order_after_dependencies(tmp_path):
+    """Each module's schematic call carries every support file, as ordered --support pairs."""
+    (call,) = _schematic_calls(tmp_path, {"support_files": ["src/aes_pkg.sv", "src/bus_if.sv"]})
+    assert call[-4:] == ["--support", "src/aes_pkg.sv", "--support", "src/bus_if.sv"]
+
+
+def test_schematics_tolerate_a_hierarchy_without_support_files(tmp_path):
+    """Older hierarchy.json files lack the key: no --support arguments, no error."""
+    (call,) = _schematic_calls(tmp_path, {})
+    assert "--support" not in call

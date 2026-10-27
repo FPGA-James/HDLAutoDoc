@@ -14,7 +14,10 @@ renderer, which only needs graphviz `dot` (already a hard dependency of
 this pipeline's other diagrams).
 
 For VHDL modules, requires yosys with the ghdl-yosys-plugin (OSS CAD Suite).
-For SystemVerilog modules, requires yosys with native SV support.
+For SystemVerilog modules, requires yosys with native SV support.  Files that
+define no module (packages, interfaces) are passed with `--support` and read
+first, in the order given (the filelist's dependency order), so package-scoped
+names and interface-typed ports resolve.
 
 Writes:
   <module_name>_schematic.svg  — gate-level schematic (netlistsvg or yosys-show)
@@ -23,6 +26,7 @@ Writes:
 
 Usage:
     python generate_schematic.py <file.vhd|file.sv> <module_name> <output_dir>
+        [dependency_file ...] [--support <support_file> ...]
 
 Always exits with code 0 — schematic generation is optional and failures are
 non-fatal.  The build continues; the block diagram RST simply omits the
@@ -164,17 +168,45 @@ def _build_prefix_vhdl(src: Path, module_name: str,
     return script_prefix, ["-m", "ghdl"]
 
 
-def _build_prefix_sv(src: Path, extra_srcs: list[Path]) -> tuple[str, list[str]]:
-    """Build the read+elaborate yosys script prefix for a SystemVerilog module."""
+def _sv_module_spelling(src: Path, module_name: str) -> str:
+    """
+    The module's name as spelled in the source.  hierarchy.json lower-cases
+    module names, but `hierarchy -top` is case-sensitive for SystemVerilog.
+    """
+    try:
+        text = src.read_text(errors="replace")
+    except OSError:
+        return module_name
+    for m in re.finditer(
+            r"^\s*(?:macromodule|module)\s+(?:automatic\s+|static\s+)?(\w+)",
+            text, re.MULTILINE):
+        if m.group(1).lower() == module_name.lower():
+            return m.group(1)
+    return module_name
+
+
+def _build_prefix_sv(src: Path, extra_srcs: list[Path],
+                     support_srcs: list[Path] | tuple = (),
+                     module_name: str | None = None) -> tuple[str, list[str]]:
+    """
+    Build the read+elaborate yosys script prefix for a SystemVerilog module.
+
+    Read order: support files (packages, interfaces; filelist order, so a package
+    precedes its users), then the dependencies' files, then the module's own file.
+    `hierarchy -top` then elaborates from the module: it resolves interface-typed
+    ports into plain signals (netlistsvg rejects the raw interface port) and
+    prunes anything the module does not use.
+    """
     seen: set[Path] = set()
     sv_files: list[Path] = []
-    for f in extra_srcs + [src]:
+    for f in [*support_srcs, *extra_srcs, src]:
         if f not in seen and f.suffix.lower() in (".sv", ".svh"):
             seen.add(f)
             sv_files.append(f)
 
+    top = _sv_module_spelling(src, module_name or src.stem)
     read_cmds = " ".join(f"read_verilog -sv {f};" for f in sv_files)
-    script_prefix = f"{read_cmds} proc; opt;"
+    script_prefix = f"{read_cmds} hierarchy -top {top}; proc; opt;"
     return script_prefix, []
 
 
@@ -207,6 +239,12 @@ def _prepare_netlist(json_path: Path, module_name: str, known: set[str]) -> None
         m = _GENERIC_SUFFIX_RE.match(key)
         if m and m["base"] in known and m["base"] not in modules:
             rename[key] = m["base"]
+        elif "$interfaces$" in key:
+            # yosys derives one copy of a module per interface it is bound to,
+            # `producer$interfaces$stream_if`; label the box with the module name.
+            base = key.split("$interfaces$")[0]
+            if base and base not in modules and base not in rename.values():
+                rename[key] = base
     if rename:
         modules = {rename.get(k, k): v for k, v in modules.items()}
         for mod in modules.values():
@@ -216,6 +254,17 @@ def _prepare_netlist(json_path: Path, module_name: str, known: set[str]) -> None
     top = next((k for k in modules if k.lower() == module_name.lower()), None)
     if top is not None and next(iter(modules)) != top:
         modules = {top: modules[top], **{k: v for k, v in modules.items() if k != top}}
+
+    # yosys names a flattened interface member `if_name.signal`.  netlistsvg labels
+    # such a port with the generic skin text ("output") instead of its name, so
+    # swap the dot for an underscore on the module being drawn.
+    if top is not None:
+        ports = modules[top].get("ports", {})
+        renamed: dict = {}
+        for pname, pval in ports.items():
+            new_name = pname.replace(".", "_")
+            renamed[new_name if new_name == pname or new_name not in ports else pname] = pval
+        modules[top]["ports"] = renamed
 
     data["modules"] = modules
     json_path.write_text(json.dumps(data))
@@ -267,23 +316,26 @@ def _run_rsvg_convert(svg_path: Path, pdf_path: Path) -> bool:
 
 
 def render_schematic(src_path: Path, module_name: str, extra_srcs: list[Path],
-                     json_path: Path, svg_path: Path) -> bool:
+                     json_path: Path, svg_path: Path,
+                     support_srcs: list[Path] | None = None) -> bool:
     """Render the RTL schematic, preferring netlistsvg and falling back to
     yosys's own `show` renderer if netlistsvg is missing or its render fails."""
     stub_dir = json_path.parent / f".{module_name}_sv_stubs"
     try:
-        return _render(src_path, module_name, extra_srcs, json_path, svg_path, stub_dir)
+        return _render(src_path, module_name, extra_srcs, json_path, svg_path,
+                       stub_dir, support_srcs or [])
     finally:
         shutil.rmtree(stub_dir, ignore_errors=True)
 
 
 def _render(src_path: Path, module_name: str, extra_srcs: list[Path],
-            json_path: Path, svg_path: Path, stub_dir: Path) -> bool:
+            json_path: Path, svg_path: Path, stub_dir: Path,
+            support_srcs: list[Path]) -> bool:
     ext = src_path.suffix.lower()
     if ext in (".vhd", ".vhdl"):
         built = _build_prefix_vhdl(src_path, module_name, extra_srcs, stub_dir)
     elif ext in (".sv", ".svh"):
-        built = _build_prefix_sv(src_path, extra_srcs)
+        built = _build_prefix_sv(src_path, extra_srcs, support_srcs, module_name)
     else:
         print(f"  ! SCHEMATIC [{module_name}]: unsupported file type '{ext}' — skipping")
         return False
@@ -330,9 +382,29 @@ def _render(src_path: Path, module_name: str, extra_srcs: list[Path],
     return False
 
 
+def parse_source_args(args: list[str]) -> tuple[list[Path], list[Path]]:
+    """
+    Split the trailing CLI arguments into (dependency files, support files).
+    Positional arguments are dependency files; `--support F` adds a support file
+    (package/interface).  Order is preserved in both lists.
+    """
+    extra_srcs: list[Path] = []
+    support_srcs: list[Path] = []
+    i = 0
+    while i < len(args):
+        if args[i] == "--support" and i + 1 < len(args):
+            support_srcs.append(Path(args[i + 1]))
+            i += 2
+        else:
+            extra_srcs.append(Path(args[i]))
+            i += 1
+    return extra_srcs, support_srcs
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 4:
-        sys.exit("Usage: generate_schematic.py <file.vhd|file.sv> <module_name> <output_dir>")
+        sys.exit("Usage: generate_schematic.py <file.vhd|file.sv> <module_name> <output_dir> "
+                 "[dependency_file ...] [--support <support_file> ...]")
 
     src_path    = Path(sys.argv[1])
     module_name = sys.argv[2]
@@ -343,12 +415,13 @@ if __name__ == "__main__":
         print(f"  ! SCHEMATIC [{module_name}]: yosys not found — skipping")
         sys.exit(0)
 
-    extra_srcs = [Path(f) for f in sys.argv[4:]]
+    extra_srcs, support_srcs = parse_source_args(sys.argv[4:])
     json_path  = output_dir / f"{module_name}_schematic.json"
     svg_path   = output_dir / f"{module_name}_schematic.svg"
     pdf_path   = output_dir / f"{module_name}_schematic.pdf"
 
-    if render_schematic(src_path, module_name, extra_srcs, json_path, svg_path):
+    if render_schematic(src_path, module_name, extra_srcs, json_path, svg_path,
+                        support_srcs):
         if _run_rsvg_convert(svg_path, pdf_path):
             print(f"  → {pdf_path}")
 
