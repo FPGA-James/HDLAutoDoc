@@ -11,6 +11,9 @@ furo>=2025.12.19
 # WaveDrom timing diagrams via .. wavedrom:: directive
 sphinxcontrib-wavedrom>=3.0
 
+# Mermaid diagrams via .. mermaid:: (HTML in the browser; PDF needs mermaid-cli, optional)
+sphinxcontrib-mermaid>=2.1
+
 # VHDL entity auto-documentation domain
 sphinx-vhdl>=0.1
 

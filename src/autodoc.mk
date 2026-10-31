@@ -44,10 +44,19 @@ AUTODOC_SPHINXOPTS    ?=
 # Project metadata handed to the shared conf.py (all optional).
 AUTODOC_AUTHOR        ?=
 AUTODOC_RELEASE       ?=
+# Mermaid diagrams (written in source comments): command that renders them for the
+# PDF, extra arguments for it, and an optional local mermaid.js for offline HTML.
+#   make doc-pdf AUTODOC_MERMAID_PARAMS="-p puppeteer.json"
+AUTODOC_MERMAID_CMD    ?= mmdc
+AUTODOC_MERMAID_PARAMS ?=
+AUTODOC_MERMAID_JS     ?=
 AUTODOC_ENV            = AUTODOC_PROJECT="$(PROJECT)" AUTODOC_AUTHOR="$(AUTODOC_AUTHOR)" \
                          AUTODOC_RELEASE="$(AUTODOC_RELEASE)" AUTODOC_SRC="$(abspath $(AUTODOC_SRCDIR))" \
                          AUTODOC_SOURCEDIR="$(abspath $(AUTODOC_SOURCEDIR))" \
-                         AUTODOC_REGISTERS_DIR="$(abspath $(AUTODOC_REGISTERS_DIR))"
+                         AUTODOC_REGISTERS_DIR="$(abspath $(AUTODOC_REGISTERS_DIR))" \
+                         AUTODOC_MERMAID_CMD="$(AUTODOC_MERMAID_CMD)" \
+                         AUTODOC_MERMAID_PARAMS="$(AUTODOC_MERMAID_PARAMS)" \
+                         AUTODOC_MERMAID_JS="$(AUTODOC_MERMAID_JS)"
 AUTODOC_SPHINXBUILD    = $(PYTHON) -m sphinx
 AUTODOC_SOURCEDIR      = docs/hdl_autodoc
 AUTODOC_BUILDDIR       = $(AUTODOC_SOURCEDIR)/_build
