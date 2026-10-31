@@ -84,21 +84,28 @@ def _parse_vivado(text: str) -> list[ClockTiming]:
 
 
 def _parse_nextpnr(text: str) -> list[ClockTiming]:
-    """Parse nextpnr --log output for 'Max frequency for clock' lines."""
-    clocks: list[ClockTiming] = []
+    """
+    Parse nextpnr --log output for 'Max frequency for clock' lines.
+
+    nextpnr reports each clock after placement and again after routing; a later
+    line for the same clock replaces the earlier one (the routed value is the real
+    one), and clocks keep the order in which they first appeared.
+    """
+    clocks: dict[str, ClockTiming] = {}
     for m in re.finditer(
         r"Max frequency for clock '([^']+)':\s*([\d.]+)\s*MHz\s*"
         r"\((PASS|FAIL)\s+at\s*([\d.]+)\s*MHz\)",
         text,
         re.IGNORECASE,
     ):
-        clocks.append(ClockTiming(
-            clock_name=_clean_clock_name(m.group(1)),
+        name = _clean_clock_name(m.group(1))
+        clocks[name] = ClockTiming(
+            clock_name=name,
             fmax_mhz=float(m.group(2)),
             passing=(m.group(3).upper() == "PASS"),
             constraint_mhz=float(m.group(4)),
-        ))
-    return clocks
+        )
+    return list(clocks.values())
 
 
 def parse_timing(path: Path) -> tuple[list[ClockTiming], str | None]:
@@ -111,10 +118,14 @@ def parse_timing(path: Path) -> tuple[list[ClockTiming], str | None]:
     if not path.exists():
         return [], None
     try:
-        text = path.read_text(errors="replace")
+        text = path.read_text(encoding="utf-8-sig", errors="replace")
     except OSError:
         return [], None
+    return parse_timing_text(text)
 
+
+def parse_timing_text(text: str) -> tuple[list[ClockTiming], str | None]:
+    """Like parse_timing, for text that has already been read."""
     if "WNS(ns)" in text or "Design Timing Summary" in text:
         return _parse_vivado(text), "vivado"
     if "Max frequency for clock" in text:

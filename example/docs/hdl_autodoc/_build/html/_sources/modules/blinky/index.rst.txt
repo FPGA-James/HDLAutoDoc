@@ -11,3 +11,4 @@ blinky
    processes/index
    cdc
    reset
+   synthesis

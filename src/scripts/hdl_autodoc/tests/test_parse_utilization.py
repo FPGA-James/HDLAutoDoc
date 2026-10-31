@@ -178,3 +178,49 @@ def test_unrecognised_format_returns_empty(tmp_path):
     modules, tool = parse_utilization(rpt)
     assert modules == []
     assert tool is None
+
+
+# ── Modern Yosys `stat` prints the count first ───────────────────────────────
+
+# Real output from Yosys 0.56 (`synth_ecp5` then `stat`).
+_YOSYS_MODERN_STAT = """\
+4. Printing statistics.
+
+=== cnt ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       16 wires
+       61 wire bits
+        3 ports
+       26 cells
+        1   $scopeinfo
+        8   CCU2C
+        1   LUT4
+       16   TRELLIS_FF
+
+=== design hierarchy ===
+
+        +----------Count including submodules.
+        | 
+       26 cells
+        8   CCU2C
+        1   LUT4
+       16   TRELLIS_FF
+"""
+
+
+def test_yosys_count_first_cell_lines_are_counted(tmp_path):
+    rpt = tmp_path / "stat.txt"
+    rpt.write_text(_YOSYS_MODERN_STAT)
+    modules, tool = parse_utilization(rpt)
+    assert tool == "yosys"
+    cnt = next(m for m in modules if m.module_name == "cnt")
+    assert (cnt.luts, cnt.ffs) == (1, 16)
+
+
+def test_yosys_design_hierarchy_section_is_not_a_module(tmp_path):
+    rpt = tmp_path / "stat.txt"
+    rpt.write_text(_YOSYS_MODERN_STAT)
+    modules, _ = parse_utilization(rpt)
+    assert [m.module_name for m in modules] == ["cnt"]

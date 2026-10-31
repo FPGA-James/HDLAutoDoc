@@ -12,3 +12,4 @@ cfg_sync
    cdc
    reset
    registers
+   synthesis

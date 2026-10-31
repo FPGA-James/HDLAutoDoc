@@ -1,0 +1,101 @@
+top — Block Diagram
+===================
+
+Auto-extracted from ``top.sv``.
+
+.. graphviz:: top_block.dot
+
+Ports
+-----
+
+.. list-table::
+   :header-rows: 1
+
+   * - Port
+     - Direction
+     - Type
+     - Description
+
+   * - ``clk``
+     - ``in``
+     - ``logic``
+     - —
+
+   * - ``rst``
+     - ``in``
+     - ``logic``
+     - —
+
+
+Interfaces
+----------
+
+``axil_if`` — instantiated here as ``s_axil``.
+
+.. list-table::
+   :header-rows: 1
+
+   * - Signal
+     - Type
+     - slave
+     - master
+     - Description
+
+   * - ``awaddr``
+     - ``logic[31:0]``
+     - in
+     - out
+     - —
+
+   * - ``awvalid``
+     - ``logic``
+     - in
+     - out
+     - —
+
+   * - ``awready``
+     - ``logic``
+     - out
+     - in
+     - —
+
+   * - ``wdata``
+     - ``logic[31:0]``
+     - in
+     - out
+     - —
+
+``axis_if`` — instantiated here as ``m_axis``, ``dbg``.
+
+.. list-table::
+   :header-rows: 1
+
+   * - Signal
+     - Type
+     - master
+     - slave
+     - Description
+
+   * - ``tdata``
+     - ``logic[7:0]``
+     - out
+     - in
+     - Payload byte.
+
+   * - ``tvalid``
+     - ``logic``
+     - out
+     - in
+     - Handshake.
+
+   * - ``tready``
+     - ``logic``
+     - in
+     - out
+     - Handshake.
+
+   * - ``tlast``
+     - ``logic``
+     - out
+     - in
+     - —

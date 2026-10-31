@@ -182,15 +182,19 @@ def _parse_yosys(text: str) -> list[ModuleUtilization]:
     for i in range(1, len(sections), 2):
         name = sections[i].strip()
         body = sections[i + 1] if i + 1 < len(sections) else ""
-        if name.lower() == "aggregate":
+        if name.lower() in ("aggregate", "design hierarchy"):
             continue
         mu = ModuleUtilization(module_name=name.lower())
         for line in body.split("\n"):
+            # Older Yosys prints "<cell> <count>", current Yosys "<count> <cell>".
             m = re.match(r'\s+(\S+)\s+(\d+)', line)
-            if not m:
-                continue
-            cell  = m.group(1).lower()
-            count = int(m.group(2))
+            if m:
+                cell, count = m.group(1).lower(), int(m.group(2))
+            else:
+                m = re.match(r'\s+(\d+)\s+(\S+)\s*$', line)
+                if not m:
+                    continue
+                cell, count = m.group(2).lower(), int(m.group(1))
             if cell in _LUT_CELLS:   mu.luts   += count
             elif cell in _FF_CELLS:  mu.ffs    += count
             elif cell in _BRAM_CELLS: mu.brams += count
@@ -211,10 +215,14 @@ def parse_utilization(path: Path) -> tuple[list[ModuleUtilization], str | None]:
     if not path.exists():
         return [], None
     try:
-        text = path.read_text(errors="replace")
+        text = path.read_text(encoding="utf-8-sig", errors="replace")
     except OSError:
         return [], None
+    return parse_utilization_text(text)
 
+
+def parse_utilization_text(text: str) -> tuple[list[ModuleUtilization], str | None]:
+    """Like parse_utilization, for text that has already been read."""
     if re.search(r'\|\s*Site Type\s*\|', text) or "Slice LUTs" in text:
         return _parse_vivado(text), "vivado"
     if re.search(r'^=== .+ ===$', text, re.MULTILINE):

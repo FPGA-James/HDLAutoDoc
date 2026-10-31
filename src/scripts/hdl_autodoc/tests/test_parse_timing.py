@@ -139,3 +139,36 @@ def test_missing_file_returns_empty(tmp_path):
     clocks, tool = parse_timing(tmp_path / "absent.rpt")
     assert clocks == []
     assert tool is None
+
+
+# ── Test 8: nextpnr prints each clock twice (after place, after route) ────────
+
+# Real excerpt from nextpnr-ecp5 0.8: the same clock is reported after placement
+# and again after routing.
+_NEXTPNR_TWICE = """\
+Info: Max frequency for clock '$glbnet$clk$TRELLIS_IO_IN': 398.09 MHz (PASS at 100.00 MHz)
+Info: Routing..
+Info: Max frequency for clock '$glbnet$clk$TRELLIS_IO_IN': 346.86 MHz (PASS at 100.00 MHz)
+"""
+
+
+def test_nextpnr_repeated_clock_lines_give_one_row_with_the_routed_value(tmp_path):
+    rpt = tmp_path / "nextpnr.log"
+    rpt.write_text(_NEXTPNR_TWICE)
+    clocks, tool = parse_timing(rpt)
+    assert tool == "nextpnr"
+    assert len(clocks) == 1
+    assert clocks[0].clock_name == "clk"
+    assert clocks[0].fmax_mhz == pytest.approx(346.86)
+
+
+def test_nextpnr_two_different_clocks_stay_two_rows_in_first_seen_order(tmp_path):
+    rpt = tmp_path / "nextpnr.log"
+    rpt.write_text(
+        "Info: Max frequency for clock 'clk_a': 200.00 MHz (PASS at 100.00 MHz)\n"
+        "Info: Max frequency for clock 'clk_b': 60.00 MHz (FAIL at 100.00 MHz)\n"
+        "Info: Max frequency for clock 'clk_a': 190.00 MHz (PASS at 100.00 MHz)\n"
+        "Info: Max frequency for clock 'clk_b': 55.00 MHz (FAIL at 100.00 MHz)\n")
+    clocks, _ = parse_timing(rpt)
+    assert [(c.clock_name, c.fmax_mhz, c.passing) for c in clocks] == [
+        ("clk_a", 190.0, True), ("clk_b", 55.0, False)]

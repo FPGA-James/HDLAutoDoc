@@ -1,0 +1,11 @@
+stream_filter — Entity
+======================
+
+Source file: ``src/stream_filter.sv``.
+
+Threshold filter for a byte stream.
+
+Forwards each byte that is at or above the threshold and drops the rest.
+One register stage; counts the bytes it forwards.
+
+.. include:: stream_filter_source.rst

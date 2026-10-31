@@ -1,0 +1,11 @@
+top — Entity
+============
+
+Source file: ``src/top.sv``.
+
+ECP5 design: an AXI4-Stream threshold filter with an AXI4-Lite register file.
+
+Bytes arriving on s_axis are forwarded to m_axis if they are at or above a
+threshold the bus master sets through the registers.
+
+.. include:: top_source.rst

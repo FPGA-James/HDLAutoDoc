@@ -1,0 +1,4 @@
+# config.yml
+  bus_width:  32
+  address_width: 8
+  protocol: axi4lite

@@ -1,5 +1,32 @@
 # Release Notes
 
+## v3.12.0
+
+#### New features
+
+- **Testbenches section** — lists the testbenches under `tb/` (`vunit/`, `cocotb/`, `directed/` subdirectories), each with its purpose, the module it tests, and its tests, counted from the source with no simulator run: VUnit `run("...")` and `` `TEST_CASE("...") ``, cocotb `@cocotb.test` functions (`skip=True` marked skipped), and directed tests marked with a `-- TEST: name — purpose` / `// TEST: name — purpose` comment. A summary table gives counts per framework and in total. Appears in the sidebar under **Verification**. `TESTBENCHES=0` removes it; `AUTODOC_TB_DIR` relocates it. The marker convention is documented in the new Testbenches section.
+- **Build section** — the Implementation section is now **Build**, and shows a summary (Yosys and nextpnr versions, device class, when the reports were produced, docs revision), utilization (nextpnr's device utilisation plus the per-module table), timing, and warnings (total and most frequent messages). Open-source ECP5 (Yosys + nextpnr) first; Vivado utilization and timing still work, with its power, DRC and other reports to follow. `BUILD=0` removes it; `AUTODOC_REPORTS_DIR` relocates the reports.
+- **`example_ecp5/`** — an ECP5 design (AXI4-Stream threshold filter with an AXI4-Lite register file, four registers), with one testbench per framework and real Yosys and nextpnr reports produced by `make ecp5-reports`.
+
+#### Behaviour changes
+
+- **Reports are now part of the normal build.** `make doc-html` ingests `reports/` itself (it used to need a separate `make doc-reports`), so a project that already has a `reports/` directory gets a Build section automatically. With no report files there is no section, as before; `make doc-reports` still writes its placeholder page; `BUILD=0` switches it off.
+- The sidebar caption and page title are **Build** (was Implementation). File paths (`synthesis/index.rst`, `modules/<n>/synthesis.rst`) and `make doc-reports` are unchanged.
+- The Build page order is Summary, Utilization, Timing, Warnings (timing used to come first).
+
+#### Fixes
+
+- **nextpnr timing showed every clock twice.** nextpnr prints `Max frequency for clock` after placement and again after routing; there is now one row per clock, with the routed value.
+- **Yosys utilization was all zeros on current Yosys.** Yosys now prints `stat` cell lines as `<count> <cell>`; the parser expected `<cell> <count>`. Both are read, and the `design hierarchy` total is no longer shown as a module.
+- When a switch is off, that section's pages from an earlier run are deleted, so they cannot reappear in the sidebar.
+
+#### Compatibility
+
+- Backwards compatible. With no `tb/` directory and no report files the output is unchanged.
+- Testbench files must not be listed in `filelist.f` (a listed testbench becomes a second top level).
+
+---
+
 ## v3.11.0
 
 #### New features

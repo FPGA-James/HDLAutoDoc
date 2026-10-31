@@ -268,11 +268,12 @@ def test_module_index_omits_synthesis_when_has_synthesis_false():
 # has_synthesis — index_rst (top-level)
 # ─────────────────────────────────────────────────────────────────────────────
 
-def test_top_index_has_implementation_section_when_has_synthesis_true():
-    """synthesis/index is included and 'Implementation' caption present."""
+def test_top_index_has_build_section_when_has_synthesis_true():
+    """synthesis/index is included under the 'Build' caption."""
     rst = index_rst([_make_entity()], "MyProject", has_synthesis=True)
     assert "synthesis/index" in rst
-    assert "Implementation" in rst
+    assert ":caption: Build" in rst
+    assert "Implementation" not in rst
 
 
 def test_top_index_no_implementation_section_when_has_synthesis_false():
@@ -384,3 +385,87 @@ def test_scan_src_discovers_interfaces_from_any_file(tmp_path):
     (tmp_path / "bridge.sv").write_text(_IFACE_MOD)
     ents = {e["name"]: e for e in scan_src(tmp_path)}
     assert [p["name"] for p in ents["bridge"]["ports"]] == ["clk", "s_axil", "m_axis", "s_dbg"]
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Verification / Build captions and --no-testbenches / --no-build
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_index_rst_verification_caption_between_design_and_build():
+    rst = index_rst([_make_entity()], "P", has_synthesis=True, has_testbenches=True)
+    assert rst.index(":caption: Design") < rst.index(":caption: Verification") \
+        < rst.index(":caption: Build")
+    assert "testbenches/index" in rst and "synthesis/index" in rst
+    assert "Implementation" not in rst
+
+
+def test_index_rst_has_no_verification_section_by_default():
+    rst = index_rst([_make_entity()], "P")
+    assert "Verification" not in rst and "testbenches/index" not in rst
+
+
+def _run_generate_rst(tmp_path, *flags):
+    """Run generate_rst.py as a script on a tiny project; return its docs dir."""
+    import subprocess
+    import sys
+    src = tmp_path / "src"
+    src.mkdir(exist_ok=True)
+    (src / "blinky.vhd").write_text("-- Blinks.\nentity blinky is port (clk : in std_logic); end entity blinky;\n")
+    docs = tmp_path / "docs"
+    docs.mkdir(exist_ok=True)
+    script = Path(__file__).parents[1] / "generate_rst.py"
+    out = subprocess.run([sys.executable, str(script), str(src), str(docs), "P", *flags],
+                         capture_output=True, text=True)
+    assert out.returncode == 0, out.stderr
+    return docs
+
+
+def _plant_generated_pages(docs):
+    (docs / "testbenches").mkdir(exist_ok=True)
+    (docs / "testbenches" / "index.rst").write_text("Testbenches\n===========\n")
+    (docs / "synthesis").mkdir(exist_ok=True)
+    (docs / "synthesis" / "index.rst").write_text("Build\n=====\n")
+    mod = docs / "modules" / "blinky"
+    mod.mkdir(parents=True, exist_ok=True)
+    (mod / "synthesis.rst").write_text("blinky\n======\n")
+
+
+def test_pages_are_listed_when_present_and_switches_are_on(tmp_path):
+    docs = tmp_path / "docs"
+    docs.mkdir()
+    _plant_generated_pages(docs)
+    docs = _run_generate_rst(tmp_path)
+    index = (docs / "index.rst").read_text()
+    assert "Verification" in index and "Build" in index
+
+
+def test_no_testbenches_flag_removes_stale_page_and_sidebar_entry(tmp_path):
+    docs = tmp_path / "docs"
+    docs.mkdir()
+    _plant_generated_pages(docs)
+    docs = _run_generate_rst(tmp_path, "--no-testbenches")
+    assert not (docs / "testbenches").exists()
+    index = (docs / "index.rst").read_text()
+    assert "Verification" not in index and "testbenches" not in index
+    assert (docs / "synthesis" / "index.rst").exists()      # build is untouched
+
+
+def test_no_build_flag_removes_stale_pages_and_sidebar_entry(tmp_path):
+    docs = tmp_path / "docs"
+    docs.mkdir()
+    _plant_generated_pages(docs)
+    docs = _run_generate_rst(tmp_path, "--no-build")
+    assert not (docs / "synthesis").exists()
+    assert not (docs / "modules" / "blinky" / "synthesis.rst").exists()
+    index = (docs / "index.rst").read_text()
+    assert "Build" not in index and "synthesis" not in index
+    assert (docs / "testbenches" / "index.rst").exists()    # testbenches untouched
+
+
+def test_both_switches_off_with_nothing_generated_changes_nothing(tmp_path):
+    """No tb/ and no reports: the output is the same with or without the flags."""
+    (tmp_path / "a").mkdir()
+    (tmp_path / "b").mkdir()
+    on = _run_generate_rst(tmp_path / "a")
+    off = _run_generate_rst(tmp_path / "b", "--no-testbenches", "--no-build")
+    assert (on / "index.rst").read_text() == (off / "index.rst").read_text()
