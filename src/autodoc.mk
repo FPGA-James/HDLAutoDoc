@@ -25,6 +25,18 @@ SCHEMATICS     ?= 1
 #   make doc-html ANNOTATED_SOURCE=0
 ANNOTATED_SOURCE ?= 1
 
+# Testbenches section (tests counted from source).  One subdirectory per framework
+# under AUTODOC_TB_DIR: vunit/, cocotb/, directed/.  Set TESTBENCHES=0 to remove it.
+#   make doc-html TESTBENCHES=0
+TESTBENCHES     ?= 1
+AUTODOC_TB_DIR  ?= tb
+
+# Build section (utilization, timing, warnings from synthesis / place-and-route
+# reports found under AUTODOC_REPORTS_DIR).  Set BUILD=0 to remove it.
+#   make doc-html BUILD=0
+BUILD               ?= 1
+AUTODOC_REPORTS_DIR ?= reports
+
 # =============================================================================
 # HDL AutoDoc (Sphinx pipeline) variables
 # =============================================================================
@@ -44,7 +56,10 @@ AUTODOC_SCRIPTDIR      = $(AUTODOC_HOME)/scripts/hdl_autodoc
 AUTODOC_CONFDIR        = $(AUTODOC_HOME)/docs/hdl_autodoc
 AUTODOC_SRCDIR         = src
 # Extra flags for generate_rst.py
-AUTODOC_GENRST_FLAGS   = $(if $(filter 0,$(ANNOTATED_SOURCE)),--no-source)
+# A switch is on unless it is exactly 0 (so an empty value cannot leave stale pages).
+AUTODOC_GENRST_FLAGS   = $(if $(filter 0,$(ANNOTATED_SOURCE)),--no-source) \
+                         $(if $(filter 0,$(TESTBENCHES)),--no-testbenches) \
+                         $(if $(filter 0,$(BUILD)),--no-build)
 AUTODOC_FILELIST       = filelist.f
 AUTODOC_HIERARCHY_JSON = $(AUTODOC_SOURCEDIR)/hierarchy.json
 # Entry point filename for the register map HTML output.
@@ -88,6 +103,8 @@ doc-help:
 	@echo "  make doc-html                 Build HTML documentation"
 	@echo "  make doc-html SCHEMATICS=0    Build HTML without RTL schematics (default: on, needs yosys)"
 	@echo "  make doc-html ANNOTATED_SOURCE=0  Omit the annotated source listing (default: on)"
+	@echo "  make doc-html TESTBENCHES=0   Omit the Testbenches section (default: on; dir: AUTODOC_TB_DIR=tb)"
+	@echo "  make doc-html BUILD=0         Omit the Build section (default: on; dir: AUTODOC_REPORTS_DIR=reports)"
 	@echo "  make doc-pdf                  Build PDF documentation"
 	@echo "  make doc-clean                Remove Sphinx build output only"
 	@echo "  make doc-clean-generated      Remove always-regenerated files"
@@ -131,6 +148,10 @@ doc-extract: doc-scaffold
 	$(AUTODOC_ENV) $(PYTHON) $(AUTODOC_SCRIPTDIR)/run_extract.py \
 		$(AUTODOC_HIERARCHY_JSON) $(AUTODOC_SOURCEDIR) $(AUTODOC_SCRIPTDIR) \
 		$(if $(filter 1,$(SCHEMATICS)),--schematics) $(if $(FORCE),--force)
+	$(if $(filter 0,$(TESTBENCHES)),,$(PYTHON) $(AUTODOC_SCRIPTDIR)/extract_testbenches.py \
+		$(AUTODOC_HIERARCHY_JSON) $(AUTODOC_SOURCEDIR) $(AUTODOC_TB_DIR))
+	$(if $(filter 0,$(BUILD)),,$(PYTHON) $(AUTODOC_SCRIPTDIR)/extract_reports.py \
+		$(AUTODOC_HIERARCHY_JSON) $(AUTODOC_SOURCEDIR) $(AUTODOC_REPORTS_DIR) --if-present)
 	@echo "Regenerating timing pages..."
 	$(PYTHON) $(AUTODOC_SCRIPTDIR)/generate_rst.py $(AUTODOC_SRCDIR) $(AUTODOC_SOURCEDIR) "$(PROJECT)" $(AUTODOC_GENRST_FLAGS)
 
@@ -143,9 +164,9 @@ doc-coverage: doc-hierarchy
 doc-reports: doc-hierarchy
 	@echo "Ingesting synthesis reports..."
 	$(PYTHON) $(AUTODOC_SCRIPTDIR)/extract_reports.py \
-		$(AUTODOC_HIERARCHY_JSON) $(AUTODOC_SOURCEDIR) reports
-	@echo "Regenerating RST for implementation pages..."
-	$(PYTHON) $(AUTODOC_SCRIPTDIR)/generate_rst.py $(AUTODOC_SRCDIR) $(AUTODOC_SOURCEDIR) "$(PROJECT)" $(AUTODOC_GENRST_FLAGS)
+		$(AUTODOC_HIERARCHY_JSON) $(AUTODOC_SOURCEDIR) $(AUTODOC_REPORTS_DIR)
+	@echo "Regenerating RST for build pages..."
+	$(PYTHON) $(AUTODOC_SCRIPTDIR)/generate_rst.py $(AUTODOC_SRCDIR) $(AUTODOC_SOURCEDIR) "$(PROJECT)" $(filter-out --no-build,$(AUTODOC_GENRST_FLAGS))
 
 # ── Step 4: build HTML ────────────────────────────────────────────────────────
 doc-html: doc-check-env doc-extract
@@ -186,6 +207,7 @@ doc-clean-generated: doc-clean
 	rm -f  $(AUTODOC_SOURCEDIR)/coverage.rst
 	rm -f  $(AUTODOC_SOURCEDIR)/synthesis/index.rst
 	rm -rf $(AUTODOC_SOURCEDIR)/synthesis
+	rm -rf $(AUTODOC_SOURCEDIR)/testbenches
 	rm -f  $(AUTODOC_SOURCEDIR)/.extract_cache.json
 	rm -rf $(AUTODOC_SOURCEDIR)/_static/registers
 	@# Per-module always-regenerated files (walk modules/ if it exists)

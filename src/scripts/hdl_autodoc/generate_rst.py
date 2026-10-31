@@ -23,6 +23,7 @@ Usage:
 
 import json
 import re
+import shutil
 import sys
 from pathlib import Path
 
@@ -113,6 +114,20 @@ def extract_entities(src_path: Path,
         entities.append({"name": name, "brief": brief,
                          "file": src_path.name, "ports": ports})
     return entities
+
+
+def remove_generated_sections(docs_dir: Path, no_testbenches: bool, no_build: bool) -> None:
+    """
+    Delete the generated pages of a switched-off section.  The sidebar is built
+    from which generated files exist, so leftovers from an earlier run with the
+    section on would otherwise reappear.
+    """
+    if no_testbenches:
+        shutil.rmtree(docs_dir / "testbenches", ignore_errors=True)
+    if no_build:
+        shutil.rmtree(docs_dir / "synthesis", ignore_errors=True)
+        for page in (docs_dir / "modules").glob("*/synthesis.rst"):
+            page.unlink()
 
 
 def scan_src(src_dir: Path) -> list[dict]:
@@ -502,7 +517,8 @@ def registers_rst(modules_with_regs: list[str]) -> str:
 def index_rst(entities: list[dict], project_name: str,
               hierarchy: dict = None, has_coverage: bool = False,
               modules_with_regs: list[str] | None = None,
-              has_synthesis: bool = False) -> str:
+              has_synthesis: bool = False,
+              has_testbenches: bool = False) -> str:
     lines = [
         project_name, "=" * len(project_name), "",
         ".. toctree::",
@@ -528,12 +544,22 @@ def index_rst(entities: list[dict], project_name: str,
     if has_coverage:
         lines.append("   coverage")
 
+    if has_testbenches:
+        lines += [
+            "",
+            ".. toctree::",
+            "   :maxdepth: 2",
+            "   :caption: Verification",
+            "",
+            "   testbenches/index",
+        ]
+
     if has_synthesis:
         lines += [
             "",
             ".. toctree::",
             "   :maxdepth: 2",
-            "   :caption: Implementation",
+            "   :caption: Build",
             "",
             "   synthesis/index",
         ]
@@ -614,6 +640,8 @@ if __name__ == "__main__":
     flags   = {a for a in sys.argv[1:] if a.startswith("--")}
     args    = [a for a in sys.argv[1:] if not a.startswith("--")]
     no_source = "--no-source" in flags
+    no_testbenches = "--no-testbenches" in flags
+    no_build       = "--no-build" in flags
     if len(args) < 2:
         sys.exit("Usage: generate_rst.py <src_dir> <docs_dir> [project_name] [--no-source]")
 
@@ -634,6 +662,7 @@ if __name__ == "__main__":
             candidate = candidate.parent
         project_name = candidate.name.replace("_", " ").replace("-", " ").title()
 
+    remove_generated_sections(docs_dir, no_testbenches, no_build)
     print(f"Project: {project_name}")
 
     # Load hierarchy if available
@@ -732,11 +761,13 @@ if __name__ == "__main__":
             registers_rst(modules_with_regs)
         ))
     has_synthesis_index = (docs_dir / "synthesis" / "index.rst").exists()
+    has_testbenches_index = (docs_dir / "testbenches" / "index.rst").exists()
     results.append(write_always(
         docs_dir / "index.rst",
         index_rst(entities, project_name, hierarchy, has_coverage=has_coverage,
                   modules_with_regs=modules_with_regs or None,
-                  has_synthesis=has_synthesis_index)
+                  has_synthesis=has_synthesis_index,
+                  has_testbenches=has_testbenches_index)
     ))
     results.append(write_always(
         docs_dir / "overview.rst",
