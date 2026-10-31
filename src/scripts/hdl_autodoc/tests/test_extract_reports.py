@@ -389,3 +389,17 @@ def test_a_utf8_byte_order_mark_does_not_stop_the_reports_parsing(tmp_path):
     page = (docs / "synthesis" / "index.rst").read_text()
     assert "346.86" in page and "TRELLIS_FF" in page
     assert "16" in page and "cnt" in page          # the BOM-prefixed stat.txt parsed
+
+
+def test_documented_at_uses_lightweight_release_tags(tmp_path):
+    """`git describe` ignores lightweight tags unless asked; releases here are lightweight."""
+    if shutil.which("git") is None:
+        return
+    h, docs, rep = _reports(tmp_path, **{"nextpnr.log": _NEXTPNR_LOG})
+    env = {**os.environ, "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t",
+           "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t"}
+    for cmd in (["git", "init", "-q"], ["git", "add", "-A"], ["git", "commit", "-q", "-m", "x"],
+                ["git", "tag", "v1.2.3"]):
+        subprocess.run(cmd, cwd=tmp_path, env=env, check=True, capture_output=True)
+    main(h, docs, rep)
+    assert "v1.2.3" in (docs / "synthesis" / "index.rst").read_text()

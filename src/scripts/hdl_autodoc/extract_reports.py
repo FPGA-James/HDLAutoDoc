@@ -296,9 +296,13 @@ def _read_text(path: Path) -> str | None:
 
 
 def _git_describe(cwd: Path) -> str | None:
-    """`git describe --always --dirty` for the docs checkout, or None if unavailable."""
+    """
+    `git describe --tags --always --dirty` for the docs checkout, or None if
+    unavailable.  `--tags` matters: releases here are lightweight tags, which plain
+    `git describe` skips (it would report the nearest *annotated* tag instead).
+    """
     try:
-        out = subprocess.run(["git", "describe", "--always", "--dirty"], cwd=cwd,
+        out = subprocess.run(["git", "describe", "--tags", "--always", "--dirty"], cwd=cwd,
                              capture_output=True, text=True, timeout=5)
     except (OSError, subprocess.SubprocessError):
         return None
