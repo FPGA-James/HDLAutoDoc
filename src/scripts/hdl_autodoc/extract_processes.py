@@ -5,8 +5,8 @@ extract_processes.py
 Parses VHDL or SystemVerilog source and writes one RST file per
 labeled process/always block plus a processes/index.rst.
 
-VHDL:  labeled process(sensitivity) blocks, -- comments, -- wavedrom::
-SV:    labeled always_ff/always_comb blocks, // comments, // wavedrom::
+VHDL:  labeled process(sensitivity) blocks, -- comments, -- wavedrom:: / -- mermaid::
+SV:    labeled always_ff/always_comb blocks, // comments, // wavedrom:: / // mermaid::
 
 Usage:
     python scripts/extract_processes.py <file.vhd|file.sv> <output_dir>
@@ -28,6 +28,20 @@ def is_rst_directive(text: str) -> bool:
     return bool(re.match(r"^\s*\.\.\s+\w+", text))
 
 
+# A block directive after the comment marker has been removed.
+_BLOCK_START_RE = re.compile(r"^\s*(?:\.\.|//|#)\s+(wavedrom|mermaid)\s*::\s*$")
+
+
+def _dedent_block(lines: list[str]) -> list[str]:
+    """Drop trailing blank lines and the smallest common indent; blank lines become ''."""
+    lines = list(lines)
+    while lines and lines[-1].strip() == "":
+        lines.pop()
+    indents = [len(l) - len(l.lstrip()) for l in lines if l.strip()]
+    cut = min(indents) if indents else 0
+    return [l[cut:] if l.strip() else "" for l in lines]
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Comment token extraction (shared between VHDL and SV)
 # ─────────────────────────────────────────────────────────────────────────────
@@ -36,7 +50,7 @@ def extract_comment_tokens(lines: list[str], end_idx: int,
                            prefix: str = "--") -> list[dict]:
     """
     Walk backwards from end_idx collecting comment lines with the given prefix.
-    Returns structured tokens: {"type": "text"|"wavedrom", "lines": [...]}
+    Returns structured tokens: {"type": "text"|"wavedrom"|"mermaid", "lines": [...]}
     Supports both -- (VHDL) and // (SV) comment styles.
     """
     raw = []
@@ -53,10 +67,10 @@ def extract_comment_tokens(lines: list[str], end_idx: int,
             break
         i -= 1
 
-    # Parse raw lines into text/wavedrom tokens
-    tokens    = []
-    text_buf  = []
-    wave_buf  = None
+    # Parse raw lines into text / wavedrom / mermaid tokens
+    tokens   = []
+    text_buf = []
+    block    = None       # None, or {"type": "wavedrom" | "mermaid", "lines": [...]}
 
     def flush_text():
         cleaned = [l for l in text_buf if not is_separator(l)]
@@ -68,26 +82,37 @@ def extract_comment_tokens(lines: list[str], end_idx: int,
             tokens.append({"type": "text", "lines": cleaned})
         text_buf.clear()
 
-    for line in raw:
-        if re.match(r"^\s*(?:\.\.|//|#)\s+wavedrom\s*::\s*$", line):
-            flush_text()
-            wave_buf = []
-            continue
-        if wave_buf is not None:
-            if line.strip() == "":
-                wave_buf.append("")
-                continue
-            if line != line.lstrip():
-                wave_buf.append(line.strip())
-                continue
-            tokens.append({"type": "wavedrom", "lines": wave_buf})
-            wave_buf = None
-            text_buf.append(line)
-            continue
-        text_buf.append(line)
+    def close_block():
+        nonlocal block
+        lines = block["lines"]
+        if block["type"] == "mermaid":
+            lines = _dedent_block(lines)          # keep relative indentation
+        else:
+            lines = [l.strip() for l in lines]    # wavedrom is JSON; indentation is noise
+        tokens.append({"type": block["type"], "lines": lines})
+        block = None
 
-    if wave_buf is not None:
-        tokens.append({"type": "wavedrom", "lines": wave_buf})
+    for line in raw:
+        while True:
+            if block is not None:
+                if line.strip() == "":
+                    block["lines"].append("")
+                    break
+                if line != line.lstrip():
+                    block["lines"].append(line)
+                    break
+                close_block()
+                continue                          # this line may start the next block
+            m = _BLOCK_START_RE.match(line)
+            if m:
+                flush_text()
+                block = {"type": m.group(1), "lines": []}
+            else:
+                text_buf.append(line)
+            break
+
+    if block is not None:
+        close_block()
     else:
         flush_text()
 
@@ -263,6 +288,23 @@ def render_wavedrom_block(json_lines: list[str]) -> list[str]:
     return out
 
 
+def render_mermaid_block(lines: list[str]) -> list[str]:
+    """
+    A `.. mermaid::` directive for already-dedented block lines, re-indented by three
+    spaces with relative indentation kept (nesting matters to Mermaid).  A blank line
+    is added after the marker unless the block starts with an option, because RST
+    would otherwise read the first line of the diagram as the directive's argument.
+    """
+    body = list(lines)
+    if body and body[0].strip() and not body[0].lstrip().startswith(":"):
+        body.insert(0, "")
+    out = [".. mermaid::"]
+    for line in body:
+        out.append("   " + line if line.strip() else "")
+    out.append("")
+    return out
+
+
 def render_process_page(proc: dict, src_filename: str,
                         extract_fn) -> str:
     label = proc["label"]
@@ -278,7 +320,7 @@ def render_process_page(proc: dict, src_filename: str,
            f"| **Sensitivity list:** {sens}",
            ""]
 
-    has_content = any(t["type"] in ("text", "wavedrom") for t in proc["tokens"])
+    has_content = any(t["type"] in ("text", "wavedrom", "mermaid") for t in proc["tokens"])
     if has_content:
         out += ["Description", "-----------", ""]
         for token in proc["tokens"]:
@@ -287,6 +329,8 @@ def render_process_page(proc: dict, src_filename: str,
                 out.append("")
             elif token["type"] == "wavedrom":
                 out.extend(render_wavedrom_block(token["lines"]))
+            elif token["type"] == "mermaid":
+                out.extend(render_mermaid_block(token["lines"]))
 
     assignments = extract_fn(proc["body"])
     if assignments:
@@ -330,17 +374,19 @@ def render_index_page(processes: list[dict], src_filename: str) -> str:
     out += ["", "Summary", "-------", "",
             ".. list-table::", "   :header-rows: 1", "",
             "   * - Block", "     - Type", "     - Sensitivity",
-            "     - Source Line", "     - WaveDrom", ""]
+            "     - Source Line", "     - WaveDrom", "     - Mermaid", ""]
     for proc in processes:
         label    = proc["label"]
         sens     = ", ".join(f"``{s}``" for s in proc["sensitivity"]) or "``*``"
         ptype    = proc["kind"]
         has_wave = "✔" if any(t["type"] == "wavedrom" for t in proc["tokens"]) else "—"
+        has_mm   = "✔" if any(t["type"] == "mermaid" for t in proc["tokens"]) else "—"
         out.append(f"   * - :doc:`{label}`")
         out.append(f"     - ``{ptype}``")
         out.append(f"     - {sens}")
         out.append(f"     - {proc['line']}")
         out.append(f"     - {has_wave}")
+        out.append(f"     - {has_mm}")
         out.append("")
     return "\n".join(out)
 
