@@ -45,7 +45,8 @@ AUTODOC_SPHINXOPTS    ?=
 AUTODOC_AUTHOR        ?=
 AUTODOC_RELEASE       ?=
 # Mermaid diagrams (written in source comments): command that renders them for the
-# PDF, extra arguments for it, and an optional local mermaid.js for offline HTML.
+# PDF, extra arguments for it, and where to load mermaid.js from for offline HTML
+# (a path relative to docs/hdl_autodoc/_static/, or an https:// URL; see README).
 #   make doc-pdf AUTODOC_MERMAID_PARAMS="-p puppeteer.json"
 AUTODOC_MERMAID_CMD    ?= mmdc
 AUTODOC_MERMAID_PARAMS ?=

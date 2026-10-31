@@ -13,7 +13,8 @@ informational message says how many were left out.
 Environment variables (set by autodoc.mk; all optional):
     AUTODOC_MERMAID_CMD     command that renders diagrams        (default: mmdc)
     AUTODOC_MERMAID_PARAMS  extra arguments for it, shell-quoted (default: none)
-    AUTODOC_MERMAID_JS      local copy of mermaid.js for offline HTML (default: CDN)
+    AUTODOC_MERMAID_JS      where HTML loads mermaid.js from: a path relative to the site's
+                            _static/ folder, or an https:// URL (default: a CDN)
 """
 from __future__ import annotations
 

@@ -18,6 +18,7 @@ No separate doc files to maintain. No manual diagrams to draw. If it's in the so
 | **Generics / parameters table** | Name, type, default value, and description extracted from VHDL `generic` and SV `parameter`/`localparam` declarations |
 | **FSM state diagrams** | Parsed from `case` blocks, rendered with [Graphviz](https://graphviz.org) |
 | **Timing waveforms** | `.. wavedrom::` blocks in source comments, rendered with [WaveDrom](https://wavedrom.com) |
+| **Mermaid diagrams** | `.. mermaid::` blocks in module headers and process comments — sequence, state, flow and other diagrams — rendered in the browser, and in the PDF if `mermaid-cli` is installed |
 | **Per-process pages** | One page per labeled `process` / `always_ff` / `always_comb` block |
 | **CDC analysis** | Clock domains, signal crossings, synchronizer detection, and async FIFO detection — one page per module with a Graphviz diagram |
 | **Design hierarchy** | Driven by `filelist.f` — instantiation tree auto-detected, top-level auto-found |
@@ -293,6 +294,65 @@ always_comb begin : p_pwm
 end
 ```
 
+### Mermaid diagrams
+
+Write a [Mermaid](https://mermaid.js.org) diagram as a `.. mermaid::` block in the comments you already write. It works in a **module header** and in the **comment block above a process** (`always_ff`, `process`, ...). The block is indented under the directive, like a wavedrom block; `:caption:` and the extension's other options go first.
+
+```vhdl
+-- Master side of a write handshake.
+--
+-- .. mermaid::
+--    :caption: Write handshake
+--
+--    sequenceDiagram
+--      Master->>Slave: valid
+--      Slave-->>Master: ready
+entity master is
+```
+
+```systemverilog
+// p_state: Controller state machine.
+//
+// .. mermaid::
+//    :caption: States
+//
+//    stateDiagram-v2
+//      [*] --> IDLE
+//      IDLE --> BUSY: start
+always_ff @(posedge clk) begin : p_state
+```
+
+- **Where it appears:** a header diagram on the module's *Entity* page; a process diagram under the process's *Description*, in the order you wrote it. The process index has a *Mermaid* column next to *WaveDrom*.
+- **Indentation is kept**, since Mermaid depends on it (`subgraph`, nested `state`, `mindmap`). Write `-->` freely inside VHDL comments; only the leading `--` is removed.
+- **The overview description** (the one line in the overview table) stops at the first directive, so a diagram never leaks into it.
+- **Generated diagrams are unchanged.** The FSM, hierarchy, CDC and block diagrams still use Graphviz; Mermaid is only for diagrams you write.
+- **Dark mode** follows the Furo toggle automatically.
+
+**HTML** needs nothing installed: the browser draws the diagram. By default it loads Mermaid from a CDN, so viewing needs internet access. Pages without a diagram do not load Mermaid.
+
+For HTML that works **offline**, serve Mermaid from your own docs. The loader `mermaid.esm.min.mjs` imports its parts from a `chunks/` folder (about 24 MB), so both are needed, kept in this layout under the project's `docs/hdl_autodoc/_static/`:
+
+```bash
+npm pack mermaid && tar xzf mermaid-*.tgz
+mkdir -p docs/hdl_autodoc/_static/mermaid/chunks
+cp package/dist/mermaid.esm.min.mjs docs/hdl_autodoc/_static/mermaid/
+cp -r package/dist/chunks/mermaid.esm.min docs/hdl_autodoc/_static/mermaid/chunks/
+make doc-html AUTODOC_MERMAID_JS=mermaid/mermaid.esm.min.mjs
+```
+
+`AUTODOC_MERMAID_JS` is a path **relative to `_static/`** (or a full `https://` URL for a copy you host yourself), not a filesystem path.
+
+**PDF** needs each diagram rendered to an image, which only [mermaid-cli](https://github.com/mermaid-js/mermaid-cli) can do:
+
+```bash
+npm install -g @mermaid-js/mermaid-cli        # provides `mmdc` (it downloads a headless Chromium)
+make doc-pdf
+# or, to use an existing Chrome instead:
+make doc-pdf AUTODOC_MERMAID_PARAMS="-p puppeteer.json"
+```
+
+`puppeteer.json` is `{"executablePath": "/path/to/chrome", "args": ["--no-sandbox"]}`. Without `mmdc` the PDF still builds, with no warnings: each diagram is replaced by a one-line note and a single message says how many were left out.
+
 ---
 
 ## 🔀 CDC analysis
@@ -498,6 +558,9 @@ Set these on the command line (`make doc-html SCHEMATICS=0`) or in your Makefile
 | `AUTODOC_AUTHOR`, `AUTODOC_RELEASE` | `HDL Team`, `1.0.0` | Author and release shown in the docs |
 | `SCHEMATICS` | `1` | `0` skips RTL schematics |
 | `ANNOTATED_SOURCE` | `1` | `0` omits the "Annotated Source" listing from entity pages |
+| `AUTODOC_MERMAID_CMD` | `mmdc` | Command that renders Mermaid diagrams for the PDF |
+| `AUTODOC_MERMAID_PARAMS` | *(none)* | Extra arguments for it, e.g. `-p puppeteer.json` |
+| `AUTODOC_MERMAID_JS` | *(CDN)* | Where to load Mermaid from: a path relative to `docs/hdl_autodoc/_static/` (e.g. `mermaid/mermaid.esm.min.mjs`) or an `https://` URL, for HTML that works offline |
 | `TESTBENCHES` | `1` | `0` removes the Testbenches section |
 | `AUTODOC_TB_DIR` | `tb` | Root of the testbenches, with one subdirectory per framework (`vunit/`, `cocotb/`, `directed/`) |
 | `BUILD` | `1` | `0` removes the Build section |
@@ -516,6 +579,7 @@ Installed automatically by `make doc-install`:
 | [furo](https://pradyunsg.me/furo/) | Modern Sphinx theme with dark/light toggle and Ctrl+K search |
 | [sphinx-vhdl](https://pypi.org/project/sphinx-vhdl/) | VHDL entity autodoc domain |
 | [sphinxcontrib-wavedrom](https://sphinxcontrib-wavedrom.readthedocs.io) | `.. wavedrom::` directive |
+| [sphinxcontrib-mermaid](https://sphinxcontrib-mermaid-demo.readthedocs.io) | `.. mermaid::` directive (the optional [mermaid-cli](https://github.com/mermaid-js/mermaid-cli) renders them for the PDF) |
 | [Graphviz](https://graphviz.org) | FSM, hierarchy, CDC, and block diagram renderer |
 | [docutils](https://docutils.sourceforge.io) | RST parser (pinned `>=0.18,<0.21` for sphinx-vhdl compat) |
 | [hdl-registers](https://hdl-registers.com) | Register map generation from TOML/YAML |
