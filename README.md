@@ -24,7 +24,8 @@ No separate doc files to maintain. No manual diagrams to draw. If it's in the so
 | **Shared components** | Documented once, linked from every parent |
 | **VHDL + SystemVerilog** | Mixed-language designs work out of the box |
 | **Register map** | Auto-embeds `registers/generated/*.html` — any register builder output supported |
-| **Synthesis reports** | Ingests Vivado and Yosys/nextpnr reports from CI — utilization per module (with hierarchy indent) and top-level timing/fmax |
+| **Testbenches** | Lists VUnit, cocotb and directed testbenches with their purpose and test counts, read from source — on by default (`TESTBENCHES=0` to skip) |
+| **Build reports** | Ingests Yosys/nextpnr (ECP5) and Vivado reports — summary, utilization, timing and warnings — on by default (`BUILD=0` to skip) |
 | **Dark / light mode** | Built-in Furo toggle — persists across sessions, respects OS preference |
 | **Ctrl+K search** | Keyboard shortcut focuses the sidebar search input |
 | **PDF output** | Full LaTeX PDF via `make doc-pdf` |
@@ -35,10 +36,12 @@ No separate doc files to maintain. No manual diagrams to draw. If it's in the so
 
 ```
 docs/
-├── index.rst                       ← project root (Design + Implementation toctrees)
+├── index.rst                       ← project root (Design, Verification and Build toctrees)
 ├── overview.rst                    ← instantiation tree, shared components, module table
 ├── synthesis/
-│   └── index.rst                   ← Implementation page: timing + utilization tables
+│   └── index.rst                   ← Build page: summary, utilization, timing, warnings
+├── testbenches/
+│   └── index.rst                   ← Testbenches page: frameworks, tests, linked modules
 └── modules/
     └── top/
         ├── index.rst               ← module toctree + submodules
@@ -187,6 +190,8 @@ make doc-venv && make doc-html
 
 Then open `example/docs/hdl_autodoc/_build/html/index.html`.
 
+Two more examples live alongside it: `example_sv/` (a SystemVerilog package, interfaces and interface ports) and `example_ecp5/` (an AXI4-Stream filter with an AXI4-Lite register file for Lattice ECP5, with testbenches in all three frameworks and real Yosys/nextpnr reports — it shows the Verification and Build sections).
+
 ---
 
 ## 🔧 How it works
@@ -213,15 +218,20 @@ include_registers.py   Checks registers/generated/*.html. Copies it
     │                  to _static/ and embeds via iframe if found.
     │                  Writes a placeholder page if not.
     ▼
+extract_testbenches.py Lists the testbenches under tb/ (TESTBENCHES=1).
+    ▼
+extract_reports.py     Reads Yosys/nextpnr/Vivado reports under reports/
+    │                  (BUILD=1; skipped if there are none).
+    ▼
 generate_rst.py        Second pass: timing pages now aggregate all
     │                  wavedrom blocks from the extracted process files.
-    │                  Detects synthesis.rst files and adds Implementation
-    │                  toctree section if present.
+    │                  Adds the Verification and Build toctree sections
+    │                  for whichever generated pages exist.
     ▼
 sphinx-build           Renders HTML (or PDF via latexpdf).
 ```
 
-Synthesis reports are ingested separately with `make doc-reports` (see below) and picked up by the next `make doc-html`.
+The testbench and build-report steps run only when their switch is on (`TESTBENCHES`, `BUILD`) and there is something to show; `make doc-reports` still runs the report step on its own.
 
 ---
 
@@ -310,20 +320,76 @@ Modules with a single clock domain show a "No CDC" note. Purely combinational mo
 
 ---
 
-## 📊 Synthesis reports
+## 🧪 Testbenches
 
-HDL AutoDoc can ingest post-synthesis and post-route reports from CI and publish them as an **Implementation** section in the sidebar.
+HDL AutoDoc lists your testbenches, what each is for, which module it tests, and how many tests it contains — read from the source, without running a simulator. The section appears in the sidebar under **Verification**.
+
+### Layout
+
+One subdirectory per framework under `tb/`:
+
+```
+tb/
+├── vunit/       VUnit testbenches (VHDL or SystemVerilog)
+├── cocotb/      cocotb test modules (Python)
+└── directed/    plain HDL testbenches
+```
+
+The subdirectory name is the framework (case-insensitive). HDL files directly in `tb/`, or in any other subdirectory, are treated as `directed`. Use `AUTODOC_TB_DIR` for a different location. Testbench files must **not** be listed in `filelist.f`: the hierarchy treats every module nothing instantiates as a top level, so a listed testbench would become a second one.
+
+### What counts as a test
+
+| Framework | A test is | Its purpose comes from |
+|---|---|---|
+| VUnit (VHDL) | each `run("name")` | the comment directly above it, or on the same line |
+| VUnit (SystemVerilog) | each `` `TEST_CASE("name") `` | the comment directly above it, or on the same line |
+| cocotb | each `@cocotb.test(...)` function | the first line of its docstring; `skip=True` tests are listed and marked *skipped* |
+| directed | each `TEST:` marker (below) | the text after the marker |
+
+A testbench's own purpose is the comment block directly above its `entity` / `module` (or, if there is none, the comment block at the top of the file); for cocotb it is the module docstring.
+
+### Marking tests in directed testbenches
+
+Directed testbenches have no framework to name their tests, so mark each scenario with a comment, in the file's own comment style, before it:
+
+```vhdl
+-- TEST: reset_clears_fifo — FIFO is empty after reset
+```
+
+```systemverilog
+// TEST: wrap_around — pointers wrap at the last address
+```
+
+- The name is one word (letters, digits, underscore). After it, `—`, `-` or `:` separates the purpose, which may be left out.
+- Only line comments count: a marker inside a string or a `/* ... */` block is ignored.
+- A directed file with **no** markers counts as one test, named after the testbench, with the header comment as its purpose.
+
+### Linking to a module
+
+A testbench is shown next to the module it tests. It is linked by name — `tb_fifo`, `test_fifo`, `fifo_tb` and `fifo_test` all link to `fifo` — or, for HDL, by the module it instantiates. A testbench that matches neither is listed without a link.
+
+### Switching it off
+
+`make doc-html TESTBENCHES=0` removes the section. With no `tb/` directory (or no testbenches in it) there is no section and no sidebar entry. See [Make variables](#make-variables). Pages already built stay in `_build/html` until you run `make doc-clean`; the sidebar no longer links to them.
+
+---
+
+## 📊 Build reports
+
+HDL AutoDoc reads the reports your synthesis and place-and-route flow leaves behind and shows them as a **Build** section in the sidebar: a summary of the tools and device, utilization, timing and warnings.
 
 ### Supported tools
 
-| Toolchain | Utilization file | Timing file |
-|---|---|---|
-| **Vivado** (Xilinx) | `utilization_placed.rpt` (falls back to `utilization_synth.rpt`) | `timing_summary_routed.rpt` |
-| **Yosys + nextpnr** (Lattice ECP5, iCE40) | `stat.txt` | `nextpnr.log` |
+| Toolchain | Files |
+|---|---|
+| **Yosys + nextpnr** (Lattice ECP5) | `yosys/stat.txt`, `yosys/nextpnr.log`, optionally `yosys/yosys.log` |
+| **Vivado** (Xilinx) | `vivado/utilization_placed.rpt` (falls back to `utilization_synth.rpt`), `vivado/timing_summary_routed.rpt` |
+
+Vivado support covers utilization and timing today; its power, DRC and other reports come later.
 
 ### Setup
 
-Drop report files from CI into a `reports/` directory at the project root:
+Put the files in a `reports/` directory at the project root (or point `AUTODOC_REPORTS_DIR` at another one):
 
 ```
 reports/
@@ -332,26 +398,22 @@ reports/
 │   └── timing_summary_routed.rpt
 └── yosys/
     ├── stat.txt
-    └── nextpnr.log
+    ├── nextpnr.log
+    └── yosys.log
 ```
 
-Then run:
-
-```bash
-make doc-reports   # ingest reports → writes synthesis RST files
-make doc-html      # build docs (picks up the new RST)
-```
+The reports are picked up by the normal `make doc-html`. With no report files there is **no Build section**; `make doc-reports` still writes the explicit placeholder page. `make doc-html BUILD=0` removes the section (run `make doc-clean` to also drop the HTML from an earlier build).
 
 ### What you get
 
-**Top-level Implementation page** (`synthesis/index.rst`):
+**Build page** (`synthesis/index.rst`), in this order:
 
-- *Timing table* — clock name, target frequency, achieved fmax, constraint period, WNS (Vivado) or PASS/FAIL status (nextpnr)
-- *Utilization table* — LUTs, FFs, BRAMs, DSPs per module with hierarchy indentation and available resource counts (Vivado)
+- *Summary* — Yosys and nextpnr versions, device size class, when the reports were produced, and the git revision of the docs. Only what is found is shown (nextpnr prints its version to stdout, so it is absent when you save only a `--log` file).
+- *Utilization* — nextpnr's device utilisation (resources in use, with counts and percentages) and a per-module table from Yosys or Vivado with hierarchy indentation.
+- *Timing* — one row per clock with target and achieved fmax and PASS/FAIL (nextpnr) or WNS (Vivado). nextpnr prints each clock after placement and again after routing; the routed value is shown.
+- *Warnings* — the total, and the most frequent messages (messages that differ only by a quoted name are grouped).
 
 **Per-module synthesis page** — LUT/FF/BRAM/DSP counts for that instance.
-
-If no report files are present, a placeholder page is still shown so the Implementation section is always visible in the sidebar.
 
 ---
 
@@ -413,10 +475,12 @@ html_theme_options = {
 | `make doc-hierarchy` | Parse `filelist.f` → `hierarchy.json` |
 | `make doc-scaffold` | Generate RST shells (runs hierarchy first) |
 | `make doc-extract` | Extract FSM + process + CDC + block docs (runs scaffold first) |
-| `make doc-reports` | Ingest synthesis/PnR reports from `reports/` → writes synthesis RST files |
+| `make doc-reports` | Ingest build reports from `reports/` (or `$AUTODOC_REPORTS_DIR`) on their own; writes a placeholder page if there are none |
 | `make doc-regs` | Generate register artifacts from `registers/regs_*.toml` (or `$AUTODOC_REGISTERS_DIR`) |
 | `make doc-html` | Full build → `docs/hdl_autodoc/_build/html/` |
 | `make doc-html ANNOTATED_SOURCE=0` | Omit the "Annotated Source" listing from entity pages (on by default) |
+| `make doc-html TESTBENCHES=0` | Omit the Testbenches section (on by default) |
+| `make doc-html BUILD=0` | Omit the Build section (on by default) |
 | `make doc-html SCHEMATICS=0` | Full build without RTL schematics (they are on by default and need yosys) |
 | `make doc-pdf` | Full build → LaTeX PDF |
 | `make doc-all` | Run `doc-regs` + `doc-html` + `doc-pdf` |
@@ -434,6 +498,10 @@ Set these on the command line (`make doc-html SCHEMATICS=0`) or in your Makefile
 | `AUTODOC_AUTHOR`, `AUTODOC_RELEASE` | `HDL Team`, `1.0.0` | Author and release shown in the docs |
 | `SCHEMATICS` | `1` | `0` skips RTL schematics |
 | `ANNOTATED_SOURCE` | `1` | `0` omits the "Annotated Source" listing from entity pages |
+| `TESTBENCHES` | `1` | `0` removes the Testbenches section |
+| `AUTODOC_TB_DIR` | `tb` | Root of the testbenches, with one subdirectory per framework (`vunit/`, `cocotb/`, `directed/`) |
+| `BUILD` | `1` | `0` removes the Build section |
+| `AUTODOC_REPORTS_DIR` | `reports` | Root of the build report files (`yosys/`, `vivado/`). Relative paths are taken from the project root. |
 | `AUTODOC_REGISTERS_DIR` | `registers` | Directory holding `regs_*.toml`, `config.yml` and the generated `generated/` and `out/` output. Relocate it, e.g. `AUTODOC_REGISTERS_DIR=out/registers`. Relative paths are taken from the project root. |
 
 ---
@@ -473,7 +541,12 @@ src/
 │   │   ├── extract_processes.py ← extracts labeled processes → rst pages
 │   │   ├── extract_cdc.py       ← extracts CDC analysis → dot + rst
 │   │   ├── extract_block.py     ← extracts block diagram + port/generics tables → dot + rst
-│   │   ├── extract_reports.py   ← ingests synthesis reports → synthesis rst pages
+│   │   ├── extract_reports.py   ← ingests build reports → Build page + per-module synthesis pages
+│   │   ├── extract_testbenches.py ← lists testbenches → Testbenches page
+│   │   ├── parse_testbenches.py ← finds testbenches; counts VUnit / cocotb / directed tests
+│   │   ├── parse_build_info.py  ← nextpnr utilisation block, tool versions, warning summary
+│   │   ├── sv_interfaces.py     ← SystemVerilog interface definitions and interface ports
+│   │   ├── rst_escape.py        ← escapes comment text for reStructuredText
 │   │   ├── parse_utilization.py ← Vivado + Yosys utilization parser
 │   │   ├── parse_timing.py      ← Vivado timing summary + nextpnr log parser
 │   │   ├── generate_schematic.py← generates RTL schematic via yosys (optional, on by default)
@@ -579,6 +652,19 @@ Done. The new module appears in the overview (tree and table), navigation, and g
 - **Non-synthesisable constructs** — `wait` statements, file I/O, or other simulation-only VHDL will cause yosys/ghdl to fail. Affected modules are skipped.
 - **Tool availability** — requires yosys and netlistsvg (all modules) plus ghdl + ghdl-yosys-plugin for VHDL. Missing tools produce a warning and the build continues without schematics.
 
+### Testbenches
+
+- Tests are counted from source, not from a run: a VUnit `run("...")` whose name is built at run time, or a cocotb test created in a loop, is not seen. Only top-level `@cocotb.test` functions are found.
+- Directed tests need the `TEST:` marker comments (see Testbenches); a directed file without them counts as one test.
+- Purposes come from comments and docstrings. No results (pass/fail, coverage) are shown.
+- A testbench is linked to a module by name or by the module it instantiates; with several instantiated modules the first alphabetically is used.
+
+### Build reports
+
+- Open-source support is ECP5 (Yosys + nextpnr-ecp5). The device class is inferred from the flip-flop capacity in nextpnr's utilisation block and is shown only for the 25k, 45k and 85k parts.
+- nextpnr prints its version to stdout, so it is shown only if the banner is in your saved log. nextpnr and Yosys wording changes between versions; unrecognised lines are skipped, not reported.
+- Power, DRC and CDC reports and build-to-build comparison are not yet supported.
+
 ### Entity documentation
 
 - `vhdl:autoentity` only works for VHDL. SystemVerilog modules get the `//` comment block above `module` as their description, followed by a `literalinclude` source listing. `/* ... */` header comments are not picked up.
@@ -591,6 +677,31 @@ Done. The new module appears in the overview (tree and table), navigation, and g
 ---
 
 ## 📋 Release notes
+
+### v3.12.0
+
+#### New features
+
+- **Testbenches section** — lists the testbenches under `tb/` (`vunit/`, `cocotb/`, `directed/` subdirectories), each with its purpose, the module it tests, and its tests, counted from the source with no simulator run: VUnit `run("...")` and `` `TEST_CASE("...") ``, cocotb `@cocotb.test` functions (`skip=True` marked skipped), and directed tests marked with a `-- TEST: name — purpose` / `// TEST: name — purpose` comment. A summary table gives counts per framework and in total. Appears in the sidebar under **Verification**. `TESTBENCHES=0` removes it; `AUTODOC_TB_DIR` relocates it. The marker convention is documented in the new Testbenches section.
+- **Build section** — the Implementation section is now **Build**, and shows a summary (Yosys and nextpnr versions, device class, when the reports were produced, docs revision), utilization (nextpnr's device utilisation plus the per-module table), timing, and warnings (total and most frequent messages). Open-source ECP5 (Yosys + nextpnr) first; Vivado utilization and timing still work, with its power, DRC and other reports to follow. `BUILD=0` removes it; `AUTODOC_REPORTS_DIR` relocates the reports.
+- **`example_ecp5/`** — an ECP5 design (AXI4-Stream threshold filter with an AXI4-Lite register file, four registers), with one testbench per framework and real Yosys and nextpnr reports produced by `make ecp5-reports`.
+
+#### Behaviour changes
+
+- **Reports are now part of the normal build.** `make doc-html` ingests `reports/` itself (it used to need a separate `make doc-reports`), so a project that already has a `reports/` directory gets a Build section automatically. With no report files there is no section, as before; `make doc-reports` still writes its placeholder page; `BUILD=0` switches it off.
+- The sidebar caption and page title are **Build** (was Implementation). File paths (`synthesis/index.rst`, `modules/<n>/synthesis.rst`) and `make doc-reports` are unchanged.
+- The Build page order is Summary, Utilization, Timing, Warnings (timing used to come first).
+
+#### Fixes
+
+- **nextpnr timing showed every clock twice.** nextpnr prints `Max frequency for clock` after placement and again after routing; there is now one row per clock, with the routed value.
+- **Yosys utilization was all zeros on current Yosys.** Yosys now prints `stat` cell lines as `<count> <cell>`; the parser expected `<cell> <count>`. Both are read, and the `design hierarchy` total is no longer shown as a module.
+- When a switch is off, that section's pages from an earlier run are deleted, so they cannot reappear in the sidebar.
+
+#### Compatibility
+
+- Backwards compatible. With no `tb/` directory and no report files the output is unchanged.
+- Testbench files must not be listed in `filelist.f` (a listed testbench becomes a second top level).
 
 ### v3.11.0
 
