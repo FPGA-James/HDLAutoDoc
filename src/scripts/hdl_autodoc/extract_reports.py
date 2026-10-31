@@ -307,12 +307,14 @@ def _git(cwd: Path, *args: str) -> str | None:
 def _git_describe(cwd: Path) -> str | None:
     """
     The checkout's revision for the "Documented at" row, or None if unavailable:
-    `git describe --tags --always`, plus `-dirty` if tracked files *outside* `cwd`
-    (the docs directory) differ from HEAD.
+    `git describe --tags --always`, plus `-dirty` if tracked source files differ from
+    HEAD.  Files under `cwd` (the docs directory) and under any `_build` directory are
+    not source and are ignored.
 
     `--tags` matters: releases here are lightweight tags, which plain `git describe`
     skips.  Changes under the docs directory are ignored for "dirty" because generated
-    docs are often tracked, and rebuilding them is not a change to the design.
+    docs are often tracked (and a repo may track several projects' output), and
+    rebuilding them is not a change to the design.
     """
     described = (_git(cwd, "describe", "--tags", "--always") or "").strip()
     toplevel = (_git(cwd, "rev-parse", "--show-toplevel") or "").strip()
@@ -322,7 +324,8 @@ def _git_describe(cwd: Path) -> str | None:
     status = _git(cwd, "status", "--porcelain", "--untracked-files=no") or ""
     for line in status.splitlines():
         path = line[3:].split(" -> ")[-1].strip().strip('"')
-        if not (Path(toplevel) / path).resolve().is_relative_to(docs):
+        full = (Path(toplevel) / path).resolve()
+        if not full.is_relative_to(docs) and "_build" not in full.parts:
             return described + "-dirty"
     return described
 

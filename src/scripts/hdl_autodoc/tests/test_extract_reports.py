@@ -432,3 +432,21 @@ def test_documented_at_is_dirty_only_for_changes_outside_the_docs_directory(tmp_
     (tmp_path / "src.txt").write_text("changed\n")            # tracked, outside docs/
     main(h, docs, rep)
     assert "v1.0.0-dirty" in (docs / "synthesis" / "index.rst").read_text()
+
+
+def test_documented_at_ignores_changes_to_any_tracked_build_output(tmp_path):
+    """Another project's tracked `_build` output (several examples in one repo) is not source."""
+    if shutil.which("git") is None:
+        return
+    h, docs, rep = _git_repo_with_reports(tmp_path)
+    other = tmp_path / "other" / "docs" / "_build"
+    other.mkdir(parents=True)
+    (other / "index.html").write_text("old\n")
+    env = {**os.environ, "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t",
+           "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t"}
+    for cmd in (["git", "add", "-A"], ["git", "commit", "-q", "-m", "y"]):
+        subprocess.run(cmd, cwd=tmp_path, env=env, check=True, capture_output=True)
+    (other / "index.html").write_text("rebuilt\n")
+    main(h, docs, rep)
+    page = (docs / "synthesis" / "index.rst").read_text()
+    assert "Documented at" in page and "dirty" not in page
