@@ -607,6 +607,8 @@ Nothing from the tool is copied into the project tree, so there are no stale cop
 | `docs/hdl_autodoc/modules/<n>/processes/` | 🔄 Auto-generated | Regenerated every build |
 | `docs/hdl_autodoc/registers.rst` | 🔄 Auto-generated | Written by `include_registers.py` |
 | `docs/hdl_autodoc/_static/registers/` | 🔄 Auto-generated | Copied from `registers/generated/` |
+| `docs/hdl_autodoc/testbenches/index.rst` | 🔄 Auto-generated | The Testbenches page, from `tb/` |
+| `docs/hdl_autodoc/synthesis/index.rst` | 🔄 Auto-generated | The Build page, from `reports/` |
 | `docs/hdl_autodoc/hierarchy.json` | 🔄 Auto-generated | Do not edit |
 | `docs/hdl_autodoc/index.rst` | 🔄 Auto-generated | Regenerated every build |
 | `docs/hdl_autodoc/overview.rst` | 🔄 Auto-generated | Regenerated every build |

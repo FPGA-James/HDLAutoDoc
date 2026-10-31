@@ -18,6 +18,7 @@ __pycache__/
 **/docs/hdl_autodoc/coverage.rst
 **/docs/hdl_autodoc/modules/
 **/docs/hdl_autodoc/synthesis/
+**/docs/hdl_autodoc/testbenches/
 **/docs/hdl_autodoc/.extract_cache.json
 
 # Generated register artifacts copied into _static (re-created by `make html`)
