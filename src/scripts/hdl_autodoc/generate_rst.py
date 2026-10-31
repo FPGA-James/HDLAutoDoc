@@ -85,6 +85,11 @@ def extract_entities(src_path: Path,
             else:
                 break
             j -= 1
+        # The description is prose: it ends where the first RST directive (a line
+        # starting "..", e.g. `.. mermaid::`) begins.
+        cut = next((n for n, text in enumerate(brief_lines) if text.startswith("..")), None)
+        if cut is not None:
+            brief_lines = brief_lines[:cut]
         brief = " ".join(brief_lines[:2]) if brief_lines else f"{name} entity."
 
         # Port extraction

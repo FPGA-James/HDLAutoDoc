@@ -469,3 +469,44 @@ def test_both_switches_off_with_nothing_generated_changes_nothing(tmp_path):
     on = _run_generate_rst(tmp_path / "a")
     off = _run_generate_rst(tmp_path / "b", "--no-testbenches", "--no-build")
     assert (on / "index.rst").read_text() == (off / "index.rst").read_text()
+
+
+# ── Overview description stops at the first directive ────────────────────────
+
+def _brief(tmp_path, name, text):
+    src = tmp_path / name
+    src.write_text(text)
+    return extract_entities(src)[0]["brief"]
+
+
+def test_sv_description_stops_before_a_directive(tmp_path):
+    text = ("// Stream filter.\n//\n// .. mermaid::\n//    :caption: Flow\n//\n"
+            "//    flowchart LR\n//      A --> B\nmodule m (input logic clk);\nendmodule\n")
+    assert _brief(tmp_path, "m.sv", text) == "Stream filter."
+
+
+def test_vhdl_description_stops_before_a_directive(tmp_path):
+    text = ("-- Sample controller.\n--\n-- .. mermaid::\n--    flowchart LR\n--      A --> B\n"
+            "entity m is port (clk : in std_logic); end entity m;\n")
+    assert _brief(tmp_path, "m.vhd", text) == "Sample controller."
+
+
+def test_two_prose_lines_before_a_directive_are_both_kept(tmp_path):
+    text = ("// First line.\n// Second line.\n// Third line.\n//\n// .. mermaid::\n"
+            "//    flowchart LR\nmodule m;\nendmodule\n")
+    assert _brief(tmp_path, "m.sv", text) == "First line. Second line."
+
+
+def test_any_directive_ends_the_description_not_only_mermaid(tmp_path):
+    text = "// Counts bytes.\n//\n// .. note::\n//    Careful.\nmodule m;\nendmodule\n"
+    assert _brief(tmp_path, "m.sv", text) == "Counts bytes."
+
+
+def test_a_header_that_starts_with_a_directive_falls_back_to_the_default(tmp_path):
+    text = "// .. mermaid::\n//    flowchart LR\n//      A --> B\nmodule m;\nendmodule\n"
+    assert _brief(tmp_path, "m.sv", text) == "m entity."
+
+
+def test_a_prose_only_header_is_unchanged(tmp_path):
+    text = "// PWM controller.\n//\n// Generates a duty cycle.\n// More detail.\nmodule m;\nendmodule\n"
+    assert _brief(tmp_path, "m.sv", text) == "PWM controller. Generates a duty cycle."
