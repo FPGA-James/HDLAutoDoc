@@ -1,0 +1,7 @@
+Annotated Source
+----------------
+
+.. literalinclude:: ../../../../src/top.sv
+   :language: systemverilog
+   :linenos:
+   :caption: src/top.sv

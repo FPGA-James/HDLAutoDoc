@@ -1,0 +1,110 @@
+Build
+=====
+
+Summary
+-------
+
+.. list-table::
+   :widths: 30 70
+
+   * - Yosys
+     - 0.56+186
+
+   * - Device
+     - ECP5 25k class
+
+   * - Reports generated
+     - 2026-10-31 21:55
+
+   * - Documented at
+     - v3.11.0-12-gdf6cfc0-dirty
+
+Utilization
+-----------
+
+Device utilisation (nextpnr)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+
+   * - Resource
+     - Used
+     - Available
+     - %
+
+   * - ``TRELLIS_IO``
+     - 122
+     - 197
+     - 61
+
+   * - ``DCCA``
+     - 1
+     - 56
+     - 1
+
+   * - ``TRELLIS_FF``
+     - 156
+     - 24,288
+     - 0
+
+   * - ``TRELLIS_COMB``
+     - 147
+     - 24,288
+     - 0
+
+24 other resource types unused.
+
+By module (Yosys)
+~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+
+   * - Module
+     - LUTs
+     - FFs
+     - BRAMs
+     - DSPs
+
+   * - top
+     - 113
+     - 156
+     - 0
+     - 0
+
+Timing — nextpnr
+----------------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Clock
+     - Fmax (MHz)
+     - Target (MHz)
+     - Status
+
+   * - clk
+     - 220.41
+     - 100.0
+     - ✔ PASS
+
+Warnings
+--------
+
+146 warnings in the build logs; the most frequent:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Message
+     - Count
+
+   * - IO '…' is unconstrained in LPF and will be automatically placed
+     - 121
+
+   * - Identifier '…' is implicitly declared.
+     - 24
+
+   * - The network is combinational.
+     - 1

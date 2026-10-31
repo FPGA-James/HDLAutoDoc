@@ -1,0 +1,66 @@
+\babel@toc {english}{}\relax 
+\contentsline {chapter}{\numberline {1}ECP5 Stream Filter — Overview}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Instantiation Tree}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Modules}{2}{section.1.2}%
+\contentsline {chapter}{\numberline {2}top}{3}{chapter.2}%
+\contentsline {section}{\numberline {2.1}top — Entity}{3}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Annotated Source}{3}{subsection.2.1.1}%
+\contentsline {section}{\numberline {2.2}top — Block Diagram}{4}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Ports}{4}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Interfaces}{4}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}Signals}{5}{subsection.2.2.3}%
+\contentsline {subsection}{\numberline {2.2.4}RTL Detail}{5}{subsection.2.2.4}%
+\contentsline {section}{\numberline {2.3}top — State Machine}{7}{section.2.3}%
+\contentsline {section}{\numberline {2.4}top — Timing Diagrams}{7}{section.2.4}%
+\contentsline {section}{\numberline {2.5}top — Clock Domain Analysis}{7}{section.2.5}%
+\contentsline {section}{\numberline {2.6}top — Reset Domain Analysis}{7}{section.2.6}%
+\contentsline {section}{\numberline {2.7}Synthesis Results}{7}{section.2.7}%
+\contentsline {section}{\numberline {2.8}Submodules}{7}{section.2.8}%
+\contentsline {subsection}{\numberline {2.8.1}axil\_regs}{7}{subsection.2.8.1}%
+\contentsline {subsubsection}{\numberline {2.8.1.1}axil\_regs — Entity}{7}{subsubsection.2.8.1.1}%
+\contentsline {paragraph}{Annotated Source}{8}{paragraph*.3}%
+\contentsline {subsubsection}{\numberline {2.8.1.2}axil\_regs — Block Diagram}{9}{subsubsection.2.8.1.2}%
+\contentsline {paragraph}{Ports}{10}{paragraph*.4}%
+\contentsline {paragraph}{Interfaces}{10}{paragraph*.5}%
+\contentsline {paragraph}{Signals}{11}{paragraph*.6}%
+\contentsline {paragraph}{RTL Detail}{11}{paragraph*.7}%
+\contentsline {subsubsection}{\numberline {2.8.1.3}axil\_regs — State Machine}{13}{subsubsection.2.8.1.3}%
+\contentsline {subsubsection}{\numberline {2.8.1.4}axil\_regs — Timing Diagrams}{13}{subsubsection.2.8.1.4}%
+\contentsline {subsubsection}{\numberline {2.8.1.5}axil\_regs — Clock Domain Analysis}{13}{subsubsection.2.8.1.5}%
+\contentsline {subsubsection}{\numberline {2.8.1.6}axil\_regs — Reset Domain Analysis}{13}{subsubsection.2.8.1.6}%
+\contentsline {paragraph}{Reset Domain}{13}{paragraph*.8}%
+\contentsline {subsubsection}{\numberline {2.8.1.7}axil\_regs — Register Map}{13}{subsubsection.2.8.1.7}%
+\contentsline {paragraph}{ctrl (0x00)}{14}{paragraph*.9}%
+\contentsline {paragraph}{status (0x04)}{14}{paragraph*.10}%
+\contentsline {paragraph}{threshold (0x08)}{14}{paragraph*.11}%
+\contentsline {paragraph}{scratch (0x0C)}{14}{paragraph*.12}%
+\contentsline {subsubsection}{\numberline {2.8.1.8}Synthesis Results}{14}{subsubsection.2.8.1.8}%
+\contentsline {subsection}{\numberline {2.8.2}stream\_filter}{14}{subsection.2.8.2}%
+\contentsline {subsubsection}{\numberline {2.8.2.1}stream\_filter — Entity}{14}{subsubsection.2.8.2.1}%
+\contentsline {paragraph}{Annotated Source}{14}{paragraph*.13}%
+\contentsline {subsubsection}{\numberline {2.8.2.2}stream\_filter — Block Diagram}{15}{subsubsection.2.8.2.2}%
+\contentsline {paragraph}{Ports}{16}{paragraph*.14}%
+\contentsline {paragraph}{Interfaces}{16}{paragraph*.15}%
+\contentsline {paragraph}{Signals}{16}{paragraph*.16}%
+\contentsline {paragraph}{RTL Detail}{17}{paragraph*.17}%
+\contentsline {subsubsection}{\numberline {2.8.2.3}stream\_filter — State Machine}{19}{subsubsection.2.8.2.3}%
+\contentsline {subsubsection}{\numberline {2.8.2.4}stream\_filter — Timing Diagrams}{19}{subsubsection.2.8.2.4}%
+\contentsline {subsubsection}{\numberline {2.8.2.5}stream\_filter — Clock Domain Analysis}{19}{subsubsection.2.8.2.5}%
+\contentsline {subsubsection}{\numberline {2.8.2.6}stream\_filter — Reset Domain Analysis}{19}{subsubsection.2.8.2.6}%
+\contentsline {subsubsection}{\numberline {2.8.2.7}Synthesis Results}{19}{subsubsection.2.8.2.7}%
+\contentsline {chapter}{\numberline {3}Register Maps}{21}{chapter.3}%
+\contentsline {chapter}{\numberline {4}Testbenches}{23}{chapter.4}%
+\contentsline {section}{\numberline {4.1}VUnit}{23}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}tb\_stream\_filter}{23}{subsection.4.1.1}%
+\contentsline {section}{\numberline {4.2}cocotb}{23}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}test\_axil\_regs}{23}{subsection.4.2.1}%
+\contentsline {section}{\numberline {4.3}Directed}{24}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}tb\_top}{24}{subsection.4.3.1}%
+\contentsline {chapter}{\numberline {5}Build}{25}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Summary}{25}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Utilization}{25}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Device utilisation (nextpnr)}{25}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}By module (Yosys)}{25}{subsection.5.2.2}%
+\contentsline {section}{\numberline {5.3}Timing — nextpnr}{25}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Warnings}{26}{section.5.4}%
+\contentsline {chapter}{\numberline {6}Indices}{27}{chapter.6}%

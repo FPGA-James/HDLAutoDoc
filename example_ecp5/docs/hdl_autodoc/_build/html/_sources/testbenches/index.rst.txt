@@ -1,0 +1,100 @@
+Testbenches
+===========
+
+.. list-table::
+   :header-rows: 1
+
+   * - Framework
+     - Testbenches
+     - Tests
+
+   * - VUnit
+     - 1
+     - 3
+
+   * - cocotb
+     - 1
+     - 3 (1 skipped)
+
+   * - Directed
+     - 1
+     - 2
+
+   * - **Total**
+     - 3
+     - 8 (1 skipped)
+
+VUnit
+-----
+
+tb_stream_filter
+~~~~~~~~~~~~~~~~
+
+:File: ``tb/vunit/tb_stream_filter.sv``
+:Tests module: :doc:`/modules/stream_filter/index`
+:Purpose: Testbench for stream_filter. Drives bytes into s_axis and checks which ones come out of m_axis: the filter forwards bytes at or above the threshold and drops the rest.
+:Tests: 3 tests
+
+.. list-table::
+   :header-rows: 1
+
+   * - Test
+     - Purpose
+
+   * - ``passes_at_or_above_threshold``
+     - A byte equal to or above the threshold appears on m_axis.
+
+   * - ``drops_below_threshold``
+     - A byte below the threshold is dropped.
+
+   * - ``counts_forwarded_bytes``
+     - The counter counts only the bytes that were forwarded.
+
+cocotb
+------
+
+test_axil_regs
+~~~~~~~~~~~~~~
+
+:File: ``tb/cocotb/test_axil_regs.py``
+:Tests module: :doc:`/modules/axil_regs/index`
+:Purpose: Register file tests for axil_regs.
+:Tests: 3 tests, 1 skipped
+
+.. list-table::
+   :header-rows: 1
+
+   * - Test
+     - Purpose
+
+   * - ``reset_values``
+     - Every register reads back zero after reset.
+
+   * - ``scratch_write_read``
+     - A value written to the scratch register reads back unchanged.
+
+   * - ``threshold_drives_filter`` *(skipped)*
+     - The threshold register changes which bytes the filter forwards (needs the full top level).
+
+Directed
+--------
+
+tb_top
+~~~~~~
+
+:File: ``tb/directed/tb_top.sv``
+:Tests module: :doc:`/modules/top/index`
+:Purpose: Directed testbench for the top level. Programs the filter through the AXI4-Lite bus, then streams bytes through it, with no verification framework: each scenario below is marked with a TEST comment.
+:Tests: 2 tests
+
+.. list-table::
+   :header-rows: 1
+
+   * - Test
+     - Purpose
+
+   * - ``register_write_read``
+     - a value written to scratch reads back unchanged
+
+   * - ``filter_pass_through``
+     - bytes at or above the threshold reach m_axis, others do not

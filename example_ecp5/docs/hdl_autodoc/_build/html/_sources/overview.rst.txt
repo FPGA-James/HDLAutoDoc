@@ -1,0 +1,41 @@
+ECP5 Stream Filter — Overview
+=============================
+
+This project contains 3 VHDL/SV modules.
+
+Top-level module: :doc:`modules/top/index`
+
+Instantiation Tree
+------------------
+
+.. graphviz:: hierarchy.dot
+
+Modules
+-------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Module
+     - Source File
+     - Description
+     - Instantiated by
+     - Instantiates
+
+   * - :doc:`modules/top/index`
+     - ``top.sv``
+     - ECP5 design: an AXI4-Stream threshold filter with an AXI4-Lite register file. Bytes arriving on s_axis are forwarded to m_axis if they are at or above a
+     - *(top)*
+     - ``axil_regs``, ``stream_filter``
+
+   * - :doc:`modules/stream_filter/index`
+     - ``stream_filter.sv``
+     - Threshold filter for a byte stream. Forwards each byte that is at or above the threshold and drops the rest.
+     - ``top``
+     - —
+
+   * - :doc:`modules/axil_regs/index`
+     - ``axil_regs.sv``
+     - AXI4-Lite register file for the stream filter. Four 32-bit registers: control (enable, clear), a read-only forwarded-byte
+     - ``top``
+     - —

@@ -1,0 +1,35 @@
+SV Interface Demo — Overview
+============================
+
+This project contains 2 VHDL/SV modules.
+
+Top-level module: :doc:`modules/top/index`
+
+Instantiation Tree
+------------------
+
+.. graphviz:: hierarchy.dot
+
+Modules
+-------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Module
+     - Source File
+     - Description
+     - Instantiated by
+     - Instantiates
+
+   * - :doc:`modules/bridge/index`
+     - ``bridge.sv``
+     - Bridges a register write port to a stream. Takes AXI4-Lite writes and forwards the data as an AXI4-Stream.
+     - ``top``
+     - —
+
+   * - :doc:`modules/top/index`
+     - ``top.sv``
+     - Top level.
+     - *(top)*
+     - ``bridge``

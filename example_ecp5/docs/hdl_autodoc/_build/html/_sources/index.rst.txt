@@ -1,0 +1,28 @@
+ECP5 Stream Filter
+==================
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Design
+
+   overview
+   modules/top/index
+   registers
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Verification
+
+   testbenches/index
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Build
+
+   synthesis/index
+
+Indices
+-------
+
+* :ref:`genindex`
+* :ref:`search`
