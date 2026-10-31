@@ -30,8 +30,8 @@ from parse_build_info import (
     parse_device_utilisation,
     summarise_warnings,
 )
-from parse_utilization import ModuleUtilization, parse_utilization
-from parse_timing import ClockTiming, parse_timing
+from parse_utilization import ModuleUtilization, parse_utilization_text
+from parse_timing import ClockTiming, parse_timing_text
 from rst_escape import escape_rst
 
 
@@ -138,6 +138,14 @@ def _utilization_table_rst(modules: list[ModuleUtilization], vivado: bool) -> st
     return "\n".join(lines)
 
 
+def _has_content(util_modules, clocks, resources, build_info, warnings) -> bool:
+    """True if anything was actually parsed (file timestamps alone do not count)."""
+    facts = build_info and (build_info.yosys_version or build_info.nextpnr_version
+                            or build_info.device)
+    return bool(util_modules or clocks or resources or facts
+                or (warnings is not None and warnings.total))
+
+
 def _summary_rst(info: BuildInfo | None, documented_at: str | None) -> list[str]:
     """Build summary table; only facts that were found, or [] if there are none."""
     rows: list[tuple[str, str]] = []
@@ -204,7 +212,7 @@ def synthesis_index_rst(
     utilization, timing, warnings.  Called with only the first four arguments it
     behaves as before (minus the new title).
     """
-    if not util_modules and not clocks and not resources:
+    if not _has_content(util_modules, clocks, resources, build_info, warnings):
         return _PLACEHOLDER
 
     lines = ["Build", "=====", ""]
@@ -262,13 +270,29 @@ def module_synthesis_rst(module_name: str, util: ModuleUtilization | None) -> st
 
 # ── Orchestration ─────────────────────────────────────────────────────────────
 
+def _warn(path: Path, message: str) -> None:
+    print(f"  WARNING: report {path}: {message}", file=sys.stderr)
+
+
 def _read_text(path: Path) -> str | None:
-    """Text of a report (undecodable bytes replaced), or None if missing or empty."""
+    """
+    Text of a report, or None if it is missing, empty or binary.  A byte-order mark
+    is dropped; undecodable bytes are replaced (with a warning).
+    """
     try:
         data = path.read_bytes()
     except OSError:
         return None
-    return data.decode("utf-8", errors="replace") if data.strip() else None
+    if not data.strip():
+        return None
+    if b"\x00" in data:
+        _warn(path, "binary file — ignored")
+        return None
+    try:
+        return data.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        _warn(path, "not valid UTF-8 — decoded with replacement characters")
+        return data.decode("utf-8-sig", errors="replace")
 
 
 def _git_describe(cwd: Path) -> str | None:
@@ -312,29 +336,57 @@ def main(hierarchy_path: Path, docs_dir: Path, reports_dir: Path,
     vivado_time  = reports_dir / "vivado" / "timing_summary_routed.rpt"
     nextpnr_time = reports_dir / "yosys"  / "nextpnr.log"
 
-    sources = [vivado_util, yosys_util, yosys_log, vivado_time, nextpnr_time]
-    present = [p for p in sources if _read_text(p) is not None]
+    # Read every report once (warning about binary / non-UTF-8 files as we go).
+    texts = {p: _read_text(p) for p in
+             (vivado_util, yosys_util, yosys_log, vivado_time, nextpnr_time)}
+    present = [p for p, t in texts.items() if t is not None]
     if if_present and not present:
         _remove_build_pages(docs_dir)
         print(f"  Build: no reports found in {reports_dir} — section skipped")
         return False
 
-    util_modules, util_tool = parse_utilization(vivado_util)
+    def utilization(p: Path):
+        return parse_utilization_text(texts[p]) if texts[p] else ([], None)
+
+    def timing(p: Path):
+        return parse_timing_text(texts[p]) if texts[p] else ([], None)
+
+    util_modules, util_tool = utilization(vivado_util)
     if not util_modules:
-        util_modules, util_tool = parse_utilization(yosys_util)
+        util_modules, util_tool = utilization(yosys_util)
 
-    clocks, timing_tool = parse_timing(vivado_time)
+    clocks, timing_tool = timing(vivado_time)
     if not clocks:
-        clocks, timing_tool = parse_timing(nextpnr_time)
+        clocks, timing_tool = timing(nextpnr_time)
 
-    nextpnr_text = _read_text(nextpnr_time)
-    yosys_text   = _read_text(yosys_log)
+    nextpnr_text = texts[nextpnr_time]
+    yosys_text   = texts[yosys_log]
     resources    = parse_device_utilisation(nextpnr_text) if nextpnr_text else []
     log_texts    = [t for t in (yosys_text, nextpnr_text) if t is not None]
     warnings     = summarise_warnings(*log_texts) if log_texts else None
 
     newest = max((p.stat().st_mtime for p in present), default=None)
     build_info = parse_build_info(yosys_text, nextpnr_text, newest) if present else None
+
+    # Say which report files contributed nothing.
+    contributed = {
+        vivado_util:  bool(utilization(vivado_util)[0]),
+        yosys_util:   bool(utilization(yosys_util)[0]),
+        vivado_time:  bool(timing(vivado_time)[0]),
+        nextpnr_time: bool(timing(nextpnr_time)[0] or resources
+                           or (nextpnr_text and summarise_warnings(nextpnr_text).total)),
+        yosys_log:    bool(build_info and build_info.yosys_version
+                           or (yosys_text and summarise_warnings(yosys_text).total)),
+    }
+    for p in present:
+        if not contributed[p]:
+            _warn(p, "unrecognised format — nothing could be read from it")
+
+    content = _has_content(util_modules, clocks, resources, build_info, warnings)
+    if if_present and not content:
+        _remove_build_pages(docs_dir)
+        print(f"  Build: nothing recognisable in the reports in {reports_dir} — section skipped")
+        return False
 
     # Write synthesis/index.rst
     synth_dir = docs_dir / "synthesis"
@@ -343,7 +395,7 @@ def main(hierarchy_path: Path, docs_dir: Path, reports_dir: Path,
     index_path.write_text(synthesis_index_rst(
         util_modules, util_tool, clocks, timing_tool,
         build_info=build_info, resources=resources, warnings=warnings,
-        documented_at=_git_describe(docs_dir) if present else None))
+        documented_at=_git_describe(docs_dir) if content else None))
     print(f"  → {index_path}")
 
     # Write per-module synthesis.rst

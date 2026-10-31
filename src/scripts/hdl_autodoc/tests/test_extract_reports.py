@@ -333,3 +333,59 @@ def test_cli_accepts_if_present(tmp_path):
                          capture_output=True, text=True)
     assert out.returncode == 0, out.stderr
     assert not (docs / "synthesis").exists()
+
+
+# ── Review fixes: nothing parseable, bad files, byte-order marks ─────────────
+
+def test_a_yosys_log_alone_gives_a_page_with_summary_and_warnings_not_a_placeholder(tmp_path):
+    h, docs, rep = _reports(tmp_path, **{"yosys.log": _YOSYS_LOG})
+    assert main(h, docs, rep, if_present=True) is True
+    page = (docs / "synthesis" / "index.rst").read_text()
+    assert "0.56+186" in page and "\nWarnings\n" in page
+    assert "No synthesis reports available" not in page
+
+
+def test_report_files_that_hold_nothing_recognisable_give_no_section_and_warn(tmp_path, capsys):
+    h, docs, rep = _reports(tmp_path, **{
+        "nextpnr.log": bytes(range(0, 200)),                  # binary
+        "yosys.log": b"caf\xe9 but nothing else\n",            # not UTF-8, no content
+        "stat.txt": "not a yosys stat report\n",             # unrecognised
+    })
+    assert main(h, docs, rep, if_present=True) is False
+    assert not (docs / "synthesis").exists()
+    err = capsys.readouterr().err
+    assert "nextpnr.log" in err and "binary" in err
+    assert "yosys.log" in err and "UTF-8" in err
+    assert "stat.txt" in err and "unrecogni" in err
+
+
+def test_without_if_present_unrecognisable_reports_still_get_the_placeholder_and_warnings(tmp_path, capsys):
+    h, docs, rep = _reports(tmp_path, **{"stat.txt": "not a yosys stat report\n"})
+    assert main(h, docs, rep) is True
+    assert "No synthesis reports available" in (docs / "synthesis" / "index.rst").read_text()
+    assert "stat.txt" in capsys.readouterr().err
+
+
+def test_a_binary_report_is_ignored_with_a_warning_and_the_rest_renders(tmp_path, capsys):
+    h, docs, rep = _reports(tmp_path, **{"stat.txt": _YOSYS_STAT, "nextpnr.log": b"\x00\x01\x02"})
+    assert main(h, docs, rep, if_present=True) is True
+    assert "cnt" in (docs / "synthesis" / "index.rst").read_text()
+    assert "nextpnr.log" in capsys.readouterr().err
+
+
+def test_a_non_utf8_report_warns_but_still_renders(tmp_path, capsys):
+    log = _NEXTPNR_LOG.encode() + "Warning: caf\xe9 is odd\n".encode("latin-1")
+    h, docs, rep = _reports(tmp_path, **{"nextpnr.log": log})
+    assert main(h, docs, rep, if_present=True) is True
+    assert "UTF-8" in capsys.readouterr().err
+
+
+def test_a_utf8_byte_order_mark_does_not_stop_the_reports_parsing(tmp_path):
+    h, docs, rep = _reports(tmp_path, **{
+        "stat.txt": ("\ufeff" + _YOSYS_STAT).encode("utf-8"),
+        "nextpnr.log": ("\ufeff" + _NEXTPNR_LOG).encode("utf-8"),
+    })
+    assert main(h, docs, rep, if_present=True) is True
+    page = (docs / "synthesis" / "index.rst").read_text()
+    assert "346.86" in page and "TRELLIS_FF" in page
+    assert "16" in page and "cnt" in page          # the BOM-prefixed stat.txt parsed

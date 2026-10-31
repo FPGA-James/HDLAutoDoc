@@ -118,10 +118,14 @@ def parse_timing(path: Path) -> tuple[list[ClockTiming], str | None]:
     if not path.exists():
         return [], None
     try:
-        text = path.read_text(errors="replace")
+        text = path.read_text(encoding="utf-8-sig", errors="replace")
     except OSError:
         return [], None
+    return parse_timing_text(text)
 
+
+def parse_timing_text(text: str) -> tuple[list[ClockTiming], str | None]:
+    """Like parse_timing, for text that has already been read."""
     if "WNS(ns)" in text or "Design Timing Summary" in text:
         return _parse_vivado(text), "vivado"
     if "Max frequency for clock" in text:

@@ -342,3 +342,64 @@ def test_discover_survives_empty_binary_and_non_utf8_files(tmp_path, capsys):
     assert "blob" not in names and "empty" not in names and "test_bad" not in names
     err = capsys.readouterr().err
     assert "blob.vhd" in err and "test_bad.py" in err          # warned, not crashed
+
+
+# ── Review fixes: output directories, helper modules, byte-order marks ───────
+
+def test_simulator_output_directories_are_not_scanned(tmp_path):
+    """VUnit copies sources into vunit_out/; those copies are not testbenches."""
+    tb = tmp_path / "tb" / "vunit"
+    (tb / "vunit_out" / "preprocessed" / "lib").mkdir(parents=True)
+    (tb / "tb_fifo.vhd").write_text(VUNIT_VHDL)
+    (tb / "vunit_out" / "preprocessed" / "lib" / "tb_fifo.vhd").write_text(VUNIT_VHDL)
+    for hidden in (".cache", "sim_build", "__pycache__", "obj_dir", "xsim.dir"):
+        (tb / hidden).mkdir()
+        (tb / hidden / "tb_copy.vhd").write_text(VUNIT_VHDL.replace("tb_fifo", "tb_copy"))
+    tbs = discover_testbenches(tmp_path / "tb", set())
+    assert [t.name for t in tbs] == ["tb_fifo"]
+
+
+def test_a_module_instantiated_by_another_testbench_is_a_helper_not_a_testbench(tmp_path):
+    d = tmp_path / "tb" / "directed"
+    d.mkdir(parents=True)
+    (d / "axi_bfm.sv").write_text("// Bus functional model.\nmodule axi_bfm (input logic clk);\nendmodule\n")
+    (d / "tb_top.sv").write_text(
+        "// Top bench.\nmodule tb_top;\n  logic clk;\n  axi_bfm u_bfm (.clk(clk));\n"
+        "  // TEST: smoke — runs\nendmodule\n")
+    names = [t.name for t in discover_testbenches(tmp_path / "tb", set())]
+    assert names == ["tb_top"]
+
+
+def test_vhdl_helper_entities_instantiated_by_a_testbench_are_skipped_too(tmp_path):
+    d = tmp_path / "tb" / "directed"
+    d.mkdir(parents=True)
+    (d / "uart_model.vhd").write_text("-- Model.\nentity uart_model is end entity;\n")
+    (d / "tb_uart.vhd").write_text(
+        "-- Bench.\nentity tb_uart is end entity;\narchitecture a of tb_uart is begin\n"
+        "  u : entity work.uart_model port map (clk => clk);\nend;\n")
+    assert [t.name for t in discover_testbenches(tmp_path / "tb", set())] == ["tb_uart"]
+
+
+def test_a_testbench_that_nothing_instantiates_is_kept(tmp_path):
+    d = tmp_path / "tb" / "directed"
+    d.mkdir(parents=True)
+    (d / "tb_a.sv").write_text("// A.\nmodule tb_a;\nendmodule\n")
+    (d / "tb_b.sv").write_text("// B.\nmodule tb_b;\nendmodule\n")
+    assert [t.name for t in discover_testbenches(tmp_path / "tb", set())] == ["tb_a", "tb_b"]
+
+
+def test_a_utf8_byte_order_mark_does_not_hide_a_cocotb_testbench(tmp_path):
+    d = tmp_path / "tb" / "cocotb"
+    d.mkdir(parents=True)
+    (d / "test_bom.py").write_bytes(
+        b'\xef\xbb\xbf"""BOM bench."""\nimport cocotb\n@cocotb.test()\nasync def a(dut):\n    """A."""\n')
+    (tb,) = discover_testbenches(tmp_path / "tb", set())
+    assert tb.name == "test_bom" and tb.purpose == "BOM bench." and len(tb.tests) == 1
+
+
+def test_a_utf8_byte_order_mark_does_not_hide_an_hdl_header_purpose(tmp_path):
+    d = tmp_path / "tb" / "directed"
+    d.mkdir(parents=True)
+    (d / "tb_bom.vhd").write_bytes(b"\xef\xbb\xbf-- FIFO bench.\nlibrary ieee;\nentity tb_bom is end entity;\n")
+    (tb,) = discover_testbenches(tmp_path / "tb", set())
+    assert tb.purpose == "FIFO bench."

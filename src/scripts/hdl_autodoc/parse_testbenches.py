@@ -40,6 +40,9 @@ from pathlib import Path
 from parse_hierarchy import extract_instantiations_sv, extract_instantiations_vhdl
 
 FRAMEWORKS = ("vunit", "cocotb", "directed")
+# Simulator and tool output that may sit under tb/ (VUnit copies sources into
+# vunit_out/, for instance); anything in them is a copy, not a testbench.
+_OUTPUT_DIRS = {"vunit_out", "sim_build", "__pycache__", "obj_dir", "xsim.dir", "work"}
 _HDL_SUFFIXES = {".vhd", ".vhdl", ".sv", ".v"}
 _VHDL_SUFFIXES = {".vhd", ".vhdl"}
 
@@ -354,10 +357,10 @@ def _read(path: Path) -> str | None:
         _warn(path, "binary file — skipped")
         return None
     try:
-        return data.decode("utf-8")
+        return data.decode("utf-8-sig")             # also drops a byte-order mark
     except UnicodeDecodeError:
         _warn(path, "not valid UTF-8 — decoded with replacement characters")
-        return data.decode("utf-8", errors="replace")
+        return data.decode("utf-8-sig", errors="replace")
 
 
 def discover_testbenches(tb_dir: Path, module_names: set[str]) -> list[Testbench]:
@@ -371,9 +374,12 @@ def discover_testbenches(tb_dir: Path, module_names: set[str]) -> list[Testbench
         return []
 
     found: list[Testbench] = []
+    sources: dict[int, tuple[str, str]] = {}      # id(testbench) -> (text, suffix)
     noted: set[str] = set()
     for path in sorted(p for p in tb_dir.rglob("*") if p.is_file()):
         rel = path.relative_to(tb_dir)
+        if any(p.startswith(".") or p in _OUTPUT_DIRS for p in rel.parts[:-1]):
+            continue
         if len(rel.parts) == 1:
             framework, label = "directed", "files directly in the testbench directory"
         else:
@@ -413,9 +419,24 @@ def discover_testbenches(tb_dir: Path, module_names: set[str]) -> list[Testbench
                 tests = parse_vunit_hdl(text, suffix)
             else:
                 tests = parse_directed(text, suffix) or [TestCase(name, purpose)]
-        found.append(Testbench(name, shown, framework, purpose, tests,
-                               link_dut(path.stem if framework == "cocotb" else name,
-                                        text, suffix, module_names)))
+        tb = Testbench(name, shown, framework, purpose, tests,
+                       link_dut(path.stem if framework == "cocotb" else name,
+                                text, suffix, module_names))
+        found.append(tb)
+        sources[id(tb)] = (text, suffix)
+
+    # A module that another testbench file instantiates is a helper (a bus
+    # functional model, a memory model), not a testbench.
+    hdl = [t for t in found if t.framework != "cocotb"]
+    known = {t.name.lower() for t in hdl}
+    used: set[str] = set()
+    for t in hdl:
+        text, suffix = sources[id(t)]
+        code, _ = _scan(text, suffix)
+        others = known - {t.name.lower()}
+        used |= set(extract_instantiations_vhdl(code, others) if suffix in _VHDL_SUFFIXES
+                    else extract_instantiations_sv(code, others))
+    found = [t for t in found if t.framework == "cocotb" or t.name.lower() not in used]
 
     order = {fw: i for i, fw in enumerate(FRAMEWORKS)}
     return sorted(found, key=lambda t: (order[t.framework], t.name.lower()))

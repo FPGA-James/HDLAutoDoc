@@ -402,7 +402,7 @@ reports/
     └── yosys.log
 ```
 
-The reports are picked up by the normal `make doc-html`. With no report files there is **no Build section**; `make doc-reports` still writes the explicit placeholder page. `make doc-html BUILD=0` removes the section (run `make doc-clean` to also drop the HTML from an earlier build).
+The reports are picked up by the normal `make doc-html`. With no report files — or none that could be read — there is **no Build section**, and a warning names each file that was binary, not UTF-8, or in an unrecognised format; `make doc-reports` still writes the explicit placeholder page. `make doc-html BUILD=0` removes the section (run `make doc-clean` to also drop the HTML from an earlier build).
 
 ### What you get
 

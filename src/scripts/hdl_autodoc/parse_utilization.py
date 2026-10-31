@@ -215,10 +215,14 @@ def parse_utilization(path: Path) -> tuple[list[ModuleUtilization], str | None]:
     if not path.exists():
         return [], None
     try:
-        text = path.read_text(errors="replace")
+        text = path.read_text(encoding="utf-8-sig", errors="replace")
     except OSError:
         return [], None
+    return parse_utilization_text(text)
 
+
+def parse_utilization_text(text: str) -> tuple[list[ModuleUtilization], str | None]:
+    """Like parse_utilization, for text that has already been read."""
     if re.search(r'\|\s*Site Type\s*\|', text) or "Slice LUTs" in text:
         return _parse_vivado(text), "vivado"
     if re.search(r'^=== .+ ===$', text, re.MULTILINE):
