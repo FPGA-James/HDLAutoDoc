@@ -295,18 +295,36 @@ def _read_text(path: Path) -> str | None:
         return data.decode("utf-8-sig", errors="replace")
 
 
-def _git_describe(cwd: Path) -> str | None:
-    """
-    `git describe --tags --always --dirty` for the docs checkout, or None if
-    unavailable.  `--tags` matters: releases here are lightweight tags, which plain
-    `git describe` skips (it would report the nearest *annotated* tag instead).
-    """
+def _git(cwd: Path, *args: str) -> str | None:
+    """Output of a git command run in `cwd`, or None if git is missing or it fails."""
     try:
-        out = subprocess.run(["git", "describe", "--tags", "--always", "--dirty"], cwd=cwd,
-                             capture_output=True, text=True, timeout=5)
+        out = subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True, timeout=5)
     except (OSError, subprocess.SubprocessError):
         return None
-    return out.stdout.strip() if out.returncode == 0 and out.stdout.strip() else None
+    return out.stdout if out.returncode == 0 else None
+
+
+def _git_describe(cwd: Path) -> str | None:
+    """
+    The checkout's revision for the "Documented at" row, or None if unavailable:
+    `git describe --tags --always`, plus `-dirty` if tracked files *outside* `cwd`
+    (the docs directory) differ from HEAD.
+
+    `--tags` matters: releases here are lightweight tags, which plain `git describe`
+    skips.  Changes under the docs directory are ignored for "dirty" because generated
+    docs are often tracked, and rebuilding them is not a change to the design.
+    """
+    described = (_git(cwd, "describe", "--tags", "--always") or "").strip()
+    toplevel = (_git(cwd, "rev-parse", "--show-toplevel") or "").strip()
+    if not described or not toplevel:
+        return None
+    docs = Path(cwd).resolve()
+    status = _git(cwd, "status", "--porcelain", "--untracked-files=no") or ""
+    for line in status.splitlines():
+        path = line[3:].split(" -> ")[-1].strip().strip('"')
+        if not (Path(toplevel) / path).resolve().is_relative_to(docs):
+            return described + "-dirty"
+    return described
 
 
 def _remove_build_pages(docs_dir: Path) -> None:
