@@ -1,0 +1,1387 @@
+
+ /----------------------------------------------------------------------------\
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |  Copyright (C) 2012 - 2025  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |  Distributed under an ISC-like license, type "license" to see terms        |
+ \----------------------------------------------------------------------------/
+ Yosys 0.56+186 (git sha1 83d953e95, aarch64-apple-darwin23.5-clang++ 18.1.8 -fPIC -O3)
+
+-- Running command `read_verilog -sv src/axis_if.sv src/axil_if.sv src/axil_regs.sv src/stream_filter.sv src/top.sv; 	hierarchy -top top; synth_ecp5 -top top -json build/top.json; 	tee -o reports/yosys/stat.txt stat' --
+
+1. Executing Verilog-2005 frontend: src/axis_if.sv
+Parsing SystemVerilog input from `src/axis_if.sv' to AST representation.
+Generating RTLIL representation for module `\axis_if'.
+Successfully finished Verilog frontend.
+
+2. Executing Verilog-2005 frontend: src/axil_if.sv
+Parsing SystemVerilog input from `src/axil_if.sv' to AST representation.
+Generating RTLIL representation for module `\axil_if'.
+Successfully finished Verilog frontend.
+
+3. Executing Verilog-2005 frontend: src/axil_regs.sv
+Parsing SystemVerilog input from `src/axil_regs.sv' to AST representation.
+Generating RTLIL representation for module `\axil_regs'.
+src/axil_regs.sv:27: Warning: Identifier `\s_axil.awaddr' is implicitly declared.
+src/axil_regs.sv:28: Warning: Identifier `\s_axil.araddr' is implicitly declared.
+src/axil_regs.sv:29: Warning: Identifier `\s_axil.wdata' is implicitly declared.
+src/axil_regs.sv:32: Warning: Identifier `\s_axil.awvalid' is implicitly declared.
+src/axil_regs.sv:32: Warning: Identifier `\s_axil.wvalid' is implicitly declared.
+src/axil_regs.sv:33: Warning: Identifier `\s_axil.arvalid' is implicitly declared.
+src/axil_regs.sv:52: Warning: Identifier `\s_axil.bready' is implicitly declared.
+src/axil_regs.sv:64: Warning: Identifier `\s_axil.rready' is implicitly declared.
+src/axil_regs.sv:70: Warning: Identifier `\s_axil.awready' is implicitly declared.
+src/axil_regs.sv:71: Warning: Identifier `\s_axil.wready' is implicitly declared.
+src/axil_regs.sv:72: Warning: Identifier `\s_axil.bresp' is implicitly declared.
+src/axil_regs.sv:73: Warning: Identifier `\s_axil.bvalid' is implicitly declared.
+src/axil_regs.sv:74: Warning: Identifier `\s_axil.arready' is implicitly declared.
+src/axil_regs.sv:75: Warning: Identifier `\s_axil.rdata' is implicitly declared.
+src/axil_regs.sv:76: Warning: Identifier `\s_axil.rresp' is implicitly declared.
+src/axil_regs.sv:77: Warning: Identifier `\s_axil.rvalid' is implicitly declared.
+Successfully finished Verilog frontend.
+
+4. Executing Verilog-2005 frontend: src/stream_filter.sv
+Parsing SystemVerilog input from `src/stream_filter.sv' to AST representation.
+Generating RTLIL representation for module `\stream_filter'.
+src/stream_filter.sv:27: Warning: Identifier `\m_axis.tready' is implicitly declared.
+src/stream_filter.sv:28: Warning: Identifier `\s_axis.tvalid' is implicitly declared.
+src/stream_filter.sv:28: Warning: Identifier `\s_axis.tdata' is implicitly declared.
+src/stream_filter.sv:42: Warning: Identifier `\s_axis.tlast' is implicitly declared.
+src/stream_filter.sv:46: Warning: Identifier `\s_axis.tready' is implicitly declared.
+src/stream_filter.sv:47: Warning: Identifier `\m_axis.tdata' is implicitly declared.
+src/stream_filter.sv:48: Warning: Identifier `\m_axis.tvalid' is implicitly declared.
+src/stream_filter.sv:49: Warning: Identifier `\m_axis.tlast' is implicitly declared.
+Successfully finished Verilog frontend.
+
+5. Executing Verilog-2005 frontend: src/top.sv
+Parsing SystemVerilog input from `src/top.sv' to AST representation.
+Generating RTLIL representation for module `\top'.
+Successfully finished Verilog frontend.
+
+6. Executing HIERARCHY pass (managing design hierarchy).
+
+6.1. Analyzing design hierarchy..
+Top module:  \top
+Used module:     \stream_filter
+Used module:     \axil_regs
+Generating RTLIL representation for module `\top'.
+Generating RTLIL representation for module `\axil_regs'.
+Generating RTLIL representation for module `\stream_filter'.
+
+6.2. Analyzing design hierarchy..
+Top module:  \top
+Used module:     \axis_if
+Used module:     \axil_if
+Used module:     \stream_filter
+Used module:     \axil_regs
+Generating RTLIL representation for module `\stream_filter$interfaces$axis_ifaxis_if'.
+Generating RTLIL representation for module `\axil_regs$interfaces$axil_if'.
+
+6.3. Analyzing design hierarchy..
+Top module:  \top
+Used module:     \axis_if
+Used module:     \axil_if
+Used module:     \stream_filter$interfaces$axis_ifaxis_if
+Used module:     \axil_regs$interfaces$axil_if
+
+6.4. Analyzing design hierarchy..
+Top module:  \top
+Used module:     \axis_if
+Used module:     \axil_if
+Used module:     \stream_filter$interfaces$axis_ifaxis_if
+Used module:     \axil_regs$interfaces$axil_if
+Removing unused module `\stream_filter'.
+Removing unused module `\axil_regs'.
+Removed 2 unused modules.
+
+7. Executing SYNTH_ECP5 pass.
+
+7.1. Executing Verilog-2005 frontend: /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_sim.v
+Parsing Verilog input from `/Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_sim.v' to AST representation.
+Generating RTLIL representation for module `\LUT4'.
+Generating RTLIL representation for module `\$__ABC9_LUT5'.
+Generating RTLIL representation for module `\$__ABC9_LUT6'.
+Generating RTLIL representation for module `\$__ABC9_LUT7'.
+Generating RTLIL representation for module `\L6MUX21'.
+Generating RTLIL representation for module `\CCU2C'.
+Generating RTLIL representation for module `\TRELLIS_RAM16X2'.
+Generating RTLIL representation for module `\PFUMX'.
+Generating RTLIL representation for module `\TRELLIS_DPR16X4'.
+Generating RTLIL representation for module `\DPR16X4C'.
+Generating RTLIL representation for module `\LUT2'.
+Generating RTLIL representation for module `\TRELLIS_FF'.
+Generating RTLIL representation for module `\TRELLIS_IO'.
+Generating RTLIL representation for module `\INV'.
+Generating RTLIL representation for module `\TRELLIS_COMB'.
+Generating RTLIL representation for module `\DP16KD'.
+Generating RTLIL representation for module `\FD1P3AX'.
+Generating RTLIL representation for module `\FD1P3AY'.
+Generating RTLIL representation for module `\FD1P3BX'.
+Generating RTLIL representation for module `\FD1P3DX'.
+Generating RTLIL representation for module `\FD1P3IX'.
+Generating RTLIL representation for module `\FD1P3JX'.
+Generating RTLIL representation for module `\FD1S3AX'.
+Generating RTLIL representation for module `\FD1S3AY'.
+Generating RTLIL representation for module `\FD1S3BX'.
+Generating RTLIL representation for module `\FD1S3DX'.
+Generating RTLIL representation for module `\FD1S3IX'.
+Generating RTLIL representation for module `\FD1S3JX'.
+Generating RTLIL representation for module `\IFS1P3BX'.
+Generating RTLIL representation for module `\IFS1P3DX'.
+Generating RTLIL representation for module `\IFS1P3IX'.
+Generating RTLIL representation for module `\IFS1P3JX'.
+Generating RTLIL representation for module `\OFS1P3BX'.
+Generating RTLIL representation for module `\OFS1P3DX'.
+Generating RTLIL representation for module `\OFS1P3IX'.
+Generating RTLIL representation for module `\OFS1P3JX'.
+Generating RTLIL representation for module `\IB'.
+Generating RTLIL representation for module `\IBPU'.
+Generating RTLIL representation for module `\IBPD'.
+Generating RTLIL representation for module `\OB'.
+Generating RTLIL representation for module `\OBZ'.
+Generating RTLIL representation for module `\OBZPU'.
+Generating RTLIL representation for module `\OBZPD'.
+Generating RTLIL representation for module `\OBCO'.
+Generating RTLIL representation for module `\BB'.
+Generating RTLIL representation for module `\BBPU'.
+Generating RTLIL representation for module `\BBPD'.
+Generating RTLIL representation for module `\ILVDS'.
+Generating RTLIL representation for module `\OLVDS'.
+Successfully finished Verilog frontend.
+
+7.2. Executing Verilog-2005 frontend: /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_bb.v
+Parsing Verilog input from `/Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_bb.v' to AST representation.
+Generating RTLIL representation for module `\MULT18X18D'.
+Generating RTLIL representation for module `\ALU54B'.
+Generating RTLIL representation for module `\EHXPLLL'.
+Generating RTLIL representation for module `\DTR'.
+Generating RTLIL representation for module `\OSCG'.
+Generating RTLIL representation for module `\USRMCLK'.
+Generating RTLIL representation for module `\JTAGG'.
+Generating RTLIL representation for module `\DELAYF'.
+Generating RTLIL representation for module `\DELAYG'.
+Generating RTLIL representation for module `\IDDRX1F'.
+Generating RTLIL representation for module `\IDDRX2F'.
+Generating RTLIL representation for module `\IDDR71B'.
+Generating RTLIL representation for module `\IDDRX2DQA'.
+Generating RTLIL representation for module `\ODDRX1F'.
+Generating RTLIL representation for module `\ODDRX2F'.
+Generating RTLIL representation for module `\ODDR71B'.
+Generating RTLIL representation for module `\OSHX2A'.
+Generating RTLIL representation for module `\ODDRX2DQA'.
+Generating RTLIL representation for module `\ODDRX2DQSB'.
+Generating RTLIL representation for module `\TSHX2DQA'.
+Generating RTLIL representation for module `\TSHX2DQSA'.
+Generating RTLIL representation for module `\DQSBUFM'.
+Generating RTLIL representation for module `\DDRDLLA'.
+Generating RTLIL representation for module `\DLLDELD'.
+Generating RTLIL representation for module `\CLKDIVF'.
+Generating RTLIL representation for module `\ECLKSYNCB'.
+Generating RTLIL representation for module `\ECLKBRIDGECS'.
+Generating RTLIL representation for module `\DCCA'.
+Generating RTLIL representation for module `\DCSC'.
+Generating RTLIL representation for module `\DCUA'.
+Generating RTLIL representation for module `\EXTREFB'.
+Generating RTLIL representation for module `\PCSCLKDIV'.
+Generating RTLIL representation for module `\PUR'.
+Generating RTLIL representation for module `\GSR'.
+Generating RTLIL representation for module `\SGSR'.
+Generating RTLIL representation for module `\PDPW16KD'.
+Successfully finished Verilog frontend.
+
+7.3. Executing HIERARCHY pass (managing design hierarchy).
+
+7.3.1. Analyzing design hierarchy..
+Top module:  \top
+Used module:     \axis_if
+Used module:     \axil_if
+Used module:     \stream_filter$interfaces$axis_ifaxis_if
+Used module:     \axil_regs$interfaces$axil_if
+
+7.3.2. Analyzing design hierarchy..
+Top module:  \top
+Used module:     \axis_if
+Used module:     \axil_if
+Used module:     \stream_filter$interfaces$axis_ifaxis_if
+Used module:     \axil_regs$interfaces$axil_if
+Removed 0 unused modules.
+
+7.4. Executing PROC pass (convert processes to netlists).
+
+7.4.1. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Cleaned up 0 empty switches.
+
+7.4.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
+Marked 4 switch rules as full_case in process $proc$src/axil_regs.sv:35$45 in module axil_regs$interfaces$axil_if.
+Marked 2 switch rules as full_case in process $proc$src/stream_filter.sv:30$36 in module stream_filter$interfaces$axis_ifaxis_if.
+Removed a total of 0 dead cases.
+
+7.4.3. Executing PROC_PRUNE pass (remove redundant assignments in processes).
+Removed 0 redundant assignments.
+Promoted 0 assignments to connections.
+
+7.4.4. Executing PROC_INIT pass (extract init attributes).
+
+7.4.5. Executing PROC_ARST pass (detect async resets in processes).
+
+7.4.6. Executing PROC_ROM pass (convert switches to ROMs).
+Converted 0 switches.
+<suppressed ~11 debug messages>
+
+7.4.7. Executing PROC_MUX pass (convert decision trees to multiplexers).
+Creating decoders for process `\axil_regs$interfaces$axil_if.$proc$src/axil_regs.sv:35$45'.
+     1/6: $0\rvalid_r[0:0]
+     2/6: $0\bvalid_r[0:0]
+     3/6: $0\rdata_r[31:0]
+     4/6: $0\scratch_r[31:0]
+     5/6: $0\threshold_r[31:0]
+     6/6: $0\ctrl_r[31:0]
+Creating decoders for process `\stream_filter$interfaces$axis_ifaxis_if.$proc$src/stream_filter.sv:30$36'.
+     1/4: $0\tlast_r[0:0]
+     2/4: $0\tvalid_r[0:0]
+     3/4: $0\tdata_r[7:0]
+     4/4: $0\count[15:0]
+
+7.4.8. Executing PROC_DLATCH pass (convert process syncs to latches).
+
+7.4.9. Executing PROC_DFF pass (convert process syncs to FFs).
+Creating register for signal `\axil_regs$interfaces$axil_if.\ctrl_r' using process `\axil_regs$interfaces$axil_if.$proc$src/axil_regs.sv:35$45'.
+  created $dff cell `$procdff$345' with positive edge clock.
+Creating register for signal `\axil_regs$interfaces$axil_if.\threshold_r' using process `\axil_regs$interfaces$axil_if.$proc$src/axil_regs.sv:35$45'.
+  created $dff cell `$procdff$346' with positive edge clock.
+Creating register for signal `\axil_regs$interfaces$axil_if.\scratch_r' using process `\axil_regs$interfaces$axil_if.$proc$src/axil_regs.sv:35$45'.
+  created $dff cell `$procdff$347' with positive edge clock.
+Creating register for signal `\axil_regs$interfaces$axil_if.\rdata_r' using process `\axil_regs$interfaces$axil_if.$proc$src/axil_regs.sv:35$45'.
+  created $dff cell `$procdff$348' with positive edge clock.
+Creating register for signal `\axil_regs$interfaces$axil_if.\bvalid_r' using process `\axil_regs$interfaces$axil_if.$proc$src/axil_regs.sv:35$45'.
+  created $dff cell `$procdff$349' with positive edge clock.
+Creating register for signal `\axil_regs$interfaces$axil_if.\rvalid_r' using process `\axil_regs$interfaces$axil_if.$proc$src/axil_regs.sv:35$45'.
+  created $dff cell `$procdff$350' with positive edge clock.
+Creating register for signal `\stream_filter$interfaces$axis_ifaxis_if.\count' using process `\stream_filter$interfaces$axis_ifaxis_if.$proc$src/stream_filter.sv:30$36'.
+  created $dff cell `$procdff$351' with positive edge clock.
+Creating register for signal `\stream_filter$interfaces$axis_ifaxis_if.\tdata_r' using process `\stream_filter$interfaces$axis_ifaxis_if.$proc$src/stream_filter.sv:30$36'.
+  created $dff cell `$procdff$352' with positive edge clock.
+Creating register for signal `\stream_filter$interfaces$axis_ifaxis_if.\tvalid_r' using process `\stream_filter$interfaces$axis_ifaxis_if.$proc$src/stream_filter.sv:30$36'.
+  created $dff cell `$procdff$353' with positive edge clock.
+Creating register for signal `\stream_filter$interfaces$axis_ifaxis_if.\tlast_r' using process `\stream_filter$interfaces$axis_ifaxis_if.$proc$src/stream_filter.sv:30$36'.
+  created $dff cell `$procdff$354' with positive edge clock.
+
+7.4.10. Executing PROC_MEMWR pass (convert process memory writes to cells).
+
+7.4.11. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Found and cleaned up 7 empty switches in `\axil_regs$interfaces$axil_if.$proc$src/axil_regs.sv:35$45'.
+Removing empty process `axil_regs$interfaces$axil_if.$proc$src/axil_regs.sv:35$45'.
+Found and cleaned up 4 empty switches in `\stream_filter$interfaces$axis_ifaxis_if.$proc$src/stream_filter.sv:30$36'.
+Removing empty process `stream_filter$interfaces$axis_ifaxis_if.$proc$src/stream_filter.sv:30$36'.
+Cleaned up 11 empty switches.
+
+7.4.12. Executing OPT_EXPR pass (perform const folding).
+Optimizing module axil_regs$interfaces$axil_if.
+<suppressed ~2 debug messages>
+Optimizing module stream_filter$interfaces$axis_ifaxis_if.
+Optimizing module top.
+Optimizing module axil_if.
+Optimizing module axis_if.
+
+7.5. Executing FLATTEN pass (flatten design).
+Deleting now unused module axil_regs$interfaces$axil_if.
+Deleting now unused module stream_filter$interfaces$axis_ifaxis_if.
+Deleting now unused module axil_if.
+Deleting now unused module axis_if.
+<suppressed ~8 debug messages>
+
+7.6. Executing TRIBUF pass.
+
+7.7. Executing DEMINOUT pass (demote inout ports to input or output).
+
+7.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module top.
+
+7.9. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \top..
+Removed 0 unused cells and 89 unused wires.
+<suppressed ~51 debug messages>
+
+7.10. Executing CHECK pass (checking for obvious problems).
+Checking module top...
+Found and reported 0 problems.
+
+7.11. Executing OPT pass (performing simple optimizations).
+
+7.11.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module top.
+
+7.11.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\top'.
+Removed a total of 0 cells.
+
+7.11.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \top..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~36 debug messages>
+
+7.11.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \top.
+Performed a total of 0 changes.
+
+7.11.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\top'.
+Removed a total of 0 cells.
+
+7.11.6. Executing OPT_DFF pass (perform DFF optimizations).
+
+7.11.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \top..
+
+7.11.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module top.
+
+7.11.9. Finished OPT passes. (There is nothing left to do.)
+
+7.12. Executing FSM pass (extract and optimize FSM).
+
+7.12.1. Executing FSM_DETECT pass (finding FSMs in design).
+
+7.12.2. Executing FSM_EXTRACT pass (extracting FSM from design).
+
+7.12.3. Executing FSM_OPT pass (simple optimizations of FSMs).
+
+7.12.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \top..
+
+7.12.5. Executing FSM_OPT pass (simple optimizations of FSMs).
+
+7.12.6. Executing FSM_RECODE pass (re-assigning FSM state encoding).
+
+7.12.7. Executing FSM_INFO pass (dumping all available information on FSM cells).
+
+7.12.8. Executing FSM_MAP pass (mapping FSMs to basic logic).
+
+7.13. Executing OPT pass (performing simple optimizations).
+
+7.13.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module top.
+
+7.13.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\top'.
+Removed a total of 0 cells.
+
+7.13.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \top..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~36 debug messages>
+
+7.13.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \top.
+Performed a total of 0 changes.
+
+7.13.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\top'.
+Removed a total of 0 cells.
+
+7.13.6. Executing OPT_DFF pass (perform DFF optimizations).
+Adding SRST signal on $flatten\u_regs.$procdff$350 ($dff) from module top (D = $flatten\u_regs.$procmux$274_Y, Q = \u_regs.rvalid_r, rval = 1'0).
+Adding EN signal on $auto$ff.cc:266:slice$363 ($sdff) from module top (D = $flatten\u_regs.$procmux$274_Y, Q = \u_regs.rvalid_r).
+Adding SRST signal on $flatten\u_regs.$procdff$349 ($dff) from module top (D = $flatten\u_regs.$procmux$282_Y, Q = \u_regs.bvalid_r, rval = 1'0).
+Adding EN signal on $auto$ff.cc:266:slice$367 ($sdff) from module top (D = $flatten\u_regs.$procmux$282_Y, Q = \u_regs.bvalid_r).
+Adding SRST signal on $flatten\u_regs.$procdff$348 ($dff) from module top (D = $flatten\u_regs.$procmux$293_Y, Q = \u_regs.rdata_r, rval = 0).
+Adding EN signal on $auto$ff.cc:266:slice$371 ($sdff) from module top (D = $flatten\u_regs.$procmux$289_Y, Q = \u_regs.rdata_r).
+Adding SRST signal on $flatten\u_regs.$procdff$347 ($dff) from module top (D = $flatten\u_regs.$procmux$301_Y, Q = \u_regs.scratch_r, rval = 0).
+Adding EN signal on $auto$ff.cc:266:slice$373 ($sdff) from module top (D = \s_axil.wdata, Q = \u_regs.scratch_r).
+Adding SRST signal on $flatten\u_regs.$procdff$346 ($dff) from module top (D = $flatten\u_regs.$procmux$310_Y, Q = \u_regs.threshold_r, rval = 0).
+Adding EN signal on $auto$ff.cc:266:slice$377 ($sdff) from module top (D = \s_axil.wdata, Q = \u_regs.threshold_r).
+Adding SRST signal on $flatten\u_regs.$procdff$345 ($dff) from module top (D = $flatten\u_regs.$procmux$320_Y, Q = \u_regs.ctrl_r, rval = 0).
+Adding EN signal on $auto$ff.cc:266:slice$381 ($sdff) from module top (D = \s_axil.wdata, Q = \u_regs.ctrl_r).
+Adding EN signal on $flatten\u_filter.$procdff$354 ($dff) from module top (D = \s_axis.tlast, Q = \u_filter.tlast_r).
+Adding SRST signal on $flatten\u_filter.$procdff$353 ($dff) from module top (D = $flatten\u_filter.$procmux$330_Y, Q = \u_filter.tvalid_r, rval = 1'0).
+Adding EN signal on $auto$ff.cc:266:slice$390 ($sdff) from module top (D = \u_filter.pass, Q = \u_filter.tvalid_r).
+Adding EN signal on $flatten\u_filter.$procdff$352 ($dff) from module top (D = \s_axis.tdata, Q = \u_filter.tdata_r).
+Adding SRST signal on $flatten\u_filter.$procdff$351 ($dff) from module top (D = $flatten\u_filter.$procmux$340_Y, Q = \u_filter.count, rval = 16'0000000000000000).
+Adding EN signal on $auto$ff.cc:266:slice$397 ($sdff) from module top (D = $flatten\u_filter.$add$src/stream_filter.sv:34$39_Y, Q = \u_filter.count).
+
+7.13.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \top..
+Removed 21 unused cells and 21 unused wires.
+<suppressed ~22 debug messages>
+
+7.13.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module top.
+<suppressed ~2 debug messages>
+
+7.13.9. Rerunning OPT passes. (Maybe there is more to do..)
+
+7.13.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \top..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~8 debug messages>
+
+7.13.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \top.
+Performed a total of 0 changes.
+
+7.13.12. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\top'.
+<suppressed ~6 debug messages>
+Removed a total of 2 cells.
+
+7.13.13. Executing OPT_DFF pass (perform DFF optimizations).
+
+7.13.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \top..
+Removed 0 unused cells and 2 unused wires.
+<suppressed ~1 debug messages>
+
+7.13.15. Executing OPT_EXPR pass (perform const folding).
+Optimizing module top.
+
+7.13.16. Rerunning OPT passes. (Maybe there is more to do..)
+
+7.13.17. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \top..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~8 debug messages>
+
+7.13.18. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \top.
+Performed a total of 0 changes.
+
+7.13.19. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\top'.
+Removed a total of 0 cells.
+
+7.13.20. Executing OPT_DFF pass (perform DFF optimizations).
+
+7.13.21. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \top..
+
+7.13.22. Executing OPT_EXPR pass (perform const folding).
+Optimizing module top.
+
+7.13.23. Finished OPT passes. (There is nothing left to do.)
+
+7.14. Executing WREDUCE pass (reducing word size of cells).
+Removed top 1 bits (of 2) from port B of cell top.$flatten\u_regs.$procmux$291_CMP0 ($eq).
+Removed top 15 bits (of 16) from port B of cell top.$flatten\u_filter.$add$src/stream_filter.sv:34$39 ($add).
+
+7.15. Executing PEEPOPT pass (run peephole optimizers).
+
+7.16. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \top..
+
+7.17. Executing SHARE pass (SAT-based resource sharing).
+
+7.18. Executing TECHMAP pass (map to technology primitives).
+
+7.18.1. Executing Verilog-2005 frontend: /Users/james/tools/oss-cad-suite/libexec/../share/yosys/cmp2lut.v
+Parsing Verilog input from `/Users/james/tools/oss-cad-suite/libexec/../share/yosys/cmp2lut.v' to AST representation.
+Generating RTLIL representation for module `\_90_lut_cmp_'.
+Successfully finished Verilog frontend.
+
+7.18.2. Continuing TECHMAP pass.
+No more expansions possible.
+<suppressed ~36 debug messages>
+
+7.19. Executing OPT_EXPR pass (perform const folding).
+Optimizing module top.
+
+7.20. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \top..
+
+7.21. Executing TECHMAP pass (map to technology primitives).
+
+7.21.1. Executing Verilog-2005 frontend: /Users/james/tools/oss-cad-suite/libexec/../share/yosys/mul2dsp.v
+Parsing Verilog input from `/Users/james/tools/oss-cad-suite/libexec/../share/yosys/mul2dsp.v' to AST representation.
+Generating RTLIL representation for module `\_80_mul'.
+Generating RTLIL representation for module `\_90_soft_mul'.
+Successfully finished Verilog frontend.
+
+7.21.2. Executing Verilog-2005 frontend: /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/dsp_map.v
+Parsing Verilog input from `/Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/dsp_map.v' to AST representation.
+Generating RTLIL representation for module `\$__MUL18X18'.
+Successfully finished Verilog frontend.
+
+7.21.3. Continuing TECHMAP pass.
+No more expansions possible.
+<suppressed ~5 debug messages>
+
+7.22. Executing ALUMACC pass (create $alu and $macc cells).
+Extracting $alu and $macc cells in module top:
+  creating $macc model for $flatten\u_filter.$add$src/stream_filter.sv:34$39 ($add).
+  creating $alu model for $macc $flatten\u_filter.$add$src/stream_filter.sv:34$39.
+  creating $alu model for $flatten\u_filter.$ge$src/stream_filter.sv:28$34 ($ge): new $alu
+  creating $alu cell for $flatten\u_filter.$ge$src/stream_filter.sv:28$34: $auto$alumacc.cc:495:replace_alu$401
+  creating $alu cell for $flatten\u_filter.$add$src/stream_filter.sv:34$39: $auto$alumacc.cc:495:replace_alu$414
+  created 2 $alu and 0 $macc cells.
+
+7.23. Executing OPT pass (performing simple optimizations).
+
+7.23.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module top.
+
+7.23.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\top'.
+Removed a total of 0 cells.
+
+7.23.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \top..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~8 debug messages>
+
+7.23.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \top.
+Performed a total of 0 changes.
+
+7.23.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\top'.
+Removed a total of 0 cells.
+
+7.23.6. Executing OPT_DFF pass (perform DFF optimizations).
+
+7.23.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \top..
+Removed 0 unused cells and 1 unused wires.
+<suppressed ~1 debug messages>
+
+7.23.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module top.
+
+7.23.9. Rerunning OPT passes. (Maybe there is more to do..)
+
+7.23.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \top..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~8 debug messages>
+
+7.23.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \top.
+Performed a total of 0 changes.
+
+7.23.12. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\top'.
+Removed a total of 0 cells.
+
+7.23.13. Executing OPT_DFF pass (perform DFF optimizations).
+
+7.23.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \top..
+
+7.23.15. Executing OPT_EXPR pass (perform const folding).
+Optimizing module top.
+
+7.23.16. Finished OPT passes. (There is nothing left to do.)
+
+7.24. Executing MEMORY pass.
+
+7.24.1. Executing OPT_MEM pass (optimize memories).
+Performed a total of 0 transformations.
+
+7.24.2. Executing OPT_MEM_PRIORITY pass (removing unnecessary memory write priority relations).
+Performed a total of 0 transformations.
+
+7.24.3. Executing OPT_MEM_FEEDBACK pass (finding memory read-to-write feedback paths).
+
+7.24.4. Executing MEMORY_BMUX2ROM pass (converting muxes to ROMs).
+
+7.24.5. Executing MEMORY_DFF pass (merging $dff cells to $memrd).
+
+7.24.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \top..
+
+7.24.7. Executing MEMORY_SHARE pass (consolidating $memrd/$memwr cells).
+
+7.24.8. Executing OPT_MEM_WIDEN pass (optimize memories where all ports are wide).
+Performed a total of 0 transformations.
+
+7.24.9. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \top..
+
+7.24.10. Executing MEMORY_COLLECT pass (generating $mem cells).
+
+7.25. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \top..
+
+7.26. Executing MEMORY_LIBMAP pass (mapping memories to cells).
+
+7.27. Executing TECHMAP pass (map to technology primitives).
+
+7.27.1. Executing Verilog-2005 frontend: /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/lutrams_map.v
+Parsing Verilog input from `/Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/lutrams_map.v' to AST representation.
+Generating RTLIL representation for module `\$__TRELLIS_DPR16X4_'.
+Successfully finished Verilog frontend.
+
+7.27.2. Executing Verilog-2005 frontend: /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/brams_map.v
+Parsing Verilog input from `/Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/brams_map.v' to AST representation.
+Generating RTLIL representation for module `\$__ECP5_DP16KD_'.
+Generating RTLIL representation for module `\$__ECP5_PDPW16KD_'.
+Successfully finished Verilog frontend.
+
+7.27.3. Continuing TECHMAP pass.
+No more expansions possible.
+<suppressed ~5 debug messages>
+
+7.28. Executing OPT pass (performing simple optimizations).
+
+7.28.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module top.
+<suppressed ~2 debug messages>
+
+7.28.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\top'.
+Removed a total of 0 cells.
+
+7.28.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+7.28.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \top..
+Removed 0 unused cells and 2 unused wires.
+<suppressed ~1 debug messages>
+
+7.28.5. Finished fast OPT passes.
+
+7.29. Executing MEMORY_MAP pass (converting memories to logic and flip-flops).
+
+7.30. Executing OPT pass (performing simple optimizations).
+
+7.30.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module top.
+
+7.30.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\top'.
+Removed a total of 0 cells.
+
+7.30.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \top..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~6 debug messages>
+
+7.30.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \top.
+Performed a total of 0 changes.
+
+7.30.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\top'.
+Removed a total of 0 cells.
+
+7.30.6. Executing OPT_DFF pass (perform DFF optimizations).
+
+7.30.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \top..
+
+7.30.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module top.
+
+7.30.9. Finished OPT passes. (There is nothing left to do.)
+
+7.31. Executing TECHMAP pass (map to technology primitives).
+
+7.31.1. Executing Verilog-2005 frontend: /Users/james/tools/oss-cad-suite/libexec/../share/yosys/techmap.v
+Parsing Verilog input from `/Users/james/tools/oss-cad-suite/libexec/../share/yosys/techmap.v' to AST representation.
+Generating RTLIL representation for module `\_90_simplemap_bool_ops'.
+Generating RTLIL representation for module `\_90_simplemap_reduce_ops'.
+Generating RTLIL representation for module `\_90_simplemap_logic_ops'.
+Generating RTLIL representation for module `\_90_simplemap_compare_ops'.
+Generating RTLIL representation for module `\_90_simplemap_various'.
+Generating RTLIL representation for module `\_90_simplemap_registers'.
+Generating RTLIL representation for module `\_90_shift_ops_shr_shl_sshl_sshr'.
+Generating RTLIL representation for module `\_90_shift_shiftx'.
+Generating RTLIL representation for module `\_90_fa'.
+Generating RTLIL representation for module `\_90_lcu_brent_kung'.
+Generating RTLIL representation for module `\_90_alu'.
+Generating RTLIL representation for module `\_90_macc'.
+Generating RTLIL representation for module `\_90_alumacc'.
+Generating RTLIL representation for module `\$__div_mod_u'.
+Generating RTLIL representation for module `\$__div_mod_trunc'.
+Generating RTLIL representation for module `\_90_div'.
+Generating RTLIL representation for module `\_90_mod'.
+Generating RTLIL representation for module `\$__div_mod_floor'.
+Generating RTLIL representation for module `\_90_divfloor'.
+Generating RTLIL representation for module `\_90_modfloor'.
+Generating RTLIL representation for module `\_90_pow'.
+Generating RTLIL representation for module `\_90_pmux'.
+Generating RTLIL representation for module `\_90_demux'.
+Generating RTLIL representation for module `\_90_lut'.
+Successfully finished Verilog frontend.
+
+7.31.2. Executing Verilog-2005 frontend: /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/arith_map.v
+Parsing Verilog input from `/Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/arith_map.v' to AST representation.
+Generating RTLIL representation for module `\_80_ecp5_alu'.
+Successfully finished Verilog frontend.
+
+7.31.3. Continuing TECHMAP pass.
+Using extmapper simplemap for cells of type $reduce_or.
+Using extmapper simplemap for cells of type $not.
+Using extmapper simplemap for cells of type $sdffe.
+Using extmapper simplemap for cells of type $logic_not.
+Using extmapper simplemap for cells of type $eq.
+Using template $paramod$54d740639e1393b22262823179ff783ea9f17a35\_90_pmux for cells of type $pmux.
+Using extmapper simplemap for cells of type $mux.
+Using extmapper simplemap for cells of type $logic_and.
+Using extmapper simplemap for cells of type $or.
+Using extmapper simplemap for cells of type $reduce_and.
+Using template $paramod$a1bc51c02ce12ac21eb18988e83292af48ed7d72\_80_ecp5_alu for cells of type $alu.
+Using extmapper simplemap for cells of type $dffe.
+Using extmapper simplemap for cells of type $logic_or.
+Using template $paramod$2af30114e9bd4ccb04dad757b3f0a8f6bf0615b0\_80_ecp5_alu for cells of type $alu.
+Using extmapper simplemap for cells of type $reduce_bool.
+Using extmapper simplemap for cells of type $and.
+Using extmapper simplemap for cells of type $xor.
+Using extmapper simplemap for cells of type $pos.
+No more expansions possible.
+<suppressed ~265 debug messages>
+
+7.32. Executing OPT pass (performing simple optimizations).
+
+7.32.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module top.
+<suppressed ~108 debug messages>
+
+7.32.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\top'.
+<suppressed ~6 debug messages>
+Removed a total of 2 cells.
+
+7.32.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+7.32.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \top..
+Removed 38 unused cells and 227 unused wires.
+<suppressed ~39 debug messages>
+
+7.32.5. Finished fast OPT passes.
+
+7.33. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \top..
+
+7.34. Executing DFFLEGALIZE pass (convert FFs to types supported by the target).
+
+7.35. Executing TECHMAP pass (map to technology primitives).
+
+7.35.1. Executing Verilog-2005 frontend: /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_map.v
+Parsing Verilog input from `/Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_map.v' to AST representation.
+Generating RTLIL representation for module `\$_DFF_N_'.
+Generating RTLIL representation for module `\$_DFF_P_'.
+Generating RTLIL representation for module `\$_DFFE_NN_'.
+Generating RTLIL representation for module `\$_DFFE_PN_'.
+Generating RTLIL representation for module `\$_DFFE_NP_'.
+Generating RTLIL representation for module `\$_DFFE_PP_'.
+Generating RTLIL representation for module `\$_DFF_NP0_'.
+Generating RTLIL representation for module `\$_DFF_NP1_'.
+Generating RTLIL representation for module `\$_DFF_PP0_'.
+Generating RTLIL representation for module `\$_DFF_PP1_'.
+Generating RTLIL representation for module `\$_SDFF_NP0_'.
+Generating RTLIL representation for module `\$_SDFF_NP1_'.
+Generating RTLIL representation for module `\$_SDFF_PP0_'.
+Generating RTLIL representation for module `\$_SDFF_PP1_'.
+Generating RTLIL representation for module `\$_DFFE_NP0P_'.
+Generating RTLIL representation for module `\$_DFFE_NP1P_'.
+Generating RTLIL representation for module `\$_DFFE_PP0P_'.
+Generating RTLIL representation for module `\$_DFFE_PP1P_'.
+Generating RTLIL representation for module `\$_DFFE_NP0N_'.
+Generating RTLIL representation for module `\$_DFFE_NP1N_'.
+Generating RTLIL representation for module `\$_DFFE_PP0N_'.
+Generating RTLIL representation for module `\$_DFFE_PP1N_'.
+Generating RTLIL representation for module `\$_SDFFE_NP0P_'.
+Generating RTLIL representation for module `\$_SDFFE_NP1P_'.
+Generating RTLIL representation for module `\$_SDFFE_PP0P_'.
+Generating RTLIL representation for module `\$_SDFFE_PP1P_'.
+Generating RTLIL representation for module `\$_SDFFE_NP0N_'.
+Generating RTLIL representation for module `\$_SDFFE_NP1N_'.
+Generating RTLIL representation for module `\$_SDFFE_PP0N_'.
+Generating RTLIL representation for module `\$_SDFFE_PP1N_'.
+Generating RTLIL representation for module `\$_ALDFF_NP_'.
+Generating RTLIL representation for module `\$_ALDFF_PP_'.
+Generating RTLIL representation for module `\$_ALDFFE_NPN_'.
+Generating RTLIL representation for module `\$_ALDFFE_NPP_'.
+Generating RTLIL representation for module `\$_ALDFFE_PPN_'.
+Generating RTLIL representation for module `\$_ALDFFE_PPP_'.
+Generating RTLIL representation for module `\FD1P3AX'.
+Generating RTLIL representation for module `\FD1P3AY'.
+Generating RTLIL representation for module `\FD1P3BX'.
+Generating RTLIL representation for module `\FD1P3DX'.
+Generating RTLIL representation for module `\FD1P3IX'.
+Generating RTLIL representation for module `\FD1P3JX'.
+Generating RTLIL representation for module `\FD1S3AX'.
+Generating RTLIL representation for module `\FD1S3AY'.
+Generating RTLIL representation for module `\FD1S3BX'.
+Generating RTLIL representation for module `\FD1S3DX'.
+Generating RTLIL representation for module `\FD1S3IX'.
+Generating RTLIL representation for module `\FD1S3JX'.
+Generating RTLIL representation for module `\IFS1P3BX'.
+Generating RTLIL representation for module `\IFS1P3DX'.
+Generating RTLIL representation for module `\IFS1P3IX'.
+Generating RTLIL representation for module `\IFS1P3JX'.
+Generating RTLIL representation for module `\OFS1P3BX'.
+Generating RTLIL representation for module `\OFS1P3DX'.
+Generating RTLIL representation for module `\OFS1P3IX'.
+Generating RTLIL representation for module `\OFS1P3JX'.
+Generating RTLIL representation for module `\IB'.
+Generating RTLIL representation for module `\IBPU'.
+Generating RTLIL representation for module `\IBPD'.
+Generating RTLIL representation for module `\OB'.
+Generating RTLIL representation for module `\OBZ'.
+Generating RTLIL representation for module `\OBZPU'.
+Generating RTLIL representation for module `\OBZPD'.
+Generating RTLIL representation for module `\OBCO'.
+Generating RTLIL representation for module `\BB'.
+Generating RTLIL representation for module `\BBPU'.
+Generating RTLIL representation for module `\BBPD'.
+Generating RTLIL representation for module `\ILVDS'.
+Generating RTLIL representation for module `\OLVDS'.
+Successfully finished Verilog frontend.
+
+7.35.2. Continuing TECHMAP pass.
+Using template \$_SDFFE_PP0P_ for cells of type $_SDFFE_PP0P_.
+Using template $paramod\$_DFFE_PP_\_TECHMAP_WIREINIT_Q_=1'x for cells of type $_DFFE_PP_.
+No more expansions possible.
+<suppressed ~238 debug messages>
+
+7.36. Executing OPT_EXPR pass (perform const folding).
+Optimizing module top.
+
+7.37. Executing SIMPLEMAP pass (map simple cells to gate primitives).
+
+7.38. Executing LATTICE_GSR pass (implement FF init values).
+Handling GSR in top.
+
+7.39. Executing ATTRMVCP pass (move or copy attributes).
+
+7.40. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \top..
+Removed 0 unused cells and 927 unused wires.
+<suppressed ~1 debug messages>
+
+7.41. Executing TECHMAP pass (map to technology primitives).
+
+7.41.1. Executing Verilog-2005 frontend: /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/latches_map.v
+Parsing Verilog input from `/Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/latches_map.v' to AST representation.
+Generating RTLIL representation for module `\$_DLATCH_N_'.
+Generating RTLIL representation for module `\$_DLATCH_P_'.
+Successfully finished Verilog frontend.
+
+7.41.2. Continuing TECHMAP pass.
+No more expansions possible.
+<suppressed ~4 debug messages>
+
+7.42. Executing ABC9 pass.
+
+7.42.1. Executing ABC9_OPS pass (helper functions for ABC9).
+
+7.42.2. Executing ABC9_OPS pass (helper functions for ABC9).
+
+7.42.3. Executing SCC pass (detecting logic loops).
+Found 0 SCCs in module top.
+Found 0 SCCs.
+
+7.42.4. Executing ABC9_OPS pass (helper functions for ABC9).
+
+7.42.5. Executing TECHMAP pass (map to technology primitives).
+
+7.42.5.1. Executing Verilog-2005 frontend: /Users/james/tools/oss-cad-suite/libexec/../share/yosys/techmap.v
+Parsing Verilog input from `/Users/james/tools/oss-cad-suite/libexec/../share/yosys/techmap.v' to AST representation.
+Generating RTLIL representation for module `\_90_simplemap_bool_ops'.
+Generating RTLIL representation for module `\_90_simplemap_reduce_ops'.
+Generating RTLIL representation for module `\_90_simplemap_logic_ops'.
+Generating RTLIL representation for module `\_90_simplemap_compare_ops'.
+Generating RTLIL representation for module `\_90_simplemap_various'.
+Generating RTLIL representation for module `\_90_simplemap_registers'.
+Generating RTLIL representation for module `\_90_shift_ops_shr_shl_sshl_sshr'.
+Generating RTLIL representation for module `\_90_shift_shiftx'.
+Generating RTLIL representation for module `\_90_fa'.
+Generating RTLIL representation for module `\_90_lcu_brent_kung'.
+Generating RTLIL representation for module `\_90_alu'.
+Generating RTLIL representation for module `\_90_macc'.
+Generating RTLIL representation for module `\_90_alumacc'.
+Generating RTLIL representation for module `\$__div_mod_u'.
+Generating RTLIL representation for module `\$__div_mod_trunc'.
+Generating RTLIL representation for module `\_90_div'.
+Generating RTLIL representation for module `\_90_mod'.
+Generating RTLIL representation for module `\$__div_mod_floor'.
+Generating RTLIL representation for module `\_90_divfloor'.
+Generating RTLIL representation for module `\_90_modfloor'.
+Generating RTLIL representation for module `\_90_pow'.
+Generating RTLIL representation for module `\_90_pmux'.
+Generating RTLIL representation for module `\_90_demux'.
+Generating RTLIL representation for module `\_90_lut'.
+Successfully finished Verilog frontend.
+
+7.42.5.2. Continuing TECHMAP pass.
+No more expansions possible.
+<suppressed ~162 debug messages>
+
+7.42.6. Executing OPT pass (performing simple optimizations).
+
+7.42.6.1. Executing OPT_EXPR pass (perform const folding).
+
+7.42.6.2. Executing OPT_MERGE pass (detect identical cells).
+Removed a total of 0 cells.
+
+7.42.6.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Removed 0 multiplexer ports.
+
+7.42.6.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+Performed a total of 0 changes.
+
+7.42.6.5. Executing OPT_MERGE pass (detect identical cells).
+Removed a total of 0 cells.
+
+7.42.6.6. Executing OPT_DFF pass (perform DFF optimizations).
+
+7.42.6.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+
+7.42.6.8. Executing OPT_EXPR pass (perform const folding).
+
+7.42.6.9. Finished OPT passes. (There is nothing left to do.)
+
+7.42.7. Executing TECHMAP pass (map to technology primitives).
+
+7.42.7.1. Executing Verilog-2005 frontend: /Users/james/tools/oss-cad-suite/libexec/../share/yosys/abc9_map.v
+Parsing Verilog input from `/Users/james/tools/oss-cad-suite/libexec/../share/yosys/abc9_map.v' to AST representation.
+Successfully finished Verilog frontend.
+
+7.42.7.2. Continuing TECHMAP pass.
+No more expansions possible.
+<suppressed ~2 debug messages>
+
+7.42.8. Executing Verilog-2005 frontend: /Users/james/tools/oss-cad-suite/libexec/../share/yosys/abc9_model.v
+Parsing Verilog input from `/Users/james/tools/oss-cad-suite/libexec/../share/yosys/abc9_model.v' to AST representation.
+Generating RTLIL representation for module `$__ABC9_DELAY'.
+Generating RTLIL representation for module `$__ABC9_SCC_BREAKER'.
+Generating RTLIL representation for module `$__DFF_N__$abc9_flop'.
+Generating RTLIL representation for module `$__DFF_P__$abc9_flop'.
+Successfully finished Verilog frontend.
+
+7.42.9. Executing ABC9_OPS pass (helper functions for ABC9).
+<suppressed ~2 debug messages>
+
+7.42.10. Executing ABC9_OPS pass (helper functions for ABC9).
+
+7.42.11. Executing ABC9_OPS pass (helper functions for ABC9).
+<suppressed ~2 debug messages>
+
+7.42.12. Executing TECHMAP pass (map to technology primitives).
+
+7.42.12.1. Executing Verilog-2005 frontend: /Users/james/tools/oss-cad-suite/libexec/../share/yosys/techmap.v
+Parsing Verilog input from `/Users/james/tools/oss-cad-suite/libexec/../share/yosys/techmap.v' to AST representation.
+Generating RTLIL representation for module `\_90_simplemap_bool_ops'.
+Generating RTLIL representation for module `\_90_simplemap_reduce_ops'.
+Generating RTLIL representation for module `\_90_simplemap_logic_ops'.
+Generating RTLIL representation for module `\_90_simplemap_compare_ops'.
+Generating RTLIL representation for module `\_90_simplemap_various'.
+Generating RTLIL representation for module `\_90_simplemap_registers'.
+Generating RTLIL representation for module `\_90_shift_ops_shr_shl_sshl_sshr'.
+Generating RTLIL representation for module `\_90_shift_shiftx'.
+Generating RTLIL representation for module `\_90_fa'.
+Generating RTLIL representation for module `\_90_lcu_brent_kung'.
+Generating RTLIL representation for module `\_90_alu'.
+Generating RTLIL representation for module `\_90_macc'.
+Generating RTLIL representation for module `\_90_alumacc'.
+Generating RTLIL representation for module `\$__div_mod_u'.
+Generating RTLIL representation for module `\$__div_mod_trunc'.
+Generating RTLIL representation for module `\_90_div'.
+Generating RTLIL representation for module `\_90_mod'.
+Generating RTLIL representation for module `\$__div_mod_floor'.
+Generating RTLIL representation for module `\_90_divfloor'.
+Generating RTLIL representation for module `\_90_modfloor'.
+Generating RTLIL representation for module `\_90_pow'.
+Generating RTLIL representation for module `\_90_pmux'.
+Generating RTLIL representation for module `\_90_demux'.
+Generating RTLIL representation for module `\_90_lut'.
+Successfully finished Verilog frontend.
+
+7.42.12.2. Continuing TECHMAP pass.
+Using template $paramod$838872d5a4bab89607f53482b205c0fd50d8b82e\CCU2C for cells of type $paramod$838872d5a4bab89607f53482b205c0fd50d8b82e\CCU2C.
+Using extmapper simplemap for cells of type $and.
+Using template $paramod\LUT4\INIT=16'1001011010101010 for cells of type LUT4.
+Using extmapper simplemap for cells of type $or.
+Using template $paramod\LUT2\INIT=4'1010 for cells of type LUT2.
+Using extmapper simplemap for cells of type $xor.
+Using extmapper simplemap for cells of type $not.
+Using extmapper simplemap for cells of type $mux.
+No more expansions possible.
+<suppressed ~201 debug messages>
+
+7.42.13. Executing OPT pass (performing simple optimizations).
+
+7.42.13.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module top.
+<suppressed ~18 debug messages>
+
+7.42.13.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\top'.
+<suppressed ~6 debug messages>
+Removed a total of 2 cells.
+
+7.42.13.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \top..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Removed 0 multiplexer ports.
+
+7.42.13.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \top.
+Performed a total of 0 changes.
+
+7.42.13.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\top'.
+Removed a total of 0 cells.
+
+7.42.13.6. Executing OPT_DFF pass (perform DFF optimizations).
+
+7.42.13.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \top..
+Removed 0 unused cells and 55 unused wires.
+<suppressed ~1 debug messages>
+
+7.42.13.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module top.
+
+7.42.13.9. Rerunning OPT passes. (Maybe there is more to do..)
+
+7.42.13.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \top..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Removed 0 multiplexer ports.
+
+7.42.13.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \top.
+Performed a total of 0 changes.
+
+7.42.13.12. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\top'.
+Removed a total of 0 cells.
+
+7.42.13.13. Executing OPT_DFF pass (perform DFF optimizations).
+
+7.42.13.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \top..
+
+7.42.13.15. Executing OPT_EXPR pass (perform const folding).
+Optimizing module top.
+
+7.42.13.16. Finished OPT passes. (There is nothing left to do.)
+
+7.42.14. Executing AIGMAP pass (map logic to AIG).
+Module top: replaced 18 cells with 120 new cells, skipped 39 cells.
+  replaced 3 cell types:
+       2 $_OR_
+       2 $_XOR_
+      14 $_MUX_
+  not replaced 3 cell types:
+      31 $specify2
+       4 $_NOT_
+       4 $_AND_
+
+7.42.15. Executing AIGMAP pass (map logic to AIG).
+Module top: replaced 102 cells with 528 new cells, skipped 297 cells.
+  replaced 3 cell types:
+      62 $_OR_
+       8 $_XOR_
+      32 $_MUX_
+  not replaced 5 cell types:
+       8 $scopeinfo
+      24 $_NOT_
+      97 $_AND_
+     156 TRELLIS_FF
+      12 $paramod$838872d5a4bab89607f53482b205c0fd50d8b82e\CCU2C
+
+7.42.15.1. Executing ABC9_OPS pass (helper functions for ABC9).
+
+7.42.15.2. Executing ABC9_OPS pass (helper functions for ABC9).
+
+7.42.15.3. Executing XAIGER backend.
+<suppressed ~11 debug messages>
+Extracted 279 AND gates and 1017 wires from module `top' to a netlist network with 226 inputs and 110 outputs.
+
+7.42.15.4. Executing ABC9_EXE pass (technology mapping using ABC9).
+
+7.42.15.5. Executing ABC9.
+Running ABC command: "<yosys-exe-dir>/yosys-abc" -s -f <abc-temp-dir>/abc.script 2>&1
+ABC: ABC command line: "source <abc-temp-dir>/abc.script".
+ABC: 
+ABC: + read_lut <abc-temp-dir>/input.lut 
+ABC: + read_box <abc-temp-dir>/input.box 
+ABC: + &read <abc-temp-dir>/input.xaig 
+ABC: + &ps 
+ABC: <abc-temp-dir>/input : i/o =    226/    110  and =     279  lev =    9 (1.00)  mem = 0.01 MB  box = 12  bb = 0
+ABC: + &scorr 
+ABC: Warning: The network is combinational.
+ABC: + &sweep 
+ABC: + &dc2 
+ABC: + &dch -f 
+ABC: + &ps 
+ABC: <abc-temp-dir>/input : i/o =    226/    110  and =     298  lev =    5 (0.80)  mem = 0.01 MB  ch =   35  box = 12  bb = 0
+ABC: cst =       0  cls =     35  lit =      35  unused =     490  proof =     0
+ABC: + &if -W 300 -v 
+ABC: K = 7. Memory (bytes): Truth =    0. Cut =   64. Obj =  148. Set =  672. CutMin = no
+ABC: Node =     298.  Ch =    35.  Total mem =    0.12 MB. Peak cut mem =    0.01 MB.
+ABC: P:  Del = 1096.00.  Ar =     112.0.  Edge =      218.  Cut =     3796.  T =     0.00 sec
+ABC: P:  Del = 1096.00.  Ar =     112.0.  Edge =      218.  Cut =     3796.  T =     0.00 sec
+ABC: P:  Del = 1096.00.  Ar =     112.0.  Edge =      218.  Cut =     3796.  T =     0.00 sec
+ABC: F:  Del = 1096.00.  Ar =     112.0.  Edge =      218.  Cut =     3792.  T =     0.00 sec
+ABC: A:  Del = 1096.00.  Ar =     112.0.  Edge =      216.  Cut =     3792.  T =     0.00 sec
+ABC: A:  Del = 1096.00.  Ar =     112.0.  Edge =      216.  Cut =     3792.  T =     0.00 sec
+ABC: Total time =     0.00 sec
+ABC: + &write -n <abc-temp-dir>/output.aig 
+ABC: + &mfs 
+ABC: The network is not changed by "&mfs".
+ABC: + &ps -l 
+ABC: <abc-temp-dir>/input : i/o =    226/    110  and =     332  lev =    5 (0.80)  mem = 0.01 MB  box = 12  bb = 0
+ABC: Mapping (K=6)  :  lut =     44  edge =     216  lev =    2 (0.22)  levB =    8  mem = 0.00 MB
+ABC: LUT = 44 : 2=5 11.4 %  3=2 4.5 %  4=1 2.3 %  5=20 45.5 %  6=16 36.4 %  Ave = 4.91
+ABC: + &write -n <abc-temp-dir>/output.aig 
+ABC: + time 
+ABC: elapse: 0.02 seconds, total: 0.02 seconds
+
+7.42.15.6. Executing AIGER frontend.
+<suppressed ~684 debug messages>
+Removed 446 unused cells and 925 unused wires.
+
+7.42.15.7. Executing ABC9_OPS pass (helper functions for ABC9).
+ABC RESULTS:              $lut cells:       45
+ABC RESULTS:   $paramod$838872d5a4bab89607f53482b205c0fd50d8b82e\CCU2C cells:       12
+ABC RESULTS:           input signals:       26
+ABC RESULTS:          output signals:       24
+Removing temp directory.
+
+7.42.16. Executing TECHMAP pass (map to technology primitives).
+
+7.42.16.1. Executing Verilog-2005 frontend: /Users/james/tools/oss-cad-suite/libexec/../share/yosys/abc9_unmap.v
+Parsing Verilog input from `/Users/james/tools/oss-cad-suite/libexec/../share/yosys/abc9_unmap.v' to AST representation.
+Generating RTLIL representation for module `\$__DFF_x__$abc9_flop'.
+Generating RTLIL representation for module `\$__ABC9_SCC_BREAKER'.
+Successfully finished Verilog frontend.
+
+7.42.16.2. Continuing TECHMAP pass.
+Using template $paramod$838872d5a4bab89607f53482b205c0fd50d8b82e\CCU2C for cells of type $paramod$838872d5a4bab89607f53482b205c0fd50d8b82e\CCU2C.
+No more expansions possible.
+<suppressed ~18 debug messages>
+Removed 36 unused cells and 1069 unused wires.
+
+7.43. Executing TECHMAP pass (map to technology primitives).
+
+7.43.1. Executing Verilog-2005 frontend: /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_map.v
+Parsing Verilog input from `/Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_map.v' to AST representation.
+Generating RTLIL representation for module `\$_DFF_N_'.
+Generating RTLIL representation for module `\$_DFF_P_'.
+Generating RTLIL representation for module `\$_DFFE_NN_'.
+Generating RTLIL representation for module `\$_DFFE_PN_'.
+Generating RTLIL representation for module `\$_DFFE_NP_'.
+Generating RTLIL representation for module `\$_DFFE_PP_'.
+Generating RTLIL representation for module `\$_DFF_NP0_'.
+Generating RTLIL representation for module `\$_DFF_NP1_'.
+Generating RTLIL representation for module `\$_DFF_PP0_'.
+Generating RTLIL representation for module `\$_DFF_PP1_'.
+Generating RTLIL representation for module `\$_SDFF_NP0_'.
+Generating RTLIL representation for module `\$_SDFF_NP1_'.
+Generating RTLIL representation for module `\$_SDFF_PP0_'.
+Generating RTLIL representation for module `\$_SDFF_PP1_'.
+Generating RTLIL representation for module `\$_DFFE_NP0P_'.
+Generating RTLIL representation for module `\$_DFFE_NP1P_'.
+Generating RTLIL representation for module `\$_DFFE_PP0P_'.
+Generating RTLIL representation for module `\$_DFFE_PP1P_'.
+Generating RTLIL representation for module `\$_DFFE_NP0N_'.
+Generating RTLIL representation for module `\$_DFFE_NP1N_'.
+Generating RTLIL representation for module `\$_DFFE_PP0N_'.
+Generating RTLIL representation for module `\$_DFFE_PP1N_'.
+Generating RTLIL representation for module `\$_SDFFE_NP0P_'.
+Generating RTLIL representation for module `\$_SDFFE_NP1P_'.
+Generating RTLIL representation for module `\$_SDFFE_PP0P_'.
+Generating RTLIL representation for module `\$_SDFFE_PP1P_'.
+Generating RTLIL representation for module `\$_SDFFE_NP0N_'.
+Generating RTLIL representation for module `\$_SDFFE_NP1N_'.
+Generating RTLIL representation for module `\$_SDFFE_PP0N_'.
+Generating RTLIL representation for module `\$_SDFFE_PP1N_'.
+Generating RTLIL representation for module `\$_ALDFF_NP_'.
+Generating RTLIL representation for module `\$_ALDFF_PP_'.
+Generating RTLIL representation for module `\$_ALDFFE_NPN_'.
+Generating RTLIL representation for module `\$_ALDFFE_NPP_'.
+Generating RTLIL representation for module `\$_ALDFFE_PPN_'.
+Generating RTLIL representation for module `\$_ALDFFE_PPP_'.
+Generating RTLIL representation for module `\FD1P3AX'.
+Generating RTLIL representation for module `\FD1P3AY'.
+Generating RTLIL representation for module `\FD1P3BX'.
+Generating RTLIL representation for module `\FD1P3DX'.
+Generating RTLIL representation for module `\FD1P3IX'.
+Generating RTLIL representation for module `\FD1P3JX'.
+Generating RTLIL representation for module `\FD1S3AX'.
+Generating RTLIL representation for module `\FD1S3AY'.
+Generating RTLIL representation for module `\FD1S3BX'.
+Generating RTLIL representation for module `\FD1S3DX'.
+Generating RTLIL representation for module `\FD1S3IX'.
+Generating RTLIL representation for module `\FD1S3JX'.
+Generating RTLIL representation for module `\IFS1P3BX'.
+Generating RTLIL representation for module `\IFS1P3DX'.
+Generating RTLIL representation for module `\IFS1P3IX'.
+Generating RTLIL representation for module `\IFS1P3JX'.
+Generating RTLIL representation for module `\OFS1P3BX'.
+Generating RTLIL representation for module `\OFS1P3DX'.
+Generating RTLIL representation for module `\OFS1P3IX'.
+Generating RTLIL representation for module `\OFS1P3JX'.
+Generating RTLIL representation for module `\IB'.
+Generating RTLIL representation for module `\IBPU'.
+Generating RTLIL representation for module `\IBPD'.
+Generating RTLIL representation for module `\OB'.
+Generating RTLIL representation for module `\OBZ'.
+Generating RTLIL representation for module `\OBZPU'.
+Generating RTLIL representation for module `\OBZPD'.
+Generating RTLIL representation for module `\OBCO'.
+Generating RTLIL representation for module `\BB'.
+Generating RTLIL representation for module `\BBPU'.
+Generating RTLIL representation for module `\BBPD'.
+Generating RTLIL representation for module `\ILVDS'.
+Generating RTLIL representation for module `\OLVDS'.
+Generating RTLIL representation for module `\$lut'.
+Successfully finished Verilog frontend.
+
+7.43.2. Continuing TECHMAP pass.
+Using template $paramod$3490fc543a07fb5e6ee84ceb9cf345b2d47fe80c\$lut for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000010\LUT=4'1011 for cells of type $lut.
+Using template $paramod$4c8de682f2508054a5f7f13444038e3331866a9d\$lut for cells of type $lut.
+Using template $paramod$9d57eff00bd6b4d25cb1c5a89cb7afd29d5fa5af\$lut for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000010\LUT=4'0010 for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000010\LUT=4'1110 for cells of type $lut.
+Using template $paramod$b0878fe1110407fee18c8a936649bef81b1047a4\$lut for cells of type $lut.
+Using template $paramod$f90e2ec6b7a4c6db6f7a3682dfa870e7c33a78da\$lut for cells of type $lut.
+Using template $paramod$584e4a38268562e2142ef24a574198cdf8d42be8\$lut for cells of type $lut.
+Using template $paramod$fa90e6b4ff54c9a3f6bea754646eebea90c24aad\$lut for cells of type $lut.
+Using template $paramod$eb117e6cc6cf95759acbf9d33d7a66af3bc722fb\$lut for cells of type $lut.
+Using template $paramod$c7b80ba430fcbff15d6bf260d454531db01b4698\$lut for cells of type $lut.
+Using template $paramod$d8aacfe44f73067ae624820f2e713299b336a863\$lut for cells of type $lut.
+Using template $paramod$b7e1f0e44e1823882f3ed6063906649af1d55c48\$lut for cells of type $lut.
+Using template $paramod$077f0a484d58dac4e3c69c4cba040f8b2cba23bf\$lut for cells of type $lut.
+Using template $paramod$91659e76e9d6e8bf8382ac8ae5441b93b381833a\$lut for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000001\LUT=2'01 for cells of type $lut.
+Using template $paramod$6cafb465f31c34f6bb6b9412b7e75000e2a2081c\$lut for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'10000000 for cells of type $lut.
+Using template $paramod$63dfb5d507c3c0842cdb02014ffa50dbe5770b84\$lut for cells of type $lut.
+Using template $paramod$a56a39c0f6a5a7dc6beed165205ecc9aaf916f10\$lut for cells of type $lut.
+Using template $paramod$3a76ae1ac16567d84de882ad5b89dd62763f5d7e\$lut for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'00001000 for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000010\LUT=4'0100 for cells of type $lut.
+Using template $paramod$374b95d4c880003991c4c8afaeff2d1b9ca01732\$lut for cells of type $lut.
+Using template $paramod$60eaeb9ed0363ab59eb47de1247974e616a53b04\$lut for cells of type $lut.
+Using template $paramod$cc4fc6e206d84fd21c9159c84f337ff5a4d50a9f\$lut for cells of type $lut.
+Using template $paramod$4e17b37949de107bb94b6f1a1a28d3496cee476c\$lut for cells of type $lut.
+No more expansions possible.
+<suppressed ~481 debug messages>
+
+7.44. Executing OPT_LUT_INS pass (discard unused LUT inputs).
+Optimizing LUTs in top.
+  Optimizing lut $abc$3058$lut$auto$opt_dff.cc:272:make_patterns_logic$379.genblk1.genblk1.genblk1.genblk1.genblk1.lut1 (4 -> 0)
+  Optimizing lut $abc$3058$lut$auto$opt_dff.cc:272:make_patterns_logic$383.genblk1.genblk1.genblk1.genblk1.genblk1.lut1 (4 -> 0)
+  Optimizing lut $abc$3058$lut$flatten\u_filter.$logic_and$src/stream_filter.sv:33$38_Y.genblk1.genblk1.genblk1.genblk1.genblk1.lut0 (4 -> 0)
+  Optimizing lut $abc$3058$lut$auto$opt_dff.cc:272:make_patterns_logic$375.genblk1.genblk1.genblk1.genblk1.genblk1.lut1 (4 -> 0)
+Removed 0 unused cells and 90 unused wires.
+
+7.45. Executing AUTONAME pass.
+Renamed 2429 objects in module top (24 iterations).
+<suppressed ~516 debug messages>
+
+7.46. Executing HIERARCHY pass (managing design hierarchy).
+Attribute `top' found on module `top'. Setting top module to top.
+
+7.46.1. Analyzing design hierarchy..
+Top module:  \top
+
+7.46.2. Analyzing design hierarchy..
+Top module:  \top
+Removed 0 unused modules.
+
+7.47. Printing statistics.
+
+=== top ===
+
+        +----------Local Count, excluding submodules.
+        | 
+      251 wires
+      733 wire bits
+      251 public wires
+      733 public wire bits
+       27 ports
+      122 port bits
+        8 cells
+        8   $scopeinfo
+      349 submodules
+       12   CCU2C
+       16   L6MUX21
+      113   LUT4
+       52   PFUMX
+      156   TRELLIS_FF
+
+=== design hierarchy ===
+
+        +----------Count including submodules.
+        | 
+        8 top
+
+        +----------Count including submodules.
+        | 
+      251 wires
+      733 wire bits
+      251 public wires
+      733 public wire bits
+       27 ports
+      122 port bits
+        - memories
+        - memory bits
+        - processes
+        8 cells
+        8   $scopeinfo
+      349 submodules
+       12   CCU2C
+       16   L6MUX21
+      113   LUT4
+       52   PFUMX
+      156   TRELLIS_FF
+
+7.48. Executing CHECK pass (checking for obvious problems).
+Checking module top...
+Found and reported 0 problems.
+
+7.49. Executing JSON backend.
+
+8. Printing statistics.
+
+=== top ===
+
+        +----------Local Count, excluding submodules.
+        | 
+      251 wires
+      733 wire bits
+      251 public wires
+      733 public wire bits
+       27 ports
+      122 port bits
+      357 cells
+        8   $scopeinfo
+       12   CCU2C
+       16   L6MUX21
+      113   LUT4
+       52   PFUMX
+      156   TRELLIS_FF
+
+Warnings: 24 unique messages, 24 total
+End of script. Logfile hash: fcfab8f840, CPU: user 0.50s system 0.02s, MEM: 36.25 MB peak
+Yosys 0.56+186 (git sha1 83d953e95, aarch64-apple-darwin23.5-clang++ 18.1.8 -fPIC -O3)
+Time spent: 46% 25x read_verilog (0 sec), 11% 1x abc9_exe (0 sec), ...

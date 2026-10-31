@@ -1,0 +1,42 @@
+[ctrl]
+mode = "r_w"
+description = "Control register for the stream filter."
+
+[ctrl.enable]
+type = "bit"
+description = "Assert to let the filter forward bytes. While low every byte is dropped."
+default_value = "0"
+
+[ctrl.clear]
+type = "bit"
+description = "Hold high to hold the forwarded-byte counter at zero."
+default_value = "0"
+
+[status]
+mode = "r"
+description = "Filter status."
+
+[status.forwarded]
+type = "bit_vector"
+width = 16
+description = "Bytes forwarded since the counter was last cleared."
+
+[threshold]
+mode = "r_w"
+description = "Filter threshold."
+
+[threshold.value]
+type = "bit_vector"
+width = 8
+description = "Smallest byte value that is forwarded. Bytes below it are dropped."
+default_value = "00000000"
+
+[scratch]
+mode = "r_w"
+description = "General-purpose scratch register. Reads back what was written; no effect on the design."
+
+[scratch.value]
+type = "bit_vector"
+width = 32
+description = "Software scratch value."
+default_value = "00000000000000000000000000000000"
