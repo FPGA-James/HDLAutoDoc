@@ -11,3 +11,4 @@ traffic_light
    processes/index
    cdc
    reset
+   synthesis

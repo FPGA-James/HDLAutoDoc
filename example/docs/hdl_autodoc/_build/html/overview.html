@@ -211,6 +211,7 @@
 <li class="toctree-l2"><a class="reference internal" href="modules/top/timing.html">top — Timing Diagrams</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/top/cdc.html">top — Clock Domain Analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/top/reset.html">top — Reset Domain Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/top/synthesis.html">Synthesis Results</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="modules/blinky/index.html">blinky</a><input aria-label="Toggle navigation of blinky" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="modules/blinky/entity.html">blinky — Entity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/blinky/block.html">blinky — Block Diagram</a></li>
@@ -224,6 +225,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="modules/blinky/cdc.html">blinky — Clock Domain Analysis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/blinky/reset.html">blinky — Reset Domain Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/blinky/synthesis.html">Synthesis Results</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="modules/cfg_sync/index.html">cfg_sync</a><input aria-label="Toggle navigation of cfg_sync" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -240,6 +242,7 @@
 <li class="toctree-l3"><a class="reference internal" href="modules/cfg_sync/cdc.html">cfg_sync — Clock Domain Analysis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/cfg_sync/reset.html">cfg_sync — Reset Domain Analysis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/cfg_sync/registers.html">cfg_sync — Register Map</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/cfg_sync/synthesis.html">Synthesis Results</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="modules/pwm_controller/index.html">pwm_controller</a><input aria-label="Toggle navigation of pwm_controller" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -255,6 +258,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="modules/pwm_controller/cdc.html">pwm_controller — Clock Domain Analysis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/pwm_controller/reset.html">pwm_controller — Reset Domain Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/pwm_controller/synthesis.html">Synthesis Results</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="modules/traffic_light/index.html">traffic_light</a><input aria-label="Toggle navigation of traffic_light" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -271,6 +275,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="modules/traffic_light/cdc.html">traffic_light — Clock Domain Analysis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/traffic_light/reset.html">traffic_light — Reset Domain Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/traffic_light/synthesis.html">Synthesis Results</a></li>
 </ul>
 </li>
 </ul>
@@ -279,6 +284,10 @@
 <li class="toctree-l2"><a class="reference internal" href="modules/cfg_sync/registers.html">cfg_sync — Register Map</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Build</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="synthesis/index.html">Build</a></li>
 </ul>
 
 </div>
@@ -345,23 +354,11 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="modules/cfg_sync/index.html"><span class="doc">cfg_sync</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">cfg_sync.vhd</span></code></p></td>
-<td><p>cfg_sync entity.</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
-<td><p>—</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/traffic_light/index.html"><span class="doc">traffic_light</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">traffic_light.vhd</span></code></p></td>
-<td><p>Traffic light controller. Implements a standard UK traffic light sequencer with four states:</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
-<td><p>—</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="modules/blinky/index.html"><span class="doc">blinky</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">blinky.vhd</span></code></p></td>
-<td><p>Blinky LED controller. Implements a 3-state FSM that drives an LED through a repeating</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
-<td><p>—</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/top/index.html"><span class="doc">top</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">top.vhd</span></code></p></td>
+<td><p>top entity.</p></td>
+<td><p><em>(top)</em></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">blinky</span></code>, <code class="docutils literal notranslate"><span class="pre">cfg_sync</span></code>, <code class="docutils literal notranslate"><span class="pre">pwm_controller</span></code>, <code class="docutils literal notranslate"><span class="pre">traffic_light</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="modules/pwm_controller/index.html"><span class="doc">pwm_controller</span></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">pwm_controller.sv</span></code></p></td>
@@ -369,11 +366,23 @@
 <td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
 <td><p>—</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="modules/top/index.html"><span class="doc">top</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">top.vhd</span></code></p></td>
-<td><p>top entity.</p></td>
-<td><p><em>(top)</em></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">blinky</span></code>, <code class="docutils literal notranslate"><span class="pre">cfg_sync</span></code>, <code class="docutils literal notranslate"><span class="pre">pwm_controller</span></code>, <code class="docutils literal notranslate"><span class="pre">traffic_light</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/traffic_light/index.html"><span class="doc">traffic_light</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">traffic_light.vhd</span></code></p></td>
+<td><p>Traffic light controller. Implements a standard UK traffic light sequencer with four states:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/blinky/index.html"><span class="doc">blinky</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">blinky.vhd</span></code></p></td>
+<td><p>Blinky LED controller. Implements a 3-state FSM that drives an LED through a repeating</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/cfg_sync/index.html"><span class="doc">cfg_sync</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cfg_sync.vhd</span></code></p></td>
+<td><p>cfg_sync entity.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
+<td><p>—</p></td>
 </tr>
 </tbody>
 </table>

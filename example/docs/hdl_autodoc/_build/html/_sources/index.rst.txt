@@ -9,6 +9,12 @@ Traffic Light Controller
    modules/top/index
    registers
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Build
+
+   synthesis/index
+
 Indices
 -------
 
