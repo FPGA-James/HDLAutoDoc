@@ -147,7 +147,8 @@ RTL itself is the builder's to design.
 
 Constraints on the design, so the example is real and stays maintainable:
 
-- Mixed **VHDL and SystemVerilog**, with at least three levels of hierarchy and one module
+- Mixed **VHDL and SystemVerilog** (pure SystemVerilog if the mixed-language spike shows no
+  workable flow, see below), with at least three levels of hierarchy and one module
   instantiated by two different parents (a shared component).
 - Synthesises with Yosys and nextpnr-ecp5 so the build reports are **real output** (see
   "Mixed-language synthesis" below).
@@ -162,7 +163,7 @@ Every row must be demonstrable in the built site; a test checks the source-level
 |---|---|
 | VHDL entities, SystemVerilog modules, mixed hierarchy, shared component | the module set as a whole |
 | Generics (VHDL) and parameters (SV), with defaults | at least one module of each |
-| FSM diagrams | a VHDL FSM and an SV FSM |
+| FSM diagrams | a VHDL FSM **and** an SV FSM (both required; two SV FSMs in the pure-SV fallback) |
 | Per-process pages, wavedrom waveforms | labelled processes with `.. wavedrom::` blocks |
 | **Mermaid** (new) | header diagram in a VHDL entity and in an SV module; process-level diagram; at least a sequence, a state and a flow diagram |
 | CDC analysis | a second clock domain, a 2-flop synchroniser, an asynchronous FIFO |
@@ -179,6 +180,12 @@ Every row must be demonstrable in the built site; a test checks the source-level
 | PDF output | built with landscape schematics |
 
 ### Mixed-language synthesis (the known risk)
+
+**Decided by the owner:** if mixed-language synthesis is not workable, `example_full` falls
+back to **pure SystemVerilog** (the VHDL modules become SV, and the VHDL testbenches become
+SV). The matrix rows that need VHDL (VHDL generics, VHDL FSM, VHDL schematics, a VHDL parent
+with an SV child) are then waived for this example only; `example/` still covers VHDL. The
+staged fallback below is superseded by this.
 
 Yosys' Verilog frontend and the ghdl plugin elaborate separately, and neither sees the other's
 modules. The builder starts with a **spike**: load the SystemVerilog modules, elaborate each

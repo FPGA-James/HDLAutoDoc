@@ -20,6 +20,7 @@
 - A project that writes no Mermaid block gets identical pages. The overview description stops at the first line beginning `..`.
 - The sidebar, pages and PDF of every example build with **zero Sphinx warnings**.
 - `example_full/` is mixed VHDL + SystemVerilog, ≥ 3 hierarchy levels, one module with two parents, real Yosys/nextpnr-ecp5 reports, ≥ 3 Mermaid diagrams (a sequence, a state, a flow), and satisfies the spec's feature-coverage matrix. Built output is committed from a clean revision.
+- If the Task 6 spike finds no workable mixed-language synthesis, `example_full` becomes **pure SystemVerilog** (VHDL modules and testbenches rewritten as SV); the matrix rows that need VHDL are waived for it, and the decision is recorded as a ledger `Ruling:`. Both languages need an FSM otherwise: a VHDL one and an SV one.
 - Standard library only in the tool's scripts; `mermaid-cli` stays an optional external tool.
 
 ## Review Focus
@@ -113,7 +114,7 @@
 **Interfaces:** Produces the coverage test every later task turns green; records the synthesis strategy in the ledger and `example_full/README.md`.
 
 - [ ] **Step 1: Write the coverage test** with one assertion group per row of the spec's matrix, parsing `example_full` with the existing parsers (hierarchy: ≥ 3 levels, one module with two parents, support files; ports/generics of VHDL and SV; FSM extraction on a VHDL and an SV module; processes with wavedrom and with mermaid; CDC output has a synchroniser and an async FIFO; reset output; bus groups found among flat ports and `bus_groups.toml` valid; interface ports and an internal interface instance; a `regs_<module>.toml`; testbenches in all three frameworks, linked, one skipped; reports parse with ≥ 1 timing row; ≥ 3 Mermaid blocks across a sequence, a state and a flow diagram). Use `pytest.mark.parametrize` per row so each failure names its feature. Run → FAIL (directory missing).
-- [ ] **Step 2: Spike mixed-language synthesis** in the scratchpad with a toy VHDL leaf and SV top and the reverse: load SV with `read_verilog -sv`, elaborate each VHDL unit with `ghdl --std=08 <files> -e <unit>` into the same design, `hierarchy -top`, `synth_ecp5`, `nextpnr-ecp5`. Record which of the spec's three strategies works.
+- [ ] **Step 2: Spike mixed-language synthesis** in the scratchpad with a toy VHDL leaf and SV top and the reverse: load SV with `read_verilog -sv`, elaborate each VHDL unit with `ghdl --std=08 <files> -e <unit>` into the same design, `hierarchy -top`, `synth_ecp5`, `nextpnr-ecp5`. Record the result. If no mixed flow works, switch `example_full` to pure SystemVerilog as the Global Constraints describe, and read the VHDL modules named in Tasks 7–10 as SV.
 - [ ] **Step 3: Create** the Makefile (`include ../src/autodoc.mk`, an `ecp5-reports` target using the working strategy), `filelist.f` skeleton, `ecp5.lpf`, `.gitignore`, and a README stub stating the strategy.
 - [ ] **Step 4: Commit** `test: coverage test for example_full; synthesis strategy`.
 
@@ -131,7 +132,7 @@
 **Files:** Create: a VHDL sample controller with a labelled-`case` FSM and wavedrom + process-level Mermaid (`stateDiagram-v2`); an SV AXI4-Lite register block with an `axil_if.slave` port and `registers/regs_<module>.toml`; an SV stream filter with `axis_if` ports, used by two parents; a VHDL APB bridge with flat APB ports; an SV module with flat AXI-Stream ports; `bus_groups.toml` with a custom group.
 
 - [ ] **Step 1:** Run the coverage groups for FSM, processes, wavedrom, mermaid-process, bus grouping, interfaces and registers → FAIL.
-- [ ] **Step 2:** Write the modules (header comment on each; a header sequence diagram on the register block showing an AXI-Lite write; the FSM in both languages — add a small SV FSM if the VHDL one is the only one); the stream filter is instantiated from two different parents.
+- [ ] **Step 2:** Write the modules (header comment on each; a header sequence diagram on the register block showing an AXI-Lite write; the design must contain **both** a VHDL FSM (the controller) and an SV FSM (for example in the capture module or stream filter); in the pure-SV fallback, two SV FSMs); the stream filter is instantiated from two different parents.
 - [ ] **Step 3:** Run the groups → PASS; lint/elaborate each file.
 - [ ] **Step 4: Commit** `feat: example_full control path, registers and bus grouping`.
 
