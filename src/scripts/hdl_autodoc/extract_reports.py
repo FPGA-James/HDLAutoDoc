@@ -4,7 +4,7 @@ extract_reports.py
 Orchestrate utilization and timing parsers, then write implementation RST.
 
 Writes:
-  docs/hdl_autodoc/synthesis/index.rst        — top-level Implementation page
+  docs/hdl_autodoc/synthesis/index.rst        — top-level Build page
   docs/hdl_autodoc/modules/<n>/synthesis.rst  — per-module utilization
 
 Usage:
@@ -16,18 +16,30 @@ Usage:
 from __future__ import annotations
 
 import json
+import shutil
+import subprocess
 import sys
+from datetime import datetime
 from pathlib import Path
 
+from parse_build_info import (
+    BuildInfo,
+    ResourceUse,
+    WarningSummary,
+    parse_build_info,
+    parse_device_utilisation,
+    summarise_warnings,
+)
 from parse_utilization import ModuleUtilization, parse_utilization
 from parse_timing import ClockTiming, parse_timing
+from rst_escape import escape_rst
 
 
 # ── RST rendering ─────────────────────────────────────────────────────────────
 
 _PLACEHOLDER = """\
-Implementation
-==============
+Build
+=====
 
 No synthesis reports available.
 
@@ -126,27 +138,95 @@ def _utilization_table_rst(modules: list[ModuleUtilization], vivado: bool) -> st
     return "\n".join(lines)
 
 
+def _summary_rst(info: BuildInfo | None, documented_at: str | None) -> list[str]:
+    """Build summary table; only facts that were found, or [] if there are none."""
+    rows: list[tuple[str, str]] = []
+    if info:
+        if info.yosys_version:
+            rows.append(("Yosys", info.yosys_version))
+        if info.nextpnr_version:
+            rows.append(("nextpnr", info.nextpnr_version))
+        if info.device:
+            rows.append(("Device", info.device))
+        if info.report_time:
+            rows.append(("Reports generated", info.report_time.strftime("%Y-%m-%d %H:%M")))
+    if documented_at:
+        rows.append(("Documented at", documented_at))
+    if not rows:
+        return []
+    lines = ["Summary", "-------", "", ".. list-table::", "   :widths: 30 70", ""]
+    for key, value in rows:
+        lines += [f"   * - {key}", f"     - {escape_rst(value)}", ""]
+    return lines
+
+
+def _device_table_rst(resources: list[ResourceUse]) -> list[str]:
+    """nextpnr device utilisation: resources in use, with a note for the unused ones."""
+    used = [r for r in resources if r.used > 0]
+    unused = len(resources) - len(used)
+    lines = ["Device utilisation (nextpnr)", "~" * len("Device utilisation (nextpnr)"), ""]
+    if used:
+        lines += [".. list-table::", "   :header-rows: 1", "",
+                  "   * - Resource", "     - Used", "     - Available", "     - %", ""]
+        for r in used:
+            lines += [f"   * - ``{r.name}``", f"     - {r.used:,}",
+                      f"     - {r.available:,}", f"     - {r.percent}", ""]
+    if unused:
+        lines += [f"{unused} other resource type{'s' if unused != 1 else ''} unused.", ""]
+    return lines
+
+
+def _warnings_rst(warnings: WarningSummary) -> list[str]:
+    lines = ["Warnings", "--------", ""]
+    if warnings.total == 0:
+        return lines + ["No warnings reported.", ""]
+    lines += [f"{warnings.total} warning{'s' if warnings.total != 1 else ''} in the build logs; "
+              f"the most frequent:", "",
+              ".. list-table::", "   :header-rows: 1", "",
+              "   * - Message", "     - Count", ""]
+    for message, count in warnings.top:
+        lines += [f"   * - {escape_rst(message)}", f"     - {count}", ""]
+    return lines
+
+
 def synthesis_index_rst(
     util_modules: list[ModuleUtilization],
     util_tool: str | None,
     clocks: list[ClockTiming],
     timing_tool: str | None,
+    build_info: BuildInfo | None = None,
+    resources: list[ResourceUse] | None = None,
+    warnings: WarningSummary | None = None,
+    documented_at: str | None = None,
 ) -> str:
-    """Return RST string for synthesis/index.rst."""
-    if not util_modules and not clocks:
+    """
+    Return RST string for synthesis/index.rst (the Build page): summary,
+    utilization, timing, warnings.  Called with only the first four arguments it
+    behaves as before (minus the new title).
+    """
+    if not util_modules and not clocks and not resources:
         return _PLACEHOLDER
 
-    lines = ["Implementation", "==============", ""]
+    lines = ["Build", "=====", ""]
+    lines += _summary_rst(build_info, documented_at)
+
+    if util_modules or resources:
+        lines += ["Utilization", "-----------", ""]
+        if resources:
+            lines += _device_table_rst(resources)
+        if util_modules and util_tool:
+            label = "Vivado" if util_tool == "vivado" else "Yosys"
+            heading = f"By module ({label})"
+            lines += [heading, "~" * len(heading), ""]
+            lines.append(_utilization_table_rst(util_modules, util_tool == "vivado"))
 
     if clocks and timing_tool:
         label = "Vivado" if timing_tool == "vivado" else "nextpnr"
         lines += [f"Timing — {label}", "-" * (9 + len(label)), ""]
         lines.append(_timing_table_rst(clocks, timing_tool))
 
-    if util_modules and util_tool:
-        label = "Vivado" if util_tool == "vivado" else "Yosys"
-        lines += [f"Utilization — {label}", "-" * (15 + len(label)), ""]
-        lines.append(_utilization_table_rst(util_modules, util_tool == "vivado"))
+    if warnings is not None:
+        lines += _warnings_rst(warnings)
 
     return "\n".join(lines)
 
@@ -182,17 +262,62 @@ def module_synthesis_rst(module_name: str, util: ModuleUtilization | None) -> st
 
 # ── Orchestration ─────────────────────────────────────────────────────────────
 
-def main(hierarchy_path: Path, docs_dir: Path, reports_dir: Path) -> None:
-    hierarchy    = json.loads(hierarchy_path.read_text())
+def _read_text(path: Path) -> str | None:
+    """Text of a report (undecodable bytes replaced), or None if missing or empty."""
+    try:
+        data = path.read_bytes()
+    except OSError:
+        return None
+    return data.decode("utf-8", errors="replace") if data.strip() else None
+
+
+def _git_describe(cwd: Path) -> str | None:
+    """`git describe --always --dirty` for the docs checkout, or None if unavailable."""
+    try:
+        out = subprocess.run(["git", "describe", "--always", "--dirty"], cwd=cwd,
+                             capture_output=True, text=True, timeout=5)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return out.stdout.strip() if out.returncode == 0 and out.stdout.strip() else None
+
+
+def _remove_build_pages(docs_dir: Path) -> None:
+    """Delete the generated Build pages (the sidebar lists whatever exists)."""
+    shutil.rmtree(docs_dir / "synthesis", ignore_errors=True)
+    for page in (docs_dir / "modules").glob("*/synthesis.rst"):
+        page.unlink()
+
+
+def main(hierarchy_path: Path, docs_dir: Path, reports_dir: Path,
+         if_present: bool = False) -> bool:
+    """
+    Write the Build pages from the report files under `reports_dir`.
+
+    With `if_present`, nothing is written when no report file has any content
+    (and pages from an earlier run are removed), so a project without reports
+    gets no Build section.  Without it a placeholder page is written.
+    Returns True if a page was written.
+    """
+    hierarchy    = json.loads(Path(hierarchy_path).read_text())
     module_names = list(hierarchy["modules"].keys())
+    docs_dir     = Path(docs_dir)
+    reports_dir  = Path(reports_dir)
 
     # Locate report files (prefer placed over synth for Vivado utilization)
     vivado_util  = reports_dir / "vivado" / "utilization_placed.rpt"
     if not vivado_util.exists():
         vivado_util  = reports_dir / "vivado" / "utilization_synth.rpt"
     yosys_util   = reports_dir / "yosys"  / "stat.txt"
+    yosys_log    = reports_dir / "yosys"  / "yosys.log"
     vivado_time  = reports_dir / "vivado" / "timing_summary_routed.rpt"
     nextpnr_time = reports_dir / "yosys"  / "nextpnr.log"
+
+    sources = [vivado_util, yosys_util, yosys_log, vivado_time, nextpnr_time]
+    present = [p for p in sources if _read_text(p) is not None]
+    if if_present and not present:
+        _remove_build_pages(docs_dir)
+        print(f"  Build: no reports found in {reports_dir} — section skipped")
+        return False
 
     util_modules, util_tool = parse_utilization(vivado_util)
     if not util_modules:
@@ -202,11 +327,23 @@ def main(hierarchy_path: Path, docs_dir: Path, reports_dir: Path) -> None:
     if not clocks:
         clocks, timing_tool = parse_timing(nextpnr_time)
 
+    nextpnr_text = _read_text(nextpnr_time)
+    yosys_text   = _read_text(yosys_log)
+    resources    = parse_device_utilisation(nextpnr_text) if nextpnr_text else []
+    log_texts    = [t for t in (yosys_text, nextpnr_text) if t is not None]
+    warnings     = summarise_warnings(*log_texts) if log_texts else None
+
+    newest = max((p.stat().st_mtime for p in present), default=None)
+    build_info = parse_build_info(yosys_text, nextpnr_text, newest) if present else None
+
     # Write synthesis/index.rst
     synth_dir = docs_dir / "synthesis"
     synth_dir.mkdir(parents=True, exist_ok=True)
     index_path = synth_dir / "index.rst"
-    index_path.write_text(synthesis_index_rst(util_modules, util_tool, clocks, timing_tool))
+    index_path.write_text(synthesis_index_rst(
+        util_modules, util_tool, clocks, timing_tool,
+        build_info=build_info, resources=resources, warnings=warnings,
+        documented_at=_git_describe(docs_dir) if present else None))
     print(f"  → {index_path}")
 
     # Write per-module synthesis.rst
@@ -217,9 +354,11 @@ def main(hierarchy_path: Path, docs_dir: Path, reports_dir: Path) -> None:
         rst_path = mod_dir / "synthesis.rst"
         rst_path.write_text(module_synthesis_rst(name, util_by_name.get(name)))
         print(f"  → {rst_path}")
+    return True
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
-        sys.exit("Usage: extract_reports.py <hierarchy.json> <docs_dir> <reports_dir>")
-    main(Path(sys.argv[1]), Path(sys.argv[2]), Path(sys.argv[3]))
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    if len(args) != 3:
+        sys.exit("Usage: extract_reports.py <hierarchy.json> <docs_dir> <reports_dir> [--if-present]")
+    main(Path(args[0]), Path(args[1]), Path(args[2]), if_present="--if-present" in sys.argv[1:])

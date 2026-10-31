@@ -19,21 +19,14 @@ Usage:
 from __future__ import annotations
 
 import json
-import re
 import shutil
 import sys
 from pathlib import Path
 
 from parse_testbenches import FRAMEWORKS, Testbench, discover_testbenches
+from rst_escape import escape_rst as _esc
 
 _LABELS = {"vunit": "VUnit", "cocotb": "cocotb", "directed": "Directed"}
-
-
-def _esc(text: str) -> str:
-    """Escape RST inline markup so comment text renders literally."""
-    text = text.replace("\\", "\\\\")
-    text = re.sub(r"([*`|])", r"\\\1", text)
-    return re.sub(r"_(?=\s|$)", r"\\_", text)
 
 
 def _count(tests: list) -> str:

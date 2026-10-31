@@ -182,15 +182,19 @@ def _parse_yosys(text: str) -> list[ModuleUtilization]:
     for i in range(1, len(sections), 2):
         name = sections[i].strip()
         body = sections[i + 1] if i + 1 < len(sections) else ""
-        if name.lower() == "aggregate":
+        if name.lower() in ("aggregate", "design hierarchy"):
             continue
         mu = ModuleUtilization(module_name=name.lower())
         for line in body.split("\n"):
+            # Older Yosys prints "<cell> <count>", current Yosys "<count> <cell>".
             m = re.match(r'\s+(\S+)\s+(\d+)', line)
-            if not m:
-                continue
-            cell  = m.group(1).lower()
-            count = int(m.group(2))
+            if m:
+                cell, count = m.group(1).lower(), int(m.group(2))
+            else:
+                m = re.match(r'\s+(\d+)\s+(\S+)\s*$', line)
+                if not m:
+                    continue
+                cell, count = m.group(2).lower(), int(m.group(1))
             if cell in _LUT_CELLS:   mu.luts   += count
             elif cell in _FF_CELLS:  mu.ffs    += count
             elif cell in _BRAM_CELLS: mu.brams += count
