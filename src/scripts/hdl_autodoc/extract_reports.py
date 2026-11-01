@@ -55,14 +55,6 @@ or::
     reports/yosys/nextpnr.log
 """
 
-_MODULE_PLACEHOLDER = """\
-Synthesis Results
-=================
-
-*No synthesis data available for this module.*
-"""
-
-
 def _timing_table_rst(clocks: list[ClockTiming], tool: str) -> str:
     if tool == "vivado":
         lines = [
@@ -239,35 +231,6 @@ def synthesis_index_rst(
     return "\n".join(lines)
 
 
-def module_synthesis_rst(module_name: str, util: ModuleUtilization | None) -> str:
-    """Return RST string for a per-module synthesis.rst."""
-    if util is None:
-        return _MODULE_PLACEHOLDER
-    return "\n".join([
-        "Synthesis Results",
-        "=================",
-        "",
-        ".. list-table::",
-        "   :header-rows: 1",
-        "",
-        "   * - Resource",
-        "     - Used",
-        "",
-        "   * - LUTs",
-        f"     - {util.luts:,}",
-        "",
-        "   * - FFs",
-        f"     - {util.ffs:,}",
-        "",
-        "   * - BRAMs",
-        f"     - {util.brams:,}",
-        "",
-        "   * - DSPs",
-        f"     - {util.dsps:,}",
-        "",
-    ])
-
-
 # ── Orchestration ─────────────────────────────────────────────────────────────
 
 def _warn(path: Path, message: str) -> None:
@@ -333,6 +296,11 @@ def _git_describe(cwd: Path) -> str | None:
 def _remove_build_pages(docs_dir: Path) -> None:
     """Delete the generated Build pages (the sidebar lists whatever exists)."""
     shutil.rmtree(docs_dir / "synthesis", ignore_errors=True)
+    _remove_module_pages(docs_dir)
+
+
+def _remove_module_pages(docs_dir: Path) -> None:
+    """Delete modules/<n>/synthesis.rst written by versions that had one per module."""
     for page in (docs_dir / "modules").glob("*/synthesis.rst"):
         page.unlink()
 
@@ -423,14 +391,9 @@ def main(hierarchy_path: Path, docs_dir: Path, reports_dir: Path,
         documented_at=_git_describe(docs_dir) if content else None))
     print(f"  → {index_path}")
 
-    # Write per-module synthesis.rst
-    util_by_name = {m.module_name: m for m in util_modules}
-    for name in module_names:
-        mod_dir = docs_dir / "modules" / name
-        mod_dir.mkdir(parents=True, exist_ok=True)
-        rst_path = mod_dir / "synthesis.rst"
-        rst_path.write_text(module_synthesis_rst(name, util_by_name.get(name)))
-        print(f"  → {rst_path}")
+    # Per-module numbers live in the Build page's "By module" table; older versions also
+    # wrote modules/<n>/synthesis.rst into the Design section, which would now be orphans.
+    _remove_module_pages(docs_dir)
     return True
 
 

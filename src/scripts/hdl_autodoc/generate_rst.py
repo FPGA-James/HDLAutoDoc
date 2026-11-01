@@ -210,8 +210,7 @@ def write_always(path: Path, content: str) -> str:
 def module_index_rst(entity: dict, children: list[str],
                      shared_children: set[str],
                      has_processes: bool = True,
-                     has_registers: bool = False,
-                     has_synthesis: bool = False) -> str:
+                     has_registers: bool = False) -> str:
     """Always-regenerated toctree for one module."""
     name  = entity["name"]
     title = name
@@ -231,8 +230,6 @@ def module_index_rst(entity: dict, children: list[str],
     lines.append("   reset")
     if has_registers:
         lines.append("   registers")
-    if has_synthesis:
-        lines.append("   synthesis")
     lines.append("")
 
     if children:
@@ -713,15 +710,15 @@ if __name__ == "__main__":
         # Always regenerated
         has_processes  = (mod_dir / "processes" / "index.rst").exists()
         has_registers  = (mod_dir / "registers.rst").exists()
-        has_synthesis  = (mod_dir / "synthesis.rst").exists()
+        # Synthesis numbers are in the Build section only; drop a page an older version wrote.
+        (mod_dir / "synthesis.rst").unlink(missing_ok=True)
         if has_registers:
             modules_with_regs.append(name)
         results.append(write_always(
             mod_dir / "index.rst",
             module_index_rst(entity, children, shared_names,
                              has_processes=has_processes,
-                             has_registers=has_registers,
-                             has_synthesis=has_synthesis)
+                             has_registers=has_registers)
         ))
         results.append(write_always(
             mod_dir / "fsm.rst",

@@ -52,7 +52,6 @@ docs/
         ├── timing.rst              ← all wavedrom diagrams for this module
         ├── cdc.rst                 ← clock domain crossing analysis + diagram
         ├── registers.rst           ← embedded register map (if present)
-        ├── synthesis.rst           ← per-module utilization (if reports present)
         ├── processes/
         │   ├── index.rst           ← process summary table
         │   ├── p_state_reg.rst     ← per-process: description, waveform, source
@@ -616,7 +615,7 @@ src/
 │   │   ├── extract_processes.py ← extracts labeled processes → rst pages
 │   │   ├── extract_cdc.py       ← extracts CDC analysis → dot + rst
 │   │   ├── extract_block.py     ← extracts block diagram + port/generics tables → dot + rst
-│   │   ├── extract_reports.py   ← ingests build reports → Build page + per-module synthesis pages
+│   │   ├── extract_reports.py   ← ingests build reports → Build page
 │   │   ├── extract_testbenches.py ← lists testbenches → Testbenches page
 │   │   ├── parse_testbenches.py ← finds testbenches; counts VUnit / cocotb / directed tests
 │   │   ├── parse_build_info.py  ← nextpnr utilisation block, tool versions, warning summary
@@ -906,7 +905,7 @@ Done. The new module appears in the overview (tree and table), navigation, and g
 
 #### New features
 
-- **Synthesis reports** — `make reports` ingests Vivado (`utilization_placed.rpt`, `timing_summary_routed.rpt`) and Yosys/nextpnr (`stat.txt`, `nextpnr.log`) report files from a `reports/` directory. Writes an **Implementation** toctree section with a top-level timing + utilization page and a per-module synthesis page. Utilization tables show hierarchy indentation (`└─ submodule`) and available resource counts. Timing tables show target frequency alongside achieved fmax. A placeholder page is always present so the Implementation sidebar section never disappears.
+- **Synthesis reports** — `make reports` ingests Vivado (`utilization_placed.rpt`, `timing_summary_routed.rpt`) and Yosys/nextpnr (`stat.txt`, `nextpnr.log`) report files from a `reports/` directory. Writes an **Implementation** toctree section with a top-level timing + utilization page (per-module numbers are in its "By module" table). Utilization tables show hierarchy indentation (`└─ submodule`) and available resource counts. Timing tables show target frequency alongside achieved fmax. A placeholder page is always present so the Implementation sidebar section never disappears.
 - **Furo theme** — migrated from `sphinx-rtd-theme` to [Furo](https://pradyunsg.me/furo/) for a modern two-column layout with a built-in dark/light toggle and responsive sidebar. `Ctrl+K` / `Cmd+K` focuses the sidebar search input.
 
 ### v3.3.0
@@ -995,7 +994,7 @@ scripts/hdl_autodoc/
 ├── extract_processes.py  <file.vhd|sv>      → p_*.rst + index.rst
 ├── extract_cdc.py        <file.vhd|sv>      → <module>_cdc.dot + <module>_cdc.rst
 ├── extract_block.py      <file.vhd|sv>      → <module>_block.dot + <module>_block.rst
-├── extract_reports.py    reports/           → synthesis/index.rst + modules/*/synthesis.rst
+├── extract_reports.py    reports/           → synthesis/index.rst
 ├── parse_utilization.py  util report        → list[ModuleUtilization]
 ├── parse_timing.py       timing report      → list[ClockTiming]
 ├── generate_schematic.py <file.vhd|sv>      → <module>_schematic.svg  (optional, on by default)

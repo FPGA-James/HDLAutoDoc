@@ -248,20 +248,11 @@ def test_index_rst_includes_registers_when_modules_present():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# has_synthesis — module_index_rst
+# module_index_rst never lists a per-module synthesis page
 # ─────────────────────────────────────────────────────────────────────────────
 
-def test_module_index_includes_synthesis_when_has_synthesis_true():
-    """synthesis is added to the module toctree when has_synthesis=True."""
-    rst = module_index_rst(_make_entity(), children=[], shared_children=set(),
-                           has_synthesis=True)
-    assert "synthesis" in rst
-
-
-def test_module_index_omits_synthesis_when_has_synthesis_false():
-    """synthesis is NOT added to the module toctree when has_synthesis=False."""
-    rst = module_index_rst(_make_entity(), children=[], shared_children=set(),
-                           has_synthesis=False)
+def test_module_index_has_no_synthesis_entry():
+    rst = module_index_rst(_make_entity(), children=[], shared_children=set())
     assert "synthesis" not in rst
 
 
@@ -545,3 +536,12 @@ def test_sv_header_diagram_keeps_closing_braces_and_frontmatter_lines():
 def test_prose_that_starts_with_dots_is_not_a_directive(tmp_path):
     text = "// Counter\n// ...wraps at N.\nmodule m;\nendmodule\n"
     assert _brief(tmp_path, "m.sv", text) == "Counter ...wraps at N."
+
+
+def test_a_stale_per_module_synthesis_page_is_removed_but_the_build_page_stays(tmp_path):
+    docs = tmp_path / "docs"
+    docs.mkdir()
+    _plant_generated_pages(docs)
+    docs = _run_generate_rst(tmp_path)
+    assert not (docs / "modules" / "blinky" / "synthesis.rst").exists()
+    assert (docs / "synthesis" / "index.rst").exists()
