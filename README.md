@@ -193,6 +193,15 @@ Then open `example/docs/hdl_autodoc/_build/html/index.html`.
 
 Two more examples live alongside it: `example_sv/` (a SystemVerilog package, interfaces and interface ports) and `example_ecp5/` (an AXI4-Stream filter with an AXI4-Lite register file for Lattice ECP5, with testbenches in all three frameworks and real Yosys/nextpnr reports — it shows the Verification and Build sections).
 
+`example_full/` shows **every feature at once** — a mixed VHDL / SystemVerilog sampler for ECP5 (`make doc-venv && make doc-html` from that directory; the PDF shows its Mermaid diagrams when `mmdc` is installed):
+
+- a three-level hierarchy with a shared module (`stream_filter` has two parents), VHDL parents of SystemVerilog children and the reverse;
+- a VHDL FSM (`sample_ctrl`) and a SystemVerilog FSM (`stream_filter`) with generated diagrams, processes with WaveDrom waveforms, and a process-level Mermaid state diagram;
+- Mermaid flow, sequence and state diagrams written in module headers and process comments;
+- clock-domain analysis (two domains, a two-flop synchroniser, an asynchronous FIFO) and reset analysis (synchronous and asynchronous resets, several reset domains);
+- generics and parameters, a package, two interfaces, interface ports and an internal interface instance, flat AXI4-Lite / AXI4-Stream / APB port groups and a custom group in `bus_groups.toml`;
+- a register map (`registers/regs_axil_regs.toml`), RTL schematics, testbenches in all three frameworks (one skipped test), and real Yosys/nextpnr reports plus sample Vivado reports.
+
 ---
 
 ## 🔧 How it works

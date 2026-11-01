@@ -220,7 +220,7 @@ def test_reset_analysis_finds_more_than_one_reset_domain(project):
 
 def test_flat_port_groups_are_recognised_and_a_custom_group_is_defined(project):
     names = set(collect_interfaces(project.support))
-    toml_path = EX / "bus_groups.toml"
+    toml_path = EX / "docs" / "hdl_autodoc" / "bus_groups.toml"
     assert toml_path.exists()
     custom = tomllib.loads(toml_path.read_text())
     assert custom, "bus_groups.toml is empty"

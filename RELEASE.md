@@ -1,5 +1,25 @@
 # Release Notes
 
+## v3.13.0
+
+#### New features
+
+- **Mermaid diagrams** — write a `.. mermaid::` block in a source comment, the way `.. wavedrom::` blocks work. It is supported in a module or entity header (VHDL and SystemVerilog) and in the comment block above a process or `always` block; options such as `:caption:` work, and the diagram keeps its indentation (state diagrams nest). HTML pages render them in the browser (Mermaid is fetched from a CDN, or served locally — see the README); the PDF includes them when `mermaid-cli` (`mmdc`) is installed, and otherwise shows a one-line note where each diagram would be and the build prints a single message. The generated FSM, hierarchy, CDC and block diagrams stay on Graphviz. There is no on/off switch: a project with no Mermaid block is unchanged.
+- **Process index** — the process table gains a "Mermaid" column next to "WaveDrom".
+- New make variables: `AUTODOC_MERMAID_CMD` (default `mmdc`), `AUTODOC_MERMAID_PARAMS` (for example a puppeteer config) and `AUTODOC_MERMAID_JS` (a local Mermaid script for offline pages). New dependency: `sphinxcontrib-mermaid>=2.1`.
+- **`example_full/`** — a mixed VHDL / SystemVerilog sampler for ECP5 that shows every feature at once: a three-level hierarchy with a shared module, VHDL and SystemVerilog FSMs, Mermaid flow / sequence / state diagrams, CDC and reset analysis, generics and parameters, a package, interfaces and flat bus groups, a custom `bus_groups.toml` group, a register map, testbenches in all three frameworks, and real Yosys/nextpnr reports. A test (`test_example_full.py`) keeps it covering every feature.
+
+#### Fixes
+
+- **A SystemVerilog or VHDL header with a directive in it no longer turns the directive into the overview description.** The description shown in the module overview table now stops at the first directive line (`.. mermaid::`, `.. wavedrom::`), instead of including it.
+
+#### Compatibility
+
+- Backwards compatible. Projects without Mermaid blocks build the same pages as before; the Mermaid script is added only to pages that contain a diagram.
+- Install the new dependency with `make doc-venv` (or `pip install -r requirements.txt`).
+
+---
+
 ## v3.12.0
 
 #### New features
