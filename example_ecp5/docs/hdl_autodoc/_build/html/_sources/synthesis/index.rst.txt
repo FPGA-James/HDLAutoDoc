@@ -17,7 +17,7 @@ Summary
      - 2026-10-31 22:35
 
    * - Documented at
-     - v3.12.0-22-ge2a438d
+     - v3.12.0-24-gbefffd0
 
 Utilization
 -----------

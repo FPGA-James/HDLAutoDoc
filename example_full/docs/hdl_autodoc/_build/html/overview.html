@@ -423,7 +423,7 @@
 <p>Top-level module: <a class="reference internal" href="modules/top/index.html"><span class="doc">top</span></a></p>
 <section id="instantiation-tree">
 <h2>Instantiation Tree<a class="headerlink" href="#instantiation-tree" title="Link to this heading">¶</a></h2>
-<div class="graphviz"><object data="_images/graphviz-3330fface2726b3d39733269c900b8606fd9031d.svg" type="image/svg+xml" class="graphviz">
+<div class="graphviz"><object data="_images/graphviz-4b1100ac4d17870a58607156e84ef25bfb3948fa.svg" type="image/svg+xml" class="graphviz">
 <p class="warning">digraph hierarchy {
     rankdir=TB;
     node [shape=box, style=filled, fillcolor=lightblue,
@@ -433,7 +433,6 @@
     stream_filter [fillcolor=lightyellow, label=&quot;stream_filter\n(shared)&quot;];
 
     axil_adapter -&gt; axil_regs;
-    sample_capture -&gt; async_fifo;
     top -&gt; apb_bridge;
     top -&gt; axil_adapter;
     top -&gt; axis_pipeline;
@@ -443,6 +442,7 @@
     top -&gt; sample_stream;
     axis_pipeline -&gt; stream_filter;
     sample_stream -&gt; stream_filter;
+    sample_capture -&gt; async_fifo;
 }</p></object></div>
 </section>
 <section id="shared-components">
@@ -465,11 +465,11 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="modules/axil_adapter/index.html"><span class="doc">axil_adapter</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">axil_adapter.sv</span></code></p></td>
-<td><p>Flat AXI4-Lite to register file adapter. Presents the register bus as flat AXI4-Lite subordinate ports (so a VHDL</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/apb_bridge/index.html"><span class="doc">apb_bridge</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">apb_bridge.vhd</span></code></p></td>
+<td><p>APB to AXI4-Lite bridge. Turns each APB transfer into one AXI4-Lite read or write and completes the</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">axil_regs</span></code></p></td>
+<td><p>—</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="modules/stream_filter/index.html"><span class="doc">stream_filter</span></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">stream_filter.sv</span></code></p></td>
@@ -477,29 +477,17 @@
 <td><p><code class="docutils literal notranslate"><span class="pre">axis_pipeline</span></code>, <code class="docutils literal notranslate"><span class="pre">sample_stream</span></code></p></td>
 <td><p>—</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="modules/sample_capture/index.html"><span class="doc">sample_capture</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">sample_capture.sv</span></code></p></td>
-<td><p>Sample capture across a clock boundary. Registers samples from a free-running converter clock (adc_clk) and hands</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/axil_adapter/index.html"><span class="doc">axil_adapter</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">axil_adapter.sv</span></code></p></td>
+<td><p>Flat AXI4-Lite to register file adapter. Presents the register bus as flat AXI4-Lite subordinate ports (so a VHDL</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">async_fifo</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">axil_regs</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/async_fifo/index.html"><span class="doc">async_fifo</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">async_fifo.vhd</span></code></p></td>
-<td><p>Asynchronous FIFO. Moves words from the write clock domain to the read clock domain. Each side</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">sample_capture</span></code></p></td>
-<td><p>—</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="modules/top/index.html"><span class="doc">top</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/top/index.html"><span class="doc">top</span></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">top.vhd</span></code></p></td>
 <td><p>Sampler top level. Captures samples from a converter clock into the system clock, runs a capture</p></td>
 <td><p><em>(top)</em></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">apb_bridge</span></code>, <code class="docutils literal notranslate"><span class="pre">axil_adapter</span></code>, <code class="docutils literal notranslate"><span class="pre">axis_pipeline</span></code>, <code class="docutils literal notranslate"><span class="pre">reset_sync</span></code>, <code class="docutils literal notranslate"><span class="pre">sample_capture</span></code>, <code class="docutils literal notranslate"><span class="pre">sample_ctrl</span></code>, <code class="docutils literal notranslate"><span class="pre">sample_stream</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/apb_bridge/index.html"><span class="doc">apb_bridge</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">apb_bridge.vhd</span></code></p></td>
-<td><p>APB to AXI4-Lite bridge. Turns each APB transfer into one AXI4-Lite read or write and completes the</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
-<td><p>—</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="modules/sample_ctrl/index.html"><span class="doc">sample_ctrl</span></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">sample_ctrl.vhd</span></code></p></td>
@@ -525,6 +513,18 @@
 <td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">stream_filter</span></code></p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/async_fifo/index.html"><span class="doc">async_fifo</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">async_fifo.vhd</span></code></p></td>
+<td><p>Asynchronous FIFO. Moves words from the write clock domain to the read clock domain. Each side</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sample_capture</span></code></p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/sample_capture/index.html"><span class="doc">sample_capture</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sample_capture.sv</span></code></p></td>
+<td><p>Sample capture across a clock boundary. Registers samples from a free-running converter clock (adc_clk) and hands</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">async_fifo</span></code></p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="modules/reset_sync/index.html"><span class="doc">reset_sync</span></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">reset_sync.vhd</span></code></p></td>
 <td><p>Reset synchroniser. Takes an asynchronous active-low reset and delivers it to one clock domain:</p></td>
@@ -542,6 +542,22 @@
       </div>
       <footer>
         
+  <div class="related-pages">
+    <a class="next-page" href="modules/top/index.html">
+        <div class="page-info">
+          <div class="context"><span>Next</span></div>
+          <div class="title">top</div>
+        </div>
+        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+      </a>
+    <a class="prev-page" href="index.html">
+        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+        <div class="page-info">
+          <div class="context"><span>Previous</span></div>
+          <div class="title">Home</div>
+        </div>
+      </a>
+  </div>
   <div class="hdl-footer">
     Built with <a href="https://www.sphinx-doc.org" target="_blank">Sphinx</a>
     &nbsp;&middot;&nbsp;

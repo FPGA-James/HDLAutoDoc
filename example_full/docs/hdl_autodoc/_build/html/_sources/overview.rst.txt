@@ -29,11 +29,11 @@ Modules
      - Instantiated by
      - Instantiates
 
-   * - :doc:`modules/axil_adapter/index`
-     - ``axil_adapter.sv``
-     - Flat AXI4-Lite to register file adapter. Presents the register bus as flat AXI4-Lite subordinate ports (so a VHDL
+   * - :doc:`modules/apb_bridge/index`
+     - ``apb_bridge.vhd``
+     - APB to AXI4-Lite bridge. Turns each APB transfer into one AXI4-Lite read or write and completes the
      - ``top``
-     - ``axil_regs``
+     - —
 
    * - :doc:`modules/stream_filter/index`
      - ``stream_filter.sv``
@@ -41,29 +41,17 @@ Modules
      - ``axis_pipeline``, ``sample_stream``
      - —
 
-   * - :doc:`modules/sample_capture/index`
-     - ``sample_capture.sv``
-     - Sample capture across a clock boundary. Registers samples from a free-running converter clock (adc_clk) and hands
+   * - :doc:`modules/axil_adapter/index`
+     - ``axil_adapter.sv``
+     - Flat AXI4-Lite to register file adapter. Presents the register bus as flat AXI4-Lite subordinate ports (so a VHDL
      - ``top``
-     - ``async_fifo``
-
-   * - :doc:`modules/async_fifo/index`
-     - ``async_fifo.vhd``
-     - Asynchronous FIFO. Moves words from the write clock domain to the read clock domain. Each side
-     - ``sample_capture``
-     - —
+     - ``axil_regs``
 
    * - :doc:`modules/top/index`
      - ``top.vhd``
      - Sampler top level. Captures samples from a converter clock into the system clock, runs a capture
      - *(top)*
      - ``apb_bridge``, ``axil_adapter``, ``axis_pipeline``, ``reset_sync``, ``sample_capture``, ``sample_ctrl``, ``sample_stream``
-
-   * - :doc:`modules/apb_bridge/index`
-     - ``apb_bridge.vhd``
-     - APB to AXI4-Lite bridge. Turns each APB transfer into one AXI4-Lite read or write and completes the
-     - ``top``
-     - —
 
    * - :doc:`modules/sample_ctrl/index`
      - ``sample_ctrl.vhd``
@@ -88,6 +76,18 @@ Modules
      - Captured samples as a filtered byte stream. Sends the low byte of each sample as a one-byte packet and runs it through a
      - ``top``
      - ``stream_filter``
+
+   * - :doc:`modules/async_fifo/index`
+     - ``async_fifo.vhd``
+     - Asynchronous FIFO. Moves words from the write clock domain to the read clock domain. Each side
+     - ``sample_capture``
+     - —
+
+   * - :doc:`modules/sample_capture/index`
+     - ``sample_capture.sv``
+     - Sample capture across a clock boundary. Registers samples from a free-running converter clock (adc_clk) and hands
+     - ``top``
+     - ``async_fifo``
 
    * - :doc:`modules/reset_sync/index`
      - ``reset_sync.vhd``

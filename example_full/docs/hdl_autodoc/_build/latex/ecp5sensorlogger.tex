@@ -107,7 +107,7 @@ Top\sphinxhyphen{}level module: {\hyperref[\detokenize{modules/top/index::doc}]{
 
 \section{Instantiation Tree}
 \label{\detokenize{overview:instantiation-tree}}
-\sphinxincludegraphics[]{graphviz-778cdce4f102015b7524ba2e0a486543247cb276.pdf}
+\sphinxincludegraphics[]{graphviz-a93e5cf13c42d04f1a1e9369217ed8cc94fcb96c.pdf}
 
 
 \section{Shared Components}
@@ -149,19 +149,19 @@ Instantiates
 \sphinxmidrule
 \sphinxtableatstartofbodyhook
 \sphinxAtStartPar
-{\hyperref[\detokenize{modules/sample_stream/index::doc}]{\sphinxcrossref{\DUrole{doc}{sample\_stream}}}}
+{\hyperref[\detokenize{modules/top/index::doc}]{\sphinxcrossref{\DUrole{doc}{top}}}}
 &
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{sample\_stream.sv}}
+\sphinxcode{\sphinxupquote{top.vhd}}
 &
 \sphinxAtStartPar
-Captured samples as a filtered byte stream. Sends the low byte of each sample as a one\sphinxhyphen{}byte packet and runs it through a
+Sampler top level. Captures samples from a converter clock into the system clock, runs a capture
 &
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{top}}
+\sphinxstyleemphasis{(top)}
 &
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{stream\_filter}}
+\sphinxcode{\sphinxupquote{apb\_bridge}}, \sphinxcode{\sphinxupquote{axil\_adapter}}, \sphinxcode{\sphinxupquote{axis\_pipeline}}, \sphinxcode{\sphinxupquote{reset\_sync}}, \sphinxcode{\sphinxupquote{sample\_capture}}, \sphinxcode{\sphinxupquote{sample\_ctrl}}, \sphinxcode{\sphinxupquote{sample\_stream}}
 \\
 \sphinxhline
 \sphinxAtStartPar
@@ -181,99 +181,19 @@ Flat AXI4\sphinxhyphen{}Lite to register file adapter. Presents the register bus
 \\
 \sphinxhline
 \sphinxAtStartPar
-{\hyperref[\detokenize{modules/apb_bridge/index::doc}]{\sphinxcrossref{\DUrole{doc}{apb\_bridge}}}}
+{\hyperref[\detokenize{modules/sample_capture/index::doc}]{\sphinxcrossref{\DUrole{doc}{sample\_capture}}}}
 &
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{apb\_bridge.vhd}}
+\sphinxcode{\sphinxupquote{sample\_capture.sv}}
 &
 \sphinxAtStartPar
-APB to AXI4\sphinxhyphen{}Lite bridge. Turns each APB transfer into one AXI4\sphinxhyphen{}Lite read or write and completes the
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{top}}
-&
-\sphinxAtStartPar
-—
-\\
-\sphinxhline
-\sphinxAtStartPar
-{\hyperref[\detokenize{modules/stream_filter/index::doc}]{\sphinxcrossref{\DUrole{doc}{stream\_filter}}}}
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{stream\_filter.sv}}
-&
-\sphinxAtStartPar
-Packet filter for a byte stream. Looks at the first byte of each packet: if it is at or above the threshold
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{axis\_pipeline}}, \sphinxcode{\sphinxupquote{sample\_stream}}
-&
-\sphinxAtStartPar
-—
-\\
-\sphinxhline
-\sphinxAtStartPar
-{\hyperref[\detokenize{modules/sample_ctrl/index::doc}]{\sphinxcrossref{\DUrole{doc}{sample\_ctrl}}}}
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{sample\_ctrl.vhd}}
-&
-\sphinxAtStartPar
-Sampler controller. Runs one capture window per start request: it arms, enables the capture
+Sample capture across a clock boundary. Registers samples from a free\sphinxhyphen{}running converter clock (adc\_clk) and hands
 &
 \sphinxAtStartPar
 \sphinxcode{\sphinxupquote{top}}
 &
 \sphinxAtStartPar
-—
-\\
-\sphinxhline
-\sphinxAtStartPar
-{\hyperref[\detokenize{modules/async_fifo/index::doc}]{\sphinxcrossref{\DUrole{doc}{async\_fifo}}}}
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{async\_fifo.vhd}}
-&
-\sphinxAtStartPar
-Asynchronous FIFO. Moves words from the write clock domain to the read clock domain. Each side
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{sample\_capture}}
-&
-\sphinxAtStartPar
-—
-\\
-\sphinxhline
-\sphinxAtStartPar
-{\hyperref[\detokenize{modules/axil_regs/index::doc}]{\sphinxcrossref{\DUrole{doc}{axil\_regs}}}}
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{axil\_regs.sv}}
-&
-\sphinxAtStartPar
-AXI4\sphinxhyphen{}Lite register file for the sampler. Five 32\sphinxhyphen{}bit registers: control (start, filter enable, clear, clear overflow), a read\sphinxhyphen{}only
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{axil\_adapter}}
-&
-\sphinxAtStartPar
-—
-\\
-\sphinxhline
-\sphinxAtStartPar
-{\hyperref[\detokenize{modules/top/index::doc}]{\sphinxcrossref{\DUrole{doc}{top}}}}
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{top.vhd}}
-&
-\sphinxAtStartPar
-Sampler top level. Captures samples from a converter clock into the system clock, runs a capture
-&
-\sphinxAtStartPar
-\sphinxstyleemphasis{(top)}
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{apb\_bridge}}, \sphinxcode{\sphinxupquote{axil\_adapter}}, \sphinxcode{\sphinxupquote{axis\_pipeline}}, \sphinxcode{\sphinxupquote{reset\_sync}}, \sphinxcode{\sphinxupquote{sample\_capture}}, \sphinxcode{\sphinxupquote{sample\_ctrl}}, \sphinxcode{\sphinxupquote{sample\_stream}}
+\sphinxcode{\sphinxupquote{async\_fifo}}
 \\
 \sphinxhline
 \sphinxAtStartPar
@@ -309,19 +229,99 @@ Filtered pass\sphinxhyphen{}through for an external byte stream. Presents flat A
 \\
 \sphinxhline
 \sphinxAtStartPar
-{\hyperref[\detokenize{modules/sample_capture/index::doc}]{\sphinxcrossref{\DUrole{doc}{sample\_capture}}}}
+{\hyperref[\detokenize{modules/axil_regs/index::doc}]{\sphinxcrossref{\DUrole{doc}{axil\_regs}}}}
 &
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{sample\_capture.sv}}
+\sphinxcode{\sphinxupquote{axil\_regs.sv}}
 &
 \sphinxAtStartPar
-Sample capture across a clock boundary. Registers samples from a free\sphinxhyphen{}running converter clock (adc\_clk) and hands
+AXI4\sphinxhyphen{}Lite register file for the sampler. Five 32\sphinxhyphen{}bit registers: control (start, filter enable, clear, clear overflow), a read\sphinxhyphen{}only
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{axil\_adapter}}
+&
+\sphinxAtStartPar
+—
+\\
+\sphinxhline
+\sphinxAtStartPar
+{\hyperref[\detokenize{modules/sample_stream/index::doc}]{\sphinxcrossref{\DUrole{doc}{sample\_stream}}}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{sample\_stream.sv}}
+&
+\sphinxAtStartPar
+Captured samples as a filtered byte stream. Sends the low byte of each sample as a one\sphinxhyphen{}byte packet and runs it through a
 &
 \sphinxAtStartPar
 \sphinxcode{\sphinxupquote{top}}
 &
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{async\_fifo}}
+\sphinxcode{\sphinxupquote{stream\_filter}}
+\\
+\sphinxhline
+\sphinxAtStartPar
+{\hyperref[\detokenize{modules/sample_ctrl/index::doc}]{\sphinxcrossref{\DUrole{doc}{sample\_ctrl}}}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{sample\_ctrl.vhd}}
+&
+\sphinxAtStartPar
+Sampler controller. Runs one capture window per start request: it arms, enables the capture
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{top}}
+&
+\sphinxAtStartPar
+—
+\\
+\sphinxhline
+\sphinxAtStartPar
+{\hyperref[\detokenize{modules/stream_filter/index::doc}]{\sphinxcrossref{\DUrole{doc}{stream\_filter}}}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{stream\_filter.sv}}
+&
+\sphinxAtStartPar
+Packet filter for a byte stream. Looks at the first byte of each packet: if it is at or above the threshold
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{axis\_pipeline}}, \sphinxcode{\sphinxupquote{sample\_stream}}
+&
+\sphinxAtStartPar
+—
+\\
+\sphinxhline
+\sphinxAtStartPar
+{\hyperref[\detokenize{modules/apb_bridge/index::doc}]{\sphinxcrossref{\DUrole{doc}{apb\_bridge}}}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{apb\_bridge.vhd}}
+&
+\sphinxAtStartPar
+APB to AXI4\sphinxhyphen{}Lite bridge. Turns each APB transfer into one AXI4\sphinxhyphen{}Lite read or write and completes the
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{top}}
+&
+\sphinxAtStartPar
+—
+\\
+\sphinxhline
+\sphinxAtStartPar
+{\hyperref[\detokenize{modules/async_fifo/index::doc}]{\sphinxcrossref{\DUrole{doc}{async\_fifo}}}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{async\_fifo.vhd}}
+&
+\sphinxAtStartPar
+Asynchronous FIFO. Moves words from the write clock domain to the read clock domain. Each side
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{sample\_capture}}
+&
+\sphinxAtStartPar
+—
 \\
 \sphinxbottomrule
 \end{tabulary}
@@ -5269,7 +5269,7 @@ source comments above each process.
 
 \subparagraph{P State}
 \label{\detokenize{modules/stream_filter/timing:p-state}}
-\noindent\sphinxincludegraphics{{wavedrom-9c0a5213-b573-491e-8c29-e45184627895}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-4084d083-c1ec-4142-a7e2-c597c3a2e044}.pdf}
 
 \sphinxstepscope
 
@@ -5297,7 +5297,7 @@ Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{stream\_filter.sv}}
 \sphinxAtStartPar
 p\_state: Clocked state register and forwarded\sphinxhyphen{}packet counter.
 
-\noindent\sphinxincludegraphics{{wavedrom-17f7564f-e8eb-475d-b487-aceccf982e62}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-8223674b-f960-4340-bf9d-1de9f71cd75f}.pdf}
 
 
 \subparagraph{Source}
@@ -9127,12 +9127,12 @@ source comments above each process.
 
 \paragraph{P Next State}
 \label{\detokenize{modules/sample_ctrl/timing:p-next-state}}
-\noindent\sphinxincludegraphics{{wavedrom-3b2f6ba2-d679-4ba9-ae27-77365920ad05}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-70c464a0-2a1f-40ce-8733-b17cb4fb8cc6}.pdf}
 
 
 \paragraph{P State Reg}
 \label{\detokenize{modules/sample_ctrl/timing:p-state-reg}}
-\noindent\sphinxincludegraphics{{wavedrom-26d0371a-55a2-4f23-b970-8253e5d00e67}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-513d46eb-7252-4ff8-aac1-1369cccdcc02}.pdf}
 
 \sphinxstepscope
 
@@ -9161,7 +9161,7 @@ Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{sample\_ctrl.vhd}}.
 p\_state\_reg: Clocked state register and window counter.
 Synchronous reset returns the state to IDLE and clears the counter.
 
-\noindent\sphinxincludegraphics{{wavedrom-fc0d3a70-8ec1-4faf-93e7-dec713cc061a}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-7a5b9e6b-1d8d-4551-b3cb-af78545de857}.pdf}
 
 
 \subparagraph{Source}
@@ -9216,7 +9216,7 @@ cycles or on overflow; DONE is left when the request is withdrawn.
 \sphinxincludegraphics{mermaid-1d86975f411cd643219ac92c1d43de06496d65d2.pdf}
 \caption{Controller states}\label{\detokenize{modules/sample_ctrl/processes/p_next_state:id1}}\end{figure}
 
-\noindent\sphinxincludegraphics{{wavedrom-f2abb146-e524-4915-be06-f41905fd4300}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-d50f96c0-8f58-43eb-b23b-dfb224aca6ce}.pdf}
 
 
 \subparagraph{Signal Assignments}
@@ -10312,7 +10312,7 @@ Reports generated
 Documented at
 &
 \sphinxAtStartPar
-v3.12.0\sphinxhyphen{}22\sphinxhyphen{}ge2a438d
+v3.12.0\sphinxhyphen{}24\sphinxhyphen{}gbefffd0
 \\
 \sphinxbottomrule
 \end{tabular}

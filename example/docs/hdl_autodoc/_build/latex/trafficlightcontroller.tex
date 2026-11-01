@@ -153,19 +153,19 @@ Traffic light controller. Implements a standard UK traffic light sequencer with 
 \\
 \sphinxhline
 \sphinxAtStartPar
-{\hyperref[\detokenize{modules/top/index::doc}]{\sphinxcrossref{\DUrole{doc}{top}}}}
+{\hyperref[\detokenize{modules/pwm_controller/index::doc}]{\sphinxcrossref{\DUrole{doc}{pwm\_controller}}}}
 &
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{top.vhd}}
+\sphinxcode{\sphinxupquote{pwm\_controller.sv}}
 &
 \sphinxAtStartPar
-top entity.
+PWM controller module. Generates a variable duty\sphinxhyphen{}cycle PWM signal using a 3\sphinxhyphen{}state FSM:
 &
 \sphinxAtStartPar
-\sphinxstyleemphasis{(top)}
+\sphinxcode{\sphinxupquote{top}}
 &
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{blinky}}, \sphinxcode{\sphinxupquote{cfg\_sync}}, \sphinxcode{\sphinxupquote{pwm\_controller}}, \sphinxcode{\sphinxupquote{traffic\_light}}
+—
 \\
 \sphinxhline
 \sphinxAtStartPar
@@ -185,19 +185,19 @@ Blinky LED controller. Implements a 3\sphinxhyphen{}state FSM that drives an LED
 \\
 \sphinxhline
 \sphinxAtStartPar
-{\hyperref[\detokenize{modules/pwm_controller/index::doc}]{\sphinxcrossref{\DUrole{doc}{pwm\_controller}}}}
+{\hyperref[\detokenize{modules/top/index::doc}]{\sphinxcrossref{\DUrole{doc}{top}}}}
 &
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{pwm\_controller.sv}}
+\sphinxcode{\sphinxupquote{top.vhd}}
 &
 \sphinxAtStartPar
-PWM controller module. Generates a variable duty\sphinxhyphen{}cycle PWM signal using a 3\sphinxhyphen{}state FSM:
+top entity.
 &
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{top}}
+\sphinxstyleemphasis{(top)}
 &
 \sphinxAtStartPar
-—
+\sphinxcode{\sphinxupquote{blinky}}, \sphinxcode{\sphinxupquote{cfg\_sync}}, \sphinxcode{\sphinxupquote{pwm\_controller}}, \sphinxcode{\sphinxupquote{traffic\_light}}
 \\
 \sphinxhline
 \sphinxAtStartPar
@@ -1594,17 +1594,17 @@ source comments above each process.
 
 \paragraph{P Next State}
 \label{\detokenize{modules/blinky/timing:p-next-state}}
-\noindent\sphinxincludegraphics{{wavedrom-92a7e04d-0935-41bc-8afc-01d2d022e8f2}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-71c3ebab-df74-4049-93da-2e1eea1b89c1}.pdf}
 
 
 \paragraph{P Outputs}
 \label{\detokenize{modules/blinky/timing:p-outputs}}
-\noindent\sphinxincludegraphics{{wavedrom-1ef1324c-891a-43e9-8b0d-bdd420a04b58}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-fef4b9dc-c4b9-48db-b4b4-009c0f888bca}.pdf}
 
 
 \paragraph{P State Reg}
 \label{\detokenize{modules/blinky/timing:p-state-reg}}
-\noindent\sphinxincludegraphics{{wavedrom-824c788c-ef02-437f-a808-3aafdfacdcb3}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-baeed6fd-5d58-45f9-8cca-daf2e82b5c7b}.pdf}
 
 \sphinxstepscope
 
@@ -1634,7 +1634,7 @@ p\_state\_reg: Clocked state register.
 Captures next\_state on each rising edge of clk.
 Synchronous reset drives state back to OFF\_STATE.
 
-\noindent\sphinxincludegraphics{{wavedrom-984970fc-3a12-4c7a-b627-06b2d929cb3e}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-ccf21d68-a035-4e92-bd46-0f2163d64992}.pdf}
 
 
 \subparagraph{Source}
@@ -1681,7 +1681,7 @@ ON\_STATE   + en + timer\_exp \sphinxhyphen{}\textgreater{} FADE\_STATE
 FADE\_STATE + en + timer\_exp \sphinxhyphen{}\textgreater{} OFF\_STATE
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-e216b89d-e9db-46ac-adb8-29164b0a9fce}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-60a440a5-33ef-467f-890c-9c74a215bf96}.pdf}
 
 
 \subparagraph{Source}
@@ -1731,7 +1731,7 @@ ON\_STATE   \sphinxhyphen{}\textgreater{} led\_on=1 led\_fade=0 led\_off=0
 FADE\_STATE \sphinxhyphen{}\textgreater{} led\_on=0 led\_fade=1 led\_off=0
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-fcfa0bf5-a594-47fb-a9c4-f3197c525638}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-d0da86ff-5aa8-4c34-ab29-8303d7ac42ed}.pdf}
 
 
 \subparagraph{Source}
@@ -2525,7 +2525,7 @@ source comments above each process.
 
 \paragraph{P Mode Sync}
 \label{\detokenize{modules/cfg_sync/timing:p-mode-sync}}
-\noindent\sphinxincludegraphics{{wavedrom-106309cb-0a1a-4bbd-9378-2b6538f262fb}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-457eed7c-ac84-4f53-a280-009a3b142461}.pdf}
 
 \sphinxstepscope
 
@@ -2593,7 +2593,7 @@ p\_mode\_sync: Two\sphinxhyphen{}flop synchroniser for mode\_sel\_r (cfg\_clk \(
 mode\_sel\_r is sampled twice in the sys\_clk domain to resolve
 metastability before the signal is used by downstream logic.
 
-\noindent\sphinxincludegraphics{{wavedrom-eb99a570-a9a5-46b7-bfbb-ac135dba4753}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-dc751dd1-f9b8-49e4-b97a-88cfb393dff4}.pdf}
 
 
 \subparagraph{Source}
@@ -3756,17 +3756,17 @@ source comments above each process.
 
 \paragraph{P Next State}
 \label{\detokenize{modules/pwm_controller/timing:p-next-state}}
-\noindent\sphinxincludegraphics{{wavedrom-71f081ff-989d-465f-9bfc-af5fbfd078ed}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-b8cd8fd9-5bd2-4fca-b225-341fae8a049b}.pdf}
 
 
 \paragraph{P Outputs}
 \label{\detokenize{modules/pwm_controller/timing:p-outputs}}
-\noindent\sphinxincludegraphics{{wavedrom-e034ddcd-ca2f-4c56-8570-c38ce437d819}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-314c52bc-2ce4-426c-a66a-8dbff605d890}.pdf}
 
 
 \paragraph{P State Reg}
 \label{\detokenize{modules/pwm_controller/timing:p-state-reg}}
-\noindent\sphinxincludegraphics{{wavedrom-b998e48a-5519-401f-856c-57a365f9501b}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-965db290-8136-494a-9038-cbacbad7b1cb}.pdf}
 
 \sphinxstepscope
 
@@ -3797,7 +3797,7 @@ Captures next\_state on each rising edge of clk.
 Synchronous reset drives state to IDLE and clears counter.
 Counter increments each cycle in COUNTING state.
 
-\noindent\sphinxincludegraphics{{wavedrom-9e370995-d36a-4682-af24-66207a774a9c}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-02535dd1-dd3f-482f-9e15-f55006e7b07f}.pdf}
 
 
 \subparagraph{Source}
@@ -3846,7 +3846,7 @@ COUNTING + count==255   \sphinxhyphen{}\textgreater{} DONE
 DONE                    \sphinxhyphen{}\textgreater{} IDLE
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-957f28f7-f25c-4441-bee8-b940d4f3f06f}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-bf7ed05c-4e65-4fad-a0bb-30f8daa3e8a0}.pdf}
 
 
 \subparagraph{Source}
@@ -3892,7 +3892,7 @@ COUNTING \sphinxhyphen{}\textgreater{} pwm\_o=(count \textless{} duty\_i) period
 DONE     \sphinxhyphen{}\textgreater{} pwm\_o=0 period\_done=1
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-527eb2e8-da14-4993-bc32-d9138a748692}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-358e3610-553e-4bbe-bcf2-a21cc24929fb}.pdf}
 
 
 \subparagraph{Source}
@@ -4997,17 +4997,17 @@ source comments above each process.
 
 \paragraph{P Next State}
 \label{\detokenize{modules/traffic_light/timing:p-next-state}}
-\noindent\sphinxincludegraphics{{wavedrom-999b92ad-d438-4912-9da2-f611ac67211e}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-e467da05-55ea-4922-aaaf-015ea1918951}.pdf}
 
 
 \paragraph{P Outputs}
 \label{\detokenize{modules/traffic_light/timing:p-outputs}}
-\noindent\sphinxincludegraphics{{wavedrom-c8819ea1-dda4-49ea-9077-0f6dbc107783}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-65bcbd1e-d8cd-4ffa-9720-0032ad7672d4}.pdf}
 
 
 \paragraph{P State Reg}
 \label{\detokenize{modules/traffic_light/timing:p-state-reg}}
-\noindent\sphinxincludegraphics{{wavedrom-2b052f72-fe9a-46be-944e-769cc985808a}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-6435bf10-b1b0-4cb2-86f2-8fa193948227}.pdf}
 
 \sphinxstepscope
 
@@ -5038,7 +5038,7 @@ Captures next\_state on each rising edge of clk.
 When rst is asserted the state returns to RED synchronously,
 regardless of timer\_exp or next\_state.
 
-\noindent\sphinxincludegraphics{{wavedrom-249d44d1-45ad-4a9c-aab3-2122a993851a}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-529ced2b-9291-4b15-a6ea-47fbc4ae7ca3}.pdf}
 
 
 \subparagraph{Source}
@@ -5087,7 +5087,7 @@ GREEN     + timer\_exp \sphinxhyphen{}\textgreater{} AMBER
 AMBER     + timer\_exp \sphinxhyphen{}\textgreater{} RED
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-8f869411-312c-4b80-971d-a1634aa78c1f}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-fcea7297-ce5d-4d1a-9422-bb2de4153fe9}.pdf}
 
 
 \subparagraph{Signal Assignments}
@@ -5202,7 +5202,7 @@ GREEN     \sphinxhyphen{}\textgreater{} red=0 amber=0 green=1
 AMBER     \sphinxhyphen{}\textgreater{} red=0 amber=1 green=0
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-4245038d-af0b-42ce-a490-bfc2f91a57c3}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-5af80613-420b-403f-99d3-f03b8b2f44bd}.pdf}
 
 
 \subparagraph{Source}
@@ -5590,7 +5590,7 @@ Reports generated
 Documented at
 &
 \sphinxAtStartPar
-v3.12.0\sphinxhyphen{}22\sphinxhyphen{}ge2a438d
+v3.12.0\sphinxhyphen{}24\sphinxhyphen{}gbefffd0
 \\
 \sphinxbottomrule
 \end{tabular}
