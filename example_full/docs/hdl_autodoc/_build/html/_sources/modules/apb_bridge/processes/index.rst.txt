@@ -19,11 +19,9 @@ Summary
      - Sensitivity
      - Source Line
      - WaveDrom
-     - Mermaid
 
    * - :doc:`p_phase`
      - ``process``
      - ``clk``
      - 52
-     - —
      - —

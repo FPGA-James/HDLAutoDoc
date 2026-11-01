@@ -22,13 +22,11 @@ Summary
      - Sensitivity
      - Source Line
      - WaveDrom
-     - Mermaid
 
    * - :doc:`p_ctrl`
      - ``always_ff``
      - ``posedge clk``, ``negedge rst_n``
      - 66
-     - —
      - —
 
    * - :doc:`p_out`
@@ -36,18 +34,15 @@ Summary
      - ``posedge clk``, ``negedge rst_n``
      - 75
      - —
-     - —
 
    * - :doc:`p_adc_en`
      - ``always_ff``
      - ``posedge adc_clk``
      - 88
      - —
-     - —
 
    * - :doc:`p_adc_capture`
      - ``always_ff``
      - ``posedge adc_clk``
      - 99
-     - —
      - —

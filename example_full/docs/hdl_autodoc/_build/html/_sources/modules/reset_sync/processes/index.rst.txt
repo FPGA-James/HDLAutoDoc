@@ -19,11 +19,9 @@ Summary
      - Sensitivity
      - Source Line
      - WaveDrom
-     - Mermaid
 
    * - :doc:`p_chain`
      - ``process``
      - ``clk``, ``arst_n``
      - 43
-     - —
      - —

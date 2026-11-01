@@ -22,13 +22,11 @@ Summary
      - Sensitivity
      - Source Line
      - WaveDrom
-     - Mermaid
 
    * - :doc:`p_wr_ptr`
      - ``process``
      - ``wr_clk``, ``wr_rst_n``
      - 74
-     - —
      - —
 
    * - :doc:`p_rptr_sync`
@@ -36,18 +34,15 @@ Summary
      - ``wr_clk``, ``wr_rst_n``
      - 92
      - —
-     - —
 
    * - :doc:`p_rd_ptr`
      - ``process``
      - ``rd_clk``, ``rd_rst_n``
      - 104
      - —
-     - —
 
    * - :doc:`p_wptr_sync`
      - ``process``
      - ``rd_clk``, ``rd_rst_n``
      - 121
-     - —
      - —

@@ -21,13 +21,11 @@ Summary
      - Sensitivity
      - Source Line
      - WaveDrom
-     - Mermaid
 
    * - :doc:`p_cfg_reg`
      - ``process``
      - ``cfg_clk``
      - 53
-     - —
      - —
 
    * - :doc:`p_mode_sync`
@@ -35,11 +33,9 @@ Summary
      - ``sys_clk``
      - 80
      - ✔
-     - —
 
    * - :doc:`p_duty_capture`
      - ``process``
      - ``sys_clk``
      - 100
-     - —
      - —

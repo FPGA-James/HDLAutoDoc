@@ -19,11 +19,9 @@ Summary
      - Sensitivity
      - Source Line
      - WaveDrom
-     - Mermaid
 
    * - :doc:`p_bus`
      - ``always_ff``
      - ``posedge clk``
      - 55
-     - —
      - —
