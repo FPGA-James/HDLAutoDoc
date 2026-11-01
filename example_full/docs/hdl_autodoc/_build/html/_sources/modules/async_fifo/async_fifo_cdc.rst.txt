@@ -1,0 +1,43 @@
+async_fifo — Clock Domain Analysis
+==================================
+
+Auto-extracted from ``async_fifo.vhd``.
+
+.. graphviz:: async_fifo_cdc.dot
+
+Clock Domains
+-------------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Clock
+     - Clocked Processes
+
+   * - ``rd_clk``
+     - ``p_rd_ptr``, ``p_wptr_sync``
+
+   * - ``wr_clk``
+     - ``p_wr_ptr``, ``p_rptr_sync``
+
+
+Signal Crossings
+----------------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Signal
+     - Source Domain
+     - Destination Domain
+     - Synchronized
+
+   * - ``rptr_gray``
+     - ``rd_clk``
+     - ``wr_clk``
+     - Yes *(two-flop)*
+
+   * - ``wptr_gray``
+     - ``wr_clk``
+     - ``rd_clk``
+     - Yes *(two-flop)*

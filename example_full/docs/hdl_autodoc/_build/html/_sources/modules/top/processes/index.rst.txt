@@ -1,0 +1,29 @@
+Processes
+=========
+
+Auto-extracted from ``top.vhd``.
+
+.. toctree::
+   :maxdepth: 2
+
+   p_ovf_sync
+
+Summary
+-------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Block
+     - Type
+     - Sensitivity
+     - Source Line
+     - WaveDrom
+     - Mermaid
+
+   * - :doc:`p_ovf_sync`
+     - ``process``
+     - ``clk``
+     - 194
+     - —
+     - —

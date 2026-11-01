@@ -1,0 +1,1 @@
+.. include:: reset_sync_block.rst

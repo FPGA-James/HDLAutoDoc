@@ -1,0 +1,53 @@
+Processes
+=========
+
+Auto-extracted from ``async_fifo.vhd``.
+
+.. toctree::
+   :maxdepth: 2
+
+   p_wr_ptr
+   p_rptr_sync
+   p_rd_ptr
+   p_wptr_sync
+
+Summary
+-------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Block
+     - Type
+     - Sensitivity
+     - Source Line
+     - WaveDrom
+     - Mermaid
+
+   * - :doc:`p_wr_ptr`
+     - ``process``
+     - ``wr_clk``, ``wr_rst_n``
+     - 74
+     - —
+     - —
+
+   * - :doc:`p_rptr_sync`
+     - ``process``
+     - ``wr_clk``, ``wr_rst_n``
+     - 92
+     - —
+     - —
+
+   * - :doc:`p_rd_ptr`
+     - ``process``
+     - ``rd_clk``, ``rd_rst_n``
+     - 104
+     - —
+     - —
+
+   * - :doc:`p_wptr_sync`
+     - ``process``
+     - ``rd_clk``, ``rd_rst_n``
+     - 121
+     - —
+     - —

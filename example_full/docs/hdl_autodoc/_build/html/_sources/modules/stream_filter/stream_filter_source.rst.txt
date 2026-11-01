@@ -1,0 +1,7 @@
+Annotated Source
+----------------
+
+.. literalinclude:: ../../../../src/stream_filter.sv
+   :language: systemverilog
+   :linenos:
+   :caption: src/stream_filter.sv

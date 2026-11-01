@@ -1,0 +1,20 @@
+Synthesis Results
+=================
+
+.. list-table::
+   :header-rows: 1
+
+   * - Resource
+     - Used
+
+   * - LUTs
+     - 387
+
+   * - FFs
+     - 294
+
+   * - BRAMs
+     - 2
+
+   * - DSPs
+     - 0

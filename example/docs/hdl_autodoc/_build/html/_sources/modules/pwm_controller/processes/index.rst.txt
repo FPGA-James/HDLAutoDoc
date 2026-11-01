@@ -21,21 +21,25 @@ Summary
      - Sensitivity
      - Source Line
      - WaveDrom
+     - Mermaid
 
    * - :doc:`p_state_reg`
      - ``always_ff``
      - ``posedge clk``
      - 53
      - ✔
+     - —
 
    * - :doc:`p_next_state`
      - ``always_comb``
      - ``*``
      - 85
      - ✔
+     - —
 
    * - :doc:`p_outputs`
      - ``always_comb``
      - ``*``
      - 114
      - ✔
+     - —

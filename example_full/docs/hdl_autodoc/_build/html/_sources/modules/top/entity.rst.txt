@@ -1,0 +1,8 @@
+top — Entity
+============
+
+Source file: ``src/top.vhd``.
+
+.. vhdl:autoentity:: top
+
+.. include:: top_source.rst

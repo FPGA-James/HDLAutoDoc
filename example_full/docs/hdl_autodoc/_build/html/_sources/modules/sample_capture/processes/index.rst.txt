@@ -1,0 +1,53 @@
+Processes
+=========
+
+Auto-extracted from ``sample_capture.sv``.
+
+.. toctree::
+   :maxdepth: 2
+
+   p_ctrl
+   p_out
+   p_adc_en
+   p_adc_capture
+
+Summary
+-------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Block
+     - Type
+     - Sensitivity
+     - Source Line
+     - WaveDrom
+     - Mermaid
+
+   * - :doc:`p_ctrl`
+     - ``always_ff``
+     - ``posedge clk``, ``negedge rst_n``
+     - 66
+     - —
+     - —
+
+   * - :doc:`p_out`
+     - ``always_ff``
+     - ``posedge clk``, ``negedge rst_n``
+     - 75
+     - —
+     - —
+
+   * - :doc:`p_adc_en`
+     - ``always_ff``
+     - ``posedge adc_clk``
+     - 88
+     - —
+     - —
+
+   * - :doc:`p_adc_capture`
+     - ``always_ff``
+     - ``posedge adc_clk``
+     - 99
+     - —
+     - —

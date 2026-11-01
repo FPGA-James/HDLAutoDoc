@@ -22,14 +22,14 @@ Modules
      - Instantiated by
      - Instantiates
 
-   * - :doc:`modules/bridge/index`
-     - ``bridge.sv``
-     - Bridges a register write port to a stream. Takes AXI4-Lite writes and forwards the data as an AXI4-Stream.
-     - ``top``
-     - —
-
    * - :doc:`modules/top/index`
      - ``top.sv``
      - Top level.
      - *(top)*
      - ``bridge``
+
+   * - :doc:`modules/bridge/index`
+     - ``bridge.sv``
+     - Bridges a register write port to a stream. Takes AXI4-Lite writes and forwards the data as an AXI4-Stream.
+     - ``top``
+     - —

@@ -1,0 +1,163 @@
+Testbenches
+===========
+
+.. list-table::
+   :header-rows: 1
+
+   * - Framework
+     - Testbenches
+     - Tests
+
+   * - VUnit
+     - 2
+     - 6
+
+   * - cocotb
+     - 1
+     - 3 (1 skipped)
+
+   * - Directed
+     - 3
+     - 6
+
+   * - **Total**
+     - 6
+     - 15 (1 skipped)
+
+VUnit
+-----
+
+tb_sample_ctrl
+~~~~~~~~~~~~~~
+
+:File: ``tb/vunit/tb_sample_ctrl.vhd``
+:Tests module: :doc:`/modules/sample_ctrl/index`
+:Purpose: Testbench for sample_ctrl. Starts a capture and checks the controller arms, runs for its window, then reports done and waits for the request to be withdrawn.
+:Tests: 3 tests
+
+.. list-table::
+   :header-rows: 1
+
+   * - Test
+     - Purpose
+
+   * - ``capture_window_length``
+     - The window opens after arming and lasts RUN_CYCLES cycles.
+
+   * - ``idle_without_start``
+     - Nothing runs without a start request.
+
+   * - ``overflow_ends_window``
+     - An overflow ends the window early.
+
+tb_stream_filter
+~~~~~~~~~~~~~~~~
+
+:File: ``tb/vunit/tb_stream_filter.sv``
+:Tests module: :doc:`/modules/stream_filter/index`
+:Purpose: Testbench for stream_filter. Sends single-byte and multi-byte packets and checks that a packet is forwarded or dropped as a whole according to its first byte.
+:Tests: 3 tests
+
+.. list-table::
+   :header-rows: 1
+
+   * - Test
+     - Purpose
+
+   * - ``forwards_packet_at_threshold``
+     - A packet whose first byte reaches the threshold is forwarded.
+
+   * - ``drops_packet_below_threshold``
+     - A packet whose first byte is below the threshold is dropped whole.
+
+   * - ``counts_forwarded_packets``
+     - Only forwarded packets are counted.
+
+cocotb
+------
+
+test_axil_regs
+~~~~~~~~~~~~~~
+
+:File: ``tb/cocotb/test_axil_regs.py``
+:Tests module: :doc:`/modules/axil_regs/index`
+:Purpose: Register file tests for axil_regs.
+:Tests: 3 tests, 1 skipped
+
+.. list-table::
+   :header-rows: 1
+
+   * - Test
+     - Purpose
+
+   * - ``reset_values``
+     - Every register reads back zero after reset.
+
+   * - ``scratch_write_read``
+     - A value written to the scratch register reads back unchanged.
+
+   * - ``start_runs_a_capture`` *(skipped)*
+     - Setting ctrl.start moves the status to running (needs the full top level).
+
+Directed
+--------
+
+tb_axil_adapter
+~~~~~~~~~~~~~~~
+
+:File: ``tb/directed/tb_axil_adapter.sv``
+:Tests module: :doc:`/modules/axil_adapter/index`
+:Purpose: Directed testbench for the AXI4-Lite adapter. Writes and reads the scratch register through the flat AXI4-Lite port, with no verification framework: each scenario below is marked with a TEST comment.
+:Tests: 2 tests
+
+.. list-table::
+   :header-rows: 1
+
+   * - Test
+     - Purpose
+
+   * - ``scratch_write_read``
+     - a value written to scratch reads back unchanged
+
+   * - ``threshold_output``
+     - writing the threshold register drives the threshold port
+
+tb_smoke
+~~~~~~~~
+
+:File: ``tb/directed/tb_smoke.sv``
+:Tests module: —
+:Purpose: Clock and reset smoke test. Checks only that a free-running clock toggles; it does not instantiate any design module, so it is not linked to one.
+:Tests: 1 test
+
+.. list-table::
+   :header-rows: 1
+
+   * - Test
+     - Purpose
+
+   * - ``clock_toggles``
+     - the clock changes level
+
+tb_top
+~~~~~~
+
+:File: ``tb/directed/tb_top.vhd``
+:Tests module: :doc:`/modules/top/index`
+:Purpose: Directed testbench for the top level. Programs the filters through the APB port, then streams bytes through the external pipeline, with no verification framework: each scenario below is marked with a TEST comment.
+:Tests: 3 tests
+
+.. list-table::
+   :header-rows: 1
+
+   * - Test
+     - Purpose
+
+   * - ``register_write``
+     - a write over APB reaches the scratch register
+
+   * - ``capture_runs``
+     - setting start raises led_busy
+
+   * - ``ext_filter_pass``
+     - a packet starting above the threshold reaches m_ext

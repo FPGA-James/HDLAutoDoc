@@ -21,21 +21,25 @@ Summary
      - Sensitivity
      - Source Line
      - WaveDrom
+     - Mermaid
 
    * - :doc:`p_state_reg`
      - ``process``
      - ``clk``
      - 67
      - ✔
+     - —
 
    * - :doc:`p_next_state`
      - ``process``
      - ``state``, ``en``, ``timer_exp``
      - 100
      - ✔
+     - —
 
    * - :doc:`p_outputs`
      - ``process``
      - ``state``
      - 133
      - ✔
+     - —

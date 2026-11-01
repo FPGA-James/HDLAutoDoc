@@ -1,0 +1,153 @@
+Build
+=====
+
+Summary
+-------
+
+.. list-table::
+   :widths: 30 70
+
+   * - Yosys
+     - 0.56+186
+
+   * - Device
+     - ECP5 25k class
+
+   * - Reports generated
+     - 2026-11-01 20:19
+
+   * - Documented at
+     - v3.12.0-15-gd3eb583
+
+Utilization
+-----------
+
+Device utilisation (nextpnr)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+
+   * - Resource
+     - Used
+     - Available
+     - %
+
+   * - ``TRELLIS_IO``
+     - 127
+     - 197
+     - 64
+
+   * - ``DCCA``
+     - 2
+     - 56
+     - 3
+
+   * - ``TRELLIS_FF``
+     - 297
+     - 24,288
+     - 1
+
+   * - ``TRELLIS_COMB``
+     - 281
+     - 24,288
+     - 1
+
+   * - ``TRELLIS_RAMW``
+     - 2
+     - 3,036
+     - 0
+
+23 other resource types unused.
+
+By module (Vivado)
+~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+
+   * - Module
+     - LUTs / 20,800
+     - FFs / 41,600
+     - BRAMs
+     - DSPs
+
+   * - top
+     - 387
+     - 294
+     - 2
+     - 0
+
+   * - └─ apb
+     - 52
+     - 70
+     - 0
+     - 0
+
+   * - └─ capture
+     - 89
+     - 72
+     - 2
+     - 0
+
+   * - └─ ctrl
+     - 47
+     - 38
+     - 0
+     - 0
+
+   * - └─ ext
+     - 72
+     - 30
+     - 0
+     - 0
+
+   * - └─ regs
+     - 109
+     - 72
+     - 0
+     - 0
+
+Timing — Vivado
+---------------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Clock
+     - Target (MHz)
+     - Fmax (MHz)
+     - Period (ns)
+     - WNS (ns)
+
+   * - clk
+     - 100.0
+     - 139.80
+     - 10.000
+     - +2.847
+
+   * - adc_clk
+     - 71.4
+     - 89.66
+     - 14.000
+     - +2.847
+
+Warnings
+--------
+
+184 warnings in the build logs; the most frequent:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Message
+     - Count
+
+   * - IO '…' is unconstrained in LPF and will be automatically placed
+     - 126
+
+   * - Identifier '…' is implicitly declared.
+     - 57
+
+   * - The network is combinational.
+     - 1

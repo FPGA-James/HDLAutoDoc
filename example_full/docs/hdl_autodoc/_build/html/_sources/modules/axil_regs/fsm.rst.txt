@@ -1,0 +1,8 @@
+axil_regs — State Machine
+=========================
+
+No FSM detected in ``axil_regs.sv``.
+
+This module is either a structural wrapper (no combinational
+state logic) or uses a coding style not yet supported by the
+FSM extractor.

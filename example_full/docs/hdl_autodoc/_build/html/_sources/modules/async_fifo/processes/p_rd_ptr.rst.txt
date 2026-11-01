@@ -1,0 +1,33 @@
+p_rd_ptr
+========
+
+| **Source file:** ``async_fifo.vhd``
+| **Source line:** 104
+| **Block type:** ``process``
+| **Sensitivity list:** ``rd_clk``, ``rd_rst_n``
+
+Description
+-----------
+
+p_rd_ptr\: Advances the read pointer after a word is taken.
+
+Source
+------
+
+.. code-block:: vhdl
+
+       p_rd_ptr : process(rd_clk, rd_rst_n) is
+           variable next_bin : unsigned(PTR_BITS - 1 downto 0);
+       begin
+           if rd_rst_n = '0' then
+               rptr_bin  <= (others => '0');
+               rptr_gray <= (others => '0');
+           elsif rising_edge(rd_clk) then
+               next_bin := rptr_bin;
+               if rd_en = '1' and rempty = '0' then
+                   next_bin := rptr_bin + 1;
+               end if;
+               rptr_bin  <= next_bin;
+               rptr_gray <= to_gray(next_bin);
+           end if;
+       end process p_rd_ptr;

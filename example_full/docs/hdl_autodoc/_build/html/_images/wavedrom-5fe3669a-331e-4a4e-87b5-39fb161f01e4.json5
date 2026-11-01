@@ -1,0 +1,6 @@
+{ "signal": [
+{ "name": "clk",      "wave": "P........" },
+{ "name": "start",    "wave": "01......0" },
+{ "name": "run_last", "wave": "0....10.." },
+{ "name": "state",    "wave": "=.=.=.=.=", "data": ["IDLE","ARMED","RUN","DONE","IDLE"] }
+]}

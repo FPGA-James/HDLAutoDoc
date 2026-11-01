@@ -1,0 +1,34 @@
+p_wr_ptr
+========
+
+| **Source file:** ``async_fifo.vhd``
+| **Source line:** 74
+| **Block type:** ``process``
+| **Sensitivity list:** ``wr_clk``, ``wr_rst_n``
+
+Description
+-----------
+
+p_wr_ptr\: Stores a word and advances the write pointer.
+
+Source
+------
+
+.. code-block:: vhdl
+
+       p_wr_ptr : process(wr_clk, wr_rst_n) is
+           variable next_bin : unsigned(PTR_BITS - 1 downto 0);
+       begin
+           if wr_rst_n = '0' then
+               wptr_bin  <= (others => '0');
+               wptr_gray <= (others => '0');
+           elsif rising_edge(wr_clk) then
+               next_bin := wptr_bin;
+               if wr_en = '1' and wfull = '0' then
+                   mem(to_integer(wptr_bin(DEPTH_LOG2 - 1 downto 0))) <= wr_data;
+                   next_bin := wptr_bin + 1;
+               end if;
+               wptr_bin  <= next_bin;
+               wptr_gray <= to_gray(next_bin);
+           end if;
+       end process p_wr_ptr;

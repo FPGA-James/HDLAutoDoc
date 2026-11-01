@@ -1,0 +1,7 @@
+Annotated Source
+----------------
+
+.. literalinclude:: ../../../../src/reset_sync.vhd
+   :language: vhdl
+   :linenos:
+   :caption: src/reset_sync.vhd
