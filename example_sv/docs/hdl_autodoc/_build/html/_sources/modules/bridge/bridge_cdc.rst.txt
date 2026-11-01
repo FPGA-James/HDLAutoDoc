@@ -1,8 +1,0 @@
-bridge — Clock Domain Analysis
-==============================
-
-Auto-extracted from ``bridge.sv``.
-
-.. note::
-
-   No clocked processes detected. This module appears to be purely combinational.

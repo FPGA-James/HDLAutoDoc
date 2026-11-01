@@ -1,7 +1,0 @@
-Annotated Source
-----------------
-
-.. literalinclude:: ../../../../src/async_fifo.vhd
-   :language: vhdl
-   :linenos:
-   :caption: src/async_fifo.vhd

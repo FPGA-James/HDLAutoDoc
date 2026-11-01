@@ -1,8 +1,0 @@
-top — Entity
-============
-
-Source file: ``src/top.sv``.
-
-Top level.
-
-.. include:: top_source.rst

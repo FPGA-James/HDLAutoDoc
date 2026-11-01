@@ -1,7 +1,0 @@
-Annotated Source
-----------------
-
-.. literalinclude:: ../../../../src/sample_ctrl.vhd
-   :language: vhdl
-   :linenos:
-   :caption: src/sample_ctrl.vhd

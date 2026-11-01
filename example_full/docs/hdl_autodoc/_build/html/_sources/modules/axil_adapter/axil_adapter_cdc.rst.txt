@@ -1,8 +1,0 @@
-axil_adapter — Clock Domain Analysis
-====================================
-
-Auto-extracted from ``axil_adapter.sv``.
-
-.. note::
-
-   No clocked processes detected. This module appears to be purely combinational.

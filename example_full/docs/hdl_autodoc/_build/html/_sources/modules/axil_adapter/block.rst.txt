@@ -1,1 +1,0 @@
-.. include:: axil_adapter_block.rst

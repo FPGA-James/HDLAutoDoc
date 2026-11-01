@@ -1,7 +1,0 @@
-Annotated Source
-----------------
-
-.. literalinclude:: ../../../../src/bridge.sv
-   :language: systemverilog
-   :linenos:
-   :caption: src/bridge.sv

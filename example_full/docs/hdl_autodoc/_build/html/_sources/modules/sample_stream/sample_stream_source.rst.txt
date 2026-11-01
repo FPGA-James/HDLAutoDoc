@@ -1,7 +1,0 @@
-Annotated Source
-----------------
-
-.. literalinclude:: ../../../../src/sample_stream.sv
-   :language: systemverilog
-   :linenos:
-   :caption: src/sample_stream.sv

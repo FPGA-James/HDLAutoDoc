@@ -1,1 +1,0 @@
-.. include:: sample_ctrl_cdc.rst
