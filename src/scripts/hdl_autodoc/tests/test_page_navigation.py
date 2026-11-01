@@ -5,8 +5,14 @@ import os
 import re
 from pathlib import Path
 
+import pytest
 from sphinx.application import Sphinx
 from sphinx.util.docutils import docutils_namespace
+
+try:
+    import sphinxcontrib.wavedrom  # noqa: F401  (the real conf.py loads it)
+except Exception as exc:    # e.g. OSError: no library called "cairo-2" was found (macOS, no DYLD_LIBRARY_PATH)
+    pytest.skip(f"the real conf.py cannot be loaded here: {exc}", allow_module_level=True)
 
 CONFDIR = Path(__file__).parents[3] / "docs" / "hdl_autodoc"
 

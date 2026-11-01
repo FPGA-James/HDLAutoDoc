@@ -262,3 +262,48 @@ def test_latex_build_with_a_caption_and_no_mmdc_has_no_figure(tmp_path):
     assert warnings == ""
     assert "\\caption{A flow}" not in tex and "\\caption{Handshake}" not in tex
     assert "\\begin{figure}" not in tex
+
+
+def test_check_env_does_not_import_the_packages_so_a_missing_native_library_cannot_fail_it(tmp_path):
+    """On macOS, importing sphinxcontrib.wavedrom needs libxcb, which make's environment
+    cannot find, although the Sphinx build (run with the right prefix) works.  The check asks
+    whether the packages are installed; it must not import them."""
+    import subprocess
+    shim = tmp_path / "python-with-a-broken-wavedrom"
+    shim.write_text(
+        "#!/bin/sh\n"
+        f'exec "{sys.executable}" -c "\n'
+        "import importlib.abc, importlib.machinery, sys\n"
+        "class Loader(importlib.abc.Loader):\n"
+        "    def create_module(self, spec): return None\n"
+        "    def exec_module(self, module): raise OSError('no library called cairo-2 was found')\n"
+        "class Finder(importlib.abc.MetaPathFinder):\n"
+        "    def find_spec(self, name, path, target=None):\n"
+        "        if name == 'sphinxcontrib.wavedrom':\n"
+        "            return importlib.machinery.ModuleSpec(name, Loader())\n"
+        "sys.meta_path.insert(0, Finder())\n"
+        'exec(sys.argv[1])" "$2"\n')
+    shim.chmod(0o755)
+    project = tmp_path / "project"
+    project.mkdir()
+    (project / "Makefile").write_text(f"include {HDL_AUTODOC_DOCS.parents[1] / 'autodoc.mk'}\n")
+    result = subprocess.run(["make", "-C", str(project), "doc-check-env", f"PYTHON={shim}"],
+                            capture_output=True, text=True)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_check_env_names_the_missing_packages(tmp_path):
+    import subprocess
+    shim = tmp_path / "python-without-mermaid"
+    shim.write_text(
+        "#!/bin/sh\n"
+        f'exec "{sys.executable}" -c "import sys; sys.modules[\'sphinxcontrib.mermaid\'] = None; '
+        'exec(sys.argv[1])" "$2"\n')
+    shim.chmod(0o755)
+    project = tmp_path / "project"
+    project.mkdir()
+    (project / "Makefile").write_text(f"include {HDL_AUTODOC_DOCS.parents[1] / 'autodoc.mk'}\n")
+    result = subprocess.run(["make", "-C", str(project), "doc-check-env", f"PYTHON={shim}"],
+                            capture_output=True, text=True)
+    assert result.returncode != 0
+    assert "sphinxcontrib.mermaid" in result.stdout + result.stderr

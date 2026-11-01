@@ -131,15 +131,22 @@ doc-venv:
 doc-install:
 	$(PYTHON) -m pip install -r $(AUTODOC_HOME)/requirements.txt
 
-## ── Pre-flight: are the Sphinx packages importable? ───────────────────────────
+## ── Pre-flight: are the Sphinx packages installed? ────────────────────────────
 # Fails early with the fix instead of a Sphinx "no theme named 'furo'" traceback
-# when no .venv exists and the system Python lacks the dependencies.
+# when no .venv exists and the system Python lacks the dependencies.  It asks whether
+# each package can be found without importing it: importing sphinxcontrib.wavedrom loads
+# native libraries (cairo, xcb) that make's environment may not be able to locate (macOS
+# needs DYLD_LIBRARY_PATH, which SIP strips), although the build itself works.
 doc-check-env:
-	@$(PYTHON) -c "import sphinx, furo, sphinxcontrib.wavedrom, sphinxcontrib.mermaid, sphinxvhdl" 2>/dev/null || { \
+	@missing=$$($(PYTHON) -c "import importlib.util as u; print(' '.join(n for n in ('sphinx', 'furo', 'sphinxcontrib.wavedrom', 'sphinxcontrib.mermaid', 'sphinxvhdl') if u.find_spec(n.split('.')[0]) is None or u.find_spec(n) is None))" 2>/dev/null); \
+	status=$$?; \
+	if [ $$status -ne 0 ] || [ -n "$$missing" ]; then \
 		echo "ERROR: the Python packages HDL AutoDoc needs are not installed for $(PYTHON)."; \
+		[ -z "$$missing" ] || echo "       Missing: $$missing"; \
 		echo "       Run 'make doc-venv' (creates .venv and installs them), then re-run."; \
 		echo "       Or 'make doc-install' to install into the active environment."; \
-		exit 1; }
+		exit 1; \
+	fi
 
 ## ── Step 1: parse filelist.f → hierarchy.json ─────────────────────────────────
 doc-hierarchy:

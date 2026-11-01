@@ -1,5 +1,18 @@
 # Release Notes
 
+## v3.14.1
+
+#### Fixes
+
+- **`make doc-check-env` no longer reports installed packages as missing on macOS.** The check imported `sphinxcontrib.wavedrom`, which loads cairo and xcb; macOS could not find `libxcb` from make's environment (SIP strips `DYLD_LIBRARY_PATH`), so the build stopped with "packages are not installed" although the real build works. The check now asks whether each package is installed without importing it, and names the ones that are missing.
+- The Sphinx tests that load the real `conf.py` skip, with the reason, when cairo cannot be loaded, instead of failing.
+
+#### Compatibility
+
+- Backwards compatible. A genuinely missing package is still caught by the check; one that is installed but cannot load its native libraries now fails in the Sphinx build with the real error.
+
+---
+
 ## v3.14.0
 
 #### New features
