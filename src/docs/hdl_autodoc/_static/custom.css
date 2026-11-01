@@ -581,6 +581,31 @@ table.register-table td {
   font-size: var(--font-size--small);
   color: var(--color-foreground-muted);
   margin-bottom: 1rem;
+  /* Stay in view while the page scrolls; the background hides text passing under it. */
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding: 0.5rem 0;
+  background: var(--color-background-primary);
+  border-bottom: 1px solid var(--color-background-border);
+}
+/* Furo's .content has overflow-x:auto, which makes it the scroll container and stops
+   position:sticky from working inside it; clip keeps the clipping without that. */
+.content {
+  overflow-x: clip;
+}
+/* Anchor jumps would land under the bar. */
+html {
+  scroll-padding-top: 3rem;
+}
+/* Furo's own header is sticky below this width; sit under it. */
+@media (max-width: 63em) {
+  .hdl-breadcrumbs {
+    top: var(--header-height);
+  }
+  html {
+    scroll-padding-top: calc(var(--header-height) + 3rem);
+  }
 }
 .hdl-breadcrumbs a {
   color: var(--color-foreground-secondary);
