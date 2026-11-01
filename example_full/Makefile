@@ -26,8 +26,8 @@ NEXTPNR ?= nextpnr-ecp5
 FILES   := $(shell grep -v '^\#' filelist.f)
 SV_SRC  := $(filter %.sv,$(FILES))
 VHDL_SRC:= $(filter %.vhd,$(FILES))
-TOP     ?= top_not_set_yet
-VHDL_ROOTS ?=
+TOP     ?= top
+VHDL_ROOTS ?= top async_fifo
 
 .PHONY: ecp5-reports
 ecp5-reports:

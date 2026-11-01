@@ -12,3 +12,4 @@ src/sample_stream.sv
 src/axil_regs.sv
 src/axil_adapter.sv
 src/apb_bridge.vhd
+src/top.vhd
