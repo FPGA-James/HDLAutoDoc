@@ -411,7 +411,7 @@
 <p>Top-level module: <a class="reference internal" href="modules/top/index.html"><span class="doc">top</span></a></p>
 <section id="instantiation-tree">
 <h2>Instantiation Tree<a class="headerlink" href="#instantiation-tree" title="Link to this heading">¶</a></h2>
-<div class="graphviz"><object data="_images/graphviz-eee5f509b8eff3adcfc5d7b710f7a0f8a23e52c1.svg" type="image/svg+xml" class="graphviz">
+<div class="graphviz"><object data="_images/graphviz-08c069ece57e11ac4eac5966175cd85c36ae5598.svg" type="image/svg+xml" class="graphviz">
 <p class="warning">digraph hierarchy {
     rankdir=TB;
     node [shape=box, style=filled, fillcolor=lightblue,
@@ -421,8 +421,6 @@
     stream_filter [fillcolor=lightyellow, label=&quot;stream_filter\n(shared)&quot;];
 
     sample_capture -&gt; async_fifo;
-    axis_pipeline -&gt; stream_filter;
-    axil_adapter -&gt; axil_regs;
     top -&gt; apb_bridge;
     top -&gt; axil_adapter;
     top -&gt; axis_pipeline;
@@ -431,6 +429,8 @@
     top -&gt; sample_ctrl;
     top -&gt; sample_stream;
     sample_stream -&gt; stream_filter;
+    axis_pipeline -&gt; stream_filter;
+    axil_adapter -&gt; axil_regs;
 }</p></object></div>
 </section>
 <section id="shared-components">
@@ -459,65 +459,65 @@
 <td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
 <td><p>—</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/sample_ctrl/index.html"><span class="doc">sample_ctrl</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sample_ctrl.vhd</span></code></p></td>
+<td><p>Sampler controller. Runs one capture window per start request: it arms, enables the capture</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/axil_regs/index.html"><span class="doc">axil_regs</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">axil_regs.sv</span></code></p></td>
+<td><p>AXI4-Lite register file for the sampler. Five 32-bit registers: control (start, filter enable, clear, clear overflow), a read-only</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">axil_adapter</span></code></p></td>
+<td><p>—</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="modules/sample_capture/index.html"><span class="doc">sample_capture</span></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">sample_capture.sv</span></code></p></td>
 <td><p>Sample capture across a clock boundary. Registers samples from a free-running converter clock (adc_clk) and hands</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">async_fifo</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="modules/sample_ctrl/index.html"><span class="doc">sample_ctrl</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">sample_ctrl.vhd</span></code></p></td>
-<td><p>Sampler controller. Runs one capture window per start request: it arms, enables the capture</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
-<td><p>—</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/axil_regs/index.html"><span class="doc">axil_regs</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">axil_regs.sv</span></code></p></td>
-<td><p>AXI4-Lite register file for the sampler. Five 32-bit registers: control (start, filter enable, clear, clear overflow), a read-only</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">axil_adapter</span></code></p></td>
-<td><p>—</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="modules/axis_pipeline/index.html"><span class="doc">axis_pipeline</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">axis_pipeline.sv</span></code></p></td>
-<td><p>Filtered pass-through for an external byte stream. Presents flat AXI4-Stream ports, wraps them in interface instances and runs</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">stream_filter</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/axil_adapter/index.html"><span class="doc">axil_adapter</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">axil_adapter.sv</span></code></p></td>
-<td><p>Flat AXI4-Lite to register file adapter. Presents the register bus as flat AXI4-Lite subordinate ports (so a VHDL</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">axil_regs</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="modules/apb_bridge/index.html"><span class="doc">apb_bridge</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">apb_bridge.vhd</span></code></p></td>
-<td><p>APB to AXI4-Lite bridge. Turns each APB transfer into one AXI4-Lite read or write and completes the</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
-<td><p>—</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/top/index.html"><span class="doc">top</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">top.vhd</span></code></p></td>
-<td><p>Sampler top level. Captures samples from a converter clock into the system clock, runs a capture</p></td>
-<td><p><em>(top)</em></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">apb_bridge</span></code>, <code class="docutils literal notranslate"><span class="pre">axil_adapter</span></code>, <code class="docutils literal notranslate"><span class="pre">axis_pipeline</span></code>, <code class="docutils literal notranslate"><span class="pre">reset_sync</span></code>, <code class="docutils literal notranslate"><span class="pre">sample_capture</span></code>, <code class="docutils literal notranslate"><span class="pre">sample_ctrl</span></code>, <code class="docutils literal notranslate"><span class="pre">sample_stream</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="modules/async_fifo/index.html"><span class="doc">async_fifo</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">async_fifo.vhd</span></code></p></td>
-<td><p>Asynchronous FIFO. Moves words from the write clock domain to the read clock domain. Each side</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">sample_capture</span></code></p></td>
-<td><p>—</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/sample_stream/index.html"><span class="doc">sample_stream</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">sample_stream.sv</span></code></p></td>
-<td><p>Captured samples as a filtered byte stream. Sends the low byte of each sample as a one-byte packet and runs it through a</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">stream_filter</span></code></p></td>
-</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="modules/stream_filter/index.html"><span class="doc">stream_filter</span></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">stream_filter.sv</span></code></p></td>
 <td><p>Packet filter for a byte stream. Looks at the first byte of each packet: if it is at or above the threshold</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">axis_pipeline</span></code>, <code class="docutils literal notranslate"><span class="pre">sample_stream</span></code></p></td>
 <td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/apb_bridge/index.html"><span class="doc">apb_bridge</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">apb_bridge.vhd</span></code></p></td>
+<td><p>APB to AXI4-Lite bridge. Turns each APB transfer into one AXI4-Lite read or write and completes the</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/top/index.html"><span class="doc">top</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">top.vhd</span></code></p></td>
+<td><p>Sampler top level. Captures samples from a converter clock into the system clock, runs a capture</p></td>
+<td><p><em>(top)</em></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">apb_bridge</span></code>, <code class="docutils literal notranslate"><span class="pre">axil_adapter</span></code>, <code class="docutils literal notranslate"><span class="pre">axis_pipeline</span></code>, <code class="docutils literal notranslate"><span class="pre">reset_sync</span></code>, <code class="docutils literal notranslate"><span class="pre">sample_capture</span></code>, <code class="docutils literal notranslate"><span class="pre">sample_ctrl</span></code>, <code class="docutils literal notranslate"><span class="pre">sample_stream</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/async_fifo/index.html"><span class="doc">async_fifo</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">async_fifo.vhd</span></code></p></td>
+<td><p>Asynchronous FIFO. Moves words from the write clock domain to the read clock domain. Each side</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sample_capture</span></code></p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/sample_stream/index.html"><span class="doc">sample_stream</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sample_stream.sv</span></code></p></td>
+<td><p>Captured samples as a filtered byte stream. Sends the low byte of each sample as a one-byte packet and runs it through a</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">stream_filter</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/axis_pipeline/index.html"><span class="doc">axis_pipeline</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">axis_pipeline.sv</span></code></p></td>
+<td><p>Filtered pass-through for an external byte stream. Presents flat AXI4-Stream ports, wraps them in interface instances and runs</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">stream_filter</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/axil_adapter/index.html"><span class="doc">axil_adapter</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">axil_adapter.sv</span></code></p></td>
+<td><p>Flat AXI4-Lite to register file adapter. Presents the register bus as flat AXI4-Lite subordinate ports (so a VHDL</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">axil_regs</span></code></p></td>
 </tr>
 </tbody>
 </table>

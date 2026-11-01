@@ -8,6 +8,7 @@ from parse_testbenches import (
     link_dut,
     parse_cocotb,
     parse_directed,
+    parse_pyuvm,
     parse_vunit_hdl,
 )
 
@@ -130,12 +131,50 @@ endmodule
 """
 
 
+PYUVM = '''\
+"""ALU tests written with pyuvm."""
+import pyuvm
+from pyuvm import uvm_test, uvm_env
+
+# @pyuvm.test()
+class NotATest(uvm_test):
+    """Commented out above."""
+
+
+class AluEnv(uvm_env):
+    """An environment, not a test."""
+
+
+@pyuvm.test()
+class RandomTest(uvm_test):
+    """Random operands against a reference model.
+
+    More detail.
+    """
+
+
+@pyuvm.test(
+    timeout_time=10,
+    timeout_unit="us",
+)
+class CornerTest(uvm_test):
+    """Operands at the limits."""
+
+
+@pyuvm.test(skip=True)
+class OverflowTest(uvm_test):
+    """Not ready yet."""
+'''
+
+
 # ── framework_for_dir ────────────────────────────────────────────────────────
 
 def test_framework_for_dir_is_case_insensitive_and_defaults_to_directed():
     assert framework_for_dir("vunit") == "vunit"
     assert framework_for_dir("VUnit") == "vunit"
     assert framework_for_dir("COCOTB") == "cocotb"
+    assert framework_for_dir("pyuvm") == "pyuvm"
+    assert framework_for_dir("PyUVM") == "pyuvm"
     assert framework_for_dir("directed") == "directed"
     assert framework_for_dir("unit_tests") == "directed"
 
@@ -403,3 +442,51 @@ def test_a_utf8_byte_order_mark_does_not_hide_an_hdl_header_purpose(tmp_path):
     (d / "tb_bom.vhd").write_bytes(b"\xef\xbb\xbf-- FIFO bench.\nlibrary ieee;\nentity tb_bom is end entity;\n")
     (tb,) = discover_testbenches(tmp_path / "tb", set())
     assert tb.purpose == "FIFO bench."
+
+
+# ── pyuvm ────────────────────────────────────────────────────────────────────
+
+def test_pyuvm_counts_only_classes_decorated_as_tests():
+    _, tests = parse_pyuvm(PYUVM)
+    assert [t.name for t in tests] == ["RandomTest", "CornerTest", "OverflowTest"]
+
+
+def test_pyuvm_purposes_come_from_the_class_docstring_and_skip_is_flagged():
+    purpose, tests = parse_pyuvm(PYUVM)
+    assert purpose == "ALU tests written with pyuvm."
+    assert tests[0].purpose == "Random operands against a reference model."
+    assert [t.skipped for t in tests] == [False, False, True]
+
+
+def test_pyuvm_recognises_an_aliased_module_and_a_bare_test_import():
+    aliased = "import pyuvm as uvm\n@uvm.test()\nclass A(uvm.uvm_test):\n    pass\n"
+    bare = "from pyuvm import test, uvm_test\n@test()\nclass B(uvm_test):\n    pass\n"
+    assert [t.name for t in parse_pyuvm(aliased)[1]] == ["A"]
+    assert [t.name for t in parse_pyuvm(bare)[1]] == ["B"]
+
+
+def test_pyuvm_ignores_a_cocotb_test_and_a_test_decorator_from_elsewhere():
+    text = ("import cocotb\nfrom other import test\n@cocotb.test()\nasync def t(dut): pass\n"
+            "@test()\nclass C: pass\n")
+    assert parse_pyuvm(text)[1] == []
+
+
+def test_pyuvm_syntax_error_raises_so_discover_can_warn_and_skip():
+    import pytest
+    with pytest.raises(SyntaxError):
+        parse_pyuvm("class broken(:\n")
+
+
+def test_discover_lists_pyuvm_between_cocotb_and_directed_and_links_by_name(tmp_path):
+    tb = tmp_path / "tb"
+    for d in ("cocotb", "pyuvm", "directed"):
+        (tb / d).mkdir(parents=True)
+    (tb / "cocotb" / "test_regs.py").write_text(COCOTB)
+    (tb / "pyuvm" / "test_alu.py").write_text(PYUVM)
+    (tb / "pyuvm" / "helpers.py").write_text("class Helper: pass\n")             # no tests
+    (tb / "directed" / "tb_top.vhd").write_text(DIRECTED_VHDL)
+    tbs = discover_testbenches(tb, {"alu", "regs", "top"})
+    assert [(t.framework, t.name, t.dut) for t in tbs] == [
+        ("cocotb", "test_regs", "regs"), ("pyuvm", "test_alu", "alu"),
+        ("directed", "tb_top", "top")]
+    assert len(tbs[1].tests) == 3 and tbs[1].file == "tb/pyuvm/test_alu.py"

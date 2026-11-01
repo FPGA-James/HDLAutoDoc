@@ -18,6 +18,8 @@ def _tbs():
                   [TestCase("reset", "Reset empties the FIFO."), TestCase("wrap")], "fifo"),
         Testbench("test_regs", "tb/cocotb/test_regs.py", "cocotb", "Register tests.",
                   [TestCase("a", "First."), TestCase("b", "Second.", skipped=True)], None),
+        Testbench("test_alu", "tb/pyuvm/test_alu.py", "pyuvm", "ALU tests.",
+                  [TestCase("RandomTest", "Random operands.")], "alu"),
         Testbench("tb_top", "tb/directed/tb_top.vhd", "directed", "", [], "top"),
     ]
 
@@ -29,9 +31,9 @@ def test_page_title_and_summary_table_with_totals():
     summary = rst[:rst.index("\nVUnit\n")]
     assert "VUnit" in summary and "cocotb" in summary and "Directed" in summary
     assert "Total" in summary
-    # 4 tests overall (one skipped), 3 testbenches.
+    # 5 tests overall (one skipped), 4 testbenches.
     total_row = summary[summary.index("Total"):]
-    assert "3" in total_row and "4" in total_row and "1 skipped" in total_row
+    assert "4" in total_row and "5" in total_row and "1 skipped" in total_row
 
 
 def test_a_section_per_framework_and_per_testbench_details():
@@ -142,3 +144,11 @@ def test_cli_always_exits_zero(tmp_path):
     missing = subprocess.run([sys.executable, str(SCRIPT), str(h), str(docs), str(tmp_path / "x")],
                              capture_output=True, text=True)
     assert ok.returncode == 0 and missing.returncode == 0
+
+
+def test_a_pyuvm_section_sits_between_cocotb_and_directed():
+    rst = render_page(_tbs())
+    assert "\npyuvm\n-----\n" in rst
+    assert rst.index("\ncocotb\n") < rst.index("\npyuvm\n") < rst.index("\nDirected\n")
+    section = rst[rst.index("\npyuvm\n"):rst.index("\nDirected\n")]
+    assert "``RandomTest``" in section and ":doc:`/modules/alu/index`" in section

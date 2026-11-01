@@ -14,10 +14,10 @@ Summary
      - ECP5 25k class
 
    * - Reports generated
-     - 2026-11-01 20:56
+     - 2026-11-01 21:14
 
    * - Documented at
-     - v3.12.0-26-g3652455
+     - v3.13.0-1-gc5cc6ad
 
 Utilization
 -----------

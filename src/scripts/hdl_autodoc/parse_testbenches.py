@@ -9,6 +9,7 @@ Layout (framework = subdirectory name, case-insensitive):
     tb/
     ├── vunit/      VUnit testbenches (VHDL / SystemVerilog)
     ├── cocotb/     cocotb tests (Python)
+    ├── pyuvm/      pyuvm tests (Python, UVM on top of cocotb)
     └── directed/   plain HDL testbenches
 
 What counts as a test:
@@ -17,6 +18,8 @@ What counts as a test:
     VUnit (SV)      each  `TEST_CASE("name")
     cocotb          each  @cocotb.test(...) function; purpose = first docstring line;
                     skip=True is listed and flagged
+    pyuvm           each  class decorated with @pyuvm.test(...); purpose = first line of the
+                    class docstring; skip=True is listed and flagged
     directed        each  `-- TEST: name — purpose`  (VHDL)  or  `// TEST: name — purpose`
                     (SV/V) comment; the separator after the name may be —, - or :.
                     A directed file with no markers is one test named after the testbench.
@@ -39,7 +42,9 @@ from pathlib import Path
 
 from parse_hierarchy import extract_instantiations_sv, extract_instantiations_vhdl
 
-FRAMEWORKS = ("vunit", "cocotb", "directed")
+FRAMEWORKS = ("vunit", "cocotb", "pyuvm", "directed")
+# Frameworks whose testbenches are Python files.
+_PYTHON_FRAMEWORKS = ("cocotb", "pyuvm")
 # Simulator and tool output that may sit under tb/ (VUnit copies sources into
 # vunit_out/, for instance); anything in them is a copy, not a testbench.
 _OUTPUT_DIRS = {"vunit_out", "sim_build", "__pycache__", "obj_dir", "xsim.dir", "work"}
@@ -264,6 +269,23 @@ def _cocotb_decorator(dec: ast.expr, bare_test: bool) -> dict | None:
     return {"skip": skip}
 
 
+def _python_purpose(tree: ast.Module, text: str) -> str:
+    """A Python test module's purpose: its docstring's first paragraph, else the leading
+    comment block."""
+    doc = ast.get_docstring(tree)
+    if doc:
+        return _clean(doc.split("\n\n")[0].splitlines())
+    block: list[str] = []
+    for l in text.splitlines():
+        if not l.strip() and not block:
+            continue
+        if l.lstrip().startswith("#") and not l.startswith("#!"):
+            block.append(l.lstrip()[1:])
+        else:
+            break
+    return _clean(block)
+
+
 def parse_cocotb(text: str) -> tuple[str, list[TestCase]]:
     """
     (module purpose, tests) for a cocotb test module.  Uses Python's own parser, so
@@ -286,20 +308,50 @@ def parse_cocotb(text: str) -> tuple[str, list[TestCase]]:
                                       info["skip"]))
                 break
 
-    doc = ast.get_docstring(tree)
-    if doc:
-        purpose = _clean(doc.split("\n\n")[0].splitlines())
-    else:
-        block: list[str] = []
-        for l in text.splitlines():
-            if not l.strip() and not block:
+    return _python_purpose(tree, text), tests
+
+
+
+def _pyuvm_names(tree: ast.Module) -> tuple[set[str], bool]:
+    """(names the pyuvm module is imported as, whether `test` is imported from pyuvm)."""
+    modules: set[str] = set()
+    bare_test = False
+    for n in tree.body:
+        if isinstance(n, ast.Import):
+            modules |= {a.asname or a.name for a in n.names if a.name == "pyuvm"}
+        elif isinstance(n, ast.ImportFrom) and n.module == "pyuvm":
+            bare_test |= any(a.name == "test" and not a.asname for a in n.names)
+    return modules, bare_test
+
+
+def parse_pyuvm(text: str) -> tuple[str, list[TestCase]]:
+    """
+    (module purpose, tests) for a pyuvm test module: each class decorated with
+    `@pyuvm.test(...)` (or `@test(...)` imported from pyuvm) is a test; its purpose is
+    the first line of the class docstring.  Raises SyntaxError for invalid Python.
+    """
+    tree = ast.parse(text)
+    modules, bare_test = _pyuvm_names(tree)
+
+    tests: list[TestCase] = []
+    for node in tree.body:
+        if not isinstance(node, ast.ClassDef):
+            continue
+        for dec in node.decorator_list:
+            call = dec if isinstance(dec, ast.Call) else None
+            target = call.func if call else dec
+            is_test = (isinstance(target, ast.Attribute) and target.attr == "test"
+                       and isinstance(target.value, ast.Name) and target.value.id in modules) \
+                or (bare_test and isinstance(target, ast.Name) and target.id == "test")
+            if not is_test:
                 continue
-            if l.lstrip().startswith("#") and not l.startswith("#!"):
-                block.append(l.lstrip()[1:])
-            else:
-                break
-        purpose = _clean(block)
-    return purpose, tests
+            skip = bool(call) and any(
+                kw.arg == "skip" and isinstance(kw.value, ast.Constant) and kw.value.value is True
+                for kw in call.keywords)
+            doc = ast.get_docstring(node) or ""
+            tests.append(TestCase(node.name, doc.splitlines()[0].strip() if doc else "", skip))
+            break
+    return _python_purpose(tree, text), tests
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -365,7 +417,7 @@ def _read(path: Path) -> str | None:
 
 def discover_testbenches(tb_dir: Path, module_names: set[str]) -> list[Testbench]:
     """
-    Every testbench under `tb_dir`, sorted by framework (vunit, cocotb, directed)
+    Every testbench under `tb_dir`, sorted by framework (vunit, cocotb, pyuvm, directed)
     then name.  A missing or empty directory gives [].  Files that are not
     testbenches (packages, helpers, runners, Makefiles) are skipped silently.
     """
@@ -388,10 +440,10 @@ def discover_testbenches(tb_dir: Path, module_names: set[str]) -> list[Testbench
             if label not in noted:
                 noted.add(label)
                 print(f"  NOTE: testbenches in {label} are treated as 'directed' "
-                      f"(use vunit/, cocotb/ or directed/)", file=sys.stderr)
+                      f"(use vunit/, cocotb/, pyuvm/ or directed/)", file=sys.stderr)
 
         suffix = path.suffix.lower()
-        wanted = {".py"} if framework == "cocotb" else _HDL_SUFFIXES
+        wanted = {".py"} if framework in _PYTHON_FRAMEWORKS else _HDL_SUFFIXES
         if suffix not in wanted:
             continue
         text = _read(path)
@@ -399,9 +451,9 @@ def discover_testbenches(tb_dir: Path, module_names: set[str]) -> list[Testbench
             continue
 
         shown = path.relative_to(tb_dir.parent).as_posix()
-        if framework == "cocotb":
+        if framework in _PYTHON_FRAMEWORKS:
             try:
-                purpose, tests = parse_cocotb(text)
+                purpose, tests = (parse_pyuvm if framework == "pyuvm" else parse_cocotb)(text)
             except SyntaxError as exc:
                 _warn(path, f"not valid Python ({exc.msg}) — skipped")
                 continue
@@ -420,14 +472,14 @@ def discover_testbenches(tb_dir: Path, module_names: set[str]) -> list[Testbench
             else:
                 tests = parse_directed(text, suffix) or [TestCase(name, purpose)]
         tb = Testbench(name, shown, framework, purpose, tests,
-                       link_dut(path.stem if framework == "cocotb" else name,
+                       link_dut(path.stem if framework in _PYTHON_FRAMEWORKS else name,
                                 text, suffix, module_names))
         found.append(tb)
         sources[id(tb)] = (text, suffix)
 
     # A module that another testbench file instantiates is a helper (a bus
     # functional model, a memory model), not a testbench.
-    hdl = [t for t in found if t.framework != "cocotb"]
+    hdl = [t for t in found if t.framework not in _PYTHON_FRAMEWORKS]
     known = {t.name.lower() for t in hdl}
     used: set[str] = set()
     for t in hdl:
@@ -436,7 +488,7 @@ def discover_testbenches(tb_dir: Path, module_names: set[str]) -> list[Testbench
         others = known - {t.name.lower()}
         used |= set(extract_instantiations_vhdl(code, others) if suffix in _VHDL_SUFFIXES
                     else extract_instantiations_sv(code, others))
-    found = [t for t in found if t.framework == "cocotb" or t.name.lower() not in used]
+    found = [t for t in found if t.framework in _PYTHON_FRAMEWORKS or t.name.lower() not in used]
 
     order = {fw: i for i, fw in enumerate(FRAMEWORKS)}
     return sorted(found, key=lambda t: (order[t.framework], t.name.lower()))
