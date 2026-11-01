@@ -270,8 +270,8 @@ def test_a_vhdl_parent_instantiates_a_systemverilog_child(project):
 
 def test_testbenches_in_all_three_frameworks_linked_with_one_skipped(project):
     tbs = discover_testbenches(EX / "tb", set(project.files))
-    assert {t.framework for t in tbs} == {"vunit", "cocotb", "directed"}
-    for framework in ("vunit", "cocotb", "directed"):
+    assert {t.framework for t in tbs} == {"vunit", "cocotb", "pyuvm", "directed"}
+    for framework in ("vunit", "cocotb", "pyuvm", "directed"):
         assert any(t.dut for t in tbs if t.framework == framework), f"no linked {framework} bench"
     assert any(c.skipped for t in tbs for c in t.tests)
     assert any(t.dut for t in tbs) and any(not t.dut for t in tbs), "need linked and unlinked benches"

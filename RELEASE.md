@@ -1,5 +1,18 @@
 # Release Notes
 
+## v3.14.0
+
+#### New features
+
+- **pyuvm testbenches** — the Testbenches section now lists [pyuvm](https://github.com/pyuvm/pyuvm) tests, from a `tb/pyuvm/` subdirectory. Each class decorated with `@pyuvm.test(...)` (or `@test(...)` imported from pyuvm) is a test; its purpose is the first line of the class docstring and `skip=True` tests are listed and marked skipped. The testbench is linked to the module it tests by file name, as for cocotb, and gets its own section and row in the summary table.
+- `example_full/` gains a pyuvm environment for `axis_pipeline` (sequence, driver, monitor, scoreboard, two tests and one skipped).
+
+#### Compatibility
+
+- Backwards compatible. A project with no `tb/pyuvm/` directory gets the same Testbenches page as before.
+
+---
+
 ## v3.13.0
 
 #### New features

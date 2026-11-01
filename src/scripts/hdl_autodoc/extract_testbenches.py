@@ -26,7 +26,7 @@ from pathlib import Path
 from parse_testbenches import FRAMEWORKS, Testbench, discover_testbenches
 from rst_escape import escape_rst as _esc
 
-_LABELS = {"vunit": "VUnit", "cocotb": "cocotb", "directed": "Directed"}
+_LABELS = {"vunit": "VUnit", "cocotb": "cocotb", "pyuvm": "pyuvm", "directed": "Directed"}
 
 
 def _count(tests: list) -> str:

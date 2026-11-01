@@ -25,7 +25,7 @@ No separate doc files to maintain. No manual diagrams to draw. If it's in the so
 | **Shared components** | Documented once, linked from every parent |
 | **VHDL + SystemVerilog** | Mixed-language designs work out of the box |
 | **Register map** | Auto-embeds `registers/generated/*.html` — any register builder output supported |
-| **Testbenches** | Lists VUnit, cocotb and directed testbenches with their purpose and test counts, read from source — on by default (`TESTBENCHES=0` to skip) |
+| **Testbenches** | Lists VUnit, cocotb, pyuvm and directed testbenches with their purpose and test counts, read from source — on by default (`TESTBENCHES=0` to skip) |
 | **Build reports** | Ingests Yosys/nextpnr (ECP5) and Vivado reports — summary, utilization, timing and warnings — on by default (`BUILD=0` to skip) |
 | **Dark / light mode** | Built-in Furo toggle — persists across sessions, respects OS preference |
 | **Ctrl+K search** | Keyboard shortcut focuses the sidebar search input |
@@ -402,6 +402,7 @@ One subdirectory per framework under `tb/`:
 tb/
 ├── vunit/       VUnit testbenches (VHDL or SystemVerilog)
 ├── cocotb/      cocotb test modules (Python)
+├── pyuvm/       pyuvm test modules (Python, UVM on top of cocotb)
 └── directed/    plain HDL testbenches
 ```
 
@@ -414,9 +415,10 @@ The subdirectory name is the framework (case-insensitive). HDL files directly in
 | VUnit (VHDL) | each `run("name")` | the comment directly above it, or on the same line |
 | VUnit (SystemVerilog) | each `` `TEST_CASE("name") `` | the comment directly above it, or on the same line |
 | cocotb | each `@cocotb.test(...)` function | the first line of its docstring; `skip=True` tests are listed and marked *skipped* |
+| pyuvm | each class decorated with `@pyuvm.test(...)` | the first line of its docstring; `skip=True` tests are listed and marked *skipped* |
 | directed | each `TEST:` marker (below) | the text after the marker |
 
-A testbench's own purpose is the comment block directly above its `entity` / `module` (or, if there is none, the comment block at the top of the file); for cocotb it is the module docstring.
+A testbench's own purpose is the comment block directly above its `entity` / `module` (or, if there is none, the comment block at the top of the file); for cocotb and pyuvm it is the module docstring.
 
 ### Marking tests in directed testbenches
 
@@ -572,7 +574,7 @@ Set these on the command line (`make doc-html SCHEMATICS=0`) or in your Makefile
 | `AUTODOC_MERMAID_PARAMS` | *(none)* | Extra arguments for it, e.g. `-p puppeteer.json` |
 | `AUTODOC_MERMAID_JS` | *(CDN)* | Where to load Mermaid from: a path relative to `docs/hdl_autodoc/_static/` (e.g. `mermaid/mermaid.esm.min.mjs`) or an `https://` URL, for HTML that works offline (serve the site; see above) |
 | `TESTBENCHES` | `1` | `0` removes the Testbenches section |
-| `AUTODOC_TB_DIR` | `tb` | Root of the testbenches, with one subdirectory per framework (`vunit/`, `cocotb/`, `directed/`) |
+| `AUTODOC_TB_DIR` | `tb` | Root of the testbenches, with one subdirectory per framework (`vunit/`, `cocotb/`, `pyuvm/`, `directed/`) |
 | `BUILD` | `1` | `0` removes the Build section |
 | `AUTODOC_REPORTS_DIR` | `reports` | Root of the build report files (`yosys/`, `vivado/`). Relative paths are taken from the project root. |
 | `AUTODOC_REGISTERS_DIR` | `registers` | Directory holding `regs_*.toml`, `config.yml` and the generated `generated/` and `out/` output. Relocate it, e.g. `AUTODOC_REGISTERS_DIR=out/registers`. Relative paths are taken from the project root. |
@@ -617,7 +619,7 @@ src/
 │   │   ├── extract_block.py     ← extracts block diagram + port/generics tables → dot + rst
 │   │   ├── extract_reports.py   ← ingests build reports → Build page
 │   │   ├── extract_testbenches.py ← lists testbenches → Testbenches page
-│   │   ├── parse_testbenches.py ← finds testbenches; counts VUnit / cocotb / directed tests
+│   │   ├── parse_testbenches.py ← finds testbenches; counts VUnit / cocotb / pyuvm / directed tests
 │   │   ├── parse_build_info.py  ← nextpnr utilisation block, tool versions, warning summary
 │   │   ├── sv_interfaces.py     ← SystemVerilog interface definitions and interface ports
 │   │   ├── rst_escape.py        ← escapes comment text for reStructuredText
@@ -730,7 +732,7 @@ Done. The new module appears in the overview (tree and table), navigation, and g
 
 ### Testbenches
 
-- Tests are counted from source, not from a run: a VUnit `run("...")` whose name is built at run time, or a cocotb test created in a loop, is not seen. Only top-level `@cocotb.test` functions are found.
+- Tests are counted from source, not from a run: a VUnit `run("...")` whose name is built at run time, or a cocotb test created in a loop, is not seen. Only top-level `@cocotb.test` functions and `@pyuvm.test` classes are found.
 - Directed tests need the `TEST:` marker comments (see Testbenches); a directed file without them counts as one test.
 - Purposes come from comments and docstrings. No results (pass/fail, coverage) are shown.
 - A testbench is linked to a module by name or by the module it instantiates; with several instantiated modules the first alphabetically is used.
@@ -753,6 +755,19 @@ Done. The new module appears in the overview (tree and table), navigation, and g
 ---
 
 ## 📋 Release notes
+
+### v3.14.0
+
+#### New features
+
+- **pyuvm testbenches** — the Testbenches section now lists [pyuvm](https://github.com/pyuvm/pyuvm) tests, from a `tb/pyuvm/` subdirectory. Each class decorated with `@pyuvm.test(...)` (or `@test(...)` imported from pyuvm) is a test; its purpose is the first line of the class docstring and `skip=True` tests are listed and marked skipped. The testbench is linked to the module it tests by file name, as for cocotb, and gets its own section and row in the summary table.
+- `example_full/` gains a pyuvm environment for `axis_pipeline` (sequence, driver, monitor, scoreboard, two tests and one skipped).
+
+#### Compatibility
+
+- Backwards compatible. A project with no `tb/pyuvm/` directory gets the same Testbenches page as before.
+
+---
 
 ### v3.13.0
 
