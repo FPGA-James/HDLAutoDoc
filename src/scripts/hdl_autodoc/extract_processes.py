@@ -267,9 +267,12 @@ def render_text_block(comment_lines: list[str]) -> list[str]:
 
     for raw in comment_lines:
         if raw == "":
-            flush_code(); out.append(""); continue
+            flush_code()
+            out.append("")
+            continue
         if raw != raw.lstrip():
-            code_buf.append(raw); continue
+            code_buf.append(raw)
+            continue
         flush_code()
         line = raw
         if first and re.match(r"^\w[\w\s]*:", line):

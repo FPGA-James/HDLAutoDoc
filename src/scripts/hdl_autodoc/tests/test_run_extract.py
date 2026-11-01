@@ -10,7 +10,6 @@ from extract_cache import (
     compute_file_hash,
     save_cache,
 )
-import pytest
 
 from run_extract import dependency_files, main, registers_dir_for
 

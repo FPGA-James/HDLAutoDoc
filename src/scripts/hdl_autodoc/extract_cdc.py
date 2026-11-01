@@ -343,11 +343,11 @@ def write_dot_cdc(module_name: str, domains: dict[str, list[str]],
         lines += [
             f"    subgraph cluster_{safe_clk} {{",
             f'        label="{clock}";',
-            f"        style=filled;",
+            "        style=filled;",
             f'        fillcolor="{fill}";',
             f'        color="{border}";',
-            f'        fontname="Helvetica Bold";',
-            f"        fontsize=13;",
+            '        fontname="Helvetica Bold";',
+            "        fontsize=13;",
             "",
         ]
         for proc in procs:

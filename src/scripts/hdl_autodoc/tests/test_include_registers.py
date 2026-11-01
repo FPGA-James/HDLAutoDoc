@@ -16,7 +16,6 @@ Covers:
 
 from pathlib import Path
 
-import pytest
 
 from include_registers import (
     REGISTERS_DIR_ENV,

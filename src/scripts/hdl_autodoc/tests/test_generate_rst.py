@@ -17,7 +17,6 @@ Covers:
 
 from pathlib import Path
 
-import pytest
 
 from generate_rst import (
     cdc_rst,

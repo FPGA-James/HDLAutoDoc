@@ -17,10 +17,8 @@ Covers all 11 cases from the spec:
   11. Malformed TOML → no custom groups (no error)
 """
 
-import pytest
-from pathlib import Path
 
-from detect_buses import BusGroup, group_ports
+from detect_buses import group_ports
 
 
 def _port(name: str, dir_: str = "in", type_: str = "std_logic") -> dict:

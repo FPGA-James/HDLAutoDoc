@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 
 from hdl_registers.parser.toml import from_toml
-from hdl_registers.parser.yaml import from_yaml
 
 from hdl_registers.generator.vhdl.register_package import VhdlRegisterPackageGenerator
 from hdl_registers.generator.vhdl.record_package import VhdlRecordPackageGenerator

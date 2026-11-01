@@ -118,10 +118,14 @@ def _parse_vivado(text: str) -> list[ModuleUtilization]:
     hdr_cols = [c.strip().lower() for c in hdr.group(0).split("|")]
     col: dict[str, int] = {}
     for i, h in enumerate(hdr_cols):
-        if re.match(r"lut", h):    col["luts"]  = i
-        elif re.match(r"ff", h):   col["ffs"]   = i
-        elif re.match(r"bram", h): col["brams"] = i
-        elif re.match(r"dsp", h):  col["dsps"]  = i
+        if re.match(r"lut", h):
+            col["luts"] = i
+        elif re.match(r"ff", h):
+            col["ffs"] = i
+        elif re.match(r"bram", h):
+            col["brams"] = i
+        elif re.match(r"dsp", h):
+            col["dsps"] = i
     if "luts" not in col or "ffs" not in col:
         return [top]
 
@@ -195,10 +199,14 @@ def _parse_yosys(text: str) -> list[ModuleUtilization]:
                 if not m:
                     continue
                 cell, count = m.group(2).lower(), int(m.group(1))
-            if cell in _LUT_CELLS:   mu.luts   += count
-            elif cell in _FF_CELLS:  mu.ffs    += count
-            elif cell in _BRAM_CELLS: mu.brams += count
-            elif cell in _DSP_CELLS:  mu.dsps  += count
+            if cell in _LUT_CELLS:
+                mu.luts += count
+            elif cell in _FF_CELLS:
+                mu.ffs += count
+            elif cell in _BRAM_CELLS:
+                mu.brams += count
+            elif cell in _DSP_CELLS:
+                mu.dsps += count
         results.append(mu)
     return results
 

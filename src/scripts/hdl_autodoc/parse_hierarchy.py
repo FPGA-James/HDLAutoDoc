@@ -247,20 +247,24 @@ def build_hierarchy(source_files: list[Path]) -> dict:
 # Pretty-print hierarchy tree
 # ─────────────────────────────────────────────────────────────────────────────
 
-def print_tree(name: str, modules: dict, prefix: str = "", visited: set = None):
+def print_tree(name: str, modules: dict, prefix: str = "", visited: set = None,
+               connector: str = ""):
+    """Print `name` and, indented below it, its children.  `prefix` is the indentation
+    inherited from the ancestors and `connector` this node's own branch (`├── `)."""
     if visited is None:
         visited = set()
     shared_tag = " [shared]" if modules[name]["shared"] else ""
     already    = " (see above)" if name in visited else ""
-    print(f"{prefix}{name}{shared_tag}{already}")
+    print(f"{prefix}{connector}{name}{shared_tag}{already}")
     if name in visited:
         return
     visited.add(name)
+    # Below this node the ancestors' bar continues unless this was the last sibling.
+    child_prefix = prefix + ("    " if connector == "└── " else "│   " if connector else "")
     children = modules[name]["children"]
     for i, child in enumerate(children):
-        connector = "└── " if i == len(children) - 1 else "├── "
-        extension = "    " if i == len(children) - 1 else "│   "
-        print_tree(child, modules, prefix + connector, visited)
+        last = i == len(children) - 1
+        print_tree(child, modules, child_prefix, visited, "└── " if last else "├── ")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -286,7 +290,7 @@ if __name__ == "__main__":
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(hierarchy, indent=2))
 
-    print(f"\nHierarchy tree:")
+    print("\nHierarchy tree:")
     print_tree(hierarchy["top"], hierarchy["modules"])
     print(f"\nTop-level: {hierarchy['top']}")
     shared = [n for n, m in hierarchy["modules"].items() if m["shared"]]

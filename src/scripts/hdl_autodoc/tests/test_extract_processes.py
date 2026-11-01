@@ -12,10 +12,8 @@ Covers:
   - The processes index RST lists all found processes.
 """
 
-import pytest
 
 from extract_processes import (
-    extract_comment_tokens,
     find_processes_sv,
     find_processes_vhdl,
     render_index_page,

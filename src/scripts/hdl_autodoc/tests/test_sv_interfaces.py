@@ -1,6 +1,5 @@
 """Tests for sv_interfaces.py: interface names, members, modports, interface ports."""
 
-from pathlib import Path
 
 from sv_interfaces import (
     collect_interfaces,

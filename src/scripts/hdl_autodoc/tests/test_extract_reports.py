@@ -12,7 +12,6 @@ Covers:
 """
 
 import json
-import pytest
 from pathlib import Path
 
 from parse_utilization import ModuleUtilization

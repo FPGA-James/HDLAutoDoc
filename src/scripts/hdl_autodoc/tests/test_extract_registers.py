@@ -16,8 +16,6 @@ Covers:
   10. Missing config.yml falls back to 32-bit bus width
 """
 
-import pytest
-from pathlib import Path
 
 from extract_registers import generate_registers_rst
 

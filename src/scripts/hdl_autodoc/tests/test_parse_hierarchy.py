@@ -11,9 +11,7 @@ Covers:
   - Shared component detection (module instantiated by more than one parent).
 """
 
-from pathlib import Path
 
-import pytest
 
 from parse_hierarchy import (
     build_hierarchy,
@@ -236,3 +234,25 @@ def test_support_file_note_goes_to_stderr_not_a_warning(tmp_path, capsys):
     build_hierarchy([pkg, leaf, top])
     err = capsys.readouterr().err
     assert "support file" in err and "could not extract module name" not in err
+
+
+# ── print_tree ───────────────────────────────────────────────────────────────
+
+def test_print_tree_draws_nested_levels_with_continuation_bars(capsys):
+    from parse_hierarchy import print_tree
+    modules = {
+        "top": {"children": ["a", "b"], "shared": False},
+        "a":   {"children": ["c", "d"], "shared": False},
+        "b":   {"children": ["c"],      "shared": False},
+        "c":   {"children": [],         "shared": True},
+        "d":   {"children": [],         "shared": False},
+    }
+    print_tree("top", modules)
+    assert capsys.readouterr().out.splitlines() == [
+        "top",
+        "├── a",
+        "│   ├── c [shared]",
+        "│   └── d",
+        "└── b",
+        "    └── c [shared] (see above)",
+    ]

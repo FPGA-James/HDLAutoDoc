@@ -15,11 +15,9 @@ Usage:
 """
 from __future__ import annotations
 
-import json
 import shutil
 import subprocess
 import sys
-from datetime import datetime
 from pathlib import Path
 
 from parse_build_info import (
@@ -315,8 +313,6 @@ def main(hierarchy_path: Path, docs_dir: Path, reports_dir: Path,
     gets no Build section.  Without it a placeholder page is written.
     Returns True if a page was written.
     """
-    hierarchy    = json.loads(Path(hierarchy_path).read_text())
-    module_names = list(hierarchy["modules"].keys())
     docs_dir     = Path(docs_dir)
     reports_dir  = Path(reports_dir)
 

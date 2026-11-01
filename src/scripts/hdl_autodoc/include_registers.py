@@ -227,7 +227,7 @@ if __name__ == "__main__":
             generated_dir=_shown(src_dir, project_root),
             registers_dir=_shown(registers_base_dir(project_root), project_root)))
         if src_dir.exists():
-            print(f"  → registers: directory found but no HTML entry point detected")
+            print("  → registers: directory found but no HTML entry point detected")
         else:
             print(f"  → registers: no export found at {_shown(src_dir, project_root)}/ "
                   f"— writing placeholder")
