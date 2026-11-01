@@ -1,0 +1,563 @@
+Info: constraining clock net 'clk' to 100.00 MHz
+Info: constraining clock net 'adc_clk' to 70.00 MHz
+Warning: IO 's_ext_tvalid' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_ext_tready' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_ext_tlast' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_ext_tdata[7]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_ext_tdata[6]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_ext_tdata[5]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_ext_tdata[4]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_ext_tdata[3]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_ext_tdata[2]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_ext_tdata[1]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_ext_tdata[0]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwrite' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[31]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[30]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[29]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[28]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[27]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[26]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[25]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[24]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[23]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[22]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[21]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[20]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[19]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[18]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[17]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[16]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[15]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[14]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[13]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[12]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[11]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[10]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[9]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[8]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[7]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[6]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[5]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[4]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[3]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[2]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[1]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pwdata[0]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_psel' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_pready' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[31]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[30]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[29]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[28]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[27]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[26]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[25]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[24]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[23]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[22]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[21]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[20]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[19]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[18]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[17]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[16]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[15]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[14]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[13]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[12]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[11]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[10]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[9]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[8]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[7]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[6]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[5]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[4]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[3]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[2]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[1]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_prdata[0]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_penable' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_paddr[7]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_paddr[6]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_paddr[5]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_paddr[4]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_paddr[3]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_paddr[2]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_paddr[1]' is unconstrained in LPF and will be automatically placed
+Warning: IO 's_apb_paddr[0]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'm_ext_tvalid' is unconstrained in LPF and will be automatically placed
+Warning: IO 'm_ext_tready' is unconstrained in LPF and will be automatically placed
+Warning: IO 'm_ext_tlast' is unconstrained in LPF and will be automatically placed
+Warning: IO 'm_ext_tdata[7]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'm_ext_tdata[6]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'm_ext_tdata[5]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'm_ext_tdata[4]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'm_ext_tdata[3]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'm_ext_tdata[2]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'm_ext_tdata[1]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'm_ext_tdata[0]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'm_axis_tvalid' is unconstrained in LPF and will be automatically placed
+Warning: IO 'm_axis_tready' is unconstrained in LPF and will be automatically placed
+Warning: IO 'm_axis_tlast' is unconstrained in LPF and will be automatically placed
+Warning: IO 'm_axis_tdata[7]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'm_axis_tdata[6]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'm_axis_tdata[5]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'm_axis_tdata[4]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'm_axis_tdata[3]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'm_axis_tdata[2]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'm_axis_tdata[1]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'm_axis_tdata[0]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'led_overflow' is unconstrained in LPF and will be automatically placed
+Warning: IO 'led_busy' is unconstrained in LPF and will be automatically placed
+Warning: IO 'arst_n' is unconstrained in LPF and will be automatically placed
+Warning: IO 'adc_data[11]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'adc_data[10]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'adc_data[9]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'adc_data[8]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'adc_data[7]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'adc_data[6]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'adc_data[5]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'adc_data[4]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'adc_data[3]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'adc_data[2]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'adc_data[1]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'adc_data[0]' is unconstrained in LPF and will be automatically placed
+Warning: IO 'adc_clk' is unconstrained in LPF and will be automatically placed
+Warning: IO 'adc_arst_n' is unconstrained in LPF and will be automatically placed
+
+Info: Logic utilisation before packing:
+Info:     Total LUT4s:       255/24288     1%
+Info:         logic LUTs:    189/24288     0%
+Info:         carry LUTs:     54/24288     0%
+Info:           RAM LUTs:      8/ 3036     0%
+Info:          RAMW LUTs:      4/ 6072     0%
+
+Info:      Total DFFs:       297/24288     1%
+
+Info: Packing IOs..
+Info: pin 'clk$tr_io' constrained to Bel 'X0/Y38/PIOB'.
+Info: Packing constants..
+Info: Packing carries...
+Info: Packing LUTs...
+Info: Packing LUT5-7s...
+Info: Packing FFs...
+Info:     80 FFs paired with LUTs.
+Info: Generating derived timing constraints...
+Info: Promoting globals...
+Info:     promoting clock net clk$TRELLIS_IO_IN to global network
+Info:     promoting clock net adc_clk$TRELLIS_IO_IN to global network
+Info: Checksum: 0x3f099b07
+
+Info: Device utilisation:
+Info: 	          TRELLIS_IO:     127/    197    64%
+Info: 	                DCCA:       2/     56     3%
+Info: 	              DP16KD:       0/     56     0%
+Info: 	          MULT18X18D:       0/     28     0%
+Info: 	              ALU54B:       0/     14     0%
+Info: 	             EHXPLLL:       0/      2     0%
+Info: 	             EXTREFB:       0/      1     0%
+Info: 	                DCUA:       0/      1     0%
+Info: 	           PCSCLKDIV:       0/      2     0%
+Info: 	             IOLOGIC:       0/    128     0%
+Info: 	            SIOLOGIC:       0/     69     0%
+Info: 	                 GSR:       0/      1     0%
+Info: 	               JTAGG:       0/      1     0%
+Info: 	                OSCG:       0/      1     0%
+Info: 	               SEDGA:       0/      1     0%
+Info: 	                 DTR:       0/      1     0%
+Info: 	             USRMCLK:       0/      1     0%
+Info: 	             CLKDIVF:       0/      4     0%
+Info: 	           ECLKSYNCB:       0/     10     0%
+Info: 	             DLLDELD:       0/      8     0%
+Info: 	              DDRDLL:       0/      4     0%
+Info: 	             DQSBUFM:       0/      8     0%
+Info: 	     TRELLIS_ECLKBUF:       0/      8     0%
+Info: 	        ECLKBRIDGECS:       0/      2     0%
+Info: 	                DCSC:       0/      2     0%
+Info: 	          TRELLIS_FF:     297/  24288     1%
+Info: 	        TRELLIS_COMB:     281/  24288     1%
+Info: 	        TRELLIS_RAMW:       2/   3036     0%
+
+Info: Placed 1 cells based on constraints.
+Info: Creating initial analytic placement for 373 cells, random placement wirelen = 24405.
+Info:     at initial placer iter 0, wirelen = 5726
+Info:     at initial placer iter 1, wirelen = 5345
+Info:     at initial placer iter 2, wirelen = 5247
+Info:     at initial placer iter 3, wirelen = 5181
+Info: Running main analytical placer, max placement attempts per cell = 62835.
+Info:     at iteration #1, type ALL: wirelen solved = 5231, spread = 5529, legal = 5704; time = 0.01s
+Info: HeAP Placer Time: 0.05s
+Info:   of which solving equations: 0.03s
+Info:   of which spreading cells: 0.00s
+Info:   of which strict legalisation: 0.00s
+
+Info: Running simulated annealing placer for refinement.
+Info:   at iteration #1: temp = 0.000000, timing cost = 222, wirelen = 5704
+Info:   at iteration #5: temp = 0.000000, timing cost = 196, wirelen = 4944
+Info:   at iteration #8: temp = 0.000000, timing cost = 190, wirelen = 4978 
+Info: SA placement time 0.10s
+
+Info: Max frequency for clock '$glbnet$adc_clk$TRELLIS_IO_IN': 237.19 MHz (PASS at 70.00 MHz)
+Info: Max frequency for clock     '$glbnet$clk$TRELLIS_IO_IN': 112.20 MHz (PASS at 100.00 MHz)
+
+Info: Max delay <async>                               -> <async>                              : 12.86 ns
+Info: Max delay <async>                               -> posedge $glbnet$adc_clk$TRELLIS_IO_IN: 5.44 ns
+Info: Max delay <async>                               -> posedge $glbnet$clk$TRELLIS_IO_IN    : 10.89 ns
+Info: Max delay posedge $glbnet$adc_clk$TRELLIS_IO_IN -> posedge $glbnet$clk$TRELLIS_IO_IN    : 1.33 ns
+Info: Max delay posedge $glbnet$clk$TRELLIS_IO_IN     -> <async>                              : 8.42 ns
+Info: Max delay posedge $glbnet$clk$TRELLIS_IO_IN     -> posedge $glbnet$adc_clk$TRELLIS_IO_IN: 1.33 ns
+
+Info: Slack histogram:
+Info:  legend: * represents 1 endpoint(s)
+Info:          + represents [1,1) endpoint(s)
+Info: [  1087,   1697) |******+
+Info: [  1697,   2307) |*******************************+
+Info: [  2307,   2917) |*********************************** 
+Info: [  2917,   3527) |**********************************************************+
+Info: [  3527,   4137) |************************************************** 
+Info: [  4137,   4747) |************************************************************ 
+Info: [  4747,   5357) |*********************+
+Info: [  5357,   5967) |******+
+Info: [  5967,   6577) |*************** 
+Info: [  6577,   7187) |*************+
+Info: [  7187,   7797) |*******************************+
+Info: [  7797,   8407) |******************+
+Info: [  8407,   9017) |************************************************+
+Info: [  9017,   9627) |*+
+Info: [  9627,  10237) |***+
+Info: [ 10237,  10847) |****+
+Info: [ 10847,  11457) |*************+
+Info: [ 11457,  12067) |***********+
+Info: [ 12067,  12677) |***********************+
+Info: [ 12677,  13287) |***** 
+Info: Checksum: 0x6d59dd2c
+Info: Routing globals...
+Info:     routing clock net $glbnet$adc_clk$TRELLIS_IO_IN using global 0
+Info:     routing clock net $glbnet$clk$TRELLIS_IO_IN using global 1
+
+Info: Routing..
+Info: Setting up routing queue.
+Info: Routing 1623 arcs.
+Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
+Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
+Info:       1000 |      176        820 |  176   820 |       860|       0.16       0.16|
+Info:       1981 |      289       1618 |  113   798 |         0|       0.19       0.35|
+Info: Routing complete.
+Info: Router1 time 0.35s
+Info: Checksum: 0xf3764d59
+
+Info: Critical path report for clock '$glbnet$adc_clk$TRELLIS_IO_IN' (posedge -> posedge):
+Info:       type curr  total name
+Info:   clk-to-q  0.52  0.52 Source u_capture.u_fifo.rptr_meta_TRELLIS_FF_DI_3.Q
+Info:    routing  0.83  1.36 Net u_capture.u_fifo.rptr_meta_TRELLIS_FF_DI_4_Q[0] (28,17) -> (28,17)
+Info:                          Sink u_capture.u_fifo.wptr_bin_TRELLIS_FF_Q_DI_LUT4_Z_C_CCU2C_S0_CIN_CCU2C_COUT_S1_LUT4_Z_A_LUT4_Z_1.A
+Info:                          Defined in:
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_map.v:108.23-108.24
+Info:      logic  0.24  1.60 Source u_capture.u_fifo.wptr_bin_TRELLIS_FF_Q_DI_LUT4_Z_C_CCU2C_S0_CIN_CCU2C_COUT_S1_LUT4_Z_A_LUT4_Z_1.F
+Info:    routing  0.59  2.19 Net u_capture.u_fifo.wptr_bin_TRELLIS_FF_Q_DI_LUT4_Z_C_CCU2C_S0_CIN_CCU2C_COUT_S1_LUT4_Z_A[3] (28,17) -> (28,17)
+Info:                          Sink u_capture.u_fifo.wptr_bin_TRELLIS_FF_Q_DI_LUT4_Z_C_CCU2C_S0_CIN_CCU2C_COUT_S1_LUT4_Z.D
+Info:                          Defined in:
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_map.v:108.23-108.24
+Info:      logic  0.24  2.42 Source u_capture.u_fifo.wptr_bin_TRELLIS_FF_Q_DI_LUT4_Z_C_CCU2C_S0_CIN_CCU2C_COUT_S1_LUT4_Z.F
+Info:    routing  0.93  3.36 Net u_capture.u_fifo.wptr_bin_TRELLIS_FF_Q_DI_LUT4_Z_C[3] (28,17) -> (30,18)
+Info:                          Sink u_capture.u_fifo.mem.0.0_WRE_LUT4_Z.D
+Info:                          Defined in:
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_map.v:108.23-108.24
+Info:      logic  0.24  3.59 Source u_capture.u_fifo.mem.0.0_WRE_LUT4_Z.F
+Info:    routing  0.60  4.19 Net u_capture.u_fifo.mem.0.0_WRE (30,18) -> (30,17)
+Info:                          Sink u_capture.u_fifo.mem.0.0$DPRAM_COMB3.WRE
+Info:      setup  0.39  4.58 Source u_capture.u_fifo.mem.0.0$DPRAM_COMB3.WRE
+Info: 1.62 ns logic, 2.96 ns routing
+
+Info: Critical path report for clock '$glbnet$clk$TRELLIS_IO_IN' (posedge -> posedge):
+Info:       type curr  total name
+Info:   clk-to-q  0.52  0.52 Source u_regs.u_regs.threshold_r_TRELLIS_FF_Q_31.Q
+Info:    routing  1.47  2.00 Net threshold[0] (24,15) -> (27,18)
+Info:                          Sink m_axis_tready_LUT4_B_D_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB0.B
+Info:                          Defined in:
+Info:                               src/stream_filter.sv:19.32-19.41
+Info:      logic  0.45  2.44 Source m_axis_tready_LUT4_B_D_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB0.FCO
+Info:    routing  0.00  2.44 Net m_axis_tready_LUT4_B_D_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_FCI_INT (27,18) -> (27,18)
+Info:                          Sink m_axis_tready_LUT4_B_D_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB1.FCI
+Info:      logic  0.00  2.44 Source m_axis_tready_LUT4_B_D_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB1.FCO
+Info:    routing  0.00  2.44 Net m_axis_tready_LUT4_B_D_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN (27,18) -> (27,18)
+Info:                          Sink m_axis_tready_LUT4_B_D_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB0.FCI
+Info:                          Defined in:
+Info:                               src/stream_filter.sv:41.40-41.58
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/arith_map.v:74.7-80.4
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_sim.v:82.9-82.13
+Info:      logic  0.07  2.51 Source m_axis_tready_LUT4_B_D_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB0.FCO
+Info:    routing  0.00  2.51 Net m_axis_tready_LUT4_B_D_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_FCI_INT (27,18) -> (27,18)
+Info:                          Sink m_axis_tready_LUT4_B_D_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB1.FCI
+Info:      logic  0.00  2.51 Source m_axis_tready_LUT4_B_D_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB1.FCO
+Info:    routing  0.00  2.51 Net m_axis_tready_LUT4_B_D_CCU2C_COUT_CIN_CCU2C_COUT_CIN (27,18) -> (27,18)
+Info:                          Sink m_axis_tready_LUT4_B_D_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB0.FCI
+Info:                          Defined in:
+Info:                               src/stream_filter.sv:41.40-41.58
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/arith_map.v:74.7-80.4
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_sim.v:82.9-82.13
+Info:      logic  0.07  2.59 Source m_axis_tready_LUT4_B_D_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB0.FCO
+Info:    routing  0.00  2.59 Net m_axis_tready_LUT4_B_D_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_FCI_INT (27,18) -> (27,18)
+Info:                          Sink m_axis_tready_LUT4_B_D_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB1.FCI
+Info:      logic  0.00  2.59 Source m_axis_tready_LUT4_B_D_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB1.FCO
+Info:    routing  0.00  2.59 Net m_axis_tready_LUT4_B_D_CCU2C_COUT_CIN (27,18) -> (28,18)
+Info:                          Sink m_axis_tready_LUT4_B_D_CCU2C_COUT$CCU2_COMB0.FCI
+Info:                          Defined in:
+Info:                               src/stream_filter.sv:41.40-41.58
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/arith_map.v:74.7-80.4
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_sim.v:82.9-82.13
+Info:      logic  0.07  2.66 Source m_axis_tready_LUT4_B_D_CCU2C_COUT$CCU2_COMB0.FCO
+Info:    routing  0.00  2.66 Net m_axis_tready_LUT4_B_D_CCU2C_COUT$CCU2_FCI_INT (28,18) -> (28,18)
+Info:                          Sink m_axis_tready_LUT4_B_D_CCU2C_COUT$CCU2_COMB1.FCI
+Info:      logic  0.00  2.66 Source m_axis_tready_LUT4_B_D_CCU2C_COUT$CCU2_COMB1.FCO
+Info:    routing  0.00  2.66 Net $nextpnr_CCU2C_9$CIN (28,18) -> (28,18)
+Info:                          Sink $nextpnr_CCU2C_9$CCU2_COMB0.FCI
+Info:      logic  0.44  3.10 Source $nextpnr_CCU2C_9$CCU2_COMB0.F
+Info:    routing  1.01  4.11 Net m_axis_tready_LUT4_B_A[2] (28,18) -> (25,17)
+Info:                          Sink m_axis_tready_LUT4_B.D
+Info:                          Defined in:
+Info:                               src/stream_filter.sv:41.40-41.58
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/arith_map.v:74.7-80.4
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_sim.v:82.9-82.13
+Info:      logic  0.24  4.34 Source m_axis_tready_LUT4_B.F
+Info:    routing  0.68  5.02 Net m_axis_tready_LUT4_B_Z[3] (25,17) -> (25,17)
+Info:                          Sink u_capture.u_fifo.rd_en_LUT4_Z.D
+Info:                          Defined in:
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_map.v:108.23-108.24
+Info:      logic  0.24  5.25 Source u_capture.u_fifo.rd_en_LUT4_Z.F
+Info:    routing  1.04  6.29 Net u_capture.rd_en (25,17) -> (30,16)
+Info:                          Sink u_capture.u_fifo.rptr_bin_TRELLIS_FF_Q_DI_LUT4_Z_C_CCU2C_S0_CIN_CCU2C_COUT_S1_LUT4_C_Z_LUT4_Z.D
+Info:                          Defined in:
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_map.v:108.23-108.24
+Info:      logic  0.24  6.53 Source u_capture.u_fifo.rptr_bin_TRELLIS_FF_Q_DI_LUT4_Z_C_CCU2C_S0_CIN_CCU2C_COUT_S1_LUT4_C_Z_LUT4_Z.F
+Info:    routing  0.13  6.66 Net u_capture.u_fifo.rptr_bin_TRELLIS_FF_Q_DI_LUT4_Z_C_CCU2C_S0_CIN_CCU2C_COUT_S1_LUT4_C_Z[0] (30,16) -> (30,16)
+Info:                          Sink u_capture.u_fifo.rptr_gray_TRELLIS_FF_Q_3.DI
+Info:      setup  0.00  6.66 Source u_capture.u_fifo.rptr_gray_TRELLIS_FF_Q_3.DI
+Info: 2.34 ns logic, 4.32 ns routing
+
+Info: Critical path report for cross-domain path '<async>' -> '<async>':
+Info:       type curr  total name
+Info:     source  0.00  0.00 Source s_ext_tdata[3]$tr_io.O
+Info:    routing  4.47  4.47 Net m_ext_tdata[3]$TRELLIS_IO_OUT (72,38) -> (26,17)
+Info:                          Sink s_ext_tdata_CCU2C_A0_2$CCU2_COMB1.A
+Info:                          Defined in:
+Info:                               src/stream_filter.sv:38.16-38.21
+Info:      logic  0.45  4.92 Source s_ext_tdata_CCU2C_A0_2$CCU2_COMB1.FCO
+Info:    routing  0.00  4.92 Net s_ext_tdata_CCU2C_A0_2_COUT (26,17) -> (26,17)
+Info:                          Sink s_ext_tdata_CCU2C_A0_1$CCU2_COMB0.FCI
+Info:                          Defined in:
+Info:                               src/stream_filter.sv:41.40-41.58
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/arith_map.v:74.7-80.4
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_sim.v:82.9-82.13
+Info:      logic  0.07  4.99 Source s_ext_tdata_CCU2C_A0_1$CCU2_COMB0.FCO
+Info:    routing  0.00  4.99 Net s_ext_tdata_CCU2C_A0_1$CCU2_FCI_INT (26,17) -> (26,17)
+Info:                          Sink s_ext_tdata_CCU2C_A0_1$CCU2_COMB1.FCI
+Info:      logic  0.00  4.99 Source s_ext_tdata_CCU2C_A0_1$CCU2_COMB1.FCO
+Info:    routing  0.00  4.99 Net s_ext_tdata_CCU2C_A0_1_COUT (26,17) -> (27,17)
+Info:                          Sink s_ext_tdata_CCU2C_A0$CCU2_COMB0.FCI
+Info:                          Defined in:
+Info:                               src/stream_filter.sv:41.40-41.58
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/arith_map.v:74.7-80.4
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_sim.v:82.9-82.13
+Info:      logic  0.07  5.06 Source s_ext_tdata_CCU2C_A0$CCU2_COMB0.FCO
+Info:    routing  0.00  5.06 Net s_ext_tdata_CCU2C_A0$CCU2_FCI_INT (27,17) -> (27,17)
+Info:                          Sink s_ext_tdata_CCU2C_A0$CCU2_COMB1.FCI
+Info:      logic  0.00  5.06 Source s_ext_tdata_CCU2C_A0$CCU2_COMB1.FCO
+Info:    routing  0.00  5.06 Net $nextpnr_CCU2C_7$CIN (27,17) -> (27,17)
+Info:                          Sink $nextpnr_CCU2C_7$CCU2_COMB0.FCI
+Info:      logic  0.44  5.50 Source $nextpnr_CCU2C_7$CCU2_COMB0.F
+Info:    routing  0.72  6.22 Net s_ext_tdata_CCU2C_A0_COUT[5] (27,17) -> (27,15)
+Info:                          Sink m_ext_tvalid_LUT4_Z_D_LUT4_Z.D
+Info:                          Defined in:
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_map.v:108.23-108.24
+Info:      logic  0.24  6.46 Source m_ext_tvalid_LUT4_Z_D_LUT4_Z.F
+Info:    routing  1.00  7.45 Net m_ext_tvalid_LUT4_Z_D[1] (27,15) -> (27,11)
+Info:                          Sink m_ext_tvalid_LUT4_Z.D
+Info:                          Defined in:
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_map.v:108.23-108.24
+Info:      logic  0.24  7.69 Source m_ext_tvalid_LUT4_Z.F
+Info:    routing  2.02  9.71 Net m_ext_tvalid$TRELLIS_IO_OUT (27,11) -> (35,0)
+Info:                          Sink m_ext_tvalid$tr_io.I
+Info:                          Defined in:
+Info:                               src/stream_filter.sv:6.1-92.10
+Info: 1.50 ns logic, 8.20 ns routing
+
+Info: Critical path report for cross-domain path '<async>' -> 'posedge $glbnet$adc_clk$TRELLIS_IO_IN':
+Info:       type curr  total name
+Info:     source  0.00  0.00 Source adc_data[5]$tr_io.O
+Info:    routing  3.64  3.64 Net adc_data[5]$TRELLIS_IO_IN (72,29) -> (30,19)
+Info:                          Sink u_capture.wr_data_TRELLIS_FF_Q_2.M
+Info:                          Defined in:
+Info:                               src/sample_capture.sv:40.53-40.61
+Info:      setup  0.00  3.64 Source u_capture.wr_data_TRELLIS_FF_Q_2.M
+Info: 0.00 ns logic, 3.64 ns routing
+
+Info: Critical path report for cross-domain path '<async>' -> 'posedge $glbnet$clk$TRELLIS_IO_IN':
+Info:       type curr  total name
+Info:     source  0.00  0.00 Source s_ext_tdata[3]$tr_io.O
+Info:    routing  4.47  4.47 Net m_ext_tdata[3]$TRELLIS_IO_OUT (72,38) -> (26,17)
+Info:                          Sink s_ext_tdata_CCU2C_A0_2$CCU2_COMB1.A
+Info:                          Defined in:
+Info:                               src/stream_filter.sv:38.16-38.21
+Info:      logic  0.45  4.92 Source s_ext_tdata_CCU2C_A0_2$CCU2_COMB1.FCO
+Info:    routing  0.00  4.92 Net s_ext_tdata_CCU2C_A0_2_COUT (26,17) -> (26,17)
+Info:                          Sink s_ext_tdata_CCU2C_A0_1$CCU2_COMB0.FCI
+Info:                          Defined in:
+Info:                               src/stream_filter.sv:41.40-41.58
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/arith_map.v:74.7-80.4
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_sim.v:82.9-82.13
+Info:      logic  0.07  4.99 Source s_ext_tdata_CCU2C_A0_1$CCU2_COMB0.FCO
+Info:    routing  0.00  4.99 Net s_ext_tdata_CCU2C_A0_1$CCU2_FCI_INT (26,17) -> (26,17)
+Info:                          Sink s_ext_tdata_CCU2C_A0_1$CCU2_COMB1.FCI
+Info:      logic  0.00  4.99 Source s_ext_tdata_CCU2C_A0_1$CCU2_COMB1.FCO
+Info:    routing  0.00  4.99 Net s_ext_tdata_CCU2C_A0_1_COUT (26,17) -> (27,17)
+Info:                          Sink s_ext_tdata_CCU2C_A0$CCU2_COMB0.FCI
+Info:                          Defined in:
+Info:                               src/stream_filter.sv:41.40-41.58
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/arith_map.v:74.7-80.4
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_sim.v:82.9-82.13
+Info:      logic  0.07  5.06 Source s_ext_tdata_CCU2C_A0$CCU2_COMB0.FCO
+Info:    routing  0.00  5.06 Net s_ext_tdata_CCU2C_A0$CCU2_FCI_INT (27,17) -> (27,17)
+Info:                          Sink s_ext_tdata_CCU2C_A0$CCU2_COMB1.FCI
+Info:      logic  0.00  5.06 Source s_ext_tdata_CCU2C_A0$CCU2_COMB1.FCO
+Info:    routing  0.00  5.06 Net $nextpnr_CCU2C_7$CIN (27,17) -> (27,17)
+Info:                          Sink $nextpnr_CCU2C_7$CCU2_COMB0.FCI
+Info:      logic  0.44  5.50 Source $nextpnr_CCU2C_7$CCU2_COMB0.F
+Info:    routing  0.72  6.22 Net s_ext_tdata_CCU2C_A0_COUT[5] (27,17) -> (27,15)
+Info:                          Sink m_ext_tvalid_LUT4_Z_D_LUT4_Z.D
+Info:                          Defined in:
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_map.v:108.23-108.24
+Info:      logic  0.24  6.46 Source m_ext_tvalid_LUT4_Z_D_LUT4_Z.F
+Info:    routing  0.45  6.91 Net m_ext_tvalid_LUT4_Z_D[1] (27,15) -> (27,15)
+Info:                          Sink s_ext_tlast_LUT4_B_7.D
+Info:                          Defined in:
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_map.v:108.23-108.24
+Info:      logic  0.24  7.15 Source s_ext_tlast_LUT4_B_7.F
+Info:    routing  0.04  7.19 Net s_ext_tlast_LUT4_B_7_Z[4] (27,15) -> (27,15)
+Info:                          Sink m_ext_tvalid_LUT4_Z_D_LUT4_C.D
+Info:                          Defined in:
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_map.v:108.23-108.24
+Info:      logic  0.24  7.42 Source m_ext_tvalid_LUT4_Z_D_LUT4_C.F
+Info:    routing  0.98  8.40 Net m_ext_tvalid_LUT4_Z_D_LUT4_C_Z (27,15) -> (26,18)
+Info:                          Sink u_ext.u_filter.count_TRELLIS_FF_Q_15.CE
+Info:      setup  0.00  8.40 Source u_ext.u_filter.count_TRELLIS_FF_Q_15.CE
+Info: 1.74 ns logic, 6.66 ns routing
+
+Info: Critical path report for cross-domain path 'posedge $glbnet$adc_clk$TRELLIS_IO_IN' -> 'posedge $glbnet$clk$TRELLIS_IO_IN':
+Info:       type curr  total name
+Info:   clk-to-q  0.52  0.52 Source u_capture.u_fifo.wptr_gray_TRELLIS_FF_Q_3.Q
+Info:    routing  0.93  1.46 Net u_capture.u_fifo.rptr_meta_TRELLIS_FF_DI_4_Q[3] (28,17) -> (27,18)
+Info:                          Sink u_capture.u_fifo.wptr_meta_TRELLIS_FF_Q_4.M
+Info:                          Defined in:
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_map.v:108.23-108.24
+Info:      setup  0.00  1.46 Source u_capture.u_fifo.wptr_meta_TRELLIS_FF_Q_4.M
+Info: 0.52 ns logic, 0.93 ns routing
+
+Info: Critical path report for cross-domain path 'posedge $glbnet$clk$TRELLIS_IO_IN' -> '<async>':
+Info:       type curr  total name
+Info:   clk-to-q  0.52  0.52 Source u_regs.u_regs.threshold_r_TRELLIS_FF_Q_31.Q
+Info:    routing  1.48  2.00 Net threshold[0] (24,15) -> (26,17)
+Info:                          Sink s_ext_tdata_CCU2C_A0_3$CCU2_COMB0.B
+Info:                          Defined in:
+Info:                               src/stream_filter.sv:19.32-19.41
+Info:      logic  0.45  2.45 Source s_ext_tdata_CCU2C_A0_3$CCU2_COMB0.FCO
+Info:    routing  0.00  2.45 Net s_ext_tdata_CCU2C_A0_3$CCU2_FCI_INT (26,17) -> (26,17)
+Info:                          Sink s_ext_tdata_CCU2C_A0_3$CCU2_COMB1.FCI
+Info:      logic  0.00  2.45 Source s_ext_tdata_CCU2C_A0_3$CCU2_COMB1.FCO
+Info:    routing  0.00  2.45 Net s_ext_tdata_CCU2C_A0_3_COUT (26,17) -> (26,17)
+Info:                          Sink s_ext_tdata_CCU2C_A0_2$CCU2_COMB0.FCI
+Info:                          Defined in:
+Info:                               src/stream_filter.sv:41.40-41.58
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/arith_map.v:74.7-80.4
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_sim.v:82.9-82.13
+Info:      logic  0.07  2.52 Source s_ext_tdata_CCU2C_A0_2$CCU2_COMB0.FCO
+Info:    routing  0.00  2.52 Net s_ext_tdata_CCU2C_A0_2$CCU2_FCI_INT (26,17) -> (26,17)
+Info:                          Sink s_ext_tdata_CCU2C_A0_2$CCU2_COMB1.FCI
+Info:      logic  0.00  2.52 Source s_ext_tdata_CCU2C_A0_2$CCU2_COMB1.FCO
+Info:    routing  0.00  2.52 Net s_ext_tdata_CCU2C_A0_2_COUT (26,17) -> (26,17)
+Info:                          Sink s_ext_tdata_CCU2C_A0_1$CCU2_COMB0.FCI
+Info:                          Defined in:
+Info:                               src/stream_filter.sv:41.40-41.58
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/arith_map.v:74.7-80.4
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_sim.v:82.9-82.13
+Info:      logic  0.07  2.59 Source s_ext_tdata_CCU2C_A0_1$CCU2_COMB0.FCO
+Info:    routing  0.00  2.59 Net s_ext_tdata_CCU2C_A0_1$CCU2_FCI_INT (26,17) -> (26,17)
+Info:                          Sink s_ext_tdata_CCU2C_A0_1$CCU2_COMB1.FCI
+Info:      logic  0.00  2.59 Source s_ext_tdata_CCU2C_A0_1$CCU2_COMB1.FCO
+Info:    routing  0.00  2.59 Net s_ext_tdata_CCU2C_A0_1_COUT (26,17) -> (27,17)
+Info:                          Sink s_ext_tdata_CCU2C_A0$CCU2_COMB0.FCI
+Info:                          Defined in:
+Info:                               src/stream_filter.sv:41.40-41.58
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/arith_map.v:74.7-80.4
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_sim.v:82.9-82.13
+Info:      logic  0.07  2.66 Source s_ext_tdata_CCU2C_A0$CCU2_COMB0.FCO
+Info:    routing  0.00  2.66 Net s_ext_tdata_CCU2C_A0$CCU2_FCI_INT (27,17) -> (27,17)
+Info:                          Sink s_ext_tdata_CCU2C_A0$CCU2_COMB1.FCI
+Info:      logic  0.00  2.66 Source s_ext_tdata_CCU2C_A0$CCU2_COMB1.FCO
+Info:    routing  0.00  2.66 Net $nextpnr_CCU2C_7$CIN (27,17) -> (27,17)
+Info:                          Sink $nextpnr_CCU2C_7$CCU2_COMB0.FCI
+Info:      logic  0.44  3.10 Source $nextpnr_CCU2C_7$CCU2_COMB0.F
+Info:    routing  0.72  3.82 Net s_ext_tdata_CCU2C_A0_COUT[5] (27,17) -> (27,15)
+Info:                          Sink m_ext_tvalid_LUT4_Z_D_LUT4_Z.D
+Info:                          Defined in:
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_map.v:108.23-108.24
+Info:      logic  0.24  4.06 Source m_ext_tvalid_LUT4_Z_D_LUT4_Z.F
+Info:    routing  1.00  5.06 Net m_ext_tvalid_LUT4_Z_D[1] (27,15) -> (27,11)
+Info:                          Sink m_ext_tvalid_LUT4_Z.D
+Info:                          Defined in:
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_map.v:108.23-108.24
+Info:      logic  0.24  5.29 Source m_ext_tvalid_LUT4_Z.F
+Info:    routing  2.02  7.31 Net m_ext_tvalid$TRELLIS_IO_OUT (27,11) -> (35,0)
+Info:                          Sink m_ext_tvalid$tr_io.I
+Info:                          Defined in:
+Info:                               src/stream_filter.sv:6.1-92.10
+Info: 2.10 ns logic, 5.21 ns routing
+
+Info: Critical path report for cross-domain path 'posedge $glbnet$clk$TRELLIS_IO_IN' -> 'posedge $glbnet$adc_clk$TRELLIS_IO_IN':
+Info:       type curr  total name
+Info:   clk-to-q  0.52  0.52 Source u_capture.u_fifo.rptr_gray_TRELLIS_FF_Q_2.Q
+Info:    routing  0.92  1.44 Net m_axis_tready_LUT4_B_Z_LUT4_Z_1_A[1] (30,16) -> (29,17)
+Info:                          Sink u_capture.u_fifo.rptr_meta_TRELLIS_FF_Q_3.M
+Info:                          Defined in:
+Info:                               /Users/james/tools/oss-cad-suite/libexec/../share/yosys/ecp5/cells_map.v:108.23-108.24
+Info:      setup  0.00  1.44 Source u_capture.u_fifo.rptr_meta_TRELLIS_FF_Q_3.M
+Info: 0.52 ns logic, 0.92 ns routing
+
+Info: Max frequency for clock '$glbnet$adc_clk$TRELLIS_IO_IN': 218.15 MHz (PASS at 70.00 MHz)
+Info: Max frequency for clock     '$glbnet$clk$TRELLIS_IO_IN': 150.15 MHz (PASS at 100.00 MHz)
+
+Info: Max delay <async>                               -> <async>                              : 9.71 ns
+Info: Max delay <async>                               -> posedge $glbnet$adc_clk$TRELLIS_IO_IN: 3.64 ns
+Info: Max delay <async>                               -> posedge $glbnet$clk$TRELLIS_IO_IN    : 8.40 ns
+Info: Max delay posedge $glbnet$adc_clk$TRELLIS_IO_IN -> posedge $glbnet$clk$TRELLIS_IO_IN    : 1.46 ns
+Info: Max delay posedge $glbnet$clk$TRELLIS_IO_IN     -> <async>                              : 7.31 ns
+Info: Max delay posedge $glbnet$clk$TRELLIS_IO_IN     -> posedge $glbnet$adc_clk$TRELLIS_IO_IN: 1.44 ns
+
+Info: Slack histogram:
+Info:  legend: * represents 1 endpoint(s)
+Info:          + represents [1,1) endpoint(s)
+Info: [  3340,   3840) |*************+
+Info: [  3840,   4340) |***************************+
+Info: [  4340,   4840) |***************************+
+Info: [  4840,   5340) |************************************************************ 
+Info: [  5340,   5840) |*******************************************************+
+Info: [  5840,   6340) |******************************+
+Info: [  6340,   6840) |**************+
+Info: [  6840,   7340) |**************+
+Info: [  7340,   7840) |**********+
+Info: [  7840,   8340) |********************+
+Info: [  8340,   8840) |***************************************+
+Info: [  8840,   9340) |*******+
+Info: [  9340,   9840) |**+
+Info: [  9840,  10340) |**+
+Info: [ 10340,  10840) |****+
+Info: [ 10840,  11340) | 
+Info: [ 11340,  11840) |******+
+Info: [ 11840,  12340) |*************+
+Info: [ 12340,  12840) |************+
+Info: [ 12840,  13340) |********+
+126 warnings, 0 errors
+
+Info: Program finished normally.
