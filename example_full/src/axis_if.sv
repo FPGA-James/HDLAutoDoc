@@ -1,8 +1,8 @@
 // AXI4-Stream bundle.
 //
-// Carries bytes from a master to a slave with valid/ready flow control. The
-// clock is a port so each instance is tied to one domain.
-interface axis_if (input logic clk);
+// Carries bytes from a master to a slave with valid/ready flow control. It has
+// no clock port: Yosys cannot pass a clocked interface instance to a submodule.
+interface axis_if;
     // Payload byte.
     logic [7:0] tdata;
     // Master has a byte; slave takes it when tready is also high.

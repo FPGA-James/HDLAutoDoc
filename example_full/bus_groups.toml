@@ -1,0 +1,6 @@
+# Custom port groups, applied on top of the built-in bus patterns.
+
+# The converter-side ports of the capture path share the prefix "adc".
+[[group]]
+prefix = "adc"
+label  = "Converter interface"

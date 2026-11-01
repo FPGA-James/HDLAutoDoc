@@ -1,8 +1,8 @@
 // AXI4-Lite register bus bundle.
 //
-// All five channels of the single-beat register bus. The clock is a port so each
-// instance is tied to one domain.
-interface axil_if (input logic clk);
+// All five channels of the single-beat register bus. It has no clock
+// port: Yosys cannot pass a clocked interface instance to a submodule.
+interface axil_if;
     // Write address channel.
     logic [7:0]  awaddr;
     logic        awvalid;

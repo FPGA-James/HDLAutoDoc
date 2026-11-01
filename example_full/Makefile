@@ -4,6 +4,9 @@
 # third_party/hdl_autodoc/src/autodoc.mk (see install.sh).
 PROJECT ?= ECP5 Sensor Logger
 
+# This project's register map is axil_regs, not the template's counter.
+AUTODOC_REGGEN ?= $(CURDIR)/registers/generate.py
+
 include ../src/autodoc.mk
 
 # ── Build reports (open-source ECP5 flow) ─────────────────────────────────────
