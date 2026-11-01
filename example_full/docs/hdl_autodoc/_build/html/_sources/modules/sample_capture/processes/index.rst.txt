@@ -26,23 +26,23 @@ Summary
    * - :doc:`p_ctrl`
      - ``always_ff``
      - ``posedge clk``, ``negedge rst_n``
-     - 66
+     - 68
      - —
 
    * - :doc:`p_out`
      - ``always_ff``
      - ``posedge clk``, ``negedge rst_n``
-     - 75
+     - 79
      - —
 
    * - :doc:`p_adc_en`
      - ``always_ff``
      - ``posedge adc_clk``
-     - 88
+     - 92
      - —
 
    * - :doc:`p_adc_capture`
      - ``always_ff``
      - ``posedge adc_clk``
-     - 99
+     - 107
      - —

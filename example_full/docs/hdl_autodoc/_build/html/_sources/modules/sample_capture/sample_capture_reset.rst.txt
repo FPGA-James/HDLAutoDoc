@@ -55,3 +55,7 @@ Signal Crossings
    * - ``capture_en``
      - ``rst_n``
      - ``adc_rst``
+
+   * - ``clear_req``
+     - ``rst_n``
+     - ``adc_rst``

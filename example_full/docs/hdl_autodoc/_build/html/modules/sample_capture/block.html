@@ -429,7 +429,7 @@
   <section id="sample-capture-block-diagram">
 <h1>sample_capture — Block Diagram<a class="headerlink" href="#sample-capture-block-diagram" title="Link to this heading">¶</a></h1>
 <p>Auto-extracted from <code class="docutils literal notranslate"><span class="pre">sample_capture.sv</span></code>.</p>
-<div class="graphviz"><object data="../../_images/graphviz-809a87056efe7784686141c33c8e894d6ab17011.svg" type="image/svg+xml" class="graphviz">
+<div class="graphviz"><object data="../../_images/graphviz-a5fee78ae7ec10d9e6b388fcb94aaa73ce01b06a.svg" type="image/svg+xml" class="graphviz">
 <p class="warning">digraph sample_capture_block {
     rankdir=LR;
     nodesep=0.5;
@@ -449,6 +449,7 @@
           &lt;TR&gt;&lt;TD PORT=&quot;i_clk&quot; ALIGN=&quot;LEFT&quot; CELLPADDING=&quot;5&quot;&gt;&amp;#x25B8; clk&lt;/TD&gt;&lt;TD WIDTH=&quot;50&quot;&gt; &lt;/TD&gt;&lt;TD PORT=&quot;o_sample_data&quot; ALIGN=&quot;RIGHT&quot; CELLPADDING=&quot;5&quot;&gt;sample_data &amp;#x25C2;&lt;/TD&gt;&lt;/TR&gt;
           &lt;TR&gt;&lt;TD PORT=&quot;i_rst_n&quot; ALIGN=&quot;LEFT&quot; CELLPADDING=&quot;5&quot;&gt;&amp;#x25B8; rst_n&lt;/TD&gt;&lt;TD WIDTH=&quot;50&quot;&gt; &lt;/TD&gt;&lt;TD PORT=&quot;o_sample_valid&quot; ALIGN=&quot;RIGHT&quot; CELLPADDING=&quot;5&quot;&gt;sample_valid &amp;#x25C2;&lt;/TD&gt;&lt;/TR&gt;
           &lt;TR&gt;&lt;TD PORT=&quot;i_enable&quot; ALIGN=&quot;LEFT&quot; CELLPADDING=&quot;5&quot;&gt;&amp;#x25B8; enable&lt;/TD&gt;&lt;TD WIDTH=&quot;50&quot;&gt; &lt;/TD&gt;&lt;TD PORT=&quot;o_overflow&quot; ALIGN=&quot;RIGHT&quot; CELLPADDING=&quot;5&quot;&gt;overflow &amp;#x25C2;&lt;/TD&gt;&lt;/TR&gt;
+          &lt;TR&gt;&lt;TD PORT=&quot;i_clear_overflow&quot; ALIGN=&quot;LEFT&quot; CELLPADDING=&quot;5&quot;&gt;&amp;#x25B8; clear_overflow&lt;/TD&gt;&lt;TD WIDTH=&quot;50&quot;&gt; &lt;/TD&gt;&lt;TD CELLPADDING=&quot;5&quot;&gt; &lt;/TD&gt;&lt;/TR&gt;
           &lt;TR&gt;&lt;TD PORT=&quot;i_adc_clk&quot; ALIGN=&quot;LEFT&quot; CELLPADDING=&quot;5&quot;&gt;&amp;#x25B8; adc_clk&lt;/TD&gt;&lt;TD WIDTH=&quot;50&quot;&gt; &lt;/TD&gt;&lt;TD CELLPADDING=&quot;5&quot;&gt; &lt;/TD&gt;&lt;/TR&gt;
           &lt;TR&gt;&lt;TD PORT=&quot;i_adc_rst&quot; ALIGN=&quot;LEFT&quot; CELLPADDING=&quot;5&quot;&gt;&amp;#x25B8; adc_rst&lt;/TD&gt;&lt;TD WIDTH=&quot;50&quot;&gt; &lt;/TD&gt;&lt;TD CELLPADDING=&quot;5&quot;&gt; &lt;/TD&gt;&lt;/TR&gt;
           &lt;TR&gt;&lt;TD PORT=&quot;i_adc_data&quot; ALIGN=&quot;LEFT&quot; CELLPADDING=&quot;5&quot;&gt;&amp;#x25B8; adc_data [full_pkg::SAMPLE_W-1:0]&lt;/TD&gt;&lt;TD WIDTH=&quot;50&quot;&gt; &lt;/TD&gt;&lt;TD CELLPADDING=&quot;5&quot;&gt; &lt;/TD&gt;&lt;/TR&gt;
@@ -512,6 +513,12 @@
       <td>Capture while high.</td>
     </tr>
     <tr>
+      <td><code>clear_overflow</code></td>
+      <td><code>in</code></td>
+      <td><code>logic</code></td>
+      <td>Clears the overflow flag while high (system clock domain).</td>
+    </tr>
+    <tr>
       <td><code>sample_data</code></td>
       <td><code>out</code></td>
       <td><code>logic[full_pkg::SAMPLE_W-1:0]</code></td>
@@ -533,7 +540,7 @@
       <td><code>overflow</code></td>
       <td><code>out</code></td>
       <td><code>logic</code></td>
-      <td>asynchronous.</td>
+      <td>must treat it as asynchronous.</td>
     </tr>
   </tbody>
 </table></section>
@@ -571,33 +578,45 @@
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">capture_en</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">logic</span></code></p></td>
-<td><p>Request to capture, registered on clk.</p></td>
+<td><p>Requests registered on clk: capture, and clear the overflow flag.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">en_meta</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">clear_req</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">logic</span></code></p></td>
-<td><p>Two-flop synchroniser for capture_en on adc_clk.</p></td>
+<td><p>Requests registered on clk: capture, and clear the overflow flag.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">en_sync</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">en_meta</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">logic</span></code></p></td>
-<td><p>Two-flop synchroniser for capture_en on adc_clk.</p></td>
+<td><p>Two-flop synchronisers for capture_en and clear_req on adc_clk.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">wr_data</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">en_sync</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">logic</span></code></p></td>
+<td><p>Two-flop synchronisers for capture_en and clear_req on adc_clk.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">clr_meta</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">logic</span></code></p></td>
+<td><p>Two-flop synchronisers for capture_en and clear_req on adc_clk.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">clr_sync</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">logic</span></code></p></td>
+<td><p>Two-flop synchronisers for capture_en and clear_req on adc_clk.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">wr_data</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">logic[full_pkg::SAMPLE_W-1:0]</span></code></p></td>
 <td><p>Registered sample and its write strobe on adc_clk.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">wr_en</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">wr_en</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">logic</span></code></p></td>
 <td><p>—</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fifo_full</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fifo_full</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">logic</span></code></p></td>
 <td><p>FIFO handshake.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fifo_empty</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fifo_empty</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">logic</span></code></p></td>
 <td><p>FIFO handshake.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fifo_rd_data</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fifo_rd_data</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">logic[full_pkg::SAMPLE_W-1:0]</span></code></p></td>
 <td><p>—</p></td>
 </tr>

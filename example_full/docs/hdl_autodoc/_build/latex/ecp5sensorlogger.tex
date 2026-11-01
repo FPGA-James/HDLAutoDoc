@@ -107,7 +107,7 @@ Top\sphinxhyphen{}level module: {\hyperref[\detokenize{modules/top/index::doc}]{
 
 \section{Instantiation Tree}
 \label{\detokenize{overview:instantiation-tree}}
-\sphinxincludegraphics[]{graphviz-31549806945403b8c62ab4ae1daed45b371b6b19.pdf}
+\sphinxincludegraphics[]{graphviz-778cdce4f102015b7524ba2e0a486543247cb276.pdf}
 
 
 \section{Shared Components}
@@ -149,70 +149,6 @@ Instantiates
 \sphinxmidrule
 \sphinxtableatstartofbodyhook
 \sphinxAtStartPar
-{\hyperref[\detokenize{modules/async_fifo/index::doc}]{\sphinxcrossref{\DUrole{doc}{async\_fifo}}}}
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{async\_fifo.vhd}}
-&
-\sphinxAtStartPar
-Asynchronous FIFO. Moves words from the write clock domain to the read clock domain. Each side
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{sample\_capture}}
-&
-\sphinxAtStartPar
-—
-\\
-\sphinxhline
-\sphinxAtStartPar
-{\hyperref[\detokenize{modules/reset_sync/index::doc}]{\sphinxcrossref{\DUrole{doc}{reset\_sync}}}}
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{reset\_sync.vhd}}
-&
-\sphinxAtStartPar
-Reset synchroniser. Takes an asynchronous active\sphinxhyphen{}low reset and delivers it to one clock domain:
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{top}}
-&
-\sphinxAtStartPar
-—
-\\
-\sphinxhline
-\sphinxAtStartPar
-{\hyperref[\detokenize{modules/sample_capture/index::doc}]{\sphinxcrossref{\DUrole{doc}{sample\_capture}}}}
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{sample\_capture.sv}}
-&
-\sphinxAtStartPar
-Sample capture across a clock boundary. Registers samples from a free\sphinxhyphen{}running converter clock (adc\_clk) and hands
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{top}}
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{async\_fifo}}
-\\
-\sphinxhline
-\sphinxAtStartPar
-{\hyperref[\detokenize{modules/apb_bridge/index::doc}]{\sphinxcrossref{\DUrole{doc}{apb\_bridge}}}}
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{apb\_bridge.vhd}}
-&
-\sphinxAtStartPar
-APB to AXI4\sphinxhyphen{}Lite bridge. Turns each APB transfer into one AXI4\sphinxhyphen{}Lite read or write and completes the
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{top}}
-&
-\sphinxAtStartPar
-—
-\\
-\sphinxhline
-\sphinxAtStartPar
 {\hyperref[\detokenize{modules/sample_stream/index::doc}]{\sphinxcrossref{\DUrole{doc}{sample\_stream}}}}
 &
 \sphinxAtStartPar
@@ -226,22 +162,6 @@ Captured samples as a filtered byte stream. Sends the low byte of each sample as
 &
 \sphinxAtStartPar
 \sphinxcode{\sphinxupquote{stream\_filter}}
-\\
-\sphinxhline
-\sphinxAtStartPar
-{\hyperref[\detokenize{modules/axil_regs/index::doc}]{\sphinxcrossref{\DUrole{doc}{axil\_regs}}}}
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{axil\_regs.sv}}
-&
-\sphinxAtStartPar
-AXI4\sphinxhyphen{}Lite register file for the sampler. Five 32\sphinxhyphen{}bit registers: control (start, filter enable, clear), a read\sphinxhyphen{}only
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{axil\_adapter}}
-&
-\sphinxAtStartPar
-—
 \\
 \sphinxhline
 \sphinxAtStartPar
@@ -261,13 +181,13 @@ Flat AXI4\sphinxhyphen{}Lite to register file adapter. Presents the register bus
 \\
 \sphinxhline
 \sphinxAtStartPar
-{\hyperref[\detokenize{modules/sample_ctrl/index::doc}]{\sphinxcrossref{\DUrole{doc}{sample\_ctrl}}}}
+{\hyperref[\detokenize{modules/apb_bridge/index::doc}]{\sphinxcrossref{\DUrole{doc}{apb\_bridge}}}}
 &
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{sample\_ctrl.vhd}}
+\sphinxcode{\sphinxupquote{apb\_bridge.vhd}}
 &
 \sphinxAtStartPar
-Sampler controller. Runs one capture window per start request: it arms, enables the capture
+APB to AXI4\sphinxhyphen{}Lite bridge. Turns each APB transfer into one AXI4\sphinxhyphen{}Lite read or write and completes the
 &
 \sphinxAtStartPar
 \sphinxcode{\sphinxupquote{top}}
@@ -293,19 +213,51 @@ Packet filter for a byte stream. Looks at the first byte of each packet: if it i
 \\
 \sphinxhline
 \sphinxAtStartPar
-{\hyperref[\detokenize{modules/axis_pipeline/index::doc}]{\sphinxcrossref{\DUrole{doc}{axis\_pipeline}}}}
+{\hyperref[\detokenize{modules/sample_ctrl/index::doc}]{\sphinxcrossref{\DUrole{doc}{sample\_ctrl}}}}
 &
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{axis\_pipeline.sv}}
+\sphinxcode{\sphinxupquote{sample\_ctrl.vhd}}
 &
 \sphinxAtStartPar
-Filtered pass\sphinxhyphen{}through for an external byte stream. Presents flat AXI4\sphinxhyphen{}Stream ports, wraps them in interface instances and runs
+Sampler controller. Runs one capture window per start request: it arms, enables the capture
 &
 \sphinxAtStartPar
 \sphinxcode{\sphinxupquote{top}}
 &
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{stream\_filter}}
+—
+\\
+\sphinxhline
+\sphinxAtStartPar
+{\hyperref[\detokenize{modules/async_fifo/index::doc}]{\sphinxcrossref{\DUrole{doc}{async\_fifo}}}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{async\_fifo.vhd}}
+&
+\sphinxAtStartPar
+Asynchronous FIFO. Moves words from the write clock domain to the read clock domain. Each side
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{sample\_capture}}
+&
+\sphinxAtStartPar
+—
+\\
+\sphinxhline
+\sphinxAtStartPar
+{\hyperref[\detokenize{modules/axil_regs/index::doc}]{\sphinxcrossref{\DUrole{doc}{axil\_regs}}}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{axil\_regs.sv}}
+&
+\sphinxAtStartPar
+AXI4\sphinxhyphen{}Lite register file for the sampler. Five 32\sphinxhyphen{}bit registers: control (start, filter enable, clear, clear overflow), a read\sphinxhyphen{}only
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{axil\_adapter}}
+&
+\sphinxAtStartPar
+—
 \\
 \sphinxhline
 \sphinxAtStartPar
@@ -322,6 +274,54 @@ Sampler top level. Captures samples from a converter clock into the system clock
 &
 \sphinxAtStartPar
 \sphinxcode{\sphinxupquote{apb\_bridge}}, \sphinxcode{\sphinxupquote{axil\_adapter}}, \sphinxcode{\sphinxupquote{axis\_pipeline}}, \sphinxcode{\sphinxupquote{reset\_sync}}, \sphinxcode{\sphinxupquote{sample\_capture}}, \sphinxcode{\sphinxupquote{sample\_ctrl}}, \sphinxcode{\sphinxupquote{sample\_stream}}
+\\
+\sphinxhline
+\sphinxAtStartPar
+{\hyperref[\detokenize{modules/reset_sync/index::doc}]{\sphinxcrossref{\DUrole{doc}{reset\_sync}}}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{reset\_sync.vhd}}
+&
+\sphinxAtStartPar
+Reset synchroniser. Takes an asynchronous active\sphinxhyphen{}low reset and delivers it to one clock domain:
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{top}}
+&
+\sphinxAtStartPar
+—
+\\
+\sphinxhline
+\sphinxAtStartPar
+{\hyperref[\detokenize{modules/axis_pipeline/index::doc}]{\sphinxcrossref{\DUrole{doc}{axis\_pipeline}}}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{axis\_pipeline.sv}}
+&
+\sphinxAtStartPar
+Filtered pass\sphinxhyphen{}through for an external byte stream. Presents flat AXI4\sphinxhyphen{}Stream ports, wraps them in interface instances and runs
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{top}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{stream\_filter}}
+\\
+\sphinxhline
+\sphinxAtStartPar
+{\hyperref[\detokenize{modules/sample_capture/index::doc}]{\sphinxcrossref{\DUrole{doc}{sample\_capture}}}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{sample\_capture.sv}}
+&
+\sphinxAtStartPar
+Sample capture across a clock boundary. Registers samples from a free\sphinxhyphen{}running converter clock (adc\_clk) and hands
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{top}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{async\_fifo}}
 \\
 \sphinxbottomrule
 \end{tabulary}
@@ -361,7 +361,7 @@ filters. The converter and system clocks are asynchronous to each other.
 \centering
 \capstart
 
-\sphinxincludegraphics{mermaid-074d359262c58b5fe7ae3ae26afc6f291888b20b.pdf}
+\sphinxincludegraphics{mermaid-436c617912b74c087a7bc9c12c116e9931d26248.pdf}
 \caption{Top\sphinxhyphen{}level structure}\label{\detokenize{modules/top/entity:id1}}\end{figure}
 \sphinxbfcode{\sphinxupquote{Generics}}
 
@@ -743,13 +743,13 @@ High after a sample was lost to a full FIFO.
 \PYG{c+c1}{\PYGZhy{}\PYGZhy{}}
 \PYG{c+c1}{\PYGZhy{}\PYGZhy{}    flowchart LR}
 \PYG{c+c1}{\PYGZhy{}\PYGZhy{}      APB[s\PYGZus{}apb] \PYGZhy{}\PYGZhy{}\PYGZgt{} BR[apb\PYGZus{}bridge] \PYGZhy{}\PYGZhy{}\PYGZgt{} RG[axil\PYGZus{}adapter + axil\PYGZus{}regs]}
-\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      RG \PYGZhy{}\PYGZhy{} start, threshold \PYGZhy{}\PYGZhy{}\PYGZgt{} CT[sample\PYGZus{}ctrl]}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      RG \PYGZhy{}\PYGZhy{} start \PYGZhy{}\PYGZhy{}\PYGZgt{} CT[sample\PYGZus{}ctrl]}
 \PYG{c+c1}{\PYGZhy{}\PYGZhy{}      ADC[adc\PYGZus{}data] \PYGZhy{}\PYGZhy{}\PYGZgt{} CAP[sample\PYGZus{}capture]}
 \PYG{c+c1}{\PYGZhy{}\PYGZhy{}      CT \PYGZhy{}\PYGZhy{} capture\PYGZus{}en \PYGZhy{}\PYGZhy{}\PYGZgt{} CAP}
 \PYG{c+c1}{\PYGZhy{}\PYGZhy{}      CAP \PYGZhy{}\PYGZhy{}\PYGZgt{} SS[sample\PYGZus{}stream] \PYGZhy{}\PYGZhy{}\PYGZgt{} MA[m\PYGZus{}axis]}
 \PYG{c+c1}{\PYGZhy{}\PYGZhy{}      EXT[s\PYGZus{}ext] \PYGZhy{}\PYGZhy{}\PYGZgt{} AP[axis\PYGZus{}pipeline] \PYGZhy{}\PYGZhy{}\PYGZgt{} ME[m\PYGZus{}ext]}
-\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      RG \PYGZhy{}\PYGZhy{} filter\PYGZus{}enable \PYGZhy{}\PYGZhy{}\PYGZgt{} SS}
-\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      RG \PYGZhy{}\PYGZhy{} filter\PYGZus{}enable \PYGZhy{}\PYGZhy{}\PYGZgt{} AP}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      RG \PYGZhy{}\PYGZhy{} filter\PYGZus{}enable, threshold \PYGZhy{}\PYGZhy{}\PYGZgt{} SS}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      RG \PYGZhy{}\PYGZhy{} filter\PYGZus{}enable, threshold \PYGZhy{}\PYGZhy{}\PYGZgt{} AP}
 \PYG{k}{entity}\PYG{+w}{ }\PYG{n+nc}{top}\PYG{+w}{ }\PYG{k}{is}
 \PYG{+w}{    }\PYG{k}{generic}\PYG{+w}{ }\PYG{p}{(}
 \PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Length of the capture window in system clock cycles.}
@@ -805,6 +805,7 @@ High after a sample was lost to a full FIFO.
 \PYG{+w}{            }\PYG{n}{clk}\PYG{+w}{          }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
 \PYG{+w}{            }\PYG{n}{rst\PYGZus{}n}\PYG{+w}{        }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
 \PYG{+w}{            }\PYG{n}{enable}\PYG{+w}{       }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{clear\PYGZus{}overflow}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
 \PYG{+w}{            }\PYG{n}{adc\PYGZus{}clk}\PYG{+w}{      }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
 \PYG{+w}{            }\PYG{n}{adc\PYGZus{}rst}\PYG{+w}{      }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
 \PYG{+w}{            }\PYG{n}{adc\PYGZus{}data}\PYG{+w}{     }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic\PYGZus{}vector}\PYG{p}{(}\PYG{l+m+mi}{11}\PYG{+w}{ }\PYG{k}{downto}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{;}
@@ -874,6 +875,7 @@ High after a sample was lost to a full FIFO.
 \PYG{+w}{            }\PYG{n}{start}\PYG{+w}{          }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{out}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
 \PYG{+w}{            }\PYG{n}{filter\PYGZus{}enable}\PYG{+w}{  }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{out}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
 \PYG{+w}{            }\PYG{n}{clear}\PYG{+w}{          }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{out}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{clear\PYGZus{}overflow}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{out}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
 \PYG{+w}{            }\PYG{n}{threshold}\PYG{+w}{      }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{out}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic\PYGZus{}vector}\PYG{p}{(}\PYG{l+m+mi}{7}\PYG{+w}{ }\PYG{k}{downto}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{;}
 \PYG{+w}{            }\PYG{n}{state\PYGZus{}code}\PYG{+w}{     }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic\PYGZus{}vector}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{k}{downto}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{;}
 \PYG{+w}{            }\PYG{n}{overflow}\PYG{+w}{       }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{  }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
@@ -894,7 +896,7 @@ High after a sample was lost to a full FIFO.
 \PYG{+w}{    }\PYG{k}{signal}\PYG{+w}{ }\PYG{n}{arvalid}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{arready}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{rvalid}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{rready}\PYG{+w}{                 }\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
 
 \PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Control.}
-\PYG{+w}{    }\PYG{k}{signal}\PYG{+w}{ }\PYG{n}{start}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{filter\PYGZus{}enable}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{clear}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{signal}\PYG{+w}{ }\PYG{n}{start}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{filter\PYGZus{}enable}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{clear}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{clear\PYGZus{}overflow}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
 \PYG{+w}{    }\PYG{k}{signal}\PYG{+w}{ }\PYG{n}{threshold}\PYG{+w}{                   }\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic\PYGZus{}vector}\PYG{p}{(}\PYG{l+m+mi}{7}\PYG{+w}{ }\PYG{k}{downto}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{;}
 \PYG{+w}{    }\PYG{k}{signal}\PYG{+w}{ }\PYG{n}{capture\PYGZus{}en}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{busy}\PYG{+w}{            }\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic}\PYG{p}{;}
 \PYG{+w}{    }\PYG{k}{signal}\PYG{+w}{ }\PYG{n}{state\PYGZus{}code}\PYG{+w}{                  }\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{std\PYGZus{}logic\PYGZus{}vector}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{k}{downto}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{;}
@@ -960,6 +962,7 @@ High after a sample was lost to a full FIFO.
 \PYG{+w}{            }\PYG{n}{s\PYGZus{}axil\PYGZus{}rdata}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{rdata}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{s\PYGZus{}axil\PYGZus{}rresp}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{rresp}\PYG{p}{,}
 \PYG{+w}{            }\PYG{n}{s\PYGZus{}axil\PYGZus{}rvalid}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{rvalid}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{s\PYGZus{}axil\PYGZus{}rready}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{rready}\PYG{p}{,}
 \PYG{+w}{            }\PYG{n}{start}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{start}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{filter\PYGZus{}enable}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{filter\PYGZus{}enable}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{clear}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{clear}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{clear\PYGZus{}overflow}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{clear\PYGZus{}overflow}\PYG{p}{,}
 \PYG{+w}{            }\PYG{n}{threshold}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{threshold}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{state\PYGZus{}code}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{state\PYGZus{}code}\PYG{p}{,}
 \PYG{+w}{            }\PYG{n}{overflow}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{ovf\PYGZus{}sync}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{count}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{ext\PYGZus{}count}
 \PYG{+w}{        }\PYG{p}{)}\PYG{p}{;}
@@ -975,7 +978,7 @@ High after a sample was lost to a full FIFO.
 \PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Capture across the clock boundary.}
 \PYG{+w}{    }\PYG{n}{u\PYGZus{}capture}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{sample\PYGZus{}capture}
 \PYG{+w}{        }\PYG{k}{port}\PYG{+w}{ }\PYG{k}{map}\PYG{+w}{ }\PYG{p}{(}
-\PYG{+w}{            }\PYG{n}{clk}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{clk}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{rst\PYGZus{}n}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{srst\PYGZus{}n}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{enable}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{capture\PYGZus{}en}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{clk}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{clk}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{rst\PYGZus{}n}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{srst\PYGZus{}n}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{enable}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{capture\PYGZus{}en}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{clear\PYGZus{}overflow}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{clear\PYGZus{}overflow}\PYG{p}{,}
 \PYG{+w}{            }\PYG{n}{adc\PYGZus{}clk}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{adc\PYGZus{}clk}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{adc\PYGZus{}rst}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{adc\PYGZus{}rst}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{adc\PYGZus{}data}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{adc\PYGZus{}data}\PYG{p}{,}
 \PYG{+w}{            }\PYG{n}{sample\PYGZus{}data}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{sample\PYGZus{}data}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{sample\PYGZus{}valid}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{sample\PYGZus{}valid}\PYG{p}{,}
 \PYG{+w}{            }\PYG{n}{sample\PYGZus{}ready}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{sample\PYGZus{}ready}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{overflow}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{overflow}
@@ -1355,6 +1358,16 @@ Control.
 \\
 \sphinxhline
 \sphinxAtStartPar
+\sphinxcode{\sphinxupquote{clear\_overflow}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{std\_logic}}
+&
+\sphinxAtStartPar
+Control.
+\\
+\sphinxhline
+\sphinxAtStartPar
 \sphinxcode{\sphinxupquote{threshold}}
 &
 \sphinxAtStartPar
@@ -1514,7 +1527,7 @@ Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{top.vhd}}.
 \label{\detokenize{modules/top/processes/p_ovf_sync:p-ovf-sync}}\label{\detokenize{modules/top/processes/p_ovf_sync::doc}}
 \begin{DUlineblock}{0em}
 \item[] \sphinxstylestrong{Source file:} \sphinxcode{\sphinxupquote{top.vhd}}
-\item[] \sphinxstylestrong{Source line:} 194
+\item[] \sphinxstylestrong{Source line:} 196
 \item[] \sphinxstylestrong{Block type:} \sphinxcode{\sphinxupquote{process}}
 \item[] \sphinxstylestrong{Sensitivity list:} \sphinxcode{\sphinxupquote{clk}}
 \end{DUlineblock}
@@ -1575,7 +1588,7 @@ WaveDrom
 \sphinxcode{\sphinxupquote{clk}}
 &
 \sphinxAtStartPar
-194
+196
 &
 \sphinxAtStartPar
 —
@@ -2738,6 +2751,8 @@ bridge can drive it) and wraps them in an axil\_if instance for axil\_regs.
 \PYG{+w}{    }\PYG{k}{output}\PYG{+w}{ }\PYG{k+kt}{logic}\PYG{+w}{        }\PYG{n}{filter\PYGZus{}enable}\PYG{p}{,}
 \PYG{+w}{    }\PYG{c+c1}{// Holds the packet counter at zero while high.}
 \PYG{+w}{    }\PYG{k}{output}\PYG{+w}{ }\PYG{k+kt}{logic}\PYG{+w}{        }\PYG{n}{clear}\PYG{p}{,}
+\PYG{+w}{    }\PYG{c+c1}{// Clears the sampler\PYGZsq{}s overflow flag while high.}
+\PYG{+w}{    }\PYG{k}{output}\PYG{+w}{ }\PYG{k+kt}{logic}\PYG{+w}{        }\PYG{n}{clear\PYGZus{}overflow}\PYG{p}{,}
 \PYG{+w}{    }\PYG{c+c1}{// Smallest first\PYGZhy{}byte value the filters let through.}
 \PYG{+w}{    }\PYG{k}{output}\PYG{+w}{ }\PYG{k+kt}{logic}\PYG{+w}{ }\PYG{p}{[}\PYG{l+m+mi}{7}\PYG{o}{:}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{+w}{  }\PYG{n}{threshold}\PYG{p}{,}
 \PYG{+w}{    }\PYG{c+c1}{// Sampler controller state.}
@@ -2769,7 +2784,7 @@ bridge can drive it) and wraps them in an axil\_if instance for axil\_regs.
 
 \PYG{+w}{    }\PYG{n}{axil\PYGZus{}regs}\PYG{+w}{ }\PYG{n}{u\PYGZus{}regs}\PYG{+w}{ }\PYG{p}{(}
 \PYG{+w}{        }\PYG{p}{.}\PYG{n}{clk}\PYG{p}{(}\PYG{n}{clk}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{.}\PYG{n}{rst}\PYG{p}{(}\PYG{n}{rst}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{.}\PYG{n}{s\PYGZus{}axil}\PYG{p}{(}\PYG{n}{bus}\PYG{p}{)}\PYG{p}{,}
-\PYG{+w}{        }\PYG{p}{.}\PYG{n}{start}\PYG{p}{(}\PYG{n}{start}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{.}\PYG{n}{filter\PYGZus{}enable}\PYG{p}{(}\PYG{n}{filter\PYGZus{}enable}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{.}\PYG{n}{clear}\PYG{p}{(}\PYG{n}{clear}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{start}\PYG{p}{(}\PYG{n}{start}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{.}\PYG{n}{filter\PYGZus{}enable}\PYG{p}{(}\PYG{n}{filter\PYGZus{}enable}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{.}\PYG{n}{clear}\PYG{p}{(}\PYG{n}{clear}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{.}\PYG{n}{clear\PYGZus{}overflow}\PYG{p}{(}\PYG{n}{clear\PYGZus{}overflow}\PYG{p}{)}\PYG{p}{,}
 \PYG{+w}{        }\PYG{p}{.}\PYG{n}{threshold}\PYG{p}{(}\PYG{n}{threshold}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{.}\PYG{n}{state\PYGZus{}code}\PYG{p}{(}\PYG{n}{state\PYGZus{}code}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{.}\PYG{n}{overflow}\PYG{p}{(}\PYG{n}{overflow}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{.}\PYG{n}{count}\PYG{p}{(}\PYG{n}{count}\PYG{p}{)}
 \PYG{+w}{    }\PYG{p}{)}\PYG{p}{;}
 \PYG{k}{endmodule}
@@ -2783,7 +2798,7 @@ bridge can drive it) and wraps them in an axil\_if instance for axil\_regs.
 \sphinxAtStartPar
 Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{axil\_adapter.sv}}.
 
-\sphinxincludegraphics[]{graphviz-559cadf361fd756f44f69ba9a9f02512824ae60e.pdf}
+\sphinxincludegraphics[]{graphviz-2ee5813608e0de83463794f17b1766a9d7b50a90.pdf}
 
 
 \paragraph{Ports}
@@ -2824,7 +2839,7 @@ Description
 \sphinxcode{\sphinxupquote{awaddr}}
 &
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{logic{[}7:0{]}}}
+\sphinxcode{\sphinxupquote{logic{[}full\_pkg::ADDR\_W\sphinxhyphen{}1:0{]}}}
 &
 \sphinxAtStartPar
 in
@@ -2984,7 +2999,7 @@ out
 \sphinxcode{\sphinxupquote{araddr}}
 &
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{logic{[}7:0{]}}}
+\sphinxcode{\sphinxupquote{logic{[}full\_pkg::ADDR\_W\sphinxhyphen{}1:0{]}}}
 &
 \sphinxAtStartPar
 in
@@ -3214,7 +3229,7 @@ every write updates the whole register. See registers/regs\_axil\_regs.toml.
 \begin{sphinxVerbatim}[commandchars=\\\{\},numbers=left,firstnumber=1,stepnumber=1]
 \PYG{c+c1}{// AXI4\PYGZhy{}Lite register file for the sampler.}
 \PYG{c+c1}{//}
-\PYG{c+c1}{// Five 32\PYGZhy{}bit registers: control (start, filter enable, clear), a read\PYGZhy{}only}
+\PYG{c+c1}{// Five 32\PYGZhy{}bit registers: control (start, filter enable, clear, clear overflow), a read\PYGZhy{}only}
 \PYG{c+c1}{// status word (controller state, overflow flag), the filter threshold, a}
 \PYG{c+c1}{// scratch register and a read\PYGZhy{}only packet count. Write strobes are ignored:}
 \PYG{c+c1}{// every write updates the whole register. See registers/regs\PYGZus{}axil\PYGZus{}regs.toml.}
@@ -3243,6 +3258,8 @@ every write updates the whole register. See registers/regs\_axil\_regs.toml.
 \PYG{+w}{    }\PYG{k}{output}\PYG{+w}{ }\PYG{k+kt}{logic}\PYG{+w}{        }\PYG{n}{filter\PYGZus{}enable}\PYG{p}{,}
 \PYG{+w}{    }\PYG{c+c1}{// Holds the packet counter at zero while high.}
 \PYG{+w}{    }\PYG{k}{output}\PYG{+w}{ }\PYG{k+kt}{logic}\PYG{+w}{        }\PYG{n}{clear}\PYG{p}{,}
+\PYG{+w}{    }\PYG{c+c1}{// Clears the sampler\PYGZsq{}s overflow flag while high.}
+\PYG{+w}{    }\PYG{k}{output}\PYG{+w}{ }\PYG{k+kt}{logic}\PYG{+w}{        }\PYG{n}{clear\PYGZus{}overflow}\PYG{p}{,}
 \PYG{+w}{    }\PYG{c+c1}{// Smallest first\PYGZhy{}byte value the filters let through.}
 \PYG{+w}{    }\PYG{k}{output}\PYG{+w}{ }\PYG{k+kt}{logic}\PYG{+w}{ }\PYG{p}{[}\PYG{l+m+mi}{7}\PYG{o}{:}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{+w}{  }\PYG{n}{threshold}\PYG{p}{,}
 \PYG{+w}{    }\PYG{c+c1}{// Sampler controller state.}
@@ -3314,6 +3331,7 @@ every write updates the whole register. See registers/regs\_axil\_regs.toml.
 \PYG{+w}{    }\PYG{k}{assign}\PYG{+w}{ }\PYG{n}{start}\PYG{+w}{         }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{ctrl\PYGZus{}r}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{;}
 \PYG{+w}{    }\PYG{k}{assign}\PYG{+w}{ }\PYG{n}{filter\PYGZus{}enable}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{ctrl\PYGZus{}r}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{p}{;}
 \PYG{+w}{    }\PYG{k}{assign}\PYG{+w}{ }\PYG{n}{clear}\PYG{+w}{         }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{ctrl\PYGZus{}r}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{assign}\PYG{+w}{ }\PYG{n}{clear\PYGZus{}overflow}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{ctrl\PYGZus{}r}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{;}
 \PYG{+w}{    }\PYG{k}{assign}\PYG{+w}{ }\PYG{n}{threshold}\PYG{+w}{     }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{threshold\PYGZus{}r}\PYG{p}{[}\PYG{l+m+mi}{7}\PYG{o}{:}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{;}
 \PYG{k}{endmodule}
 \end{sphinxVerbatim}
@@ -3326,7 +3344,7 @@ every write updates the whole register. See registers/regs\_axil\_regs.toml.
 \sphinxAtStartPar
 Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{axil\_regs.sv}}.
 
-\sphinxincludegraphics[]{graphviz-f2c496a8dfafbc328a1d041ad2bddc7d61f0491f.pdf}
+\sphinxincludegraphics[]{graphviz-41bf6dbf486603e586f2ca8ac10f44267cec46bb.pdf}
 
 
 \subparagraph{Ports}
@@ -3431,6 +3449,19 @@ Holds the packet counter at zero while high.
 \\
 \sphinxhline
 \sphinxAtStartPar
+\sphinxcode{\sphinxupquote{clear\_overflow}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{out}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{logic}}
+&
+\sphinxAtStartPar
+Clears the sampler’s overflow flag while high.
+\\
+\sphinxhline
+\sphinxAtStartPar
 \sphinxcode{\sphinxupquote{threshold}}
 &
 \sphinxAtStartPar
@@ -3517,7 +3548,7 @@ Description
 \sphinxcode{\sphinxupquote{awaddr}}
 &
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{logic{[}7:0{]}}}
+\sphinxcode{\sphinxupquote{logic{[}full\_pkg::ADDR\_W\sphinxhyphen{}1:0{]}}}
 &
 \sphinxAtStartPar
 in
@@ -3647,7 +3678,7 @@ in
 \sphinxcode{\sphinxupquote{araddr}}
 &
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{logic{[}7:0{]}}}
+\sphinxcode{\sphinxupquote{logic{[}full\_pkg::ADDR\_W\sphinxhyphen{}1:0{]}}}
 &
 \sphinxAtStartPar
 in
@@ -3883,7 +3914,7 @@ Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{axil\_regs.sv}}.
 \label{\detokenize{modules/axil_regs/processes/p_bus:p-bus}}\label{\detokenize{modules/axil_regs/processes/p_bus::doc}}
 \begin{DUlineblock}{0em}
 \item[] \sphinxstylestrong{Source file:} \sphinxcode{\sphinxupquote{axil\_regs.sv}}
-\item[] \sphinxstylestrong{Source line:} 55
+\item[] \sphinxstylestrong{Source line:} 57
 \item[] \sphinxstylestrong{Block type:} \sphinxcode{\sphinxupquote{always\_ff}}
 \item[] \sphinxstylestrong{Sensitivity list:} \sphinxcode{\sphinxupquote{posedge clk}}
 \end{DUlineblock}
@@ -4007,7 +4038,7 @@ WaveDrom
 \sphinxcode{\sphinxupquote{posedge clk}}
 &
 \sphinxAtStartPar
-55
+57
 &
 \sphinxAtStartPar
 —
@@ -4269,6 +4300,19 @@ bit
 &
 \sphinxAtStartPar
 Hold high to hold the forwarded\sphinxhyphen{}packet counter at zero.
+\\
+\sphinxhline
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{clear\_overflow}}
+&
+\sphinxAtStartPar
+bit
+&
+\sphinxAtStartPar
+0
+&
+\sphinxAtStartPar
+Hold high to clear the overflow flag. While the flag is set a new capture ends at once, so clear it before starting.
 \\
 \sphinxbottomrule
 \end{tabular}
@@ -5225,7 +5269,7 @@ source comments above each process.
 
 \subparagraph{P State}
 \label{\detokenize{modules/stream_filter/timing:p-state}}
-\noindent\sphinxincludegraphics{{wavedrom-811bd523-ed02-4d16-ab8a-b499d3861a93}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-9c0a5213-b573-491e-8c29-e45184627895}.pdf}
 
 \sphinxstepscope
 
@@ -5253,7 +5297,7 @@ Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{stream\_filter.sv}}
 \sphinxAtStartPar
 p\_state: Clocked state register and forwarded\sphinxhyphen{}packet counter.
 
-\noindent\sphinxincludegraphics{{wavedrom-f5aa7a68-480d-49db-aaca-27fcbfc0afb6}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-17f7564f-e8eb-475d-b487-aceccf982e62}.pdf}
 
 
 \subparagraph{Source}
@@ -6111,8 +6155,8 @@ domain samples a signal that changes under its own clock edge.
 \PYG{c+c1}{//}
 \PYG{c+c1}{// Registers samples from a free\PYGZhy{}running converter clock (adc\PYGZus{}clk) and hands}
 \PYG{c+c1}{// them to the system clock (clk) through an asynchronous FIFO. The enable}
-\PYG{c+c1}{// request goes the other way through a two\PYGZhy{}flop synchroniser, so neither}
-\PYG{c+c1}{// domain samples a signal that changes under its own clock edge.}
+\PYG{c+c1}{// and clear requests go the other way through two\PYGZhy{}flop synchronisers, so}
+\PYG{c+c1}{// neither domain samples a signal that changes under its own clock edge.}
 \PYG{c+c1}{//}
 \PYG{c+c1}{// .. mermaid::}
 \PYG{c+c1}{//    :caption: Capture data path}
@@ -6126,7 +6170,7 @@ domain samples a signal that changes under its own clock edge.
 \PYG{c+c1}{//        N[p\PYGZus{}adc\PYGZus{}en] \PYGZhy{}\PYGZhy{}\PYGZgt{} R[p\PYGZus{}adc\PYGZus{}capture]}
 \PYG{c+c1}{//        D[adc\PYGZus{}data] \PYGZhy{}\PYGZhy{}\PYGZgt{} R}
 \PYG{c+c1}{//      end}
-\PYG{c+c1}{//      C \PYGZhy{}\PYGZhy{} capture\PYGZus{}en \PYGZhy{}\PYGZhy{}\PYGZgt{} N}
+\PYG{c+c1}{//      C \PYGZhy{}\PYGZhy{} capture\PYGZus{}en, clear\PYGZus{}req \PYGZhy{}\PYGZhy{}\PYGZgt{} N}
 \PYG{c+c1}{//      R \PYGZhy{}\PYGZhy{} samples \PYGZhy{}\PYGZhy{}\PYGZgt{} F[(async\PYGZus{}fifo)]}
 \PYG{c+c1}{//      F \PYGZhy{}\PYGZhy{}\PYGZgt{} O}
 \PYG{k}{module}\PYG{+w}{ }\PYG{n}{sample\PYGZus{}capture}\PYG{+w}{ }\PYG{p}{\PYGZsh{}}\PYG{p}{(}
@@ -6141,6 +6185,8 @@ domain samples a signal that changes under its own clock edge.
 \PYG{+w}{    }\PYG{k}{input}\PYG{+w}{  }\PYG{k+kt}{logic}\PYG{+w}{                       }\PYG{n}{rst\PYGZus{}n}\PYG{p}{,}
 \PYG{+w}{    }\PYG{c+c1}{// Capture while high.}
 \PYG{+w}{    }\PYG{k}{input}\PYG{+w}{  }\PYG{k+kt}{logic}\PYG{+w}{                       }\PYG{n}{enable}\PYG{p}{,}
+\PYG{+w}{    }\PYG{c+c1}{// Clears the overflow flag while high (system clock domain).}
+\PYG{+w}{    }\PYG{k}{input}\PYG{+w}{  }\PYG{k+kt}{logic}\PYG{+w}{                       }\PYG{n}{clear\PYGZus{}overflow}\PYG{p}{,}
 \PYG{+w}{    }\PYG{c+c1}{// Converter clock; unrelated to clk.}
 \PYG{+w}{    }\PYG{k}{input}\PYG{+w}{  }\PYG{k+kt}{logic}\PYG{+w}{                       }\PYG{n}{adc\PYGZus{}clk}\PYG{p}{,}
 \PYG{+w}{    }\PYG{c+c1}{// Converter\PYGZhy{}domain synchronous active\PYGZhy{}high reset, released on adc\PYGZus{}clk.}
@@ -6153,15 +6199,15 @@ domain samples a signal that changes under its own clock edge.
 \PYG{+w}{    }\PYG{k}{output}\PYG{+w}{ }\PYG{k+kt}{logic}\PYG{+w}{                       }\PYG{n}{sample\PYGZus{}valid}\PYG{p}{,}
 \PYG{+w}{    }\PYG{c+c1}{// Consumer takes the sample this cycle.}
 \PYG{+w}{    }\PYG{k}{input}\PYG{+w}{  }\PYG{k+kt}{logic}\PYG{+w}{                       }\PYG{n}{sample\PYGZus{}ready}\PYG{p}{,}
-\PYG{+w}{    }\PYG{c+c1}{// Set when a sample arrived while the FIFO was full (held when}
-\PYG{+w}{    }\PYG{c+c1}{// STICKY\PYGZus{}OVERFLOW). Changes under adc\PYGZus{}clk, so the reader must treat it as}
-\PYG{+w}{    }\PYG{c+c1}{// asynchronous.}
+\PYG{+w}{    }\PYG{c+c1}{// Set when a sample arrived while the FIFO was full (held until}
+\PYG{+w}{    }\PYG{c+c1}{// clear\PYGZus{}overflow when STICKY\PYGZus{}OVERFLOW). Changes under adc\PYGZus{}clk, so the reader}
+\PYG{+w}{    }\PYG{c+c1}{// must treat it as asynchronous.}
 \PYG{+w}{    }\PYG{k}{output}\PYG{+w}{ }\PYG{k+kt}{logic}\PYG{+w}{                       }\PYG{n}{overflow}
 \PYG{p}{)}\PYG{p}{;}
-\PYG{+w}{    }\PYG{c+c1}{// Request to capture, registered on clk.}
-\PYG{+w}{    }\PYG{k+kt}{logic}\PYG{+w}{                       }\PYG{n}{capture\PYGZus{}en}\PYG{p}{;}
-\PYG{+w}{    }\PYG{c+c1}{// Two\PYGZhy{}flop synchroniser for capture\PYGZus{}en on adc\PYGZus{}clk.}
-\PYG{+w}{    }\PYG{k+kt}{logic}\PYG{+w}{                       }\PYG{n}{en\PYGZus{}meta}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{en\PYGZus{}sync}\PYG{p}{;}
+\PYG{+w}{    }\PYG{c+c1}{// Requests registered on clk: capture, and clear the overflow flag.}
+\PYG{+w}{    }\PYG{k+kt}{logic}\PYG{+w}{                       }\PYG{n}{capture\PYGZus{}en}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{clear\PYGZus{}req}\PYG{p}{;}
+\PYG{+w}{    }\PYG{c+c1}{// Two\PYGZhy{}flop synchronisers for capture\PYGZus{}en and clear\PYGZus{}req on adc\PYGZus{}clk.}
+\PYG{+w}{    }\PYG{k+kt}{logic}\PYG{+w}{                       }\PYG{n}{en\PYGZus{}meta}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{en\PYGZus{}sync}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{clr\PYGZus{}meta}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{clr\PYGZus{}sync}\PYG{p}{;}
 \PYG{+w}{    }\PYG{c+c1}{// Registered sample and its write strobe on adc\PYGZus{}clk.}
 \PYG{+w}{    }\PYG{k+kt}{logic}\PYG{+w}{ }\PYG{p}{[}\PYG{n}{full\PYGZus{}pkg}\PYG{o}{:}\PYG{o}{:}\PYG{n}{SAMPLE\PYGZus{}W}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{o}{:}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{+w}{ }\PYG{n}{wr\PYGZus{}data}\PYG{p}{;}
 \PYG{+w}{    }\PYG{k+kt}{logic}\PYG{+w}{                       }\PYG{n}{wr\PYGZus{}en}\PYG{p}{;}
@@ -6171,12 +6217,14 @@ domain samples a signal that changes under its own clock edge.
 \PYG{+w}{    }\PYG{k+kt}{wire}\PYG{+w}{                        }\PYG{n}{rd\PYGZus{}en}\PYG{+w}{     }\PYG{o}{=}\PYG{+w}{ }\PYG{o}{!}\PYG{n}{fifo\PYGZus{}empty}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{p}{(}\PYG{o}{!}\PYG{n}{sample\PYGZus{}valid}\PYG{+w}{ }\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{sample\PYGZus{}ready}\PYG{p}{)}\PYG{p}{;}
 \PYG{+w}{    }\PYG{k+kt}{wire}\PYG{+w}{                        }\PYG{n}{adc\PYGZus{}rst\PYGZus{}n}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{o}{!}\PYG{n}{adc\PYGZus{}rst}\PYG{p}{;}
 
-\PYG{+w}{    }\PYG{c+c1}{// p\PYGZus{}ctrl: Registers the enable request on the system clock.}
+\PYG{+w}{    }\PYG{c+c1}{// p\PYGZus{}ctrl: Registers the enable and clear requests on the system clock.}
 \PYG{+w}{    }\PYG{k}{always\PYGZus{}ff}\PYG{+w}{ }\PYG{p}{@}\PYG{p}{(}\PYG{k}{posedge}\PYG{+w}{ }\PYG{n}{clk}\PYG{+w}{ }\PYG{k}{or}\PYG{+w}{ }\PYG{k}{negedge}\PYG{+w}{ }\PYG{n}{rst\PYGZus{}n}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{begin}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{p\PYGZus{}ctrl}
 \PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{o}{!}\PYG{n}{rst\PYGZus{}n}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{begin}
 \PYG{+w}{            }\PYG{n}{capture\PYGZus{}en}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mb}{1\PYGZsq{}b0}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{clear\PYGZus{}req}\PYG{+w}{  }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mb}{1\PYGZsq{}b0}\PYG{p}{;}
 \PYG{+w}{        }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{k}{begin}
 \PYG{+w}{            }\PYG{n}{capture\PYGZus{}en}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{enable}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{clear\PYGZus{}req}\PYG{+w}{  }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{clear\PYGZus{}overflow}\PYG{p}{;}
 \PYG{+w}{        }\PYG{k}{end}
 \PYG{+w}{    }\PYG{k}{end}
 
@@ -6193,14 +6241,18 @@ domain samples a signal that changes under its own clock edge.
 \PYG{+w}{        }\PYG{k}{end}
 \PYG{+w}{    }\PYG{k}{end}
 
-\PYG{+w}{    }\PYG{c+c1}{// p\PYGZus{}adc\PYGZus{}en: Brings capture\PYGZus{}en into the converter domain.}
+\PYG{+w}{    }\PYG{c+c1}{// p\PYGZus{}adc\PYGZus{}en: Brings capture\PYGZus{}en and clear\PYGZus{}req into the converter domain.}
 \PYG{+w}{    }\PYG{k}{always\PYGZus{}ff}\PYG{+w}{ }\PYG{p}{@}\PYG{p}{(}\PYG{k}{posedge}\PYG{+w}{ }\PYG{n}{adc\PYGZus{}clk}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{begin}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{p\PYGZus{}adc\PYGZus{}en}
 \PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{adc\PYGZus{}rst}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{begin}
-\PYG{+w}{            }\PYG{n}{en\PYGZus{}meta}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mb}{1\PYGZsq{}b0}\PYG{p}{;}
-\PYG{+w}{            }\PYG{n}{en\PYGZus{}sync}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mb}{1\PYGZsq{}b0}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{en\PYGZus{}meta}\PYG{+w}{  }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mb}{1\PYGZsq{}b0}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{en\PYGZus{}sync}\PYG{+w}{  }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mb}{1\PYGZsq{}b0}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{clr\PYGZus{}meta}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mb}{1\PYGZsq{}b0}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{clr\PYGZus{}sync}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mb}{1\PYGZsq{}b0}\PYG{p}{;}
 \PYG{+w}{        }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{k}{begin}
-\PYG{+w}{            }\PYG{n}{en\PYGZus{}meta}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{capture\PYGZus{}en}\PYG{p}{;}
-\PYG{+w}{            }\PYG{n}{en\PYGZus{}sync}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{en\PYGZus{}meta}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{en\PYGZus{}meta}\PYG{+w}{  }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{capture\PYGZus{}en}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{en\PYGZus{}sync}\PYG{+w}{  }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{en\PYGZus{}meta}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{clr\PYGZus{}meta}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{clear\PYGZus{}req}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{clr\PYGZus{}sync}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{clr\PYGZus{}meta}\PYG{p}{;}
 \PYG{+w}{        }\PYG{k}{end}
 \PYG{+w}{    }\PYG{k}{end}
 
@@ -6215,7 +6267,7 @@ domain samples a signal that changes under its own clock edge.
 \PYG{+w}{            }\PYG{n}{wr\PYGZus{}data}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{adc\PYGZus{}data}\PYG{p}{;}
 \PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{wr\PYGZus{}en}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{fifo\PYGZus{}full}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{begin}
 \PYG{+w}{                }\PYG{n}{overflow}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mb}{1\PYGZsq{}b1}\PYG{p}{;}
-\PYG{+w}{            }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{o}{!}\PYG{n}{STICKY\PYGZus{}OVERFLOW}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{begin}
+\PYG{+w}{            }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{clr\PYGZus{}sync}\PYG{+w}{ }\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{o}{!}\PYG{n}{STICKY\PYGZus{}OVERFLOW}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{begin}
 \PYG{+w}{                }\PYG{n}{overflow}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mb}{1\PYGZsq{}b0}\PYG{p}{;}
 \PYG{+w}{            }\PYG{k}{end}
 \PYG{+w}{        }\PYG{k}{end}
@@ -6246,7 +6298,7 @@ domain samples a signal that changes under its own clock edge.
 \sphinxAtStartPar
 Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{sample\_capture.sv}}.
 
-\sphinxincludegraphics[]{graphviz-809a87056efe7784686141c33c8e894d6ab17011.pdf}
+\sphinxincludegraphics[]{graphviz-a5fee78ae7ec10d9e6b388fcb94aaa73ce01b06a.pdf}
 
 
 \paragraph{Ports}
@@ -6322,7 +6374,17 @@ Description
 \sphinxcode{\sphinxupquote{logic}}
 &
 \sphinxAtStartPar
-Request to capture, registered on clk.
+Requests registered on clk: capture, and clear the overflow flag.
+\\
+\sphinxhline
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{clear\_req}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{logic}}
+&
+\sphinxAtStartPar
+Requests registered on clk: capture, and clear the overflow flag.
 \\
 \sphinxhline
 \sphinxAtStartPar
@@ -6332,7 +6394,7 @@ Request to capture, registered on clk.
 \sphinxcode{\sphinxupquote{logic}}
 &
 \sphinxAtStartPar
-Two\sphinxhyphen{}flop synchroniser for capture\_en on adc\_clk.
+Two\sphinxhyphen{}flop synchronisers for capture\_en and clear\_req on adc\_clk.
 \\
 \sphinxhline
 \sphinxAtStartPar
@@ -6342,7 +6404,27 @@ Two\sphinxhyphen{}flop synchroniser for capture\_en on adc\_clk.
 \sphinxcode{\sphinxupquote{logic}}
 &
 \sphinxAtStartPar
-Two\sphinxhyphen{}flop synchroniser for capture\_en on adc\_clk.
+Two\sphinxhyphen{}flop synchronisers for capture\_en and clear\_req on adc\_clk.
+\\
+\sphinxhline
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{clr\_meta}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{logic}}
+&
+\sphinxAtStartPar
+Two\sphinxhyphen{}flop synchronisers for capture\_en and clear\_req on adc\_clk.
+\\
+\sphinxhline
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{clr\_sync}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{logic}}
+&
+\sphinxAtStartPar
+Two\sphinxhyphen{}flop synchronisers for capture\_en and clear\_req on adc\_clk.
 \\
 \sphinxhline
 \sphinxAtStartPar
@@ -6459,7 +6541,7 @@ Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{sample\_capture.sv}
 \label{\detokenize{modules/sample_capture/processes/p_ctrl:p-ctrl}}\label{\detokenize{modules/sample_capture/processes/p_ctrl::doc}}
 \begin{DUlineblock}{0em}
 \item[] \sphinxstylestrong{Source file:} \sphinxcode{\sphinxupquote{sample\_capture.sv}}
-\item[] \sphinxstylestrong{Source line:} 66
+\item[] \sphinxstylestrong{Source line:} 68
 \item[] \sphinxstylestrong{Block type:} \sphinxcode{\sphinxupquote{always\_ff}}
 \item[] \sphinxstylestrong{Sensitivity list:} \sphinxcode{\sphinxupquote{posedge clk}}, \sphinxcode{\sphinxupquote{negedge rst\_n}}
 \end{DUlineblock}
@@ -6468,7 +6550,7 @@ Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{sample\_capture.sv}
 \subparagraph{Description}
 \label{\detokenize{modules/sample_capture/processes/p_ctrl:description}}
 \sphinxAtStartPar
-p\_ctrl: Registers the enable request on the system clock.
+p\_ctrl: Registers the enable and clear requests on the system clock.
 
 
 \subparagraph{Source}
@@ -6477,8 +6559,10 @@ p\_ctrl: Registers the enable request on the system clock.
 \PYG{k}{always\PYGZus{}ff}\PYG{+w}{ }\PYG{p}{@}\PYG{p}{(}\PYG{k}{posedge}\PYG{+w}{ }\PYG{n}{clk}\PYG{+w}{ }\PYG{k}{or}\PYG{+w}{ }\PYG{k}{negedge}\PYG{+w}{ }\PYG{n}{rst\PYGZus{}n}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{begin}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{p\PYGZus{}ctrl}
 \PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{o}{!}\PYG{n}{rst\PYGZus{}n}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{begin}
 \PYG{+w}{        }\PYG{n}{capture\PYGZus{}en}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mb}{1\PYGZsq{}b0}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{clear\PYGZus{}req}\PYG{+w}{  }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mb}{1\PYGZsq{}b0}\PYG{p}{;}
 \PYG{+w}{    }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{k}{begin}
 \PYG{+w}{        }\PYG{n}{capture\PYGZus{}en}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{enable}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{clear\PYGZus{}req}\PYG{+w}{  }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{clear\PYGZus{}overflow}\PYG{p}{;}
 \PYG{+w}{    }\PYG{k}{end}
 \PYG{k}{end}
 \end{sphinxVerbatim}
@@ -6490,7 +6574,7 @@ p\_ctrl: Registers the enable request on the system clock.
 \label{\detokenize{modules/sample_capture/processes/p_out:p-out}}\label{\detokenize{modules/sample_capture/processes/p_out::doc}}
 \begin{DUlineblock}{0em}
 \item[] \sphinxstylestrong{Source file:} \sphinxcode{\sphinxupquote{sample\_capture.sv}}
-\item[] \sphinxstylestrong{Source line:} 75
+\item[] \sphinxstylestrong{Source line:} 79
 \item[] \sphinxstylestrong{Block type:} \sphinxcode{\sphinxupquote{always\_ff}}
 \item[] \sphinxstylestrong{Sensitivity list:} \sphinxcode{\sphinxupquote{posedge clk}}, \sphinxcode{\sphinxupquote{negedge rst\_n}}
 \end{DUlineblock}
@@ -6525,7 +6609,7 @@ p\_out: Presents the oldest sample to the consumer.
 \label{\detokenize{modules/sample_capture/processes/p_adc_en:p-adc-en}}\label{\detokenize{modules/sample_capture/processes/p_adc_en::doc}}
 \begin{DUlineblock}{0em}
 \item[] \sphinxstylestrong{Source file:} \sphinxcode{\sphinxupquote{sample\_capture.sv}}
-\item[] \sphinxstylestrong{Source line:} 88
+\item[] \sphinxstylestrong{Source line:} 92
 \item[] \sphinxstylestrong{Block type:} \sphinxcode{\sphinxupquote{always\_ff}}
 \item[] \sphinxstylestrong{Sensitivity list:} \sphinxcode{\sphinxupquote{posedge adc\_clk}}
 \end{DUlineblock}
@@ -6534,7 +6618,7 @@ p\_out: Presents the oldest sample to the consumer.
 \subparagraph{Description}
 \label{\detokenize{modules/sample_capture/processes/p_adc_en:description}}
 \sphinxAtStartPar
-p\_adc\_en: Brings capture\_en into the converter domain.
+p\_adc\_en: Brings capture\_en and clear\_req into the converter domain.
 
 
 \subparagraph{Source}
@@ -6542,11 +6626,15 @@ p\_adc\_en: Brings capture\_en into the converter domain.
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{k}{always\PYGZus{}ff}\PYG{+w}{ }\PYG{p}{@}\PYG{p}{(}\PYG{k}{posedge}\PYG{+w}{ }\PYG{n}{adc\PYGZus{}clk}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{begin}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{p\PYGZus{}adc\PYGZus{}en}
 \PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{adc\PYGZus{}rst}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{begin}
-\PYG{+w}{        }\PYG{n}{en\PYGZus{}meta}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mb}{1\PYGZsq{}b0}\PYG{p}{;}
-\PYG{+w}{        }\PYG{n}{en\PYGZus{}sync}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mb}{1\PYGZsq{}b0}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{en\PYGZus{}meta}\PYG{+w}{  }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mb}{1\PYGZsq{}b0}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{en\PYGZus{}sync}\PYG{+w}{  }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mb}{1\PYGZsq{}b0}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{clr\PYGZus{}meta}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mb}{1\PYGZsq{}b0}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{clr\PYGZus{}sync}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mb}{1\PYGZsq{}b0}\PYG{p}{;}
 \PYG{+w}{    }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{k}{begin}
-\PYG{+w}{        }\PYG{n}{en\PYGZus{}meta}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{capture\PYGZus{}en}\PYG{p}{;}
-\PYG{+w}{        }\PYG{n}{en\PYGZus{}sync}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{en\PYGZus{}meta}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{en\PYGZus{}meta}\PYG{+w}{  }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{capture\PYGZus{}en}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{en\PYGZus{}sync}\PYG{+w}{  }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{en\PYGZus{}meta}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{clr\PYGZus{}meta}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{clear\PYGZus{}req}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{clr\PYGZus{}sync}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{clr\PYGZus{}meta}\PYG{p}{;}
 \PYG{+w}{    }\PYG{k}{end}
 \PYG{k}{end}
 \end{sphinxVerbatim}
@@ -6558,7 +6646,7 @@ p\_adc\_en: Brings capture\_en into the converter domain.
 \label{\detokenize{modules/sample_capture/processes/p_adc_capture:p-adc-capture}}\label{\detokenize{modules/sample_capture/processes/p_adc_capture::doc}}
 \begin{DUlineblock}{0em}
 \item[] \sphinxstylestrong{Source file:} \sphinxcode{\sphinxupquote{sample\_capture.sv}}
-\item[] \sphinxstylestrong{Source line:} 99
+\item[] \sphinxstylestrong{Source line:} 107
 \item[] \sphinxstylestrong{Block type:} \sphinxcode{\sphinxupquote{always\_ff}}
 \item[] \sphinxstylestrong{Sensitivity list:} \sphinxcode{\sphinxupquote{posedge adc\_clk}}
 \end{DUlineblock}
@@ -6583,7 +6671,7 @@ p\_adc\_capture: Registers each sample and flags FIFO overflow.
 \PYG{+w}{        }\PYG{n}{wr\PYGZus{}data}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{adc\PYGZus{}data}\PYG{p}{;}
 \PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{wr\PYGZus{}en}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{fifo\PYGZus{}full}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{begin}
 \PYG{+w}{            }\PYG{n}{overflow}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mb}{1\PYGZsq{}b1}\PYG{p}{;}
-\PYG{+w}{        }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{o}{!}\PYG{n}{STICKY\PYGZus{}OVERFLOW}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{begin}
+\PYG{+w}{        }\PYG{k}{end}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{clr\PYGZus{}sync}\PYG{+w}{ }\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{o}{!}\PYG{n}{STICKY\PYGZus{}OVERFLOW}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{begin}
 \PYG{+w}{            }\PYG{n}{overflow}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mb}{1\PYGZsq{}b0}\PYG{p}{;}
 \PYG{+w}{        }\PYG{k}{end}
 \PYG{+w}{    }\PYG{k}{end}
@@ -6627,7 +6715,7 @@ WaveDrom
 \sphinxcode{\sphinxupquote{posedge clk}}, \sphinxcode{\sphinxupquote{negedge rst\_n}}
 &
 \sphinxAtStartPar
-66
+68
 &
 \sphinxAtStartPar
 —
@@ -6643,7 +6731,7 @@ WaveDrom
 \sphinxcode{\sphinxupquote{posedge clk}}, \sphinxcode{\sphinxupquote{negedge rst\_n}}
 &
 \sphinxAtStartPar
-75
+79
 &
 \sphinxAtStartPar
 —
@@ -6659,7 +6747,7 @@ WaveDrom
 \sphinxcode{\sphinxupquote{posedge adc\_clk}}
 &
 \sphinxAtStartPar
-88
+92
 &
 \sphinxAtStartPar
 —
@@ -6675,7 +6763,7 @@ WaveDrom
 \sphinxcode{\sphinxupquote{posedge adc\_clk}}
 &
 \sphinxAtStartPar
-99
+107
 &
 \sphinxAtStartPar
 —
@@ -6693,7 +6781,7 @@ WaveDrom
 \sphinxAtStartPar
 Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{sample\_capture.sv}}.
 
-\sphinxincludegraphics[]{graphviz-7f482c46c6c12ec5bab5f8f7d1092f8ec2a8a3d8.pdf}
+\sphinxincludegraphics[]{graphviz-91a1e6e1342fb5183fc4acd9eb54d7f3c20d38d0.pdf}
 
 
 \paragraph{Clock Domains}
@@ -6806,6 +6894,19 @@ Synchronized
 \sphinxAtStartPar
 Yes \sphinxstyleemphasis{(two\sphinxhyphen{}flop)}
 \\
+\sphinxhline
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{clear\_req}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{clk}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{adc\_clk}}
+&
+\sphinxAtStartPar
+Yes \sphinxstyleemphasis{(two\sphinxhyphen{}flop)}
+\\
 \sphinxbottomrule
 \end{tabulary}
 \sphinxtableafterendhook\par
@@ -6819,7 +6920,7 @@ Yes \sphinxstyleemphasis{(two\sphinxhyphen{}flop)}
 \sphinxAtStartPar
 Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{sample\_capture.sv}}.
 
-\sphinxincludegraphics[]{graphviz-018f0f2ab1032c8260c786f2170efe00662b6634.pdf}
+\sphinxincludegraphics[]{graphviz-8fb3fd2119a0874a6b9c277ffc2abd08085f28ce.pdf}
 
 
 \paragraph{Reset Domains}
@@ -6936,6 +7037,16 @@ Destination Reset
 \sphinxAtStartPar
 \sphinxcode{\sphinxupquote{adc\_rst}}
 \\
+\sphinxhline
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{clear\_req}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{rst\_n}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{adc\_rst}}
+\\
 \sphinxbottomrule
 \end{tabulary}
 \sphinxtableafterendhook\par
@@ -6982,8 +7093,9 @@ the other domain through a two\sphinxhyphen{}flop synchroniser, so only one bit 
 a time and a pointer is never sampled half\sphinxhyphen{}updated.
 
 \sphinxAtStartPar
-Depth is 2**DEPTH\_LOG2 words. Full and empty are conservative: they may
-assert a cycle or two late after the opposite side moves, never early.
+Depth is 2**DEPTH\_LOG2 words. Full and empty are conservative: each side
+sees the other side’s pointer a cycle or two late, so a flag may stay
+asserted slightly longer than needed, but is never released early.
 \sphinxbfcode{\sphinxupquote{Generics}}
 
 \begin{savenotes}\sphinxattablestart
@@ -7210,8 +7322,9 @@ High when there is nothing to read.
 \PYG{c+c1}{\PYGZhy{}\PYGZhy{} the other domain through a two\PYGZhy{}flop synchroniser, so only one bit changes at}
 \PYG{c+c1}{\PYGZhy{}\PYGZhy{} a time and a pointer is never sampled half\PYGZhy{}updated.}
 \PYG{c+c1}{\PYGZhy{}\PYGZhy{}}
-\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Depth is 2**DEPTH\PYGZus{}LOG2 words. Full and empty are conservative: they may}
-\PYG{c+c1}{\PYGZhy{}\PYGZhy{} assert a cycle or two late after the opposite side moves, never early.}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Depth is 2**DEPTH\PYGZus{}LOG2 words. Full and empty are conservative: each side}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{} sees the other side\PYGZsq{}s pointer a cycle or two late, so a flag may stay}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{} asserted slightly longer than needed, but is never released early.}
 \PYG{k}{entity}\PYG{+w}{ }\PYG{n+nc}{async\PYGZus{}fifo}\PYG{+w}{ }\PYG{k}{is}
 \PYG{+w}{    }\PYG{k}{generic}\PYG{+w}{ }\PYG{p}{(}
 \PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Width of one stored word in bits (default matches full\PYGZus{}pkg::SAMPLE\PYGZus{}W).}
@@ -7761,7 +7874,7 @@ Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{async\_fifo.vhd}}.
 \label{\detokenize{modules/async_fifo/processes/p_wr_ptr:p-wr-ptr}}\label{\detokenize{modules/async_fifo/processes/p_wr_ptr::doc}}
 \begin{DUlineblock}{0em}
 \item[] \sphinxstylestrong{Source file:} \sphinxcode{\sphinxupquote{async\_fifo.vhd}}
-\item[] \sphinxstylestrong{Source line:} 74
+\item[] \sphinxstylestrong{Source line:} 75
 \item[] \sphinxstylestrong{Block type:} \sphinxcode{\sphinxupquote{process}}
 \item[] \sphinxstylestrong{Sensitivity list:} \sphinxcode{\sphinxupquote{wr\_clk}}, \sphinxcode{\sphinxupquote{wr\_rst\_n}}
 \end{DUlineblock}
@@ -7801,7 +7914,7 @@ p\_wr\_ptr: Stores a word and advances the write pointer.
 \label{\detokenize{modules/async_fifo/processes/p_rptr_sync:p-rptr-sync}}\label{\detokenize{modules/async_fifo/processes/p_rptr_sync::doc}}
 \begin{DUlineblock}{0em}
 \item[] \sphinxstylestrong{Source file:} \sphinxcode{\sphinxupquote{async\_fifo.vhd}}
-\item[] \sphinxstylestrong{Source line:} 92
+\item[] \sphinxstylestrong{Source line:} 93
 \item[] \sphinxstylestrong{Block type:} \sphinxcode{\sphinxupquote{process}}
 \item[] \sphinxstylestrong{Sensitivity list:} \sphinxcode{\sphinxupquote{wr\_clk}}, \sphinxcode{\sphinxupquote{wr\_rst\_n}}
 \end{DUlineblock}
@@ -7835,7 +7948,7 @@ p\_rptr\_sync: Brings the read pointer into the write domain.
 \label{\detokenize{modules/async_fifo/processes/p_rd_ptr:p-rd-ptr}}\label{\detokenize{modules/async_fifo/processes/p_rd_ptr::doc}}
 \begin{DUlineblock}{0em}
 \item[] \sphinxstylestrong{Source file:} \sphinxcode{\sphinxupquote{async\_fifo.vhd}}
-\item[] \sphinxstylestrong{Source line:} 104
+\item[] \sphinxstylestrong{Source line:} 105
 \item[] \sphinxstylestrong{Block type:} \sphinxcode{\sphinxupquote{process}}
 \item[] \sphinxstylestrong{Sensitivity list:} \sphinxcode{\sphinxupquote{rd\_clk}}, \sphinxcode{\sphinxupquote{rd\_rst\_n}}
 \end{DUlineblock}
@@ -7874,7 +7987,7 @@ p\_rd\_ptr: Advances the read pointer after a word is taken.
 \label{\detokenize{modules/async_fifo/processes/p_wptr_sync:p-wptr-sync}}\label{\detokenize{modules/async_fifo/processes/p_wptr_sync::doc}}
 \begin{DUlineblock}{0em}
 \item[] \sphinxstylestrong{Source file:} \sphinxcode{\sphinxupquote{async\_fifo.vhd}}
-\item[] \sphinxstylestrong{Source line:} 121
+\item[] \sphinxstylestrong{Source line:} 122
 \item[] \sphinxstylestrong{Block type:} \sphinxcode{\sphinxupquote{process}}
 \item[] \sphinxstylestrong{Sensitivity list:} \sphinxcode{\sphinxupquote{rd\_clk}}, \sphinxcode{\sphinxupquote{rd\_rst\_n}}
 \end{DUlineblock}
@@ -7938,7 +8051,7 @@ WaveDrom
 \sphinxcode{\sphinxupquote{wr\_clk}}, \sphinxcode{\sphinxupquote{wr\_rst\_n}}
 &
 \sphinxAtStartPar
-74
+75
 &
 \sphinxAtStartPar
 —
@@ -7954,7 +8067,7 @@ WaveDrom
 \sphinxcode{\sphinxupquote{wr\_clk}}, \sphinxcode{\sphinxupquote{wr\_rst\_n}}
 &
 \sphinxAtStartPar
-92
+93
 &
 \sphinxAtStartPar
 —
@@ -7970,7 +8083,7 @@ WaveDrom
 \sphinxcode{\sphinxupquote{rd\_clk}}, \sphinxcode{\sphinxupquote{rd\_rst\_n}}
 &
 \sphinxAtStartPar
-104
+105
 &
 \sphinxAtStartPar
 —
@@ -7986,7 +8099,7 @@ WaveDrom
 \sphinxcode{\sphinxupquote{rd\_clk}}, \sphinxcode{\sphinxupquote{rd\_rst\_n}}
 &
 \sphinxAtStartPar
-121
+122
 &
 \sphinxAtStartPar
 —
@@ -8505,7 +8618,7 @@ Current state, 0 IDLE, 1 ARMED, 2 RUN, 3 DONE.
 \PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      \PYGZob{} \PYGZdq{}name\PYGZdq{}: \PYGZdq{}clk\PYGZdq{},   \PYGZdq{}wave\PYGZdq{}: \PYGZdq{}P.......\PYGZdq{} \PYGZcb{},}
 \PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      \PYGZob{} \PYGZdq{}name\PYGZdq{}: \PYGZdq{}rst\PYGZdq{},   \PYGZdq{}wave\PYGZdq{}: \PYGZdq{}1.0.....\PYGZdq{} \PYGZcb{},}
 \PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      \PYGZob{} \PYGZdq{}name\PYGZdq{}: \PYGZdq{}start\PYGZdq{}, \PYGZdq{}wave\PYGZdq{}: \PYGZdq{}0..1....\PYGZdq{} \PYGZcb{},}
-\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      \PYGZob{} \PYGZdq{}name\PYGZdq{}: \PYGZdq{}state\PYGZdq{}, \PYGZdq{}wave\PYGZdq{}: \PYGZdq{}=.=.=.=.\PYGZdq{}, \PYGZdq{}data\PYGZdq{}: [\PYGZdq{}(any)\PYGZdq{},\PYGZdq{}IDLE\PYGZdq{},\PYGZdq{}ARMED\PYGZdq{},\PYGZdq{}RUN\PYGZdq{}] \PYGZcb{}}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      \PYGZob{} \PYGZdq{}name\PYGZdq{}: \PYGZdq{}state\PYGZdq{}, \PYGZdq{}wave\PYGZdq{}: \PYGZdq{}=.=.==..\PYGZdq{}, \PYGZdq{}data\PYGZdq{}: [\PYGZdq{}(any)\PYGZdq{},\PYGZdq{}IDLE\PYGZdq{},\PYGZdq{}ARMED\PYGZdq{},\PYGZdq{}RUN\PYGZdq{}] \PYGZcb{}}
 \PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}    ]\PYGZcb{}}
 \PYG{+w}{    }\PYG{n}{p\PYGZus{}state\PYGZus{}reg}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{process}\PYG{p}{(}\PYG{n}{clk}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{is}
 \PYG{+w}{    }\PYG{k}{begin}
@@ -8546,10 +8659,10 @@ Current state, 0 IDLE, 1 ARMED, 2 RUN, 3 DONE.
 \PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} .. wavedrom::}
 \PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}}
 \PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}    \PYGZob{} \PYGZdq{}signal\PYGZdq{}: [}
-\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      \PYGZob{} \PYGZdq{}name\PYGZdq{}: \PYGZdq{}clk\PYGZdq{},      \PYGZdq{}wave\PYGZdq{}: \PYGZdq{}P........\PYGZdq{} \PYGZcb{},}
-\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      \PYGZob{} \PYGZdq{}name\PYGZdq{}: \PYGZdq{}start\PYGZdq{},    \PYGZdq{}wave\PYGZdq{}: \PYGZdq{}01......0\PYGZdq{} \PYGZcb{},}
-\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      \PYGZob{} \PYGZdq{}name\PYGZdq{}: \PYGZdq{}run\PYGZus{}last\PYGZdq{}, \PYGZdq{}wave\PYGZdq{}: \PYGZdq{}0....10..\PYGZdq{} \PYGZcb{},}
-\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      \PYGZob{} \PYGZdq{}name\PYGZdq{}: \PYGZdq{}state\PYGZdq{},    \PYGZdq{}wave\PYGZdq{}: \PYGZdq{}=.=.=.=.=\PYGZdq{}, \PYGZdq{}data\PYGZdq{}: [\PYGZdq{}IDLE\PYGZdq{},\PYGZdq{}ARMED\PYGZdq{},\PYGZdq{}RUN\PYGZdq{},\PYGZdq{}DONE\PYGZdq{},\PYGZdq{}IDLE\PYGZdq{}] \PYGZcb{}}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      \PYGZob{} \PYGZdq{}name\PYGZdq{}: \PYGZdq{}clk\PYGZdq{},      \PYGZdq{}wave\PYGZdq{}: \PYGZdq{}P.........\PYGZdq{} \PYGZcb{},}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      \PYGZob{} \PYGZdq{}name\PYGZdq{}: \PYGZdq{}start\PYGZdq{},    \PYGZdq{}wave\PYGZdq{}: \PYGZdq{}01.....0..\PYGZdq{} \PYGZcb{},}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      \PYGZob{} \PYGZdq{}name\PYGZdq{}: \PYGZdq{}run\PYGZus{}last\PYGZdq{}, \PYGZdq{}wave\PYGZdq{}: \PYGZdq{}0....10...\PYGZdq{} \PYGZcb{},}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}      \PYGZob{} \PYGZdq{}name\PYGZdq{}: \PYGZdq{}state\PYGZdq{},    \PYGZdq{}wave\PYGZdq{}: \PYGZdq{}=.==..=.=.\PYGZdq{}, \PYGZdq{}data\PYGZdq{}: [\PYGZdq{}IDLE\PYGZdq{},\PYGZdq{}ARMED\PYGZdq{},\PYGZdq{}RUN\PYGZdq{},\PYGZdq{}DONE\PYGZdq{},\PYGZdq{}IDLE\PYGZdq{}] \PYGZcb{}}
 \PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{}    ]\PYGZcb{}}
 \PYG{+w}{    }\PYG{n}{p\PYGZus{}next\PYGZus{}state}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{process}\PYG{p}{(}\PYG{n}{state}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{start}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{overflow}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{run\PYGZus{}last}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{is}
 \PYG{+w}{    }\PYG{k}{begin}
@@ -9014,12 +9127,12 @@ source comments above each process.
 
 \paragraph{P Next State}
 \label{\detokenize{modules/sample_ctrl/timing:p-next-state}}
-\noindent\sphinxincludegraphics{{wavedrom-b7ef3d3f-4d33-4e4c-8ace-7e1913b0a79c}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-3b2f6ba2-d679-4ba9-ae27-77365920ad05}.pdf}
 
 
 \paragraph{P State Reg}
 \label{\detokenize{modules/sample_ctrl/timing:p-state-reg}}
-\noindent\sphinxincludegraphics{{wavedrom-584070e2-96c4-4b52-8164-16c2c448432b}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-26d0371a-55a2-4f23-b970-8253e5d00e67}.pdf}
 
 \sphinxstepscope
 
@@ -9048,7 +9161,7 @@ Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{sample\_ctrl.vhd}}.
 p\_state\_reg: Clocked state register and window counter.
 Synchronous reset returns the state to IDLE and clears the counter.
 
-\noindent\sphinxincludegraphics{{wavedrom-f0e2432f-6222-458b-83fd-5dd120d31609}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-fc0d3a70-8ec1-4faf-93e7-dec713cc061a}.pdf}
 
 
 \subparagraph{Source}
@@ -9103,7 +9216,7 @@ cycles or on overflow; DONE is left when the request is withdrawn.
 \sphinxincludegraphics{mermaid-1d86975f411cd643219ac92c1d43de06496d65d2.pdf}
 \caption{Controller states}\label{\detokenize{modules/sample_ctrl/processes/p_next_state:id1}}\end{figure}
 
-\noindent\sphinxincludegraphics{{wavedrom-d23faf2a-848e-416d-a734-56162f332079}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-f2abb146-e524-4915-be06-f41905fd4300}.pdf}
 
 
 \subparagraph{Signal Assignments}
@@ -9934,19 +10047,19 @@ Only forwarded packets are counted.
 \section{cocotb}
 \label{\detokenize{testbenches/index:cocotb}}
 
-\subsection{test\_axil\_regs}
-\label{\detokenize{testbenches/index:test-axil-regs}}\begin{quote}\begin{description}
+\subsection{test\_axil\_adapter}
+\label{\detokenize{testbenches/index:test-axil-adapter}}\begin{quote}\begin{description}
 \sphinxlineitem{File}
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{tb/cocotb/test\_axil\_regs.py}}
+\sphinxcode{\sphinxupquote{tb/cocotb/test\_axil\_adapter.py}}
 
 \sphinxlineitem{Tests module}
 \sphinxAtStartPar
-{\hyperref[\detokenize{modules/axil_regs/index::doc}]{\sphinxcrossref{\DUrole{doc}{axil\_regs}}}}
+{\hyperref[\detokenize{modules/axil_adapter/index::doc}]{\sphinxcrossref{\DUrole{doc}{axil\_adapter}}}}
 
 \sphinxlineitem{Purpose}
 \sphinxAtStartPar
-Register file tests for axil\_regs.
+Register file tests through axil\_adapter.
 
 \sphinxlineitem{Tests}
 \sphinxAtStartPar
@@ -10192,14 +10305,14 @@ ECP5 25k class
 Reports generated
 &
 \sphinxAtStartPar
-2026\sphinxhyphen{}11\sphinxhyphen{}01 20:19
+2026\sphinxhyphen{}11\sphinxhyphen{}01 20:56
 \\
 \sphinxhline
 \sphinxAtStartPar
 Documented at
 &
 \sphinxAtStartPar
-v3.12.0\sphinxhyphen{}19\sphinxhyphen{}gdbbc3d1
+v3.12.0\sphinxhyphen{}22\sphinxhyphen{}ge2a438d
 \\
 \sphinxbottomrule
 \end{tabular}
@@ -10263,7 +10376,7 @@ Available
 \sphinxcode{\sphinxupquote{TRELLIS\_FF}}
 &
 \sphinxAtStartPar
-297
+300
 &
 \sphinxAtStartPar
 24,288
@@ -10276,7 +10389,7 @@ Available
 \sphinxcode{\sphinxupquote{TRELLIS\_COMB}}
 &
 \sphinxAtStartPar
-281
+290
 &
 \sphinxAtStartPar
 24,288

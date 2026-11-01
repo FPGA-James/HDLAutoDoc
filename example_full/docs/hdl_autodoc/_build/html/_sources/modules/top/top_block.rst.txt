@@ -343,6 +343,10 @@ Signals
      - ``std_logic``
      - Control.
 
+   * - ``clear_overflow``
+     - ``std_logic``
+     - Control.
+
    * - ``threshold``
      - ``std_logic_vector(7 downto 0)``
      - —

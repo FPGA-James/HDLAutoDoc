@@ -14,10 +14,10 @@ Summary
      - ECP5 25k class
 
    * - Reports generated
-     - 2026-11-01 20:19
+     - 2026-11-01 20:56
 
    * - Documented at
-     - v3.12.0-19-gdbbc3d1
+     - v3.12.0-22-ge2a438d
 
 Utilization
 -----------
@@ -44,12 +44,12 @@ Device utilisation (nextpnr)
      - 3
 
    * - ``TRELLIS_FF``
-     - 297
+     - 300
      - 24,288
      - 1
 
    * - ``TRELLIS_COMB``
-     - 281
+     - 290
      - 24,288
      - 1
 

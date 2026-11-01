@@ -2,7 +2,7 @@ p_adc_capture
 =============
 
 | **Source file:** ``sample_capture.sv``
-| **Source line:** 99
+| **Source line:** 107
 | **Block type:** ``always_ff``
 | **Sensitivity list:** ``posedge adc_clk``
 
@@ -26,7 +26,7 @@ Source
                wr_data <= adc_data;
                if (wr_en && fifo_full) begin
                    overflow <= 1'b1;
-               end else if (!STICKY_OVERFLOW) begin
+               end else if (clr_sync || !STICKY_OVERFLOW) begin
                    overflow <= 1'b0;
                end
            end

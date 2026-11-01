@@ -489,7 +489,7 @@
 <span class="linenos"> 66</span><span class="w">    </span><span class="c1">--      { "name": "clk",   "wave": "P......." },</span>
 <span class="linenos"> 67</span><span class="w">    </span><span class="c1">--      { "name": "rst",   "wave": "1.0....." },</span>
 <span class="linenos"> 68</span><span class="w">    </span><span class="c1">--      { "name": "start", "wave": "0..1...." },</span>
-<span class="linenos"> 69</span><span class="w">    </span><span class="c1">--      { "name": "state", "wave": "=.=.=.=.", "data": ["(any)","IDLE","ARMED","RUN"] }</span>
+<span class="linenos"> 69</span><span class="w">    </span><span class="c1">--      { "name": "state", "wave": "=.=.==..", "data": ["(any)","IDLE","ARMED","RUN"] }</span>
 <span class="linenos"> 70</span><span class="w">    </span><span class="c1">--    ]}</span>
 <span class="linenos"> 71</span><span class="w">    </span><span class="n">p_state_reg</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">process</span><span class="p">(</span><span class="n">clk</span><span class="p">)</span><span class="w"> </span><span class="k">is</span>
 <span class="linenos"> 72</span><span class="w">    </span><span class="k">begin</span>
@@ -530,10 +530,10 @@
 <span class="linenos">107</span><span class="w">    </span><span class="c1">-- .. wavedrom::</span>
 <span class="linenos">108</span><span class="w">    </span><span class="c1">--</span>
 <span class="linenos">109</span><span class="w">    </span><span class="c1">--    { "signal": [</span>
-<span class="linenos">110</span><span class="w">    </span><span class="c1">--      { "name": "clk",      "wave": "P........" },</span>
-<span class="linenos">111</span><span class="w">    </span><span class="c1">--      { "name": "start",    "wave": "01......0" },</span>
-<span class="linenos">112</span><span class="w">    </span><span class="c1">--      { "name": "run_last", "wave": "0....10.." },</span>
-<span class="linenos">113</span><span class="w">    </span><span class="c1">--      { "name": "state",    "wave": "=.=.=.=.=", "data": ["IDLE","ARMED","RUN","DONE","IDLE"] }</span>
+<span class="linenos">110</span><span class="w">    </span><span class="c1">--      { "name": "clk",      "wave": "P........." },</span>
+<span class="linenos">111</span><span class="w">    </span><span class="c1">--      { "name": "start",    "wave": "01.....0.." },</span>
+<span class="linenos">112</span><span class="w">    </span><span class="c1">--      { "name": "run_last", "wave": "0....10..." },</span>
+<span class="linenos">113</span><span class="w">    </span><span class="c1">--      { "name": "state",    "wave": "=.==..=.=.", "data": ["IDLE","ARMED","RUN","DONE","IDLE"] }</span>
 <span class="linenos">114</span><span class="w">    </span><span class="c1">--    ]}</span>
 <span class="linenos">115</span><span class="w">    </span><span class="n">p_next_state</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">process</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">overflow</span><span class="p">,</span><span class="w"> </span><span class="n">run_last</span><span class="p">)</span><span class="w"> </span><span class="k">is</span>
 <span class="linenos">116</span><span class="w">    </span><span class="k">begin</span>

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.6)  1 NOV 2026 20:51
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.6)  1 NOV 2026 20:58
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -892,16 +892,6 @@ Overfull \hbox (36.44229pt too wide) in paragraph at lines 187--187
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 187--187
-[]\T1/txtt/m/n/10 axil_regs\T1/qtm/m/n/10 ,
- []
-
-
-Overfull \hbox (15.08992pt too wide) in paragraph at lines 187--187
-\T1/txtt/m/n/10 stream_filter| 
- []
-
-
 Overfull \hbox (14.44482pt too wide) in paragraph at lines 187--187
 [][][]\T1/qtm/m/it/10 axil_regs[][]| 
  []
@@ -909,6 +899,16 @@ Overfull \hbox (14.44482pt too wide) in paragraph at lines 187--187
 
 Overfull \hbox (15.44235pt too wide) in paragraph at lines 187--187
 []\T1/txtt/m/n/10 axil_regs.
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 187--187
+[]\T1/txtt/m/n/10 axil_regs\T1/qtm/m/n/10 ,
+ []
+
+
+Overfull \hbox (15.08992pt too wide) in paragraph at lines 187--187
+\T1/txtt/m/n/10 stream_filter| 
  []
 
 [1
@@ -1070,7 +1070,7 @@ s/t1xbtt.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/txfont
 s/t1xtt.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/txfonts
 /t1xtt.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/txfonts/
 tcxtt.pfb>
-Output written on ecp5streamfilter.pdf (31 pages, 342307 bytes).
+Output written on ecp5streamfilter.pdf (31 pages, 342310 bytes).
 PDF statistics:
  690 PDF objects out of 1000 (max. 8388607)
  584 compressed objects within 6 object streams

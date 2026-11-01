@@ -28,14 +28,14 @@ Modules
      - ``top``
      - —
 
-   * - :doc:`modules/top/index`
-     - ``top.sv``
-     - ECP5 design: an AXI4-Stream threshold filter with an AXI4-Lite register file. Bytes arriving on s_axis are forwarded to m_axis if they are at or above a
-     - *(top)*
-     - ``axil_regs``, ``stream_filter``
-
    * - :doc:`modules/stream_filter/index`
      - ``stream_filter.sv``
      - Threshold filter for a byte stream. Forwards each byte that is at or above the threshold and drops the rest.
      - ``top``
      - —
+
+   * - :doc:`modules/top/index`
+     - ``top.sv``
+     - ECP5 design: an AXI4-Stream threshold filter with an AXI4-Lite register file. Bytes arriving on s_axis are forwarded to m_axis if they are at or above a
+     - *(top)*
+     - ``axil_regs``, ``stream_filter``

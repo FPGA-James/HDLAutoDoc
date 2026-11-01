@@ -429,7 +429,7 @@
   <section id="sample-capture-clock-domain-analysis">
 <h1>sample_capture — Clock Domain Analysis<a class="headerlink" href="#sample-capture-clock-domain-analysis" title="Link to this heading">¶</a></h1>
 <p>Auto-extracted from <code class="docutils literal notranslate"><span class="pre">sample_capture.sv</span></code>.</p>
-<div class="graphviz"><object data="../../_images/graphviz-7f482c46c6c12ec5bab5f8f7d1092f8ec2a8a3d8.svg" type="image/svg+xml" class="graphviz">
+<div class="graphviz"><object data="../../_images/graphviz-91a1e6e1342fb5183fc4acd9eb54d7f3c20d38d0.svg" type="image/svg+xml" class="graphviz">
 <p class="warning">digraph sample_capture_cdc {
     compound=true;
     rankdir=LR;
@@ -462,6 +462,7 @@
 
     // CDC signal crossings
     clk__p_ctrl -&gt; adc_clk__p_adc_en [label=&quot;capture_en\n(synchronized)&quot;, color=&quot;#16a34a&quot;, fontcolor=&quot;#16a34a&quot;, style=&quot;solid&quot;, ltail=&quot;cluster_clk&quot;, lhead=&quot;cluster_adc_clk&quot;];
+    clk__p_ctrl -&gt; adc_clk__p_adc_en [label=&quot;clear_req\n(synchronized)&quot;, color=&quot;#16a34a&quot;, fontcolor=&quot;#16a34a&quot;, style=&quot;solid&quot;, ltail=&quot;cluster_clk&quot;, lhead=&quot;cluster_adc_clk&quot;];
 
     // Dual-clock instances
     subgraph cluster_dual_clk {
@@ -527,6 +528,11 @@ indicating an asynchronous FIFO, dual-port RAM, or similar CDC structure.</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">capture_en</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">clk</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">adc_clk</span></code></p></td>
+<td><p>Yes <em>(two-flop)</em></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">clear_req</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">clk</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">adc_clk</span></code></p></td>
 <td><p>Yes <em>(two-flop)</em></p></td>

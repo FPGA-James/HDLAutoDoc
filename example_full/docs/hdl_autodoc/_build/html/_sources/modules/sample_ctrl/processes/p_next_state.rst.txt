@@ -27,10 +27,10 @@ cycles or on overflow; DONE is left when the request is withdrawn.
 
 
    { "signal": [
-   { "name": "clk",      "wave": "P........" },
-   { "name": "start",    "wave": "01......0" },
-   { "name": "run_last", "wave": "0....10.." },
-   { "name": "state",    "wave": "=.=.=.=.=", "data": ["IDLE","ARMED","RUN","DONE","IDLE"] }
+   { "name": "clk",      "wave": "P........." },
+   { "name": "start",    "wave": "01.....0.." },
+   { "name": "run_last", "wave": "0....10..." },
+   { "name": "state",    "wave": "=.==..=.=.", "data": ["IDLE","ARMED","RUN","DONE","IDLE"] }
    ]}
 
 Signal Assignments

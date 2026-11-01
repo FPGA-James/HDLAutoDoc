@@ -26,23 +26,23 @@ Summary
    * - :doc:`p_wr_ptr`
      - ``process``
      - ``wr_clk``, ``wr_rst_n``
-     - 74
+     - 75
      - —
 
    * - :doc:`p_rptr_sync`
      - ``process``
      - ``wr_clk``, ``wr_rst_n``
-     - 92
+     - 93
      - —
 
    * - :doc:`p_rd_ptr`
      - ``process``
      - ``rd_clk``, ``rd_rst_n``
-     - 104
+     - 105
      - —
 
    * - :doc:`p_wptr_sync`
      - ``process``
      - ``rd_clk``, ``rd_rst_n``
-     - 121
+     - 122
      - —

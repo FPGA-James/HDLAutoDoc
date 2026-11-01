@@ -2,7 +2,7 @@ p_bus
 =====
 
 | **Source file:** ``axil_regs.sv``
-| **Source line:** 55
+| **Source line:** 57
 | **Block type:** ``always_ff``
 | **Sensitivity list:** ``posedge clk``
 

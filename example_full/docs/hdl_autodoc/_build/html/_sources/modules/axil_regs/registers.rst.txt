@@ -55,6 +55,10 @@ ctrl (0x00)
      - bit
      - 0
      - Hold high to hold the forwarded-packet counter at zero.
+   * - ``clear_overflow``
+     - bit
+     - 0
+     - Hold high to clear the overflow flag. While the flag is set a new capture ends at once, so clear it before starting.
 
 status (0x04)
 -------------

@@ -61,6 +61,12 @@ Ports
          <td>Capture while high.</td>
        </tr>
        <tr>
+         <td><code>clear_overflow</code></td>
+         <td><code>in</code></td>
+         <td><code>logic</code></td>
+         <td>Clears the overflow flag while high (system clock domain).</td>
+       </tr>
+       <tr>
          <td><code>sample_data</code></td>
          <td><code>out</code></td>
          <td><code>logic[full_pkg::SAMPLE_W-1:0]</code></td>
@@ -82,7 +88,7 @@ Ports
          <td><code>overflow</code></td>
          <td><code>out</code></td>
          <td><code>logic</code></td>
-         <td>asynchronous.</td>
+         <td>must treat it as asynchronous.</td>
        </tr>
      </tbody>
    </table>
@@ -117,15 +123,27 @@ Signals
 
    * - ``capture_en``
      - ``logic``
-     - Request to capture, registered on clk.
+     - Requests registered on clk: capture, and clear the overflow flag.
+
+   * - ``clear_req``
+     - ``logic``
+     - Requests registered on clk: capture, and clear the overflow flag.
 
    * - ``en_meta``
      - ``logic``
-     - Two-flop synchroniser for capture_en on adc_clk.
+     - Two-flop synchronisers for capture_en and clear_req on adc_clk.
 
    * - ``en_sync``
      - ``logic``
-     - Two-flop synchroniser for capture_en on adc_clk.
+     - Two-flop synchronisers for capture_en and clear_req on adc_clk.
+
+   * - ``clr_meta``
+     - ``logic``
+     - Two-flop synchronisers for capture_en and clear_req on adc_clk.
+
+   * - ``clr_sync``
+     - ``logic``
+     - Two-flop synchronisers for capture_en and clear_req on adc_clk.
 
    * - ``wr_data``
      - ``logic[full_pkg::SAMPLE_W-1:0]``

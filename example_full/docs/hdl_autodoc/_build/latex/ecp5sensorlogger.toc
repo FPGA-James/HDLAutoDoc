@@ -61,7 +61,7 @@
 \contentsline {subparagraph}{Annotated Source}{29}{subparagraph*.22}%
 \contentsline {subparagraph}{axil\_regs — Block Diagram}{33}{subparagraph*.23}%
 \contentsline {subparagraph}{Ports}{33}{subparagraph*.24}%
-\contentsline {subparagraph}{Interfaces}{33}{subparagraph*.25}%
+\contentsline {subparagraph}{Interfaces}{34}{subparagraph*.25}%
 \contentsline {subparagraph}{Signals}{34}{subparagraph*.26}%
 \contentsline {subparagraph}{RTL Detail}{34}{subparagraph*.27}%
 \contentsline {subparagraph}{axil\_regs — State Machine}{36}{subparagraph*.28}%
@@ -79,7 +79,7 @@
 \contentsline {subparagraph}{axil\_regs — Register Map}{38}{subparagraph*.40}%
 \contentsline {subparagraph}{ctrl (0x00)}{38}{subparagraph*.41}%
 \contentsline {subparagraph}{status (0x04)}{38}{subparagraph*.42}%
-\contentsline {subparagraph}{threshold (0x08)}{38}{subparagraph*.43}%
+\contentsline {subparagraph}{threshold (0x08)}{39}{subparagraph*.43}%
 \contentsline {subparagraph}{scratch (0x0C)}{39}{subparagraph*.44}%
 \contentsline {subparagraph}{count (0x10)}{39}{subparagraph*.45}%
 \contentsline {subparagraph}{Synthesis Results}{39}{subparagraph*.46}%
@@ -148,7 +148,7 @@
 \contentsline {subsubsection}{\numberline {2.9.5.2}sample\_capture — Block Diagram}{63}{subsubsection.2.9.5.2}%
 \contentsline {paragraph}{Ports}{64}{paragraph*.90}%
 \contentsline {paragraph}{Parameters}{64}{paragraph*.91}%
-\contentsline {paragraph}{Signals}{64}{paragraph*.92}%
+\contentsline {paragraph}{Signals}{65}{paragraph*.92}%
 \contentsline {paragraph}{RTL Detail}{65}{paragraph*.93}%
 \contentsline {subsubsection}{\numberline {2.9.5.3}sample\_capture — State Machine}{67}{subsubsection.2.9.5.3}%
 \contentsline {subsubsection}{\numberline {2.9.5.4}sample\_capture — Timing Diagrams}{67}{subsubsection.2.9.5.4}%
@@ -157,13 +157,13 @@
 \contentsline {subparagraph}{Description}{67}{subparagraph*.95}%
 \contentsline {subparagraph}{Source}{67}{subparagraph*.96}%
 \contentsline {paragraph}{p\_out}{67}{paragraph*.97}%
-\contentsline {subparagraph}{Description}{67}{subparagraph*.98}%
+\contentsline {subparagraph}{Description}{68}{subparagraph*.98}%
 \contentsline {subparagraph}{Source}{68}{subparagraph*.99}%
 \contentsline {paragraph}{p\_adc\_en}{68}{paragraph*.100}%
 \contentsline {subparagraph}{Description}{68}{subparagraph*.101}%
 \contentsline {subparagraph}{Source}{68}{subparagraph*.102}%
 \contentsline {paragraph}{p\_adc\_capture}{68}{paragraph*.103}%
-\contentsline {subparagraph}{Description}{68}{subparagraph*.104}%
+\contentsline {subparagraph}{Description}{69}{subparagraph*.104}%
 \contentsline {subparagraph}{Source}{69}{subparagraph*.105}%
 \contentsline {paragraph}{Summary}{69}{paragraph*.106}%
 \contentsline {subsubsection}{\numberline {2.9.5.6}sample\_capture — Clock Domain Analysis}{69}{subsubsection.2.9.5.6}%
@@ -259,7 +259,7 @@
 \contentsline {subsection}{\numberline {5.1.1}tb\_sample\_ctrl}{107}{subsection.5.1.1}%
 \contentsline {subsection}{\numberline {5.1.2}tb\_stream\_filter}{107}{subsection.5.1.2}%
 \contentsline {section}{\numberline {5.2}cocotb}{108}{section.5.2}%
-\contentsline {subsection}{\numberline {5.2.1}test\_axil\_regs}{108}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.1}test\_axil\_adapter}{108}{subsection.5.2.1}%
 \contentsline {section}{\numberline {5.3}Directed}{108}{section.5.3}%
 \contentsline {subsection}{\numberline {5.3.1}tb\_axil\_adapter}{108}{subsection.5.3.1}%
 \contentsline {subsection}{\numberline {5.3.2}tb\_smoke}{109}{subsection.5.3.2}%

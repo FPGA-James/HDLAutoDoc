@@ -420,7 +420,7 @@
   <section id="axil-regs-block-diagram">
 <h1>axil_regs — Block Diagram<a class="headerlink" href="#axil-regs-block-diagram" title="Link to this heading">¶</a></h1>
 <p>Auto-extracted from <code class="docutils literal notranslate"><span class="pre">axil_regs.sv</span></code>.</p>
-<div class="graphviz"><object data="../../_images/graphviz-18d335255c1036b2235b3db9a265e6e9f07d23b8.svg" type="image/svg+xml" class="graphviz">
+<div class="graphviz"><object data="../../_images/graphviz-368eaaf0b412e00ea925d01644b8e86095937bda.svg" type="image/svg+xml" class="graphviz">
 <p class="warning">digraph axil_regs_block {
     rankdir=LR;
     nodesep=0.5;
@@ -434,8 +434,8 @@
           &lt;TR&gt;&lt;TD PORT=&quot;i_clk&quot; ALIGN=&quot;LEFT&quot; CELLPADDING=&quot;5&quot;&gt;&amp;#x25B8; clk&lt;/TD&gt;&lt;TD WIDTH=&quot;50&quot;&gt; &lt;/TD&gt;&lt;TD PORT=&quot;o_start&quot; ALIGN=&quot;RIGHT&quot; CELLPADDING=&quot;5&quot;&gt;start &amp;#x25C2;&lt;/TD&gt;&lt;/TR&gt;
           &lt;TR&gt;&lt;TD PORT=&quot;i_rst&quot; ALIGN=&quot;LEFT&quot; CELLPADDING=&quot;5&quot;&gt;&amp;#x25B8; rst&lt;/TD&gt;&lt;TD WIDTH=&quot;50&quot;&gt; &lt;/TD&gt;&lt;TD PORT=&quot;o_filter_enable&quot; ALIGN=&quot;RIGHT&quot; CELLPADDING=&quot;5&quot;&gt;filter_enable &amp;#x25C2;&lt;/TD&gt;&lt;/TR&gt;
           &lt;TR&gt;&lt;TD PORT=&quot;i_state_code&quot; ALIGN=&quot;LEFT&quot; CELLPADDING=&quot;5&quot;&gt;&amp;#x25B8; state_code [2]&lt;/TD&gt;&lt;TD WIDTH=&quot;50&quot;&gt; &lt;/TD&gt;&lt;TD PORT=&quot;o_clear&quot; ALIGN=&quot;RIGHT&quot; CELLPADDING=&quot;5&quot;&gt;clear &amp;#x25C2;&lt;/TD&gt;&lt;/TR&gt;
-          &lt;TR&gt;&lt;TD PORT=&quot;i_overflow&quot; ALIGN=&quot;LEFT&quot; CELLPADDING=&quot;5&quot;&gt;&amp;#x25B8; overflow&lt;/TD&gt;&lt;TD WIDTH=&quot;50&quot;&gt; &lt;/TD&gt;&lt;TD PORT=&quot;o_threshold&quot; ALIGN=&quot;RIGHT&quot; CELLPADDING=&quot;5&quot;&gt;threshold &amp;#x25C2;&lt;/TD&gt;&lt;/TR&gt;
-          &lt;TR&gt;&lt;TD PORT=&quot;i_count&quot; ALIGN=&quot;LEFT&quot; CELLPADDING=&quot;5&quot;&gt;&amp;#x25B8; count [16]&lt;/TD&gt;&lt;TD WIDTH=&quot;50&quot;&gt; &lt;/TD&gt;&lt;TD CELLPADDING=&quot;5&quot;&gt; &lt;/TD&gt;&lt;/TR&gt;
+          &lt;TR&gt;&lt;TD PORT=&quot;i_overflow&quot; ALIGN=&quot;LEFT&quot; CELLPADDING=&quot;5&quot;&gt;&amp;#x25B8; overflow&lt;/TD&gt;&lt;TD WIDTH=&quot;50&quot;&gt; &lt;/TD&gt;&lt;TD PORT=&quot;o_clear_overflow&quot; ALIGN=&quot;RIGHT&quot; CELLPADDING=&quot;5&quot;&gt;clear_overflow &amp;#x25C2;&lt;/TD&gt;&lt;/TR&gt;
+          &lt;TR&gt;&lt;TD PORT=&quot;i_count&quot; ALIGN=&quot;LEFT&quot; CELLPADDING=&quot;5&quot;&gt;&amp;#x25B8; count [16]&lt;/TD&gt;&lt;TD WIDTH=&quot;50&quot;&gt; &lt;/TD&gt;&lt;TD PORT=&quot;o_threshold&quot; ALIGN=&quot;RIGHT&quot; CELLPADDING=&quot;5&quot;&gt;threshold &amp;#x25C2;&lt;/TD&gt;&lt;/TR&gt;
           &lt;TR&gt;&lt;TD PORT=&quot;i_s_axil&quot; ALIGN=&quot;LEFT&quot; CELLPADDING=&quot;5&quot;&gt;&amp;#x25B8;&amp;#x25B8; s_axil (interface)&lt;/TD&gt;&lt;TD WIDTH=&quot;50&quot;&gt; &lt;/TD&gt;&lt;TD CELLPADDING=&quot;5&quot;&gt; &lt;/TD&gt;&lt;/TR&gt;
         &lt;/TABLE&gt;&gt;];
 
@@ -482,22 +482,27 @@
 <td><p><code class="docutils literal notranslate"><span class="pre">logic</span></code></p></td>
 <td><p>Holds the packet counter at zero while high.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">threshold</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">clear_overflow</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">out</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">logic</span></code></p></td>
+<td><p>Clears the sampler’s overflow flag while high.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">threshold</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">out</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">logic[7:0]</span></code></p></td>
 <td><p>Smallest first-byte value the filters let through.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">state_code</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">state_code</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">in</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">logic[1:0]</span></code></p></td>
 <td><p>Sampler controller state.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">overflow</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">overflow</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">in</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">logic</span></code></p></td>
 <td><p>A sample was lost because the FIFO was full.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">count</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">count</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">in</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">logic[15:0]</span></code></p></td>
 <td><p>Packets forwarded since the counter was last cleared.</p></td>
@@ -520,7 +525,7 @@
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">awaddr</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">logic[7:0]</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">logic[full_pkg::ADDR_W-1:0]</span></code></p></td>
 <td><p>in</p></td>
 <td><p>Write address channel.</p></td>
 </tr>
@@ -570,7 +575,7 @@
 <td><p>—</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">araddr</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">logic[7:0]</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">logic[full_pkg::ADDR_W-1:0]</span></code></p></td>
 <td><p>in</p></td>
 <td><p>Read address channel.</p></td>
 </tr>

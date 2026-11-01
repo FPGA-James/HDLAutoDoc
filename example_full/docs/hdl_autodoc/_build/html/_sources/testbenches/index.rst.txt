@@ -76,12 +76,12 @@ tb_stream_filter
 cocotb
 ------
 
-test_axil_regs
-~~~~~~~~~~~~~~
+test_axil_adapter
+~~~~~~~~~~~~~~~~~
 
-:File: ``tb/cocotb/test_axil_regs.py``
-:Tests module: :doc:`/modules/axil_regs/index`
-:Purpose: Register file tests for axil_regs.
+:File: ``tb/cocotb/test_axil_adapter.py``
+:Tests module: :doc:`/modules/axil_adapter/index`
+:Purpose: Register file tests through axil_adapter.
 :Tests: 3 tests, 1 skipped
 
 .. list-table::

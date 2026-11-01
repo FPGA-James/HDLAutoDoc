@@ -2,7 +2,7 @@ p_rd_ptr
 ========
 
 | **Source file:** ``async_fifo.vhd``
-| **Source line:** 104
+| **Source line:** 105
 | **Block type:** ``process``
 | **Sensitivity list:** ``rd_clk``, ``rd_rst_n``
 

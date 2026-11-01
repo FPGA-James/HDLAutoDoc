@@ -432,23 +432,27 @@
 <h1>p_adc_en<a class="headerlink" href="#p-adc-en" title="Link to this heading">¶</a></h1>
 <div class="line-block">
 <div class="line"><strong>Source file:</strong> <code class="docutils literal notranslate"><span class="pre">sample_capture.sv</span></code></div>
-<div class="line"><strong>Source line:</strong> 88</div>
+<div class="line"><strong>Source line:</strong> 92</div>
 <div class="line"><strong>Block type:</strong> <code class="docutils literal notranslate"><span class="pre">always_ff</span></code></div>
 <div class="line"><strong>Sensitivity list:</strong> <code class="docutils literal notranslate"><span class="pre">posedge</span> <span class="pre">adc_clk</span></code></div>
 </div>
 <section id="description">
 <h2>Description<a class="headerlink" href="#description" title="Link to this heading">¶</a></h2>
-<p>p_adc_en: Brings capture_en into the converter domain.</p>
+<p>p_adc_en: Brings capture_en and clear_req into the converter domain.</p>
 </section>
 <section id="source">
 <h2>Source<a class="headerlink" href="#source" title="Link to this heading">¶</a></h2>
 <div class="highlight-systemverilog notranslate"><div class="highlight"><pre><span></span><span class="k">always_ff</span><span class="w"> </span><span class="p">@(</span><span class="k">posedge</span><span class="w"> </span><span class="n">adc_clk</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">p_adc_en</span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">adc_rst</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
-<span class="w">        </span><span class="n">en_meta</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mb">1'b0</span><span class="p">;</span>
-<span class="w">        </span><span class="n">en_sync</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mb">1'b0</span><span class="p">;</span>
+<span class="w">        </span><span class="n">en_meta</span><span class="w">  </span><span class="o">&lt;=</span><span class="w"> </span><span class="mb">1'b0</span><span class="p">;</span>
+<span class="w">        </span><span class="n">en_sync</span><span class="w">  </span><span class="o">&lt;=</span><span class="w"> </span><span class="mb">1'b0</span><span class="p">;</span>
+<span class="w">        </span><span class="n">clr_meta</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mb">1'b0</span><span class="p">;</span>
+<span class="w">        </span><span class="n">clr_sync</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mb">1'b0</span><span class="p">;</span>
 <span class="w">    </span><span class="k">end</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">begin</span>
-<span class="w">        </span><span class="n">en_meta</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">capture_en</span><span class="p">;</span>
-<span class="w">        </span><span class="n">en_sync</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">en_meta</span><span class="p">;</span>
+<span class="w">        </span><span class="n">en_meta</span><span class="w">  </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">capture_en</span><span class="p">;</span>
+<span class="w">        </span><span class="n">en_sync</span><span class="w">  </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">en_meta</span><span class="p">;</span>
+<span class="w">        </span><span class="n">clr_meta</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">clear_req</span><span class="p">;</span>
+<span class="w">        </span><span class="n">clr_sync</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">clr_meta</span><span class="p">;</span>
 <span class="w">    </span><span class="k">end</span>
 <span class="k">end</span>
 </pre></div>

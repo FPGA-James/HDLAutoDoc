@@ -2,7 +2,7 @@ p_rptr_sync
 ===========
 
 | **Source file:** ``async_fifo.vhd``
-| **Source line:** 92
+| **Source line:** 93
 | **Block type:** ``process``
 | **Sensitivity list:** ``wr_clk``, ``wr_rst_n``
 

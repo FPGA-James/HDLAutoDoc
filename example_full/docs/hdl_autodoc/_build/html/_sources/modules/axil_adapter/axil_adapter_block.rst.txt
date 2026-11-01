@@ -157,6 +157,12 @@ Ports
          <td>Holds the packet counter at zero while high.</td>
        </tr>
        <tr>
+         <td><code>clear_overflow</code></td>
+         <td><code>out</code></td>
+         <td><code>logic</code></td>
+         <td>Clears the sampler&#x27;s overflow flag while high.</td>
+       </tr>
+       <tr>
          <td><code>threshold</code></td>
          <td><code>out</code></td>
          <td><code>logic[7:0]</code></td>
@@ -199,7 +205,7 @@ Interfaces
      - Description
 
    * - ``awaddr``
-     - ``logic[7:0]``
+     - ``logic[full_pkg::ADDR_W-1:0]``
      - in
      - out
      - Write address channel.
@@ -259,7 +265,7 @@ Interfaces
      - —
 
    * - ``araddr``
-     - ``logic[7:0]``
+     - ``logic[full_pkg::ADDR_W-1:0]``
      - in
      - out
      - Read address channel.

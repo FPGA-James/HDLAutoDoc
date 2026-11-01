@@ -2,7 +2,7 @@ p_wr_ptr
 ========
 
 | **Source file:** ``async_fifo.vhd``
-| **Source line:** 74
+| **Source line:** 75
 | **Block type:** ``process``
 | **Sensitivity list:** ``wr_clk``, ``wr_rst_n``
 

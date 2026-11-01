@@ -2,7 +2,7 @@ p_out
 =====
 
 | **Source file:** ``sample_capture.sv``
-| **Source line:** 75
+| **Source line:** 79
 | **Block type:** ``always_ff``
 | **Sensitivity list:** ``posedge clk``, ``negedge rst_n``
 

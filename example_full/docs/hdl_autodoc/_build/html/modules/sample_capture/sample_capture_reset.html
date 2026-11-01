@@ -420,7 +420,7 @@
   <section id="sample-capture-reset-domain-analysis">
 <h1>sample_capture — Reset Domain Analysis<a class="headerlink" href="#sample-capture-reset-domain-analysis" title="Link to this heading">¶</a></h1>
 <p>Auto-extracted from <code class="docutils literal notranslate"><span class="pre">sample_capture.sv</span></code>.</p>
-<div class="graphviz"><object data="../../_images/graphviz-f4cf109ef59150fe8a7ee7bc117aace37dcff8e5.svg" type="image/svg+xml" class="graphviz">
+<div class="graphviz"><object data="../../_images/graphviz-5b6d2410b2b23e4d25b68d288d9b9744f0d97703.svg" type="image/svg+xml" class="graphviz">
 <p class="warning">digraph sample_capture_reset {
     compound=true;
     rankdir=LR;
@@ -447,6 +447,7 @@
 
     // Reset domain crossings
     rst_n__p_ctrl -&gt; adc_rst__p_adc_en [label=&quot;capture_en&quot;, color=&quot;#dc2626&quot;, fontcolor=&quot;#dc2626&quot;, style=&quot;dashed&quot;, ltail=&quot;cluster_rst_n&quot;, lhead=&quot;cluster_adc_rst&quot;];
+    rst_n__p_ctrl -&gt; adc_rst__p_adc_en [label=&quot;clear_req&quot;, color=&quot;#dc2626&quot;, fontcolor=&quot;#dc2626&quot;, style=&quot;dashed&quot;, ltail=&quot;cluster_rst_n&quot;, lhead=&quot;cluster_adc_rst&quot;];
 
 }</p></object></div>
 <section id="reset-domains">
@@ -501,6 +502,10 @@
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">capture_en</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rst_n</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">adc_rst</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">clear_req</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">rst_n</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">adc_rst</span></code></p></td>
 </tr>

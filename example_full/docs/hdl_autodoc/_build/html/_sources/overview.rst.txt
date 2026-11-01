@@ -29,23 +29,35 @@ Modules
      - Instantiated by
      - Instantiates
 
+   * - :doc:`modules/axil_adapter/index`
+     - ``axil_adapter.sv``
+     - Flat AXI4-Lite to register file adapter. Presents the register bus as flat AXI4-Lite subordinate ports (so a VHDL
+     - ``top``
+     - ``axil_regs``
+
+   * - :doc:`modules/stream_filter/index`
+     - ``stream_filter.sv``
+     - Packet filter for a byte stream. Looks at the first byte of each packet: if it is at or above the threshold
+     - ``axis_pipeline``, ``sample_stream``
+     - —
+
+   * - :doc:`modules/sample_capture/index`
+     - ``sample_capture.sv``
+     - Sample capture across a clock boundary. Registers samples from a free-running converter clock (adc_clk) and hands
+     - ``top``
+     - ``async_fifo``
+
    * - :doc:`modules/async_fifo/index`
      - ``async_fifo.vhd``
      - Asynchronous FIFO. Moves words from the write clock domain to the read clock domain. Each side
      - ``sample_capture``
      - —
 
-   * - :doc:`modules/axil_regs/index`
-     - ``axil_regs.sv``
-     - AXI4-Lite register file for the sampler. Five 32-bit registers: control (start, filter enable, clear), a read-only
-     - ``axil_adapter``
-     - —
-
-   * - :doc:`modules/axil_adapter/index`
-     - ``axil_adapter.sv``
-     - Flat AXI4-Lite to register file adapter. Presents the register bus as flat AXI4-Lite subordinate ports (so a VHDL
-     - ``top``
-     - ``axil_regs``
+   * - :doc:`modules/top/index`
+     - ``top.vhd``
+     - Sampler top level. Captures samples from a converter clock into the system clock, runs a capture
+     - *(top)*
+     - ``apb_bridge``, ``axil_adapter``, ``axis_pipeline``, ``reset_sync``, ``sample_capture``, ``sample_ctrl``, ``sample_stream``
 
    * - :doc:`modules/apb_bridge/index`
      - ``apb_bridge.vhd``
@@ -59,23 +71,17 @@ Modules
      - ``top``
      - —
 
-   * - :doc:`modules/reset_sync/index`
-     - ``reset_sync.vhd``
-     - Reset synchroniser. Takes an asynchronous active-low reset and delivers it to one clock domain:
-     - ``top``
-     - —
-
    * - :doc:`modules/axis_pipeline/index`
      - ``axis_pipeline.sv``
      - Filtered pass-through for an external byte stream. Presents flat AXI4-Stream ports, wraps them in interface instances and runs
      - ``top``
      - ``stream_filter``
 
-   * - :doc:`modules/sample_capture/index`
-     - ``sample_capture.sv``
-     - Sample capture across a clock boundary. Registers samples from a free-running converter clock (adc_clk) and hands
-     - ``top``
-     - ``async_fifo``
+   * - :doc:`modules/axil_regs/index`
+     - ``axil_regs.sv``
+     - AXI4-Lite register file for the sampler. Five 32-bit registers: control (start, filter enable, clear, clear overflow), a read-only
+     - ``axil_adapter``
+     - —
 
    * - :doc:`modules/sample_stream/index`
      - ``sample_stream.sv``
@@ -83,14 +89,8 @@ Modules
      - ``top``
      - ``stream_filter``
 
-   * - :doc:`modules/top/index`
-     - ``top.vhd``
-     - Sampler top level. Captures samples from a converter clock into the system clock, runs a capture
-     - *(top)*
-     - ``apb_bridge``, ``axil_adapter``, ``axis_pipeline``, ``reset_sync``, ``sample_capture``, ``sample_ctrl``, ``sample_stream``
-
-   * - :doc:`modules/stream_filter/index`
-     - ``stream_filter.sv``
-     - Packet filter for a byte stream. Looks at the first byte of each packet: if it is at or above the threshold
-     - ``axis_pipeline``, ``sample_stream``
+   * - :doc:`modules/reset_sync/index`
+     - ``reset_sync.vhd``
+     - Reset synchroniser. Takes an asynchronous active-low reset and delivers it to one clock domain:
+     - ``top``
      - —

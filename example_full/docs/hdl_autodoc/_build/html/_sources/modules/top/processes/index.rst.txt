@@ -23,5 +23,5 @@ Summary
    * - :doc:`p_ovf_sync`
      - ``process``
      - ``clk``
-     - 194
+     - 196
      - —

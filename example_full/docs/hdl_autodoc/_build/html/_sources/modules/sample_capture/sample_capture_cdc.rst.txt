@@ -54,3 +54,8 @@ Signal Crossings
      - ``clk``
      - ``adc_clk``
      - Yes *(two-flop)*
+
+   * - ``clear_req``
+     - ``clk``
+     - ``adc_clk``
+     - Yes *(two-flop)*
