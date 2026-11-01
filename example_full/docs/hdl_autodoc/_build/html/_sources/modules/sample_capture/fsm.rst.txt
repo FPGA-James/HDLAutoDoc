@@ -1,0 +1,8 @@
+sample_capture — State Machine
+==============================
+
+No FSM detected in ``sample_capture.sv``.
+
+This module is either a structural wrapper (no combinational
+state logic) or uses a coding style not yet supported by the
+FSM extractor.

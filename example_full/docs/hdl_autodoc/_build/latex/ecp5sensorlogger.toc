@@ -1,0 +1,263 @@
+\babel@toc {english}{}\relax 
+\contentsline {chapter}{\numberline {1}ECP5 Sensor Logger — Overview}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Instantiation Tree}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Shared Components}{1}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Modules}{2}{section.1.3}%
+\contentsline {chapter}{\numberline {2}top}{3}{chapter.2}%
+\contentsline {section}{\numberline {2.1}top — Entity}{3}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Annotated Source}{4}{subsection.2.1.1}%
+\contentsline {section}{\numberline {2.2}top — Block Diagram}{10}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Ports}{11}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Generics}{11}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}Signals}{12}{subsection.2.2.3}%
+\contentsline {section}{\numberline {2.3}top — State Machine}{12}{section.2.3}%
+\contentsline {section}{\numberline {2.4}top — Timing Diagrams}{12}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Processes}{13}{section.2.5}%
+\contentsline {subsection}{\numberline {2.5.1}p\_ovf\_sync}{13}{subsection.2.5.1}%
+\contentsline {subsubsection}{\numberline {2.5.1.1}Description}{13}{subsubsection.2.5.1.1}%
+\contentsline {subsubsection}{\numberline {2.5.1.2}Source}{13}{subsubsection.2.5.1.2}%
+\contentsline {subsection}{\numberline {2.5.2}Summary}{13}{subsection.2.5.2}%
+\contentsline {section}{\numberline {2.6}top — Clock Domain Analysis}{13}{section.2.6}%
+\contentsline {subsection}{\numberline {2.6.1}Clock Domain}{13}{subsection.2.6.1}%
+\contentsline {section}{\numberline {2.7}top — Reset Domain Analysis}{14}{section.2.7}%
+\contentsline {subsection}{\numberline {2.7.1}Reset Domain}{14}{subsection.2.7.1}%
+\contentsline {section}{\numberline {2.8}Submodules}{14}{section.2.8}%
+\contentsline {subsection}{\numberline {2.8.1}apb\_bridge}{14}{subsection.2.8.1}%
+\contentsline {subsubsection}{\numberline {2.8.1.1}apb\_bridge — Entity}{14}{subsubsection.2.8.1.1}%
+\contentsline {paragraph}{Annotated Source}{15}{paragraph*.5}%
+\contentsline {subsubsection}{\numberline {2.8.1.2}apb\_bridge — Block Diagram}{17}{subsubsection.2.8.1.2}%
+\contentsline {paragraph}{Ports}{18}{paragraph*.6}%
+\contentsline {paragraph}{Signals}{18}{paragraph*.7}%
+\contentsline {paragraph}{RTL Detail}{19}{paragraph*.8}%
+\contentsline {subsubsection}{\numberline {2.8.1.3}apb\_bridge — State Machine}{21}{subsubsection.2.8.1.3}%
+\contentsline {subsubsection}{\numberline {2.8.1.4}apb\_bridge — Timing Diagrams}{21}{subsubsection.2.8.1.4}%
+\contentsline {subsubsection}{\numberline {2.8.1.5}Processes}{21}{subsubsection.2.8.1.5}%
+\contentsline {paragraph}{p\_phase}{21}{paragraph*.9}%
+\contentsline {subparagraph}{Description}{21}{subparagraph*.10}%
+\contentsline {subparagraph}{Signal Assignments}{21}{subparagraph*.11}%
+\contentsline {subparagraph}{Source}{21}{subparagraph*.12}%
+\contentsline {paragraph}{Summary}{22}{paragraph*.13}%
+\contentsline {subsubsection}{\numberline {2.8.1.6}apb\_bridge — Clock Domain Analysis}{22}{subsubsection.2.8.1.6}%
+\contentsline {paragraph}{Clock Domain}{23}{paragraph*.14}%
+\contentsline {subsubsection}{\numberline {2.8.1.7}apb\_bridge — Reset Domain Analysis}{23}{subsubsection.2.8.1.7}%
+\contentsline {paragraph}{Reset Domain}{23}{paragraph*.15}%
+\contentsline {subsection}{\numberline {2.8.2}axil\_adapter}{23}{subsection.2.8.2}%
+\contentsline {subsubsection}{\numberline {2.8.2.1}axil\_adapter — Entity}{23}{subsubsection.2.8.2.1}%
+\contentsline {paragraph}{Annotated Source}{23}{paragraph*.16}%
+\contentsline {subsubsection}{\numberline {2.8.2.2}axil\_adapter — Block Diagram}{25}{subsubsection.2.8.2.2}%
+\contentsline {paragraph}{Ports}{26}{paragraph*.17}%
+\contentsline {paragraph}{Interfaces}{26}{paragraph*.18}%
+\contentsline {paragraph}{RTL Detail}{27}{paragraph*.19}%
+\contentsline {subsubsection}{\numberline {2.8.2.3}axil\_adapter — State Machine}{29}{subsubsection.2.8.2.3}%
+\contentsline {subsubsection}{\numberline {2.8.2.4}axil\_adapter — Timing Diagrams}{29}{subsubsection.2.8.2.4}%
+\contentsline {subsubsection}{\numberline {2.8.2.5}axil\_adapter — Clock Domain Analysis}{29}{subsubsection.2.8.2.5}%
+\contentsline {subsubsection}{\numberline {2.8.2.6}axil\_adapter — Reset Domain Analysis}{29}{subsubsection.2.8.2.6}%
+\contentsline {subsubsection}{\numberline {2.8.2.7}Submodules}{29}{subsubsection.2.8.2.7}%
+\contentsline {paragraph}{axil\_regs}{29}{paragraph*.20}%
+\contentsline {subparagraph}{axil\_regs — Entity}{29}{subparagraph*.21}%
+\contentsline {subparagraph}{Annotated Source}{29}{subparagraph*.22}%
+\contentsline {subparagraph}{axil\_regs — Block Diagram}{33}{subparagraph*.23}%
+\contentsline {subparagraph}{Ports}{33}{subparagraph*.24}%
+\contentsline {subparagraph}{Interfaces}{34}{subparagraph*.25}%
+\contentsline {subparagraph}{Signals}{34}{subparagraph*.26}%
+\contentsline {subparagraph}{RTL Detail}{34}{subparagraph*.27}%
+\contentsline {subparagraph}{axil\_regs — State Machine}{36}{subparagraph*.28}%
+\contentsline {subparagraph}{axil\_regs — Timing Diagrams}{36}{subparagraph*.29}%
+\contentsline {subparagraph}{Processes}{36}{subparagraph*.30}%
+\contentsline {subparagraph}{p\_bus}{36}{subparagraph*.31}%
+\contentsline {subparagraph}{Description}{36}{subparagraph*.32}%
+\contentsline {subparagraph}{Signal Assignments}{36}{subparagraph*.33}%
+\contentsline {subparagraph}{Source}{36}{subparagraph*.34}%
+\contentsline {subparagraph}{Summary}{37}{subparagraph*.35}%
+\contentsline {subparagraph}{axil\_regs — Clock Domain Analysis}{37}{subparagraph*.36}%
+\contentsline {subparagraph}{Clock Domain}{37}{subparagraph*.37}%
+\contentsline {subparagraph}{axil\_regs — Reset Domain Analysis}{37}{subparagraph*.38}%
+\contentsline {subparagraph}{Reset Domain}{38}{subparagraph*.39}%
+\contentsline {subparagraph}{axil\_regs — Register Map}{38}{subparagraph*.40}%
+\contentsline {subparagraph}{ctrl (0x00)}{38}{subparagraph*.41}%
+\contentsline {subparagraph}{status (0x04)}{38}{subparagraph*.42}%
+\contentsline {subparagraph}{threshold (0x08)}{39}{subparagraph*.43}%
+\contentsline {subparagraph}{scratch (0x0C)}{39}{subparagraph*.44}%
+\contentsline {subparagraph}{count (0x10)}{39}{subparagraph*.45}%
+\contentsline {subsection}{\numberline {2.8.3}axis\_pipeline}{39}{subsection.2.8.3}%
+\contentsline {subsubsection}{\numberline {2.8.3.1}axis\_pipeline — Entity}{39}{subsubsection.2.8.3.1}%
+\contentsline {paragraph}{Annotated Source}{39}{paragraph*.46}%
+\contentsline {subsubsection}{\numberline {2.8.3.2}axis\_pipeline — Block Diagram}{40}{subsubsection.2.8.3.2}%
+\contentsline {paragraph}{Ports}{41}{paragraph*.47}%
+\contentsline {paragraph}{Interfaces}{41}{paragraph*.48}%
+\contentsline {paragraph}{RTL Detail}{42}{paragraph*.49}%
+\contentsline {subsubsection}{\numberline {2.8.3.3}axis\_pipeline — State Machine}{44}{subsubsection.2.8.3.3}%
+\contentsline {subsubsection}{\numberline {2.8.3.4}axis\_pipeline — Timing Diagrams}{44}{subsubsection.2.8.3.4}%
+\contentsline {subsubsection}{\numberline {2.8.3.5}axis\_pipeline — Clock Domain Analysis}{44}{subsubsection.2.8.3.5}%
+\contentsline {subsubsection}{\numberline {2.8.3.6}axis\_pipeline — Reset Domain Analysis}{44}{subsubsection.2.8.3.6}%
+\contentsline {subsubsection}{\numberline {2.8.3.7}Submodules}{44}{subsubsection.2.8.3.7}%
+\contentsline {paragraph}{stream\_filter}{44}{paragraph*.50}%
+\contentsline {subparagraph}{stream\_filter — Entity}{44}{subparagraph*.51}%
+\contentsline {subparagraph}{Annotated Source}{44}{subparagraph*.52}%
+\contentsline {subparagraph}{stream\_filter — Block Diagram}{46}{subparagraph*.53}%
+\contentsline {subparagraph}{Ports}{47}{subparagraph*.54}%
+\contentsline {subparagraph}{Interfaces}{47}{subparagraph*.55}%
+\contentsline {subparagraph}{Parameters}{48}{subparagraph*.56}%
+\contentsline {subparagraph}{RTL Detail}{48}{subparagraph*.57}%
+\contentsline {subparagraph}{stream\_filter State Machine}{50}{subparagraph*.58}%
+\contentsline {subparagraph}{State Transition Diagram}{50}{subparagraph*.59}%
+\contentsline {subparagraph}{Transitions}{50}{subparagraph*.60}%
+\contentsline {subparagraph}{stream\_filter — Timing Diagrams}{50}{subparagraph*.61}%
+\contentsline {subparagraph}{P State}{51}{subparagraph*.62}%
+\contentsline {subparagraph}{Processes}{51}{subparagraph*.63}%
+\contentsline {subparagraph}{p\_state}{51}{subparagraph*.64}%
+\contentsline {subparagraph}{Description}{51}{subparagraph*.65}%
+\contentsline {subparagraph}{Source}{51}{subparagraph*.66}%
+\contentsline {subparagraph}{p\_next\_state}{52}{subparagraph*.67}%
+\contentsline {subparagraph}{Description}{52}{subparagraph*.68}%
+\contentsline {subparagraph}{Source}{52}{subparagraph*.69}%
+\contentsline {subparagraph}{Summary}{52}{subparagraph*.70}%
+\contentsline {subparagraph}{stream\_filter — Clock Domain Analysis}{52}{subparagraph*.71}%
+\contentsline {subparagraph}{Clock Domain}{52}{subparagraph*.72}%
+\contentsline {subparagraph}{stream\_filter — Reset Domain Analysis}{53}{subparagraph*.73}%
+\contentsline {subparagraph}{Reset Domain}{53}{subparagraph*.74}%
+\contentsline {subsection}{\numberline {2.8.4}reset\_sync}{53}{subsection.2.8.4}%
+\contentsline {subsubsection}{\numberline {2.8.4.1}reset\_sync — Entity}{53}{subsubsection.2.8.4.1}%
+\contentsline {paragraph}{Annotated Source}{53}{paragraph*.76}%
+\contentsline {subsubsection}{\numberline {2.8.4.2}reset\_sync — Block Diagram}{56}{subsubsection.2.8.4.2}%
+\contentsline {paragraph}{Ports}{56}{paragraph*.77}%
+\contentsline {paragraph}{Generics}{56}{paragraph*.78}%
+\contentsline {paragraph}{Signals}{56}{paragraph*.79}%
+\contentsline {paragraph}{RTL Detail}{57}{paragraph*.80}%
+\contentsline {subsubsection}{\numberline {2.8.4.3}reset\_sync — State Machine}{59}{subsubsection.2.8.4.3}%
+\contentsline {subsubsection}{\numberline {2.8.4.4}reset\_sync — Timing Diagrams}{59}{subsubsection.2.8.4.4}%
+\contentsline {subsubsection}{\numberline {2.8.4.5}Processes}{59}{subsubsection.2.8.4.5}%
+\contentsline {paragraph}{p\_chain}{59}{paragraph*.81}%
+\contentsline {subparagraph}{Description}{59}{subparagraph*.82}%
+\contentsline {subparagraph}{Source}{59}{subparagraph*.83}%
+\contentsline {paragraph}{Summary}{59}{paragraph*.84}%
+\contentsline {subsubsection}{\numberline {2.8.4.6}reset\_sync — Clock Domain Analysis}{59}{subsubsection.2.8.4.6}%
+\contentsline {paragraph}{Clock Domain}{60}{paragraph*.85}%
+\contentsline {subsubsection}{\numberline {2.8.4.7}reset\_sync — Reset Domain Analysis}{60}{subsubsection.2.8.4.7}%
+\contentsline {paragraph}{Reset Domain}{60}{paragraph*.86}%
+\contentsline {subsection}{\numberline {2.8.5}sample\_capture}{60}{subsection.2.8.5}%
+\contentsline {subsubsection}{\numberline {2.8.5.1}sample\_capture — Entity}{60}{subsubsection.2.8.5.1}%
+\contentsline {paragraph}{Annotated Source}{61}{paragraph*.87}%
+\contentsline {subsubsection}{\numberline {2.8.5.2}sample\_capture — Block Diagram}{63}{subsubsection.2.8.5.2}%
+\contentsline {paragraph}{Ports}{64}{paragraph*.88}%
+\contentsline {paragraph}{Parameters}{64}{paragraph*.89}%
+\contentsline {paragraph}{Signals}{65}{paragraph*.90}%
+\contentsline {paragraph}{RTL Detail}{65}{paragraph*.91}%
+\contentsline {subsubsection}{\numberline {2.8.5.3}sample\_capture — State Machine}{67}{subsubsection.2.8.5.3}%
+\contentsline {subsubsection}{\numberline {2.8.5.4}sample\_capture — Timing Diagrams}{67}{subsubsection.2.8.5.4}%
+\contentsline {subsubsection}{\numberline {2.8.5.5}Processes}{67}{subsubsection.2.8.5.5}%
+\contentsline {paragraph}{p\_ctrl}{67}{paragraph*.92}%
+\contentsline {subparagraph}{Description}{67}{subparagraph*.93}%
+\contentsline {subparagraph}{Source}{67}{subparagraph*.94}%
+\contentsline {paragraph}{p\_out}{67}{paragraph*.95}%
+\contentsline {subparagraph}{Description}{68}{subparagraph*.96}%
+\contentsline {subparagraph}{Source}{68}{subparagraph*.97}%
+\contentsline {paragraph}{p\_adc\_en}{68}{paragraph*.98}%
+\contentsline {subparagraph}{Description}{68}{subparagraph*.99}%
+\contentsline {subparagraph}{Source}{68}{subparagraph*.100}%
+\contentsline {paragraph}{p\_adc\_capture}{68}{paragraph*.101}%
+\contentsline {subparagraph}{Description}{69}{subparagraph*.102}%
+\contentsline {subparagraph}{Source}{69}{subparagraph*.103}%
+\contentsline {paragraph}{Summary}{69}{paragraph*.104}%
+\contentsline {subsubsection}{\numberline {2.8.5.6}sample\_capture — Clock Domain Analysis}{69}{subsubsection.2.8.5.6}%
+\contentsline {paragraph}{Clock Domains}{70}{paragraph*.105}%
+\contentsline {paragraph}{Dual\sphinxhyphen {}Clock Instances}{70}{paragraph*.106}%
+\contentsline {paragraph}{Signal Crossings}{70}{paragraph*.107}%
+\contentsline {subsubsection}{\numberline {2.8.5.7}sample\_capture — Reset Domain Analysis}{71}{subsubsection.2.8.5.7}%
+\contentsline {paragraph}{Reset Domains}{71}{paragraph*.108}%
+\contentsline {paragraph}{Signal Crossings}{71}{paragraph*.109}%
+\contentsline {subsubsection}{\numberline {2.8.5.8}Submodules}{71}{subsubsection.2.8.5.8}%
+\contentsline {paragraph}{async\_fifo}{71}{paragraph*.110}%
+\contentsline {subparagraph}{async\_fifo — Entity}{72}{subparagraph*.111}%
+\contentsline {subparagraph}{Annotated Source}{72}{subparagraph*.113}%
+\contentsline {subparagraph}{async\_fifo — Block Diagram}{75}{subparagraph*.114}%
+\contentsline {subparagraph}{Ports}{76}{subparagraph*.115}%
+\contentsline {subparagraph}{Generics}{77}{subparagraph*.116}%
+\contentsline {subparagraph}{Signals}{77}{subparagraph*.117}%
+\contentsline {subparagraph}{RTL Detail}{77}{subparagraph*.118}%
+\contentsline {subparagraph}{async\_fifo — State Machine}{79}{subparagraph*.119}%
+\contentsline {subparagraph}{async\_fifo — Timing Diagrams}{79}{subparagraph*.120}%
+\contentsline {subparagraph}{Processes}{79}{subparagraph*.121}%
+\contentsline {subparagraph}{p\_wr\_ptr}{79}{subparagraph*.122}%
+\contentsline {subparagraph}{Description}{79}{subparagraph*.123}%
+\contentsline {subparagraph}{Source}{79}{subparagraph*.124}%
+\contentsline {subparagraph}{p\_rptr\_sync}{80}{subparagraph*.125}%
+\contentsline {subparagraph}{Description}{80}{subparagraph*.126}%
+\contentsline {subparagraph}{Source}{80}{subparagraph*.127}%
+\contentsline {subparagraph}{p\_rd\_ptr}{80}{subparagraph*.128}%
+\contentsline {subparagraph}{Description}{80}{subparagraph*.129}%
+\contentsline {subparagraph}{Source}{80}{subparagraph*.130}%
+\contentsline {subparagraph}{p\_wptr\_sync}{81}{subparagraph*.131}%
+\contentsline {subparagraph}{Description}{81}{subparagraph*.132}%
+\contentsline {subparagraph}{Source}{81}{subparagraph*.133}%
+\contentsline {subparagraph}{Summary}{81}{subparagraph*.134}%
+\contentsline {subparagraph}{async\_fifo — Clock Domain Analysis}{81}{subparagraph*.135}%
+\contentsline {subparagraph}{Clock Domains}{82}{subparagraph*.136}%
+\contentsline {subparagraph}{Signal Crossings}{82}{subparagraph*.137}%
+\contentsline {subparagraph}{async\_fifo — Reset Domain Analysis}{82}{subparagraph*.138}%
+\contentsline {subparagraph}{Reset Domains}{83}{subparagraph*.139}%
+\contentsline {subparagraph}{Signal Crossings}{83}{subparagraph*.140}%
+\contentsline {subsection}{\numberline {2.8.6}sample\_ctrl}{83}{subsection.2.8.6}%
+\contentsline {subsubsection}{\numberline {2.8.6.1}sample\_ctrl — Entity}{83}{subsubsection.2.8.6.1}%
+\contentsline {paragraph}{Annotated Source}{84}{paragraph*.142}%
+\contentsline {subsubsection}{\numberline {2.8.6.2}sample\_ctrl — Block Diagram}{87}{subsubsection.2.8.6.2}%
+\contentsline {paragraph}{Ports}{88}{paragraph*.143}%
+\contentsline {paragraph}{Generics}{88}{paragraph*.144}%
+\contentsline {paragraph}{Signals}{89}{paragraph*.145}%
+\contentsline {paragraph}{RTL Detail}{89}{paragraph*.146}%
+\contentsline {subsubsection}{\numberline {2.8.6.3}sample\_ctrl State Machine}{91}{subsubsection.2.8.6.3}%
+\contentsline {paragraph}{State Transition Diagram}{91}{paragraph*.147}%
+\contentsline {paragraph}{State Output Table}{91}{paragraph*.148}%
+\contentsline {paragraph}{Transitions}{91}{paragraph*.149}%
+\contentsline {subsubsection}{\numberline {2.8.6.4}sample\_ctrl — Timing Diagrams}{91}{subsubsection.2.8.6.4}%
+\contentsline {paragraph}{P Next State}{91}{paragraph*.150}%
+\contentsline {paragraph}{P State Reg}{92}{paragraph*.151}%
+\contentsline {subsubsection}{\numberline {2.8.6.5}Processes}{92}{subsubsection.2.8.6.5}%
+\contentsline {paragraph}{p\_state\_reg}{92}{paragraph*.152}%
+\contentsline {subparagraph}{Description}{92}{subparagraph*.153}%
+\contentsline {subparagraph}{Source}{92}{subparagraph*.154}%
+\contentsline {paragraph}{p\_next\_state}{93}{paragraph*.155}%
+\contentsline {subparagraph}{Description}{93}{subparagraph*.156}%
+\contentsline {subparagraph}{Signal Assignments}{94}{subparagraph*.157}%
+\contentsline {subparagraph}{Source}{94}{subparagraph*.158}%
+\contentsline {paragraph}{p\_outputs}{94}{paragraph*.159}%
+\contentsline {subparagraph}{Description}{95}{subparagraph*.160}%
+\contentsline {subparagraph}{Source}{95}{subparagraph*.161}%
+\contentsline {paragraph}{Summary}{95}{paragraph*.162}%
+\contentsline {subsubsection}{\numberline {2.8.6.6}sample\_ctrl — Clock Domain Analysis}{95}{subsubsection.2.8.6.6}%
+\contentsline {paragraph}{Clock Domain}{95}{paragraph*.163}%
+\contentsline {subsubsection}{\numberline {2.8.6.7}sample\_ctrl — Reset Domain Analysis}{95}{subsubsection.2.8.6.7}%
+\contentsline {paragraph}{Reset Domain}{96}{paragraph*.164}%
+\contentsline {subsection}{\numberline {2.8.7}sample\_stream}{96}{subsection.2.8.7}%
+\contentsline {subsubsection}{\numberline {2.8.7.1}sample\_stream — Entity}{96}{subsubsection.2.8.7.1}%
+\contentsline {paragraph}{Annotated Source}{96}{paragraph*.165}%
+\contentsline {subsubsection}{\numberline {2.8.7.2}sample\_stream — Block Diagram}{97}{subsubsection.2.8.7.2}%
+\contentsline {paragraph}{Ports}{98}{paragraph*.166}%
+\contentsline {paragraph}{Interfaces}{98}{paragraph*.167}%
+\contentsline {paragraph}{Signals}{98}{paragraph*.168}%
+\contentsline {paragraph}{RTL Detail}{98}{paragraph*.169}%
+\contentsline {subsubsection}{\numberline {2.8.7.3}sample\_stream — State Machine}{100}{subsubsection.2.8.7.3}%
+\contentsline {subsubsection}{\numberline {2.8.7.4}sample\_stream — Timing Diagrams}{100}{subsubsection.2.8.7.4}%
+\contentsline {subsubsection}{\numberline {2.8.7.5}sample\_stream — Clock Domain Analysis}{100}{subsubsection.2.8.7.5}%
+\contentsline {subsubsection}{\numberline {2.8.7.6}sample\_stream — Reset Domain Analysis}{100}{subsubsection.2.8.7.6}%
+\contentsline {subsubsection}{\numberline {2.8.7.7}Submodules}{100}{subsubsection.2.8.7.7}%
+\contentsline {chapter}{\numberline {3}Register Maps}{101}{chapter.3}%
+\contentsline {chapter}{\numberline {4}Documentation Coverage}{103}{chapter.4}%
+\contentsline {chapter}{\numberline {5}Testbenches}{105}{chapter.5}%
+\contentsline {section}{\numberline {5.1}VUnit}{105}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}tb\_sample\_ctrl}{105}{subsection.5.1.1}%
+\contentsline {subsection}{\numberline {5.1.2}tb\_stream\_filter}{105}{subsection.5.1.2}%
+\contentsline {section}{\numberline {5.2}cocotb}{106}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}test\_axil\_adapter}{106}{subsection.5.2.1}%
+\contentsline {section}{\numberline {5.3}Directed}{106}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}tb\_axil\_adapter}{106}{subsection.5.3.1}%
+\contentsline {subsection}{\numberline {5.3.2}tb\_smoke}{107}{subsection.5.3.2}%
+\contentsline {subsection}{\numberline {5.3.3}tb\_top}{107}{subsection.5.3.3}%
+\contentsline {chapter}{\numberline {6}Build}{109}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Summary}{109}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Utilization}{109}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}Device utilisation (nextpnr)}{109}{subsection.6.2.1}%
+\contentsline {subsection}{\numberline {6.2.2}By module (Vivado)}{109}{subsection.6.2.2}%
+\contentsline {section}{\numberline {6.3}Timing — Vivado}{110}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Warnings}{110}{section.6.4}%
+\contentsline {chapter}{\numberline {7}Indices}{111}{chapter.7}%

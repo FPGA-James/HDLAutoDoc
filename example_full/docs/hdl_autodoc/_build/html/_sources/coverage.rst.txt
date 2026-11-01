@@ -1,0 +1,113 @@
+Documentation Coverage
+======================
+
+.. raw:: html
+
+   <table class="coverage-table">
+     <thead>
+       <tr>
+         <th>Module</th><th>FSM</th><th>Processes</th>
+         <th>CDC</th><th>Reset</th><th>Ports</th>
+       </tr>
+     </thead>
+     <tbody>
+       <tr>
+         <td><a href="modules/top/index.html">top</a></td>
+         <td class="cov-no">–</td>
+         <td class="cov-count">1</td>
+         <td class="cov-no">–</td>
+         <td class="cov-no">–</td>
+         <td class="cov-no">–</td>
+       </tr>
+       <tr>
+         <td><a href="modules/apb_bridge/index.html">apb_bridge</a></td>
+         <td class="cov-no">–</td>
+         <td class="cov-count">1</td>
+         <td class="cov-no">–</td>
+         <td class="cov-yes">✓</td>
+         <td class="cov-no">–</td>
+       </tr>
+       <tr>
+         <td><a href="modules/axil_adapter/index.html">axil_adapter</a></td>
+         <td class="cov-no">–</td>
+         <td class="cov-no">–</td>
+         <td class="cov-no">–</td>
+         <td class="cov-no">–</td>
+         <td class="cov-no">–</td>
+       </tr>
+       <tr>
+         <td><a href="modules/axil_regs/index.html">axil_regs</a></td>
+         <td class="cov-no">–</td>
+         <td class="cov-count">1</td>
+         <td class="cov-no">–</td>
+         <td class="cov-yes">✓</td>
+         <td class="cov-count">10</td>
+       </tr>
+       <tr>
+         <td><a href="modules/axis_pipeline/index.html">axis_pipeline</a></td>
+         <td class="cov-no">–</td>
+         <td class="cov-no">–</td>
+         <td class="cov-no">–</td>
+         <td class="cov-no">–</td>
+         <td class="cov-no">–</td>
+       </tr>
+       <tr>
+         <td><a href="modules/stream_filter/index.html">stream_filter</a></td>
+         <td class="cov-yes">✓</td>
+         <td class="cov-count">2</td>
+         <td class="cov-no">–</td>
+         <td class="cov-yes">✓</td>
+         <td class="cov-count">8</td>
+       </tr>
+       <tr>
+         <td><a href="modules/reset_sync/index.html">reset_sync</a></td>
+         <td class="cov-no">–</td>
+         <td class="cov-count">1</td>
+         <td class="cov-no">–</td>
+         <td class="cov-yes">✓</td>
+         <td class="cov-count">3</td>
+       </tr>
+       <tr>
+         <td><a href="modules/sample_capture/index.html">sample_capture</a></td>
+         <td class="cov-no">–</td>
+         <td class="cov-count">4</td>
+         <td class="cov-yes">✓</td>
+         <td class="cov-yes">✓</td>
+         <td class="cov-count">10</td>
+       </tr>
+       <tr>
+         <td><a href="modules/async_fifo/index.html">async_fifo</a></td>
+         <td class="cov-no">–</td>
+         <td class="cov-count">4</td>
+         <td class="cov-yes">✓</td>
+         <td class="cov-yes">✓</td>
+         <td class="cov-count">10</td>
+       </tr>
+       <tr>
+         <td><a href="modules/sample_ctrl/index.html">sample_ctrl</a></td>
+         <td class="cov-yes">✓</td>
+         <td class="cov-count">3</td>
+         <td class="cov-no">–</td>
+         <td class="cov-yes">✓</td>
+         <td class="cov-count">7</td>
+       </tr>
+       <tr>
+         <td><a href="modules/sample_stream/index.html">sample_stream</a></td>
+         <td class="cov-no">–</td>
+         <td class="cov-no">–</td>
+         <td class="cov-no">–</td>
+         <td class="cov-no">–</td>
+         <td class="cov-no">–</td>
+       </tr>
+     </tbody>
+     <tfoot>
+       <tr>
+         <td>Totals</td>
+         <td>2/11</td>
+         <td>8/11</td>
+         <td>2/11</td>
+         <td>7/11</td>
+         <td>6/11</td>
+       </tr>
+     </tfoot>
+   </table>

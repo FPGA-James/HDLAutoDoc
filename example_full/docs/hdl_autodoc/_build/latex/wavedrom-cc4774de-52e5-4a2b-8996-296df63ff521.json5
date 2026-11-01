@@ -1,0 +1,6 @@
+{ "signal": [
+{ "name": "clk",    "wave": "P......." },
+{ "name": "tvalid", "wave": "01.....0" },
+{ "name": "tlast",  "wave": "0....10." },
+{ "name": "state",  "wave": "=.=...=.", "data": ["FIRST","FORWARD","FIRST"] }
+]}

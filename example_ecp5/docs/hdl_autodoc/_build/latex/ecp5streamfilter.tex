@@ -72,7 +72,7 @@
 
 
 \title{ECP5 Stream Filter}
-\date{Oct 31, 2026}
+\date{Nov 01, 2026}
 \release{1.0.0}
 \author{HDL Team}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -137,6 +137,22 @@ Instantiates
 \sphinxmidrule
 \sphinxtableatstartofbodyhook
 \sphinxAtStartPar
+{\hyperref[\detokenize{modules/top/index::doc}]{\sphinxcrossref{\DUrole{doc}{top}}}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{top.sv}}
+&
+\sphinxAtStartPar
+ECP5 design: an AXI4\sphinxhyphen{}Stream threshold filter with an AXI4\sphinxhyphen{}Lite register file. Bytes arriving on s\_axis are forwarded to m\_axis if they are at or above a
+&
+\sphinxAtStartPar
+\sphinxstyleemphasis{(top)}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{axil\_regs}}, \sphinxcode{\sphinxupquote{stream\_filter}}
+\\
+\sphinxhline
+\sphinxAtStartPar
 {\hyperref[\detokenize{modules/axil_regs/index::doc}]{\sphinxcrossref{\DUrole{doc}{axil\_regs}}}}
 &
 \sphinxAtStartPar
@@ -166,22 +182,6 @@ Threshold filter for a byte stream. Forwards each byte that is at or above the t
 &
 \sphinxAtStartPar
 —
-\\
-\sphinxhline
-\sphinxAtStartPar
-{\hyperref[\detokenize{modules/top/index::doc}]{\sphinxcrossref{\DUrole{doc}{top}}}}
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{top.sv}}
-&
-\sphinxAtStartPar
-ECP5 design: an AXI4\sphinxhyphen{}Stream threshold filter with an AXI4\sphinxhyphen{}Lite register file. Bytes arriving on s\_axis are forwarded to m\_axis if they are at or above a
-&
-\sphinxAtStartPar
-\sphinxstyleemphasis{(top)}
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{axil\_regs}}, \sphinxcode{\sphinxupquote{stream\_filter}}
 \\
 \sphinxbottomrule
 \end{tabulary}
@@ -830,58 +830,6 @@ Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{top.sv}}.
 \sphinxAtStartPar
 No clocked processes detected. This module appears to be purely combinational.
 \end{sphinxadmonition}
-
-\sphinxstepscope
-
-
-\section{Synthesis Results}
-\label{\detokenize{modules/top/synthesis:synthesis-results}}\label{\detokenize{modules/top/synthesis::doc}}
-
-\begin{savenotes}\sphinxattablestart
-\sphinxthistablewithglobalstyle
-\centering
-\begin{tabulary}{\linewidth}[t]{TT}
-\sphinxtoprule
-\sphinxstyletheadfamily 
-\sphinxAtStartPar
-Resource
-&\sphinxstyletheadfamily 
-\sphinxAtStartPar
-Used
-\\
-\sphinxmidrule
-\sphinxtableatstartofbodyhook
-\sphinxAtStartPar
-LUTs
-&
-\sphinxAtStartPar
-113
-\\
-\sphinxhline
-\sphinxAtStartPar
-FFs
-&
-\sphinxAtStartPar
-156
-\\
-\sphinxhline
-\sphinxAtStartPar
-BRAMs
-&
-\sphinxAtStartPar
-0
-\\
-\sphinxhline
-\sphinxAtStartPar
-DSPs
-&
-\sphinxAtStartPar
-0
-\\
-\sphinxbottomrule
-\end{tabulary}
-\sphinxtableafterendhook\par
-\sphinxattableend\end{savenotes}
 
 
 \section{Submodules}
@@ -1833,14 +1781,6 @@ Software scratch value.
 \sphinxstepscope
 
 
-\subsubsection{Synthesis Results}
-\label{\detokenize{modules/axil_regs/synthesis:synthesis-results}}\label{\detokenize{modules/axil_regs/synthesis::doc}}
-\sphinxAtStartPar
-\sphinxstyleemphasis{No synthesis data available for this module.}
-
-\sphinxstepscope
-
-
 \subsection{stream\_filter}
 \label{\detokenize{modules/stream_filter/index:stream-filter}}\label{\detokenize{modules/stream_filter/index::doc}}
 \sphinxstepscope
@@ -2284,14 +2224,6 @@ No clocked processes detected. This module appears to be purely combinational.
 \sphinxstepscope
 
 
-\subsubsection{Synthesis Results}
-\label{\detokenize{modules/stream_filter/synthesis:synthesis-results}}\label{\detokenize{modules/stream_filter/synthesis::doc}}
-\sphinxAtStartPar
-\sphinxstyleemphasis{No synthesis data available for this module.}
-
-\sphinxstepscope
-
-
 \chapter{Register Maps}
 \label{\detokenize{registers:register-maps}}\label{\detokenize{registers::doc}}
 \sphinxstepscope
@@ -2579,14 +2511,14 @@ ECP5 25k class
 Reports generated
 &
 \sphinxAtStartPar
-2026\sphinxhyphen{}10\sphinxhyphen{}31 21:55
+2026\sphinxhyphen{}10\sphinxhyphen{}31 22:35
 \\
 \sphinxhline
 \sphinxAtStartPar
 Documented at
 &
 \sphinxAtStartPar
-v3.11.0\sphinxhyphen{}15\sphinxhyphen{}g9aa4a9f
+v3.12.0\sphinxhyphen{}26\sphinxhyphen{}g3652455
 \\
 \sphinxbottomrule
 \end{tabular}

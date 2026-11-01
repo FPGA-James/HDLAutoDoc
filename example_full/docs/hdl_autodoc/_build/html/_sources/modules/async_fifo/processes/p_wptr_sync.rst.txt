@@ -1,0 +1,28 @@
+p_wptr_sync
+===========
+
+| **Source file:** ``async_fifo.vhd``
+| **Source line:** 122
+| **Block type:** ``process``
+| **Sensitivity list:** ``rd_clk``, ``rd_rst_n``
+
+Description
+-----------
+
+p_wptr_sync\: Brings the write pointer into the read domain.
+
+Source
+------
+
+.. code-block:: vhdl
+
+       p_wptr_sync : process(rd_clk, rd_rst_n) is
+       begin
+           if rd_rst_n = '0' then
+               wptr_meta  <= (others => '0');
+               wptr_rsync <= (others => '0');
+           elsif rising_edge(rd_clk) then
+               wptr_meta  <= wptr_gray;
+               wptr_rsync <= wptr_meta;
+           end if;
+       end process p_wptr_sync;

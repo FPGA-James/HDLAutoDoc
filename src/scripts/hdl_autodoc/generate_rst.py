@@ -85,6 +85,11 @@ def extract_entities(src_path: Path,
             else:
                 break
             j -= 1
+        # The description is prose: it ends where the first RST directive (a line
+        # starting ".." and a word, e.g. `.. mermaid::`) begins.
+        cut = next((n for n, text in enumerate(brief_lines) if re.match(r"^\.\.\s+\w", text)), None)
+        if cut is not None:
+            brief_lines = brief_lines[:cut]
         brief = " ".join(brief_lines[:2]) if brief_lines else f"{name} entity."
 
         # Port extraction
@@ -205,8 +210,7 @@ def write_always(path: Path, content: str) -> str:
 def module_index_rst(entity: dict, children: list[str],
                      shared_children: set[str],
                      has_processes: bool = True,
-                     has_registers: bool = False,
-                     has_synthesis: bool = False) -> str:
+                     has_registers: bool = False) -> str:
     """Always-regenerated toctree for one module."""
     name  = entity["name"]
     title = name
@@ -226,8 +230,6 @@ def module_index_rst(entity: dict, children: list[str],
     lines.append("   reset")
     if has_registers:
         lines.append("   registers")
-    if has_synthesis:
-        lines.append("   synthesis")
     lines.append("")
 
     if children:
@@ -280,7 +282,9 @@ def sv_module_description(text: str, name: str) -> str:
         block.append(re.sub(r"^\s*//\s?", "", lines[i]).rstrip())
         i -= 1
     block.reverse()
-    block = ["" if not re.search(r"\w", l) else l for l in block]
+    # A line with no letters is a paragraph break (empty) or a flush banner (dropped);
+    # an indented one such as `}` or `---` belongs to a diagram and stays.
+    block = ["" if not re.search(r"\w", l) and not l[:1].isspace() else l for l in block]
     return "\n".join(block).strip()
 
 
@@ -706,15 +710,15 @@ if __name__ == "__main__":
         # Always regenerated
         has_processes  = (mod_dir / "processes" / "index.rst").exists()
         has_registers  = (mod_dir / "registers.rst").exists()
-        has_synthesis  = (mod_dir / "synthesis.rst").exists()
+        # Synthesis numbers are in the Build section only; drop a page an older version wrote.
+        (mod_dir / "synthesis.rst").unlink(missing_ok=True)
         if has_registers:
             modules_with_regs.append(name)
         results.append(write_always(
             mod_dir / "index.rst",
             module_index_rst(entity, children, shared_names,
                              has_processes=has_processes,
-                             has_registers=has_registers,
-                             has_synthesis=has_synthesis)
+                             has_registers=has_registers)
         ))
         results.append(write_always(
             mod_dir / "fsm.rst",

@@ -44,10 +44,20 @@ AUTODOC_SPHINXOPTS    ?=
 # Project metadata handed to the shared conf.py (all optional).
 AUTODOC_AUTHOR        ?=
 AUTODOC_RELEASE       ?=
+# Mermaid diagrams (written in source comments): command that renders them for the
+# PDF, extra arguments for it, and where to load mermaid.js from for offline HTML
+# (a path relative to docs/hdl_autodoc/_static/, or an https:// URL; see README).
+#   make doc-pdf AUTODOC_MERMAID_PARAMS="-p puppeteer.json"
+AUTODOC_MERMAID_CMD    ?= mmdc
+AUTODOC_MERMAID_PARAMS ?=
+AUTODOC_MERMAID_JS     ?=
 AUTODOC_ENV            = AUTODOC_PROJECT="$(PROJECT)" AUTODOC_AUTHOR="$(AUTODOC_AUTHOR)" \
                          AUTODOC_RELEASE="$(AUTODOC_RELEASE)" AUTODOC_SRC="$(abspath $(AUTODOC_SRCDIR))" \
                          AUTODOC_SOURCEDIR="$(abspath $(AUTODOC_SOURCEDIR))" \
-                         AUTODOC_REGISTERS_DIR="$(abspath $(AUTODOC_REGISTERS_DIR))"
+                         AUTODOC_REGISTERS_DIR="$(abspath $(AUTODOC_REGISTERS_DIR))" \
+                         AUTODOC_MERMAID_CMD="$(AUTODOC_MERMAID_CMD)" \
+                         AUTODOC_MERMAID_PARAMS="$(AUTODOC_MERMAID_PARAMS)" \
+                         AUTODOC_MERMAID_JS="$(AUTODOC_MERMAID_JS)"
 AUTODOC_SPHINXBUILD    = $(PYTHON) -m sphinx
 AUTODOC_SOURCEDIR      = docs/hdl_autodoc
 AUTODOC_BUILDDIR       = $(AUTODOC_SOURCEDIR)/_build
@@ -125,7 +135,7 @@ doc-install:
 # Fails early with the fix instead of a Sphinx "no theme named 'furo'" traceback
 # when no .venv exists and the system Python lacks the dependencies.
 doc-check-env:
-	@$(PYTHON) -c "import sphinx, furo, sphinxcontrib.wavedrom, sphinxvhdl" 2>/dev/null || { \
+	@$(PYTHON) -c "import sphinx, furo, sphinxcontrib.wavedrom, sphinxcontrib.mermaid, sphinxvhdl" 2>/dev/null || { \
 		echo "ERROR: the Python packages HDL AutoDoc needs are not installed for $(PYTHON)."; \
 		echo "       Run 'make doc-venv' (creates .venv and installs them), then re-run."; \
 		echo "       Or 'make doc-install' to install into the active environment."; \

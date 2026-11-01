@@ -18,6 +18,7 @@ No separate doc files to maintain. No manual diagrams to draw. If it's in the so
 | **Generics / parameters table** | Name, type, default value, and description extracted from VHDL `generic` and SV `parameter`/`localparam` declarations |
 | **FSM state diagrams** | Parsed from `case` blocks, rendered with [Graphviz](https://graphviz.org) |
 | **Timing waveforms** | `.. wavedrom::` blocks in source comments, rendered with [WaveDrom](https://wavedrom.com) |
+| **Mermaid diagrams** | `.. mermaid::` blocks in module headers and process comments — sequence, state, flow and other diagrams — rendered in the browser, and in the PDF if `mermaid-cli` is installed |
 | **Per-process pages** | One page per labeled `process` / `always_ff` / `always_comb` block |
 | **CDC analysis** | Clock domains, signal crossings, synchronizer detection, and async FIFO detection — one page per module with a Graphviz diagram |
 | **Design hierarchy** | Driven by `filelist.f` — instantiation tree auto-detected, top-level auto-found |
@@ -51,7 +52,6 @@ docs/
         ├── timing.rst              ← all wavedrom diagrams for this module
         ├── cdc.rst                 ← clock domain crossing analysis + diagram
         ├── registers.rst           ← embedded register map (if present)
-        ├── synthesis.rst           ← per-module utilization (if reports present)
         ├── processes/
         │   ├── index.rst           ← process summary table
         │   ├── p_state_reg.rst     ← per-process: description, waveform, source
@@ -192,6 +192,15 @@ Then open `example/docs/hdl_autodoc/_build/html/index.html`.
 
 Two more examples live alongside it: `example_sv/` (a SystemVerilog package, interfaces and interface ports) and `example_ecp5/` (an AXI4-Stream filter with an AXI4-Lite register file for Lattice ECP5, with testbenches in all three frameworks and real Yosys/nextpnr reports — it shows the Verification and Build sections).
 
+`example_full/` shows **every feature at once** — a mixed VHDL / SystemVerilog sampler for ECP5 (`make doc-venv && make doc-html` from that directory; the PDF shows its Mermaid diagrams when `mmdc` is installed):
+
+- a three-level hierarchy with a shared module (`stream_filter` has two parents), VHDL parents of SystemVerilog children and the reverse;
+- a VHDL FSM (`sample_ctrl`) and a SystemVerilog FSM (`stream_filter`) with generated diagrams, processes with WaveDrom waveforms, and a process-level Mermaid state diagram;
+- Mermaid flow, sequence and state diagrams written in module headers and process comments;
+- clock-domain analysis (two domains, a two-flop synchroniser, an asynchronous FIFO) and reset analysis (synchronous and asynchronous resets, several reset domains);
+- generics and parameters, a package, two interfaces, interface ports and an internal interface instance, flat AXI4-Lite / AXI4-Stream / APB port groups and a custom group in `bus_groups.toml`;
+- a register map (`registers/regs_axil_regs.toml`), RTL schematics, testbenches in all three frameworks (one skipped test), and real Yosys/nextpnr reports plus sample Vivado reports.
+
 ---
 
 ## 🔧 How it works
@@ -292,6 +301,67 @@ always_comb begin : p_pwm
     ...
 end
 ```
+
+### Mermaid diagrams
+
+Write a [Mermaid](https://mermaid.js.org) diagram as a `.. mermaid::` block in the comments you already write. It works in a **module header** and in the **comment block above a process** (`always_ff`, `process`, ...). The block is indented under the directive, like a wavedrom block; `:caption:` and the extension's other options go first.
+
+```vhdl
+-- Master side of a write handshake.
+--
+-- .. mermaid::
+--    :caption: Write handshake
+--
+--    sequenceDiagram
+--      Master->>Slave: valid
+--      Slave-->>Master: ready
+entity master is
+```
+
+```systemverilog
+// p_state: Controller state machine.
+//
+// .. mermaid::
+//    :caption: States
+//
+//    stateDiagram-v2
+//      [*] --> IDLE
+//      IDLE --> BUSY: start
+always_ff @(posedge clk) begin : p_state
+```
+
+- **Where it appears:** a header diagram on the module's *Entity* page; a process diagram under the process's *Description*, in the order you wrote it. The process index gets a *Mermaid* column next to *WaveDrom* when a process in that module has a diagram.
+- **Indentation is kept**, since Mermaid depends on it (`subgraph`, nested `state`, `mindmap`). Write `-->` freely inside VHDL comments; only the leading `--` is removed. In a VHDL header, write the comment marker as `-- ` (with a space): the VHDL header reader ignores `--.. mermaid::` and a tab after `--`, and the comment above a process loses a tab after `--` too.
+- **The overview description** (the one line in the overview table) stops at the first directive, so a diagram never leaks into it.
+- **Generated diagrams are unchanged.** The FSM, hierarchy, CDC and block diagrams still use Graphviz; Mermaid is only for diagrams you write.
+- **Dark mode** follows the Furo toggle automatically.
+
+**HTML** needs nothing installed: the browser draws the diagram. By default it loads Mermaid from a CDN, so viewing needs internet access. Pages without a diagram do not load Mermaid.
+
+For HTML that works **offline**, serve Mermaid from your own docs. The loader `mermaid.esm.min.mjs` imports its parts from a `chunks/` folder (about 24 MB), so both are needed, kept in this layout under the project's `docs/hdl_autodoc/_static/`:
+
+```bash
+npm pack mermaid && tar xzf mermaid-*.tgz
+mkdir -p docs/hdl_autodoc/_static/mermaid/chunks
+cp package/dist/mermaid.esm.min.mjs docs/hdl_autodoc/_static/mermaid/
+cp -r package/dist/chunks/mermaid.esm.min docs/hdl_autodoc/_static/mermaid/chunks/
+make doc-html AUTODOC_MERMAID_JS=mermaid/mermaid.esm.min.mjs
+```
+
+`AUTODOC_MERMAID_JS` is a path **relative to `_static/`** (or a full `https://` URL for a copy you host yourself), not a filesystem path.
+
+The local copy is loaded as an ES module, which browsers refuse to load from a `file://` page, so the site must be **served** (for example `python3 -m http.server -d docs/hdl_autodoc/_build/html`) rather than opened from disk. The default CDN setup works when the page is opened from disk (it needs a network connection).
+
+**PDF** needs each diagram rendered to an image, which only [mermaid-cli](https://github.com/mermaid-js/mermaid-cli) can do:
+
+```bash
+npm install -g @mermaid-js/mermaid-cli        # provides `mmdc` (it downloads a headless Chromium)
+make doc-pdf
+# or, to use an existing Chrome instead:
+make doc-pdf AUTODOC_MERMAID_PARAMS="-p puppeteer.json"
+```
+
+`puppeteer.json` is `{"executablePath": "/path/to/chrome", "args": ["--no-sandbox"]}`. Without `mmdc` the PDF still builds, with no warnings: each diagram is replaced by a one-line note and a single message says how many were left out.
 
 ---
 
@@ -498,6 +568,9 @@ Set these on the command line (`make doc-html SCHEMATICS=0`) or in your Makefile
 | `AUTODOC_AUTHOR`, `AUTODOC_RELEASE` | `HDL Team`, `1.0.0` | Author and release shown in the docs |
 | `SCHEMATICS` | `1` | `0` skips RTL schematics |
 | `ANNOTATED_SOURCE` | `1` | `0` omits the "Annotated Source" listing from entity pages |
+| `AUTODOC_MERMAID_CMD` | `mmdc` | Command that renders Mermaid diagrams for the PDF; it may carry arguments (`npx -y @mermaid-js/mermaid-cli`), and a space in a path is written `\ ` |
+| `AUTODOC_MERMAID_PARAMS` | *(none)* | Extra arguments for it, e.g. `-p puppeteer.json` |
+| `AUTODOC_MERMAID_JS` | *(CDN)* | Where to load Mermaid from: a path relative to `docs/hdl_autodoc/_static/` (e.g. `mermaid/mermaid.esm.min.mjs`) or an `https://` URL, for HTML that works offline (serve the site; see above) |
 | `TESTBENCHES` | `1` | `0` removes the Testbenches section |
 | `AUTODOC_TB_DIR` | `tb` | Root of the testbenches, with one subdirectory per framework (`vunit/`, `cocotb/`, `directed/`) |
 | `BUILD` | `1` | `0` removes the Build section |
@@ -516,6 +589,7 @@ Installed automatically by `make doc-install`:
 | [furo](https://pradyunsg.me/furo/) | Modern Sphinx theme with dark/light toggle and Ctrl+K search |
 | [sphinx-vhdl](https://pypi.org/project/sphinx-vhdl/) | VHDL entity autodoc domain |
 | [sphinxcontrib-wavedrom](https://sphinxcontrib-wavedrom.readthedocs.io) | `.. wavedrom::` directive |
+| [sphinxcontrib-mermaid](https://sphinxcontrib-mermaid-demo.readthedocs.io) | `.. mermaid::` directive (the optional [mermaid-cli](https://github.com/mermaid-js/mermaid-cli) renders them for the PDF) |
 | [Graphviz](https://graphviz.org) | FSM, hierarchy, CDC, and block diagram renderer |
 | [docutils](https://docutils.sourceforge.io) | RST parser (pinned `>=0.18,<0.21` for sphinx-vhdl compat) |
 | [hdl-registers](https://hdl-registers.com) | Register map generation from TOML/YAML |
@@ -541,7 +615,7 @@ src/
 │   │   ├── extract_processes.py ← extracts labeled processes → rst pages
 │   │   ├── extract_cdc.py       ← extracts CDC analysis → dot + rst
 │   │   ├── extract_block.py     ← extracts block diagram + port/generics tables → dot + rst
-│   │   ├── extract_reports.py   ← ingests build reports → Build page + per-module synthesis pages
+│   │   ├── extract_reports.py   ← ingests build reports → Build page
 │   │   ├── extract_testbenches.py ← lists testbenches → Testbenches page
 │   │   ├── parse_testbenches.py ← finds testbenches; counts VUnit / cocotb / directed tests
 │   │   ├── parse_build_info.py  ← nextpnr utilisation block, tool versions, warning summary
@@ -831,7 +905,7 @@ Done. The new module appears in the overview (tree and table), navigation, and g
 
 #### New features
 
-- **Synthesis reports** — `make reports` ingests Vivado (`utilization_placed.rpt`, `timing_summary_routed.rpt`) and Yosys/nextpnr (`stat.txt`, `nextpnr.log`) report files from a `reports/` directory. Writes an **Implementation** toctree section with a top-level timing + utilization page and a per-module synthesis page. Utilization tables show hierarchy indentation (`└─ submodule`) and available resource counts. Timing tables show target frequency alongside achieved fmax. A placeholder page is always present so the Implementation sidebar section never disappears.
+- **Synthesis reports** — `make reports` ingests Vivado (`utilization_placed.rpt`, `timing_summary_routed.rpt`) and Yosys/nextpnr (`stat.txt`, `nextpnr.log`) report files from a `reports/` directory. Writes an **Implementation** toctree section with a top-level timing + utilization page (per-module numbers are in its "By module" table). Utilization tables show hierarchy indentation (`└─ submodule`) and available resource counts. Timing tables show target frequency alongside achieved fmax. A placeholder page is always present so the Implementation sidebar section never disappears.
 - **Furo theme** — migrated from `sphinx-rtd-theme` to [Furo](https://pradyunsg.me/furo/) for a modern two-column layout with a built-in dark/light toggle and responsive sidebar. `Ctrl+K` / `Cmd+K` focuses the sidebar search input.
 
 ### v3.3.0
@@ -920,7 +994,7 @@ scripts/hdl_autodoc/
 ├── extract_processes.py  <file.vhd|sv>      → p_*.rst + index.rst
 ├── extract_cdc.py        <file.vhd|sv>      → <module>_cdc.dot + <module>_cdc.rst
 ├── extract_block.py      <file.vhd|sv>      → <module>_block.dot + <module>_block.rst
-├── extract_reports.py    reports/           → synthesis/index.rst + modules/*/synthesis.rst
+├── extract_reports.py    reports/           → synthesis/index.rst
 ├── parse_utilization.py  util report        → list[ModuleUtilization]
 ├── parse_timing.py       timing report      → list[ClockTiming]
 ├── generate_schematic.py <file.vhd|sv>      → <module>_schematic.svg  (optional, on by default)

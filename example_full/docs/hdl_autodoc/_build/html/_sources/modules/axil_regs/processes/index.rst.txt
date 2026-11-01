@@ -1,0 +1,27 @@
+Processes
+=========
+
+Auto-extracted from ``axil_regs.sv``.
+
+.. toctree::
+   :maxdepth: 2
+
+   p_bus
+
+Summary
+-------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Block
+     - Type
+     - Sensitivity
+     - Source Line
+     - WaveDrom
+
+   * - :doc:`p_bus`
+     - ``always_ff``
+     - ``posedge clk``
+     - 57
+     - —

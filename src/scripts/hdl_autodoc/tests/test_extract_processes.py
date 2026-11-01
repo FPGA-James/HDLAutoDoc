@@ -19,6 +19,7 @@ from extract_processes import (
     find_processes_sv,
     find_processes_vhdl,
     render_index_page,
+    render_mermaid_block,
     render_process_page,
 )
 
@@ -198,3 +199,149 @@ def test_render_index_page_lists_all_processes():
     rst = render_index_page(procs, "test.vhd")
     assert "p_clk_reg" in rst
     assert "p_comb" in rst
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Mermaid blocks in process comments
+# ─────────────────────────────────────────────────────────────────────────────
+
+VHDL_WITH_MERMAID = """\
+-- p_flow: Flow with a diagram.
+--
+-- Before the diagram.
+--
+-- .. mermaid::
+--    :caption: Flow
+--
+--    flowchart LR
+--      subgraph core
+--        A[Start] --> B[Done]
+--      end
+--      B -->|again| A
+--
+-- After the diagram.
+p_flow : process(clk) is
+begin
+    null;
+end process p_flow;
+""".splitlines()
+
+SV_WITH_MERMAID = """\
+// p_state: State diagram.
+//
+// .. mermaid::
+//    :caption: States
+//
+//    stateDiagram-v2
+//      [*] --> IDLE
+//      state BUSY {
+//        [*] --> WORK
+//      }
+//      IDLE --> BUSY: start
+always_ff @(posedge clk) begin : p_state
+    state <= next_state;
+end
+""".splitlines()
+
+VHDL_WAVE_THEN_MERMAID = """\
+-- p_both: Waveform then diagram.
+--
+-- .. wavedrom::
+--
+--    { "signal": [{ "name": "clk", "wave": "P...." }]}
+-- .. mermaid::
+--
+--    flowchart LR
+--      A --> B
+p_both : process(clk) is
+begin
+    null;
+end process p_both;
+""".splitlines()
+
+EXPECTED_FLOW = [
+    ":caption: Flow", "", "flowchart LR", "  subgraph core",
+    "    A[Start] --> B[Done]", "  end", "  B -->|again| A",
+]
+
+
+def _tokens(source):
+    return find_processes_vhdl(source)[0]["tokens"]
+
+
+def test_mermaid_block_becomes_a_token_between_the_surrounding_text():
+    tokens = _tokens(VHDL_WITH_MERMAID)
+    assert [t["type"] for t in tokens] == ["text", "mermaid", "text"]
+    assert "Before the diagram." in " ".join(tokens[0]["lines"])
+    assert "After the diagram." in " ".join(tokens[2]["lines"])
+
+
+def test_mermaid_block_keeps_its_relative_indentation_options_and_blank_lines():
+    (block,) = [t for t in _tokens(VHDL_WITH_MERMAID) if t["type"] == "mermaid"]
+    assert block["lines"] == EXPECTED_FLOW
+
+
+def test_vhdl_arrows_inside_a_comment_block_survive():
+    """`-->` contains `--`: only the leading comment marker may be removed."""
+    (block,) = [t for t in _tokens(VHDL_WITH_MERMAID) if t["type"] == "mermaid"]
+    assert any("A[Start] --> B[Done]" in line for line in block["lines"])
+    assert any(line.strip().endswith("B -->|again| A") for line in block["lines"])
+
+
+def test_sv_mermaid_block_with_nested_state_keeps_indentation():
+    (block,) = [t for t in find_processes_sv(SV_WITH_MERMAID)[0]["tokens"]
+                if t["type"] == "mermaid"]
+    assert block["lines"] == [
+        ":caption: States", "", "stateDiagram-v2", "  [*] --> IDLE", "  state BUSY {",
+        "    [*] --> WORK", "  }", "  IDLE --> BUSY: start"]
+
+
+def test_a_mermaid_block_straight_after_a_wavedrom_block_keeps_token_order():
+    types = [t["type"] for t in _tokens(VHDL_WAVE_THEN_MERMAID)]
+    assert types == ["text", "wavedrom", "mermaid"]
+    wave, mm = _tokens(VHDL_WAVE_THEN_MERMAID)[1:]
+    assert any("signal" in line for line in wave["lines"])
+    assert mm["lines"] == ["", "flowchart LR", "  A --> B"]
+
+
+def test_render_mermaid_block_reindents_by_three_and_keeps_blank_lines():
+    out = render_mermaid_block(EXPECTED_FLOW)
+    assert out == [
+        ".. mermaid::", "   :caption: Flow", "", "   flowchart LR", "     subgraph core",
+        "       A[Start] --> B[Done]", "     end", "     B -->|again| A", ""]
+
+
+def test_process_page_shows_the_diagram_in_the_description():
+    p = find_processes_vhdl(VHDL_WITH_MERMAID)[0]
+    rst = render_process_page(p, "t.vhd", lambda body: {})
+    desc = rst[rst.index("Description"):]
+    assert ".. mermaid::" in desc and "   :caption: Flow" in desc
+    assert desc.index("Before the diagram.") < desc.index(".. mermaid::") < desc.index("After the diagram.")
+
+
+def test_index_table_has_a_mermaid_column_marking_processes_with_a_diagram():
+    procs = find_processes_vhdl(VHDL_WITH_MERMAID) + find_processes_vhdl(VHDL_WITH_WAVEDROM)
+    rst = render_index_page(procs, "t.vhd")
+    header = rst[rst.index("* - Block"):rst.index("* - :doc:")]
+    assert "WaveDrom" in header and "Mermaid" in header
+    assert header.index("WaveDrom") < header.index("Mermaid")
+    flow_row = rst[rst.index("* - :doc:`p_flow`"):rst.index("* - :doc:`p_wave`")]
+    wave_row = rst[rst.index("* - :doc:`p_wave`"):]
+    assert flow_row.count("—") == 1 and flow_row.count("✔") == 1      # no waveform, has diagram
+    assert wave_row.count("—") == 1 and wave_row.count("✔") == 1      # has waveform, no diagram
+
+
+def test_a_process_without_diagrams_is_unchanged_apart_from_the_new_column():
+    p = find_processes_vhdl(VHDL_SOURCE)[0]
+    assert "mermaid" not in render_process_page(p, "t.vhd", lambda body: {}).lower()
+
+
+def test_index_table_has_no_mermaid_column_when_no_process_has_a_diagram():
+    """A project that never writes a Mermaid block gets the same index table as before."""
+    procs = find_processes_vhdl(VHDL_WITH_WAVEDROM) + find_processes_vhdl(VHDL_SOURCE)
+    rst = render_index_page(procs, "t.vhd")
+    assert "Mermaid" not in rst
+    header = rst[rst.index("* - Block"):rst.index("* - :doc:")]
+    assert header.rstrip().endswith("- WaveDrom")
+    row = rst[rst.index("* - :doc:"):].split("\n\n")[0]
+    assert row.count("\n") == 4            # block, type, sensitivity, line, waveform

@@ -7,10 +7,8 @@ Covers:
   1.  synthesis_index_rst with no reports → placeholder text present
   2.  synthesis_index_rst with timing → Timing section with fmax
   3.  synthesis_index_rst with utilization → Utilization table with module name
-  4.  module_synthesis_rst with no util → placeholder text present
-  5.  module_synthesis_rst with util → LUT/FF/BRAM/DSP counts in RST
   6.  main() with no report files → synthesis/index.rst written with placeholder
-  7.  main() with no report files → synthesis.rst written for each module
+  7.  main() writes no per-module pages and removes ones from an older version
 """
 
 import json
@@ -21,7 +19,6 @@ from parse_utilization import ModuleUtilization
 from parse_timing import ClockTiming
 from extract_reports import (
     synthesis_index_rst,
-    module_synthesis_rst,
     main,
 )
 
@@ -55,24 +52,6 @@ def test_synthesis_index_with_utilization():
     assert "142" in rst
 
 
-# ── Test 4: per-module placeholder when no util ───────────────────────────────
-
-def test_module_synthesis_placeholder_when_no_util():
-    rst = module_synthesis_rst("blinky", None)
-    assert "No synthesis data available" in rst
-
-
-# ── Test 5: per-module RST with util data ────────────────────────────────────
-
-def test_module_synthesis_with_util():
-    util = ModuleUtilization(module_name="blinky", luts=12, ffs=8, brams=0, dsps=0)
-    rst = module_synthesis_rst("blinky", util)
-    assert "12" in rst
-    assert "8" in rst
-    assert "LUTs" in rst
-    assert "FFs" in rst
-
-
 # ── Test 6: main() writes synthesis/index.rst ────────────────────────────────
 
 def test_main_writes_synthesis_index(tmp_path):
@@ -96,9 +75,9 @@ def test_main_writes_synthesis_index(tmp_path):
     assert "No synthesis reports available" in synth_index.read_text()
 
 
-# ── Test 7: main() writes synthesis.rst for each module ──────────────────────
+# ── Test 7: the Build section is the only home of synthesis numbers ──────────
 
-def test_main_writes_per_module_synthesis(tmp_path):
+def _two_module_project(tmp_path):
     hierarchy = {
         "top": "top",
         "modules": {
@@ -112,11 +91,22 @@ def test_main_writes_per_module_synthesis(tmp_path):
     docs_dir.mkdir()
     reports_dir = tmp_path / "reports"
     reports_dir.mkdir()
+    return hier_path, docs_dir, reports_dir
 
+
+def test_main_writes_no_per_module_synthesis_pages(tmp_path):
+    hier_path, docs_dir, reports_dir = _two_module_project(tmp_path)
     main(hier_path, docs_dir, reports_dir)
+    assert list((docs_dir / "modules").glob("*/synthesis.rst")) == []
 
-    assert (docs_dir / "modules" / "top"    / "synthesis.rst").exists()
-    assert (docs_dir / "modules" / "blinky" / "synthesis.rst").exists()
+
+def test_main_removes_per_module_synthesis_pages_left_by_an_older_version(tmp_path):
+    hier_path, docs_dir, reports_dir = _two_module_project(tmp_path)
+    old = docs_dir / "modules" / "blinky"
+    old.mkdir(parents=True)
+    (old / "synthesis.rst").write_text("Synthesis Results\n=================\n")
+    main(hier_path, docs_dir, reports_dir)
+    assert not (old / "synthesis.rst").exists()
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -319,10 +309,11 @@ def test_documented_at_appears_only_inside_a_git_repository(tmp_path):
     assert "Documented at" in (docs / "synthesis" / "index.rst").read_text()
 
 
-def test_main_still_writes_a_per_module_synthesis_page(tmp_path):
+def test_the_build_page_carries_the_per_module_numbers(tmp_path):
     h, docs, rep = _reports(tmp_path, **{"stat.txt": _YOSYS_STAT})
     main(h, docs, rep)
-    assert "16" in (docs / "modules" / "cnt" / "synthesis.rst").read_text()
+    index = (docs / "synthesis" / "index.rst").read_text()
+    assert "By module" in index and "cnt" in index and "16" in index
 
 
 def test_cli_accepts_if_present(tmp_path):

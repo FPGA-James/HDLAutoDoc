@@ -8,6 +8,28 @@
 {% endblock %}
 
 {% block footer %}
+  {#- Furo's Previous / Next links, which overriding this block would otherwise drop.
+      They follow the toctree order, i.e. the documentation hierarchy. #}
+  <div class="related-pages">
+    {% if next -%}
+      <a class="next-page" href="{{ next.link }}">
+        <div class="page-info">
+          <div class="context"><span>{{ _("Next") }}</span></div>
+          <div class="title">{{ next.title }}</div>
+        </div>
+        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+      </a>
+    {%- endif %}
+    {% if prev -%}
+      <a class="prev-page" href="{{ prev.link }}">
+        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+        <div class="page-info">
+          <div class="context"><span>{{ _("Previous") }}</span></div>
+          <div class="title">{% if prev.link == pathto(master_doc) %}{{ _("Home") }}{% else %}{{ prev.title }}{% endif %}</div>
+        </div>
+      </a>
+    {%- endif %}
+  </div>
   <div class="hdl-footer">
     Built with <a href="https://www.sphinx-doc.org" target="_blank">Sphinx</a>
     &nbsp;&middot;&nbsp;

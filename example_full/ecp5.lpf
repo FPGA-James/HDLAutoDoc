@@ -1,0 +1,4 @@
+# ECP5-25F, CABGA256.  Only the clocks are constrained (clk 100 MHz, adc_clk 70 MHz); everything else is placed automatically.
+LOCATE COMP "clk" SITE "P3";
+FREQUENCY PORT "clk" 100 MHZ;
+FREQUENCY PORT "adc_clk" 70 MHZ;

@@ -1,0 +1,25 @@
+axil_regs — Entity
+==================
+
+Source file: ``src/axil_regs.sv``.
+
+AXI4-Lite register file for the sampler.
+
+Five 32-bit registers: control (start, filter enable, clear), a read-only
+status word (controller state, overflow flag), the filter threshold, a
+scratch register and a read-only packet count. Write strobes are ignored:
+every write updates the whole register. See registers/regs_axil_regs.toml.
+
+.. mermaid::
+   :caption: AXI4-Lite register write
+
+   sequenceDiagram
+     participant M as Bus master
+     participant R as axil_regs
+     M->>R: awaddr, awvalid
+     M->>R: wdata, wvalid
+     R-->>M: awready, wready (both together)
+     R-->>M: bvalid (OKAY)
+     M->>R: bready
+
+.. include:: axil_regs_source.rst

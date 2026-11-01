@@ -1,0 +1,65 @@
+[ctrl]
+mode = "r_w"
+description = "Control register for the sampler."
+
+[ctrl.start]
+type = "bit"
+description = "Assert to start a capture. Hold until the status reports done, then clear."
+default_value = "0"
+
+[ctrl.filter_enable]
+type = "bit"
+description = "Assert to let the stream filters forward packets. While low every packet is dropped."
+default_value = "0"
+
+[ctrl.clear]
+type = "bit"
+description = "Hold high to hold the forwarded-packet counter at zero."
+default_value = "0"
+
+[ctrl.clear_overflow]
+type = "bit"
+description = "Hold high to clear the overflow flag. While the flag is set a new capture ends at once, so clear it before starting."
+default_value = "0"
+
+[status]
+mode = "r"
+description = "Sampler status."
+
+[status.state]
+type = "bit_vector"
+width = 2
+description = "Controller state: 0 idle, 1 armed, 2 running, 3 done."
+
+[status.overflow]
+type = "bit"
+description = "A sample was lost because the capture FIFO was full."
+
+[threshold]
+mode = "r_w"
+description = "Filter threshold."
+
+[threshold.value]
+type = "bit_vector"
+width = 8
+description = "Smallest first-byte value that lets a packet through. Packets below it are dropped."
+default_value = "00000000"
+
+[scratch]
+mode = "r_w"
+description = "General-purpose scratch register. Reads back what was written; no effect on the design."
+
+[scratch.value]
+type = "bit_vector"
+width = 32
+description = "Software scratch value."
+default_value = "00000000000000000000000000000000"
+
+[count]
+mode = "r"
+description = "Forwarded-packet count."
+
+[count.forwarded]
+type = "bit_vector"
+width = 16
+description = "Packets forwarded since the counter was last cleared."

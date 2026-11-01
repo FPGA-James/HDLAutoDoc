@@ -1,7 +1,11 @@
 # conf.py — Sphinx configuration for VHDL HDL documentation
 
 import os
+import sys
 from datetime import date
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from mermaid_support import mermaid_settings, setup_mermaid
 
 # ── Project metadata ─────────────────────────────────────────────────────────
 # autodoc.mk passes these through the environment; the defaults apply when
@@ -16,7 +20,14 @@ extensions = [
     "sphinx.ext.graphviz",       # FSM diagrams via graphviz/dot
     "sphinxcontrib.wavedrom",    # .. wavedrom:: directive
     "sphinxvhdl.vhdl",           # vhdl:autoentity:: auto-documentation
+    "sphinxcontrib.mermaid",     # .. mermaid:: diagrams written in source comments
 ]
+
+# ── Mermaid ──────────────────────────────────────────────────────────────────
+# HTML renders in the browser; the PDF needs mermaid-cli (mmdc).  Command, extra
+# arguments and an offline copy of mermaid.js come from autodoc.mk (see
+# mermaid_support.py); without mmdc the PDF omits the diagrams with one note.
+globals().update(mermaid_settings(os.environ))
 
 # ── WaveDrom ─────────────────────────────────────────────────────────────────
 wavedrom_html_jsinline = False
@@ -84,3 +95,4 @@ def _reset_vhdl_parse_flag(app):
 
 def setup(app):
     app.connect("builder-inited", _reset_vhdl_parse_flag)
+    setup_mermaid(app)

@@ -1,0 +1,49 @@
+p_state_reg
+===========
+
+| **Source file:** ``sample_ctrl.vhd``
+| **Source line:** 71
+| **Block type:** ``process``
+| **Sensitivity list:** ``clk``
+
+Description
+-----------
+
+p_state_reg\: Clocked state register and window counter.
+Synchronous reset returns the state to IDLE and clears the counter.
+
+.. wavedrom::
+
+
+   { "signal": [
+   { "name": "clk",   "wave": "P......." },
+   { "name": "rst",   "wave": "1.0....." },
+   { "name": "start", "wave": "0..1...." },
+   { "name": "state", "wave": "=.=.==..", "data": ["(any)","IDLE","ARMED","RUN"] }
+   ]}
+
+Source
+------
+
+.. code-block:: vhdl
+
+       p_state_reg : process(clk) is
+       begin
+           if rising_edge(clk) then
+               if rst = '1' then
+                   state   <= IDLE;
+                   run_cnt <= 0;
+               else
+                   state <= next_state;
+                   if state = RUN then
+                       if run_cnt = RUN_CYCLES - 1 then
+                           run_cnt <= 0;
+                       else
+                           run_cnt <= run_cnt + 1;
+                       end if;
+                   else
+                       run_cnt <= 0;
+                   end if;
+               end if;
+           end if;
+       end process p_state_reg;

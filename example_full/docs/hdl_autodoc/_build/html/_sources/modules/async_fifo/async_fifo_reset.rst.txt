@@ -1,0 +1,61 @@
+async_fifo — Reset Domain Analysis
+==================================
+
+Auto-extracted from ``async_fifo.vhd``.
+
+.. graphviz:: async_fifo_reset.dot
+
+Reset Domains
+-------------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Process
+     - Clock
+     - Reset
+     - Style
+
+   * - ``p_rd_ptr``
+     - ``rd_clk``
+     - ``rd_rst_n``
+     - Async
+
+   * - ``p_wptr_sync``
+     - ``rd_clk``
+     - ``rd_rst_n``
+     - Async
+
+   * - ``p_wr_ptr``
+     - ``wr_clk``
+     - ``wr_rst_n``
+     - Async
+
+   * - ``p_rptr_sync``
+     - ``wr_clk``
+     - ``wr_rst_n``
+     - Async
+
+
+.. warning::
+
+   The following signals cross between different reset domains. Logic driven under one reset may not be in a consistent state when the other reset releases.
+
+
+Signal Crossings
+----------------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Signal
+     - Source Reset
+     - Destination Reset
+
+   * - ``rptr_gray``
+     - ``rd_rst_n``
+     - ``wr_rst_n``
+
+   * - ``wptr_gray``
+     - ``wr_rst_n``
+     - ``rd_rst_n``

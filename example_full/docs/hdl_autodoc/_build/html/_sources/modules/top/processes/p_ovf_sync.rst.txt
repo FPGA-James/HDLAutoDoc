@@ -1,0 +1,25 @@
+p_ovf_sync
+==========
+
+| **Source file:** ``top.vhd``
+| **Source line:** 196
+| **Block type:** ``process``
+| **Sensitivity list:** ``clk``
+
+Description
+-----------
+
+p_ovf_sync\: Brings the converter-domain overflow flag onto clk.
+
+Source
+------
+
+.. code-block:: vhdl
+
+       p_ovf_sync : process(clk) is
+       begin
+           if rising_edge(clk) then
+               ovf_meta <= overflow;
+               ovf_sync <= ovf_meta;
+           end if;
+       end process p_ovf_sync;

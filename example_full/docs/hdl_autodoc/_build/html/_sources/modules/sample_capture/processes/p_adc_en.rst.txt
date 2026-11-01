@@ -1,0 +1,31 @@
+p_adc_en
+========
+
+| **Source file:** ``sample_capture.sv``
+| **Source line:** 92
+| **Block type:** ``always_ff``
+| **Sensitivity list:** ``posedge adc_clk``
+
+Description
+-----------
+
+p_adc_en\: Brings capture_en and clear_req into the converter domain.
+
+Source
+------
+
+.. code-block:: systemverilog
+
+       always_ff @(posedge adc_clk) begin : p_adc_en
+           if (adc_rst) begin
+               en_meta  <= 1'b0;
+               en_sync  <= 1'b0;
+               clr_meta <= 1'b0;
+               clr_sync <= 1'b0;
+           end else begin
+               en_meta  <= capture_en;
+               en_sync  <= en_meta;
+               clr_meta <= clear_req;
+               clr_sync <= clr_meta;
+           end
+       end

@@ -1,0 +1,7 @@
+Annotated Source
+----------------
+
+.. literalinclude:: ../../../../src/axil_regs.sv
+   :language: systemverilog
+   :linenos:
+   :caption: src/axil_regs.sv
