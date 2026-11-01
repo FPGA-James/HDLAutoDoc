@@ -334,3 +334,14 @@ def test_index_table_has_a_mermaid_column_marking_processes_with_a_diagram():
 def test_a_process_without_diagrams_is_unchanged_apart_from_the_new_column():
     p = find_processes_vhdl(VHDL_SOURCE)[0]
     assert "mermaid" not in render_process_page(p, "t.vhd", lambda body: {}).lower()
+
+
+def test_index_table_has_no_mermaid_column_when_no_process_has_a_diagram():
+    """A project that never writes a Mermaid block gets the same index table as before."""
+    procs = find_processes_vhdl(VHDL_WITH_WAVEDROM) + find_processes_vhdl(VHDL_SOURCE)
+    rst = render_index_page(procs, "t.vhd")
+    assert "Mermaid" not in rst
+    header = rst[rst.index("* - Block"):rst.index("* - :doc:")]
+    assert header.rstrip().endswith("- WaveDrom")
+    row = rst[rst.index("* - :doc:"):].split("\n\n")[0]
+    assert row.count("\n") == 4            # block, type, sensitivity, line, waveform

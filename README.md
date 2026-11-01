@@ -351,6 +351,8 @@ make doc-html AUTODOC_MERMAID_JS=mermaid/mermaid.esm.min.mjs
 
 `AUTODOC_MERMAID_JS` is a path **relative to `_static/`** (or a full `https://` URL for a copy you host yourself), not a filesystem path.
 
+The local copy is loaded as an ES module, which browsers refuse to load from a `file://` page, so the site must be **served** (for example `python3 -m http.server -d docs/hdl_autodoc/_build/html`) rather than opened from disk. The default CDN setup works when the page is opened from disk (it needs a network connection).
+
 **PDF** needs each diagram rendered to an image, which only [mermaid-cli](https://github.com/mermaid-js/mermaid-cli) can do:
 
 ```bash
@@ -569,7 +571,7 @@ Set these on the command line (`make doc-html SCHEMATICS=0`) or in your Makefile
 | `ANNOTATED_SOURCE` | `1` | `0` omits the "Annotated Source" listing from entity pages |
 | `AUTODOC_MERMAID_CMD` | `mmdc` | Command that renders Mermaid diagrams for the PDF |
 | `AUTODOC_MERMAID_PARAMS` | *(none)* | Extra arguments for it, e.g. `-p puppeteer.json` |
-| `AUTODOC_MERMAID_JS` | *(CDN)* | Where to load Mermaid from: a path relative to `docs/hdl_autodoc/_static/` (e.g. `mermaid/mermaid.esm.min.mjs`) or an `https://` URL, for HTML that works offline |
+| `AUTODOC_MERMAID_JS` | *(CDN)* | Where to load Mermaid from: a path relative to `docs/hdl_autodoc/_static/` (e.g. `mermaid/mermaid.esm.min.mjs`) or an `https://` URL, for HTML that works offline (serve the site; see above) |
 | `TESTBENCHES` | `1` | `0` removes the Testbenches section |
 | `AUTODOC_TB_DIR` | `tb` | Root of the testbenches, with one subdirectory per framework (`vunit/`, `cocotb/`, `directed/`) |
 | `BUILD` | `1` | `0` removes the Build section |

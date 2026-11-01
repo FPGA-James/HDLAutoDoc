@@ -366,6 +366,9 @@ def render_process_page(proc: dict, src_filename: str,
 
 
 def render_index_page(processes: list[dict], src_filename: str) -> str:
+    # The Mermaid column appears only once some process has a diagram, so a project that
+    # never writes one keeps its table as it was.
+    show_mm = any(t["type"] == "mermaid" for proc in processes for t in proc["tokens"])
     out = ["Processes", "=========", "",
            f"Auto-extracted from ``{src_filename}``.", "",
            ".. toctree::", "   :maxdepth: 2", ""]
@@ -374,7 +377,8 @@ def render_index_page(processes: list[dict], src_filename: str) -> str:
     out += ["", "Summary", "-------", "",
             ".. list-table::", "   :header-rows: 1", "",
             "   * - Block", "     - Type", "     - Sensitivity",
-            "     - Source Line", "     - WaveDrom", "     - Mermaid", ""]
+            "     - Source Line", "     - WaveDrom"]
+    out += ["     - Mermaid", ""] if show_mm else [""]
     for proc in processes:
         label    = proc["label"]
         sens     = ", ".join(f"``{s}``" for s in proc["sensitivity"]) or "``*``"
@@ -386,7 +390,8 @@ def render_index_page(processes: list[dict], src_filename: str) -> str:
         out.append(f"     - {sens}")
         out.append(f"     - {proc['line']}")
         out.append(f"     - {has_wave}")
-        out.append(f"     - {has_mm}")
+        if show_mm:
+            out.append(f"     - {has_mm}")
         out.append("")
     return "\n".join(out)
 

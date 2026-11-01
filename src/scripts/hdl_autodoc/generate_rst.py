@@ -285,7 +285,9 @@ def sv_module_description(text: str, name: str) -> str:
         block.append(re.sub(r"^\s*//\s?", "", lines[i]).rstrip())
         i -= 1
     block.reverse()
-    block = ["" if not re.search(r"\w", l) else l for l in block]
+    # A line with no letters is a paragraph break (empty) or a flush banner (dropped);
+    # an indented one such as `}` or `---` belongs to a diagram and stays.
+    block = ["" if not re.search(r"\w", l) and not l[:1].isspace() else l for l in block]
     return "\n".join(block).strip()
 
 

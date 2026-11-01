@@ -21,6 +21,7 @@ import pytest
 
 from generate_rst import (
     cdc_rst,
+    sv_module_description,
     entity_rst,
     extract_entities,
     scan_src,
@@ -510,3 +511,32 @@ def test_a_header_that_starts_with_a_directive_falls_back_to_the_default(tmp_pat
 def test_a_prose_only_header_is_unchanged(tmp_path):
     text = "// PWM controller.\n//\n// Generates a duty cycle.\n// More detail.\nmodule m;\nendmodule\n"
     assert _brief(tmp_path, "m.sv", text) == "PWM controller. Generates a duty cycle."
+
+
+# ── Header diagrams keep lines that have no letters ──────────────────────────
+
+def test_sv_header_diagram_keeps_closing_braces_and_frontmatter_lines():
+    """`}` closes a composite state and `---` delimits Mermaid frontmatter; both are lines
+    without a letter or digit, and dropping them breaks the diagram.  A flush banner line
+    (`//-----`) is still not description text."""
+    src = (
+        "//----------------\n"
+        "// Shifter.\n"
+        "//\n"
+        "// .. mermaid::\n"
+        "//\n"
+        "//    ---\n"
+        "//    title: States\n"
+        "//    ---\n"
+        "//    stateDiagram-v2\n"
+        "//      state Busy {\n"
+        "//        Load --> Shift\n"
+        "//      }\n"
+        "//      [*] --> Busy\n"
+        "module shifter (input logic clk);\n"
+        "endmodule\n")
+    desc = sv_module_description(src, "shifter")
+    assert desc.splitlines()[0] == "Shifter."
+    lines = [l.strip() for l in desc.splitlines()]
+    assert "}" in lines
+    assert lines.count("---") == 2
