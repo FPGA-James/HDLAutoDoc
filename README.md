@@ -1,5 +1,7 @@
 # 📟 HDL AutoDoc
 
+[![CI](https://github.com/FPGA-James/HDLAutoDoc/actions/workflows/ci.yml/badge.svg)](https://github.com/FPGA-James/HDLAutoDoc/actions/workflows/ci.yml)
+
 > **Turn your VHDL and SystemVerilog source into beautiful, navigable documentation — automatically.**
 
 HDL AutoDoc is a zero-boilerplate documentation pipeline for hardware design projects. Drop your source files in, run `make doc-html`, and get a fully structured Sphinx site with block diagrams, FSM diagrams, timing waveforms, process pages, a hierarchy tree, a CDC analysis page per module, an embedded register map, and synthesis/place-and-route reports — all extracted directly from your HDL source and CI artifacts.
