@@ -11,7 +11,6 @@ sample_capture
    processes/index
    cdc
    reset
-   synthesis
 
 Submodules
 ----------

@@ -11,4 +11,3 @@ reset_sync
    processes/index
    cdc
    reset
-   synthesis

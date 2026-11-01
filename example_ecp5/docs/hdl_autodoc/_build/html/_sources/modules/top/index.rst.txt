@@ -10,7 +10,6 @@ top
    timing
    cdc
    reset
-   synthesis
 
 Submodules
 ----------

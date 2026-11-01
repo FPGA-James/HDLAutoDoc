@@ -11,4 +11,3 @@ async_fifo
    processes/index
    cdc
    reset
-   synthesis

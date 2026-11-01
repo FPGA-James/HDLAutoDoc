@@ -137,29 +137,13 @@ Instantiates
 \sphinxmidrule
 \sphinxtableatstartofbodyhook
 \sphinxAtStartPar
-{\hyperref[\detokenize{modules/traffic_light/index::doc}]{\sphinxcrossref{\DUrole{doc}{traffic\_light}}}}
+{\hyperref[\detokenize{modules/cfg_sync/index::doc}]{\sphinxcrossref{\DUrole{doc}{cfg\_sync}}}}
 &
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{traffic\_light.vhd}}
+\sphinxcode{\sphinxupquote{cfg\_sync.vhd}}
 &
 \sphinxAtStartPar
-Traffic light controller. Implements a standard UK traffic light sequencer with four states:
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{top}}
-&
-\sphinxAtStartPar
-—
-\\
-\sphinxhline
-\sphinxAtStartPar
-{\hyperref[\detokenize{modules/pwm_controller/index::doc}]{\sphinxcrossref{\DUrole{doc}{pwm\_controller}}}}
-&
-\sphinxAtStartPar
-\sphinxcode{\sphinxupquote{pwm\_controller.sv}}
-&
-\sphinxAtStartPar
-PWM controller module. Generates a variable duty\sphinxhyphen{}cycle PWM signal using a 3\sphinxhyphen{}state FSM:
+cfg\_sync entity.
 &
 \sphinxAtStartPar
 \sphinxcode{\sphinxupquote{top}}
@@ -201,13 +185,29 @@ top entity.
 \\
 \sphinxhline
 \sphinxAtStartPar
-{\hyperref[\detokenize{modules/cfg_sync/index::doc}]{\sphinxcrossref{\DUrole{doc}{cfg\_sync}}}}
+{\hyperref[\detokenize{modules/pwm_controller/index::doc}]{\sphinxcrossref{\DUrole{doc}{pwm\_controller}}}}
 &
 \sphinxAtStartPar
-\sphinxcode{\sphinxupquote{cfg\_sync.vhd}}
+\sphinxcode{\sphinxupquote{pwm\_controller.sv}}
 &
 \sphinxAtStartPar
-cfg\_sync entity.
+PWM controller module. Generates a variable duty\sphinxhyphen{}cycle PWM signal using a 3\sphinxhyphen{}state FSM:
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{top}}
+&
+\sphinxAtStartPar
+—
+\\
+\sphinxhline
+\sphinxAtStartPar
+{\hyperref[\detokenize{modules/traffic_light/index::doc}]{\sphinxcrossref{\DUrole{doc}{traffic\_light}}}}
+&
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{traffic\_light.vhd}}
+&
+\sphinxAtStartPar
+Traffic light controller. Implements a standard UK traffic light sequencer with four states:
 &
 \sphinxAtStartPar
 \sphinxcode{\sphinxupquote{top}}
@@ -873,58 +873,6 @@ Auto\sphinxhyphen{}extracted from \sphinxcode{\sphinxupquote{top.vhd}}.
 \sphinxAtStartPar
 No clocked processes detected. This module appears to be purely combinational.
 \end{sphinxadmonition}
-
-\sphinxstepscope
-
-
-\section{Synthesis Results}
-\label{\detokenize{modules/top/synthesis:synthesis-results}}\label{\detokenize{modules/top/synthesis::doc}}
-
-\begin{savenotes}\sphinxattablestart
-\sphinxthistablewithglobalstyle
-\centering
-\begin{tabulary}{\linewidth}[t]{TT}
-\sphinxtoprule
-\sphinxstyletheadfamily 
-\sphinxAtStartPar
-Resource
-&\sphinxstyletheadfamily 
-\sphinxAtStartPar
-Used
-\\
-\sphinxmidrule
-\sphinxtableatstartofbodyhook
-\sphinxAtStartPar
-LUTs
-&
-\sphinxAtStartPar
-387
-\\
-\sphinxhline
-\sphinxAtStartPar
-FFs
-&
-\sphinxAtStartPar
-294
-\\
-\sphinxhline
-\sphinxAtStartPar
-BRAMs
-&
-\sphinxAtStartPar
-2
-\\
-\sphinxhline
-\sphinxAtStartPar
-DSPs
-&
-\sphinxAtStartPar
-0
-\\
-\sphinxbottomrule
-\end{tabulary}
-\sphinxtableafterendhook\par
-\sphinxattableend\end{savenotes}
 
 
 \section{Submodules}
@@ -1594,17 +1542,17 @@ source comments above each process.
 
 \paragraph{P Next State}
 \label{\detokenize{modules/blinky/timing:p-next-state}}
-\noindent\sphinxincludegraphics{{wavedrom-71c3ebab-df74-4049-93da-2e1eea1b89c1}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-e005cde8-a200-4012-b5d1-756190e6fd09}.pdf}
 
 
 \paragraph{P Outputs}
 \label{\detokenize{modules/blinky/timing:p-outputs}}
-\noindent\sphinxincludegraphics{{wavedrom-fef4b9dc-c4b9-48db-b4b4-009c0f888bca}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-985d4e92-7ff4-49d9-9fb2-88e43a649fe5}.pdf}
 
 
 \paragraph{P State Reg}
 \label{\detokenize{modules/blinky/timing:p-state-reg}}
-\noindent\sphinxincludegraphics{{wavedrom-baeed6fd-5d58-45f9-8cca-daf2e82b5c7b}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-6dc75c14-188c-41f2-ba82-3760397a98af}.pdf}
 
 \sphinxstepscope
 
@@ -1634,7 +1582,7 @@ p\_state\_reg: Clocked state register.
 Captures next\_state on each rising edge of clk.
 Synchronous reset drives state back to OFF\_STATE.
 
-\noindent\sphinxincludegraphics{{wavedrom-ccf21d68-a035-4e92-bd46-0f2163d64992}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-82ea67fc-63aa-4ae2-8cfc-8274123c7530}.pdf}
 
 
 \subparagraph{Source}
@@ -1681,7 +1629,7 @@ ON\_STATE   + en + timer\_exp \sphinxhyphen{}\textgreater{} FADE\_STATE
 FADE\_STATE + en + timer\_exp \sphinxhyphen{}\textgreater{} OFF\_STATE
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-60a440a5-33ef-467f-890c-9c74a215bf96}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-f3764ab9-641f-4125-83ae-984060e2284e}.pdf}
 
 
 \subparagraph{Source}
@@ -1731,7 +1679,7 @@ ON\_STATE   \sphinxhyphen{}\textgreater{} led\_on=1 led\_fade=0 led\_off=0
 FADE\_STATE \sphinxhyphen{}\textgreater{} led\_on=0 led\_fade=1 led\_off=0
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-d0da86ff-5aa8-4c34-ab29-8303d7ac42ed}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-bd046484-1f34-458e-9a84-52a1663d204e}.pdf}
 
 
 \subparagraph{Source}
@@ -1920,58 +1868,6 @@ Style
 &
 \sphinxAtStartPar
 Sync
-\\
-\sphinxbottomrule
-\end{tabulary}
-\sphinxtableafterendhook\par
-\sphinxattableend\end{savenotes}
-
-\sphinxstepscope
-
-
-\subsubsection{Synthesis Results}
-\label{\detokenize{modules/blinky/synthesis:synthesis-results}}\label{\detokenize{modules/blinky/synthesis::doc}}
-
-\begin{savenotes}\sphinxattablestart
-\sphinxthistablewithglobalstyle
-\centering
-\begin{tabulary}{\linewidth}[t]{TT}
-\sphinxtoprule
-\sphinxstyletheadfamily 
-\sphinxAtStartPar
-Resource
-&\sphinxstyletheadfamily 
-\sphinxAtStartPar
-Used
-\\
-\sphinxmidrule
-\sphinxtableatstartofbodyhook
-\sphinxAtStartPar
-LUTs
-&
-\sphinxAtStartPar
-24
-\\
-\sphinxhline
-\sphinxAtStartPar
-FFs
-&
-\sphinxAtStartPar
-18
-\\
-\sphinxhline
-\sphinxAtStartPar
-BRAMs
-&
-\sphinxAtStartPar
-0
-\\
-\sphinxhline
-\sphinxAtStartPar
-DSPs
-&
-\sphinxAtStartPar
-0
 \\
 \sphinxbottomrule
 \end{tabulary}
@@ -2525,7 +2421,7 @@ source comments above each process.
 
 \paragraph{P Mode Sync}
 \label{\detokenize{modules/cfg_sync/timing:p-mode-sync}}
-\noindent\sphinxincludegraphics{{wavedrom-457eed7c-ac84-4f53-a280-009a3b142461}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-dda7dc50-d7da-4e1f-b6e3-2d126bece3b7}.pdf}
 
 \sphinxstepscope
 
@@ -2593,7 +2489,7 @@ p\_mode\_sync: Two\sphinxhyphen{}flop synchroniser for mode\_sel\_r (cfg\_clk \(
 mode\_sel\_r is sampled twice in the sys\_clk domain to resolve
 metastability before the signal is used by downstream logic.
 
-\noindent\sphinxincludegraphics{{wavedrom-dc751dd1-f9b8-49e4-b97a-88cfb393dff4}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-5903f805-9aa6-41ec-b949-cf8bf140ffbb}.pdf}
 
 
 \subparagraph{Source}
@@ -3211,58 +3107,6 @@ Current pwm\_duty value in the sys\_clk domain (raw crossing, may be metastable 
 \sphinxstepscope
 
 
-\subsubsection{Synthesis Results}
-\label{\detokenize{modules/cfg_sync/synthesis:synthesis-results}}\label{\detokenize{modules/cfg_sync/synthesis::doc}}
-
-\begin{savenotes}\sphinxattablestart
-\sphinxthistablewithglobalstyle
-\centering
-\begin{tabulary}{\linewidth}[t]{TT}
-\sphinxtoprule
-\sphinxstyletheadfamily 
-\sphinxAtStartPar
-Resource
-&\sphinxstyletheadfamily 
-\sphinxAtStartPar
-Used
-\\
-\sphinxmidrule
-\sphinxtableatstartofbodyhook
-\sphinxAtStartPar
-LUTs
-&
-\sphinxAtStartPar
-47
-\\
-\sphinxhline
-\sphinxAtStartPar
-FFs
-&
-\sphinxAtStartPar
-38
-\\
-\sphinxhline
-\sphinxAtStartPar
-BRAMs
-&
-\sphinxAtStartPar
-0
-\\
-\sphinxhline
-\sphinxAtStartPar
-DSPs
-&
-\sphinxAtStartPar
-0
-\\
-\sphinxbottomrule
-\end{tabulary}
-\sphinxtableafterendhook\par
-\sphinxattableend\end{savenotes}
-
-\sphinxstepscope
-
-
 \subsection{pwm\_controller}
 \label{\detokenize{modules/pwm_controller/index:pwm-controller}}\label{\detokenize{modules/pwm_controller/index::doc}}
 \sphinxstepscope
@@ -3756,17 +3600,17 @@ source comments above each process.
 
 \paragraph{P Next State}
 \label{\detokenize{modules/pwm_controller/timing:p-next-state}}
-\noindent\sphinxincludegraphics{{wavedrom-b8cd8fd9-5bd2-4fca-b225-341fae8a049b}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-23567c1b-f8a2-4127-9798-3e2cd9684155}.pdf}
 
 
 \paragraph{P Outputs}
 \label{\detokenize{modules/pwm_controller/timing:p-outputs}}
-\noindent\sphinxincludegraphics{{wavedrom-314c52bc-2ce4-426c-a66a-8dbff605d890}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-99330df0-705d-46b4-8cbe-75c06e2d285c}.pdf}
 
 
 \paragraph{P State Reg}
 \label{\detokenize{modules/pwm_controller/timing:p-state-reg}}
-\noindent\sphinxincludegraphics{{wavedrom-965db290-8136-494a-9038-cbacbad7b1cb}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-2f480dee-b6e3-4af5-a4e3-9aa84c6e9b20}.pdf}
 
 \sphinxstepscope
 
@@ -3797,7 +3641,7 @@ Captures next\_state on each rising edge of clk.
 Synchronous reset drives state to IDLE and clears counter.
 Counter increments each cycle in COUNTING state.
 
-\noindent\sphinxincludegraphics{{wavedrom-02535dd1-dd3f-482f-9e15-f55006e7b07f}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-6343040f-6f39-4470-bbff-17dd6fa84c62}.pdf}
 
 
 \subparagraph{Source}
@@ -3846,7 +3690,7 @@ COUNTING + count==255   \sphinxhyphen{}\textgreater{} DONE
 DONE                    \sphinxhyphen{}\textgreater{} IDLE
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-bf7ed05c-4e65-4fad-a0bb-30f8daa3e8a0}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-c441fa04-d1a7-488e-bc7e-088e8b30a8cc}.pdf}
 
 
 \subparagraph{Source}
@@ -3892,7 +3736,7 @@ COUNTING \sphinxhyphen{}\textgreater{} pwm\_o=(count \textless{} duty\_i) period
 DONE     \sphinxhyphen{}\textgreater{} pwm\_o=0 period\_done=1
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-358e3610-553e-4bbe-bcf2-a21cc24929fb}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-3bd8718a-8f9c-4a5d-a3b0-0cc059cd4a5e}.pdf}
 
 
 \subparagraph{Source}
@@ -4079,58 +3923,6 @@ Style
 &
 \sphinxAtStartPar
 Sync
-\\
-\sphinxbottomrule
-\end{tabulary}
-\sphinxtableafterendhook\par
-\sphinxattableend\end{savenotes}
-
-\sphinxstepscope
-
-
-\subsubsection{Synthesis Results}
-\label{\detokenize{modules/pwm_controller/synthesis:synthesis-results}}\label{\detokenize{modules/pwm_controller/synthesis::doc}}
-
-\begin{savenotes}\sphinxattablestart
-\sphinxthistablewithglobalstyle
-\centering
-\begin{tabulary}{\linewidth}[t]{TT}
-\sphinxtoprule
-\sphinxstyletheadfamily 
-\sphinxAtStartPar
-Resource
-&\sphinxstyletheadfamily 
-\sphinxAtStartPar
-Used
-\\
-\sphinxmidrule
-\sphinxtableatstartofbodyhook
-\sphinxAtStartPar
-LUTs
-&
-\sphinxAtStartPar
-89
-\\
-\sphinxhline
-\sphinxAtStartPar
-FFs
-&
-\sphinxAtStartPar
-72
-\\
-\sphinxhline
-\sphinxAtStartPar
-BRAMs
-&
-\sphinxAtStartPar
-0
-\\
-\sphinxhline
-\sphinxAtStartPar
-DSPs
-&
-\sphinxAtStartPar
-0
 \\
 \sphinxbottomrule
 \end{tabulary}
@@ -4997,17 +4789,17 @@ source comments above each process.
 
 \paragraph{P Next State}
 \label{\detokenize{modules/traffic_light/timing:p-next-state}}
-\noindent\sphinxincludegraphics{{wavedrom-e467da05-55ea-4922-aaaf-015ea1918951}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-8cbfedf3-ba42-4efc-929d-0945c931406b}.pdf}
 
 
 \paragraph{P Outputs}
 \label{\detokenize{modules/traffic_light/timing:p-outputs}}
-\noindent\sphinxincludegraphics{{wavedrom-65bcbd1e-d8cd-4ffa-9720-0032ad7672d4}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-8c4722b4-7ed5-4d4c-8166-39f9dc807397}.pdf}
 
 
 \paragraph{P State Reg}
 \label{\detokenize{modules/traffic_light/timing:p-state-reg}}
-\noindent\sphinxincludegraphics{{wavedrom-6435bf10-b1b0-4cb2-86f2-8fa193948227}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-0b0817e5-ca84-4690-a2cf-d9d3edadf57e}.pdf}
 
 \sphinxstepscope
 
@@ -5038,7 +4830,7 @@ Captures next\_state on each rising edge of clk.
 When rst is asserted the state returns to RED synchronously,
 regardless of timer\_exp or next\_state.
 
-\noindent\sphinxincludegraphics{{wavedrom-529ced2b-9291-4b15-a6ea-47fbc4ae7ca3}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-20214d75-7ce1-4060-992f-af95746a1049}.pdf}
 
 
 \subparagraph{Source}
@@ -5087,7 +4879,7 @@ GREEN     + timer\_exp \sphinxhyphen{}\textgreater{} AMBER
 AMBER     + timer\_exp \sphinxhyphen{}\textgreater{} RED
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-fcea7297-ce5d-4d1a-9422-bb2de4153fe9}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-42eb201e-4fad-4f49-b38f-19bd9dc31b8b}.pdf}
 
 
 \subparagraph{Signal Assignments}
@@ -5202,7 +4994,7 @@ GREEN     \sphinxhyphen{}\textgreater{} red=0 amber=0 green=1
 AMBER     \sphinxhyphen{}\textgreater{} red=0 amber=1 green=0
 \end{quote}
 
-\noindent\sphinxincludegraphics{{wavedrom-5af80613-420b-403f-99d3-f03b8b2f44bd}.pdf}
+\noindent\sphinxincludegraphics{{wavedrom-51d1e389-749c-48e7-95ea-1b07aadcfb2c}.pdf}
 
 
 \subparagraph{Source}
@@ -5510,58 +5302,6 @@ Destination Reset
 \sphinxstepscope
 
 
-\subsubsection{Synthesis Results}
-\label{\detokenize{modules/traffic_light/synthesis:synthesis-results}}\label{\detokenize{modules/traffic_light/synthesis::doc}}
-
-\begin{savenotes}\sphinxattablestart
-\sphinxthistablewithglobalstyle
-\centering
-\begin{tabulary}{\linewidth}[t]{TT}
-\sphinxtoprule
-\sphinxstyletheadfamily 
-\sphinxAtStartPar
-Resource
-&\sphinxstyletheadfamily 
-\sphinxAtStartPar
-Used
-\\
-\sphinxmidrule
-\sphinxtableatstartofbodyhook
-\sphinxAtStartPar
-LUTs
-&
-\sphinxAtStartPar
-209
-\\
-\sphinxhline
-\sphinxAtStartPar
-FFs
-&
-\sphinxAtStartPar
-154
-\\
-\sphinxhline
-\sphinxAtStartPar
-BRAMs
-&
-\sphinxAtStartPar
-2
-\\
-\sphinxhline
-\sphinxAtStartPar
-DSPs
-&
-\sphinxAtStartPar
-0
-\\
-\sphinxbottomrule
-\end{tabulary}
-\sphinxtableafterendhook\par
-\sphinxattableend\end{savenotes}
-
-\sphinxstepscope
-
-
 \chapter{Register Maps}
 \label{\detokenize{registers:register-maps}}\label{\detokenize{registers::doc}}
 \sphinxstepscope
@@ -5590,7 +5330,7 @@ Reports generated
 Documented at
 &
 \sphinxAtStartPar
-v3.12.0\sphinxhyphen{}24\sphinxhyphen{}gbefffd0
+v3.12.0\sphinxhyphen{}26\sphinxhyphen{}g3652455
 \\
 \sphinxbottomrule
 \end{tabular}

@@ -11,4 +11,3 @@ stream_filter
    processes/index
    cdc
    reset
-   synthesis

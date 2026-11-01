@@ -211,7 +211,6 @@
 <li class="toctree-l2"><a class="reference internal" href="modules/top/timing.html">top — Timing Diagrams</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/top/cdc.html">top — Clock Domain Analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/top/reset.html">top — Reset Domain Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/top/synthesis.html">Synthesis Results</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="modules/axil_regs/index.html">axil_regs</a><input aria-label="Toggle navigation of axil_regs" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="modules/axil_regs/entity.html">axil_regs — Entity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/axil_regs/block.html">axil_regs — Block Diagram</a></li>
@@ -220,7 +219,6 @@
 <li class="toctree-l3"><a class="reference internal" href="modules/axil_regs/cdc.html">axil_regs — Clock Domain Analysis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/axil_regs/reset.html">axil_regs — Reset Domain Analysis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/axil_regs/registers.html">axil_regs — Register Map</a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/axil_regs/synthesis.html">Synthesis Results</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="modules/stream_filter/index.html">stream_filter</a><input aria-label="Toggle navigation of stream_filter" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -230,7 +228,6 @@
 <li class="toctree-l3"><a class="reference internal" href="modules/stream_filter/timing.html">stream_filter — Timing Diagrams</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/stream_filter/cdc.html">stream_filter — Clock Domain Analysis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/stream_filter/reset.html">stream_filter — Reset Domain Analysis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/stream_filter/synthesis.html">Synthesis Results</a></li>
 </ul>
 </li>
 </ul>
@@ -311,11 +308,11 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="modules/axil_regs/index.html"><span class="doc">axil_regs</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">axil_regs.sv</span></code></p></td>
-<td><p>AXI4-Lite register file for the stream filter. Four 32-bit registers: control (enable, clear), a read-only forwarded-byte</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
-<td><p>—</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/top/index.html"><span class="doc">top</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">top.sv</span></code></p></td>
+<td><p>ECP5 design: an AXI4-Stream threshold filter with an AXI4-Lite register file. Bytes arriving on s_axis are forwarded to m_axis if they are at or above a</p></td>
+<td><p><em>(top)</em></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">axil_regs</span></code>, <code class="docutils literal notranslate"><span class="pre">stream_filter</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="modules/stream_filter/index.html"><span class="doc">stream_filter</span></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">stream_filter.sv</span></code></p></td>
@@ -323,11 +320,11 @@
 <td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
 <td><p>—</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="modules/top/index.html"><span class="doc">top</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">top.sv</span></code></p></td>
-<td><p>ECP5 design: an AXI4-Stream threshold filter with an AXI4-Lite register file. Bytes arriving on s_axis are forwarded to m_axis if they are at or above a</p></td>
-<td><p><em>(top)</em></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">axil_regs</span></code>, <code class="docutils literal notranslate"><span class="pre">stream_filter</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/axil_regs/index.html"><span class="doc">axil_regs</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">axil_regs.sv</span></code></p></td>
+<td><p>AXI4-Lite register file for the stream filter. Four 32-bit registers: control (enable, clear), a read-only forwarded-byte</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">top</span></code></p></td>
+<td><p>—</p></td>
 </tr>
 </tbody>
 </table>

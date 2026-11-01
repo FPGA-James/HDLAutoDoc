@@ -11,4 +11,3 @@ pwm_controller
    processes/index
    cdc
    reset
-   synthesis

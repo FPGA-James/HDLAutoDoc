@@ -10,7 +10,6 @@ axil_adapter
    timing
    cdc
    reset
-   synthesis
 
 Submodules
 ----------

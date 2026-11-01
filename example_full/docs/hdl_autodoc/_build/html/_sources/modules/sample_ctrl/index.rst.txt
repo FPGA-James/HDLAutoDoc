@@ -11,4 +11,3 @@ sample_ctrl
    processes/index
    cdc
    reset
-   synthesis

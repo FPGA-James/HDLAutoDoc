@@ -12,4 +12,3 @@ axil_regs
    cdc
    reset
    registers
-   synthesis

@@ -10,7 +10,6 @@ axis_pipeline
    timing
    cdc
    reset
-   synthesis
 
 Submodules
 ----------

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.6)  1 NOV 2026 21:06
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.6)  1 NOV 2026 21:12
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -848,7 +848,7 @@ r/local/texlive/2026basic/texmf-dist/fonts/enc/dvips/tex-gyre/q-ec.enc}] [2
 
  [2]
 Chapter 1.
-<graphviz-58e4596efca7ec3e646a3e224d8222cd32424147.pdf, id=338, 246.9225pt x 18
+<graphviz-58e4596efca7ec3e646a3e224d8222cd32424147.pdf, id=323, 246.9225pt x 18
 8.705pt>
 LaTeX Font Info:    Trying to load font information for T1+txtt on input line 1
 10.
@@ -882,6 +882,16 @@ Underfull \hbox (badness 10000) in paragraph at lines 187--187
  []
 
 
+Underfull \hbox (badness 10000) in paragraph at lines 187--187
+[]\T1/txtt/m/n/10 axil_regs\T1/qtm/m/n/10 ,
+ []
+
+
+Overfull \hbox (15.08992pt too wide) in paragraph at lines 187--187
+\T1/txtt/m/n/10 stream_filter| 
+ []
+
+
 Overfull \hbox (14.44482pt too wide) in paragraph at lines 187--187
 [][][]\T1/qtm/m/it/10 axil_regs[][]| 
  []
@@ -899,16 +909,6 @@ Overfull \hbox (28.53984pt too wide) in paragraph at lines 187--187
 
 Overfull \hbox (36.44229pt too wide) in paragraph at lines 187--187
 []\T1/txtt/m/n/10 stream_filter.
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 187--187
-[]\T1/txtt/m/n/10 axil_regs\T1/qtm/m/n/10 ,
- []
-
-
-Overfull \hbox (15.08992pt too wide) in paragraph at lines 187--187
-\T1/txtt/m/n/10 stream_filter| 
  []
 
 [1
@@ -929,7 +929,7 @@ Overfull \vbox (3.34003pt too high) detected at line 246
 [3
 
 ]
-<graphviz-df307e446dfa6874d06d653093576c5dfb153efa.pdf, id=381, 386.44376pt x 1
+<graphviz-df307e446dfa6874d06d653093576c5dfb153efa.pdf, id=366, 386.44376pt x 1
 91.71625pt>
 File: graphviz-df307e446dfa6874d06d653093576c5dfb153efa.pdf Graphic file (type 
 pdf)
@@ -938,39 +938,43 @@ Package pdftex.def Info: graphviz-df307e446dfa6874d06d653093576c5dfb153efa.pdf
  used on input line 256.
 (pdftex.def)             Requested size: 386.44281pt x 191.71577pt.
  [4 <./graphviz-df307e446dfa6874d06d653093576c5dfb153efa.pdf>] [5]
-<top_schematic.pdf, id=421, 592.46344pt x 719.68875pt>
+<top_schematic.pdf, id=406, 592.46344pt x 719.68875pt>
 File: top_schematic.pdf Graphic file (type pdf)
 <use top_schematic.pdf>
 Package pdftex.def Info: top_schematic.pdf  used on input line 774.
 (pdftex.def)             Requested size: 347.20897pt x 421.76846pt.
  [6
 
- <./top_schematic.pdf>] [7
-
-]
+ <./top_schematic.pdf>]
 LaTeX Font Info:    Trying to load font information for TS1+txtt on input line 
-951.
+899.
 
 (/usr/local/texlive/2026basic/texmf-dist/tex/latex/txfonts/ts1txtt.fd
 File: ts1txtt.fd 2000/12/15 v3.1
-)
-Underfull \vbox (badness 1838) detected at line 997
+) [7
+
+]
+Underfull \vbox (badness 10000) detected at line 945
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 945
  []
 
 [8]
-<graphviz-37d1533bb02f08e6a8c34afffe442e2aecfadbcb.pdf, id=446, 331.2375pt x 19
+<graphviz-37d1533bb02f08e6a8c34afffe442e2aecfadbcb.pdf, id=431, 331.2375pt x 19
 1.71625pt>
 File: graphviz-37d1533bb02f08e6a8c34afffe442e2aecfadbcb.pdf Graphic file (type 
 pdf)
 <use graphviz-37d1533bb02f08e6a8c34afffe442e2aecfadbcb.pdf>
 Package pdftex.def Info: graphviz-37d1533bb02f08e6a8c34afffe442e2aecfadbcb.pdf 
- used on input line 1007.
+ used on input line 955.
 (pdftex.def)             Requested size: 331.23668pt x 191.71577pt.
- [9] [10 <./graphviz-37d1533bb02f08e6a8c34afffe442e2aecfadbcb.pdf>] [11]
-<axil_regs_schematic.pdf, id=492, 1619.29968pt x 1308.76453pt>
+ [9 <./graphviz-37d1533bb02f08e6a8c34afffe442e2aecfadbcb.pdf>] [10] [11]
+<axil_regs_schematic.pdf, id=477, 1619.29968pt x 1308.76453pt>
 File: axil_regs_schematic.pdf Graphic file (type pdf)
 <use axil_regs_schematic.pdf>
-Package pdftex.def Info: axil_regs_schematic.pdf  used on input line 1476.
+Package pdftex.def Info: axil_regs_schematic.pdf  used on input line 1424.
 (pdftex.def)             Requested size: 521.81863pt x 421.74881pt.
 
 [12
@@ -978,25 +982,25 @@ Package pdftex.def Info: axil_regs_schematic.pdf  used on input line 1476.
  <./axil_regs_schematic.pdf>] [13
 
 ]
-Overfull \hbox (78.049pt too wide) in paragraph at lines 1822--1824
+Overfull \hbox (78.049pt too wide) in paragraph at lines 1770--1772
 []|\T1/qtm/m/n/10 00000000000000000000000000000000| 
  []
 
 [14]
-<graphviz-7fa46bd70d7390e18828eeea44fbe903ae7953e8.pdf, id=514, 386.44376pt x 2
+<graphviz-7fa46bd70d7390e18828eeea44fbe903ae7953e8.pdf, id=499, 386.44376pt x 2
 43.91125pt>
 File: graphviz-7fa46bd70d7390e18828eeea44fbe903ae7953e8.pdf Graphic file (type 
 pdf)
 <use graphviz-7fa46bd70d7390e18828eeea44fbe903ae7953e8.pdf>
 Package pdftex.def Info: graphviz-7fa46bd70d7390e18828eeea44fbe903ae7953e8.pdf 
- used on input line 1926.
+ used on input line 1866.
 (pdftex.def)             Requested size: 386.44281pt x 243.91064pt.
  [15] [16 <./graphviz-7fa46bd70d7390e18828eeea44fbe903ae7953e8.pdf>]
 [17]
-<stream_filter_schematic.pdf, id=559, 684.30656pt x 587.94656pt>
+<stream_filter_schematic.pdf, id=544, 684.30656pt x 587.94656pt>
 File: stream_filter_schematic.pdf Graphic file (type pdf)
 <use stream_filter_schematic.pdf>
-Package pdftex.def Info: stream_filter_schematic.pdf  used on input line 2224.
+Package pdftex.def Info: stream_filter_schematic.pdf  used on input line 2164.
 (pdftex.def)             Requested size: 490.89394pt x 421.7602pt.
  [18
 
@@ -1011,7 +1015,7 @@ Chapter 3.
 ]
 Chapter 4.
 [23]
-Underfull \hbox (badness 10000) in paragraph at lines 2488--2488
+Underfull \hbox (badness 10000) in paragraph at lines 2420--2420
 []\T1/txtt/m/n/10 threshold_drives_filter
  []
 
@@ -1022,7 +1026,7 @@ Chapter 5.
 ] [26]
 Chapter 6.
 LaTeX Font Info:    Trying to load font information for TS1+qtm on input line 2
-819.
+751.
 (/usr/local/texlive/2026basic/texmf-dist/tex/latex/tex-gyre/ts1qtm.fd
 File: ts1qtm.fd 2009/09/25 v1.2 font definition file for TS1/qtm
 )
@@ -1046,16 +1050,16 @@ LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
 Package rerunfilecheck Info: File `ecp5streamfilter.out' has not changed.
-(rerunfilecheck)             Checksum: 67373E1205A2C1A65363A67FA80FB9FF;9574.
+(rerunfilecheck)             Checksum: 59B84E66090AB840B83940B4FA6E39DF;9111.
  ) 
 Here is how much of TeX's memory you used:
- 17137 strings out of 469006
- 298063 string characters out of 5454814
- 857945 words of memory out of 5000000
- 45375 multiletter control sequences out of 15000+600000
+ 17125 strings out of 469006
+ 297712 string characters out of 5454814
+ 871621 words of memory out of 5000000
+ 45366 multiletter control sequences out of 15000+600000
  699248 words of font info for 89 fonts, out of 8000000 for 9000
  320 hyphenation exceptions out of 8191
- 72i,20n,82p,1205b,680s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 72i,20n,82p,1205b,711s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5
 .pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/amsfonts/cm/cm
 sy5.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/amsfonts/sy
@@ -1070,10 +1074,10 @@ s/t1xbtt.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/txfont
 s/t1xtt.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/txfonts
 /t1xtt.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/txfonts/
 tcxtt.pfb>
-Output written on ecp5streamfilter.pdf (31 pages, 342309 bytes).
+Output written on ecp5streamfilter.pdf (31 pages, 340066 bytes).
 PDF statistics:
- 690 PDF objects out of 1000 (max. 8388607)
- 584 compressed objects within 6 object streams
- 100 named destinations out of 1000 (max. 500000)
- 564 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 675 PDF objects out of 1000 (max. 8388607)
+ 569 compressed objects within 6 object streams
+ 97 named destinations out of 1000 (max. 500000)
+ 540 words of extra memory for PDF output out of 10000 (max. 10000000)
 

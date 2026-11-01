@@ -11,4 +11,3 @@ apb_bridge
    processes/index
    cdc
    reset
-   synthesis
