@@ -28,12 +28,8 @@ from pathlib import Path
 # Comment stripping
 # ─────────────────────────────────────────────────────────────────────────────
 
-def strip_vhdl_comments(text: str) -> str:
-    return re.sub(r"--[^\n]*", "", text)
-
-def strip_sv_comments(text: str) -> str:
-    text = re.sub(r"//[^\n]*", "", text)
-    return re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
+from hdl_text import strip_sv_comments, strip_vhdl_comments  # noqa: F401  (re-exported)
+from hdl_text import safe_id, title
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -322,9 +318,7 @@ _DOMAIN_COLORS = [
 ]
 
 
-def _safe(name: str) -> str:
-    """Return a Graphviz-safe identifier."""
-    return re.sub(r"\W", "_", name)
+_safe = safe_id
 
 
 def write_dot_cdc(module_name: str, domains: dict[str, list[str]],
@@ -414,8 +408,7 @@ def write_dot_cdc(module_name: str, domains: dict[str, list[str]],
 # RST writers
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _title(text: str) -> list[str]:
-    return [text, "=" * len(text), ""]
+_title = title
 
 
 def write_rst_no_clocks(module_name: str, src_filename: str) -> str:

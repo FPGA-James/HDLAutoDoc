@@ -38,6 +38,7 @@ import re
 import sys
 from pathlib import Path
 
+from hdl_text import safe_id
 from sv_interfaces import collect_interfaces, find_interface_port
 
 
@@ -492,8 +493,7 @@ def _width_label(port: dict) -> str:
 
 import html as _html
 
-def _safe(name: str) -> str:
-    return re.sub(r"\W", "_", name)
+_safe = safe_id
 
 
 # Modport-name tokens that mean "this port drives the bus": drawn on the right.
