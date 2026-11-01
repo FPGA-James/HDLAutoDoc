@@ -29,6 +29,7 @@ from pathlib import Path
 # ─────────────────────────────────────────────────────────────────────────────
 
 from hdl_text import strip_sv_comments, strip_vhdl_comments  # noqa: F401  (re-exported)
+from hdl_scan import named_connections, scan_sv_instances, scan_vhdl_instances, vhdl_associations
 from hdl_text import safe_id, title
 
 
@@ -235,38 +236,26 @@ def _is_clock_port(name: str) -> bool:
     return bool(re.search(r"(?:clk|clock|ck)", name, re.IGNORECASE))
 
 
+def _clock_connections(connections: dict[str, str]) -> dict[str, str]:
+    """The clock-named ports that are connected to a plain signal, as {port: signal}.
+    A clock driven through an expression (a gate, a slice) is not a signal name."""
+    return {port: expr.lower() for port, expr in connections.items()
+            if _is_clock_port(port) and re.fullmatch(r"\w+", expr)}
+
+
 def detect_dual_clock_instances_vhdl(stripped: str) -> list[dict]:
     """
-    Find VHDL port map instances where 2+ clock-named ports connect to different signals.
+    Find VHDL instances where 2+ clock-named ports connect to different signals.
     """
-    results  = []
-    # label : [entity work.]component [generic map (...)] port map (...)
-    inst_re  = re.compile(
-        r"(\w+)\s*:\s*(?:entity\s+\w+\s*\.\s*)?(\w+)\s*"
-        r"(?:generic\s+map\s*\([^)]*\)\s*)?"
-        r"port\s+map\s*\(([^;]*?)\)\s*;",
-        re.IGNORECASE | re.DOTALL,
-    )
-    assoc_re = re.compile(r"(\w+)\s*=>\s*(\w+)", re.IGNORECASE)
-
-    for m in inst_re.finditer(stripped):
-        inst_label = m.group(1)
-        component  = m.group(2)
-        port_map   = m.group(3)
-
-        clock_ports: dict[str, str] = {}
-        for am in assoc_re.finditer(port_map):
-            port, signal = am.group(1), am.group(2)
-            if _is_clock_port(port):
-                clock_ports[port] = signal.lower()
-
+    results = []
+    for inst in scan_vhdl_instances(stripped):
+        clock_ports = _clock_connections(vhdl_associations(inst["ports"]))
         if len(set(clock_ports.values())) >= 2:
             results.append({
-                "instance":  inst_label,
-                "component": component,
+                "instance":  inst["instance"],
+                "component": inst["component"],
                 "clocks":    clock_ports,
             })
-
     return results
 
 
@@ -274,33 +263,15 @@ def detect_dual_clock_instances_sv(stripped: str) -> list[dict]:
     """
     Find SV instances where 2+ clock-named ports connect to different signals.
     """
-    results  = []
-    _kw      = {k.lower() for k in _SV_KW}
-    # module_name [#(...)] inst_name (connections);
-    inst_re  = re.compile(
-        r"^\s*(\w+)\s*(?:#\s*\([^)]*\)\s*)?(\w+)\s*\(([^;]*)\)\s*;",
-        re.MULTILINE | re.DOTALL,
-    )
-    named_re = re.compile(r"\.(\w+)\s*\(\s*(\w+)\s*\)")
-
-    for m in inst_re.finditer(stripped):
-        component, inst_label, port_body = m.group(1), m.group(2), m.group(3)
-        if component.lower() in _kw:
-            continue
-
-        clock_ports: dict[str, str] = {}
-        for pm in named_re.finditer(port_body):
-            port, signal = pm.group(1), pm.group(2)
-            if _is_clock_port(port):
-                clock_ports[port] = signal.lower()
-
+    results = []
+    for inst in scan_sv_instances(stripped):
+        clock_ports = _clock_connections(named_connections(inst["ports"]))
         if len(set(clock_ports.values())) >= 2:
             results.append({
-                "instance":  inst_label,
-                "component": component,
+                "instance":  inst["instance"],
+                "component": inst["component"],
                 "clocks":    clock_ports,
             })
-
     return results
 
 

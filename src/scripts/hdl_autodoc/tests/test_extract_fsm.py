@@ -170,3 +170,67 @@ def test_write_rst_contains_transitions_table():
     assert "Transitions" in rst
     assert "RED" in rst
     assert "GREEN" in rst
+
+
+# ── conditions with parentheses, ternaries, begin/end arms ───────────────────
+
+SV_HARD = """\
+always_comb begin : p_next_state
+    next_state = state;
+    case (state)
+        IDLE: begin
+            if (start && (mode == 2'd1 || force_go)) begin
+                next_state = RUN;
+            end
+        end
+        RUN: next_state = done ? IDLE : ERR;
+        ERR: if (clear) next_state = IDLE;
+        default: next_state = IDLE;
+    endcase
+end
+"""
+
+
+def test_sv_condition_with_nested_parentheses_is_kept_whole():
+    from extract_fsm import extract_transitions_sv
+    got = extract_transitions_sv(SV_HARD)
+    assert ("IDLE", "RUN", "start && (mode == 2'd1 || force_go)") in got
+
+
+def test_sv_ternary_gives_a_transition_for_each_outcome():
+    from extract_fsm import extract_transitions_sv
+    got = extract_transitions_sv(SV_HARD)
+    assert ("RUN", "IDLE", "done") in got
+    assert ("RUN", "ERR", "!(done)") in got
+
+
+def test_sv_ternary_does_not_invent_states_or_split_on_its_colon():
+    from extract_fsm import extract_transitions_sv
+    froms = {t[0] for t in extract_transitions_sv(SV_HARD)}
+    assert froms == {"IDLE", "RUN", "ERR"}
+
+
+def test_sv_simple_arms_are_unchanged():
+    from extract_fsm import extract_transitions_sv
+    assert ("ERR", "IDLE", "clear") in extract_transitions_sv(SV_HARD)
+    assert len(extract_transitions_sv(SV_HARD)) == 4
+
+
+VHDL_HARD = """\
+case state is
+  when IDLE =>
+     if start = '1' and (mode = "01" or force_go = '1') then next_state <= RUN; end if;
+  when RUN =>
+     if done = '1' then next_state <= IDLE;
+     elsif err = '1' then next_state <= ERR; end if;
+  when ERR => next_state <= IDLE;
+end case;
+"""
+
+
+def test_vhdl_condition_with_parentheses_is_kept_whole():
+    from extract_fsm import extract_transitions_vhdl
+    got = extract_transitions_vhdl(VHDL_HARD)
+    assert ("IDLE", "RUN", "start = '1' and (mode = \"01\" or force_go = '1')") in got
+    assert ("RUN", "IDLE", "done = '1'") in got and ("RUN", "ERR", "err = '1'") in got
+    assert ("ERR", "IDLE", "") in got
