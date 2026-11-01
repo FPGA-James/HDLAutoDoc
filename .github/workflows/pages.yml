@@ -1,0 +1,53 @@
+name: Pages
+
+# Publishes the example sites, built from main, to GitHub Pages.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: src/requirements.txt
+      - run: sudo apt-get update && sudo apt-get install -y graphviz
+      - run: pip install -r src/requirements.txt
+      - name: Build the examples
+        run: |
+          for example in example example_sv example_ecp5 example_full; do
+            make -C "$example" doc-clean doc-html SCHEMATICS=0
+            mkdir -p "site/$example"
+            cp -r "$example/docs/hdl_autodoc/_build/html/." "site/$example/"
+          done
+          cp .github/pages/index.html site/index.html
+          touch site/.nojekyll
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -183,6 +183,8 @@ make doc-html PROJECT="My FPGA Design"
 
 ### Try the example
 
+**Live:** the four example projects, built from `main`, are at [fpga-james.github.io/HDLAutoDoc](https://fpga-james.github.io/HDLAutoDoc/) (without the RTL schematics, which need Yosys).
+
 A fully working example design (traffic light controller + PWM controller) lives in `example/`. It is a self-contained project with HDL sources, register definitions, and dummy synthesis reports:
 
 ```bash
