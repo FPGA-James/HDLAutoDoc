@@ -95,17 +95,29 @@ def _inline_comment_sv(line: str) -> str:
     return m.group(1).strip() if m else ""
 
 
+# A comment line that only draws a rule (`-----`, `=====`) or frames a section title
+# (`── control ──`, `===== status =====`): it ends a description instead of joining it.
+_BANNER_RE = re.compile(r"^[-=*#_~─━═]{2,}(?:.*[-=*#_~─━═]{2,})?$")
+
+
 def _preceding_comment(lines: list[str], idx: int, prefix: str) -> str:
     """
-    Look back from line idx for a comment line immediately above (ignoring
-    blank lines).  Returns the comment text or empty string.
+    The description above line `idx`: the whole contiguous comment block directly above
+    it (blank lines between the block and the line are ignored), joined into one
+    sentence.  The block ends at a blank or bare comment line, at a section banner, or
+    at code.  Returns "" if there is none.
     """
     i = idx - 1
     while i >= 0 and lines[i].strip() == "":
         i -= 1
-    if i >= 0 and lines[i].strip().startswith(prefix):
-        return re.sub(rf"^{re.escape(prefix)}\s*", "", lines[i].strip()).strip()
-    return ""
+    parts: list[str] = []
+    while i >= 0 and lines[i].strip().startswith(prefix):
+        text = re.sub(rf"^{re.escape(prefix)}\s*", "", lines[i].strip()).strip()
+        if not text or _BANNER_RE.match(text):
+            break
+        parts.insert(0, text)
+        i -= 1
+    return " ".join(parts)
 
 
 # ─────────────────────────────────────────────────────────────────────────────

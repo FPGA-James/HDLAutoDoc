@@ -839,3 +839,71 @@ def test_diagram_interface_box_alone_stacks_below_the_ports():
 def test_diagram_escapes_interface_instance_names():
     dot = write_dot_block("m", _CLK, [], [{"name": "a<b", "interface": "x&y", "comment": ""}])
     assert "a&lt;b : x&amp;y" in dot
+
+
+# ── multi-line port descriptions (issue #3) ──────────────────────────────────
+
+SV_MULTILINE = """\
+module m (
+    // ── control ──────────────────────
+    // Held-level start request. Core detects the rising edge internally and
+    // pulses u_aes_cipher's start_i for exactly one cycle.
+    input  logic         start_i,
+
+    // Unrelated block above a blank line.
+
+    // Clock.
+    input  logic         clk,
+    // First line.
+    // Second line.
+    input  logic         a,   // Inline wins.
+    // -------------------------
+    output logic         b
+);
+endmodule
+"""
+
+VHDL_MULTILINE = """\
+entity e is
+    port (
+        -- Held-level start request. Core detects the rising edge
+        -- internally and pulses start_i for one cycle.
+        start_i : in  std_logic;
+        -- ===== status =====
+        done_o  : out std_logic
+    );
+end entity e;
+"""
+
+
+def _by_name(ports):
+    return {p["name"]: p["comment"] for p in ports}
+
+
+def test_sv_port_description_joins_the_whole_comment_block_above():
+    c = _by_name(extract_ports_sv(SV_MULTILINE))
+    assert c["start_i"] == ("Held-level start request. Core detects the rising edge internally "
+                            "and pulses u_aes_cipher's start_i for exactly one cycle.")
+
+
+def test_sv_port_description_stops_at_a_section_banner():
+    c = _by_name(extract_ports_sv(SV_MULTILINE))
+    assert "control" not in c["start_i"]
+    assert c["b"] == ""                       # only a banner above
+
+
+def test_sv_port_description_stops_at_a_blank_line_and_keeps_single_lines():
+    c = _by_name(extract_ports_sv(SV_MULTILINE))
+    assert c["clk"] == "Clock."
+
+
+def test_sv_inline_comment_still_wins_over_the_block_above():
+    c = _by_name(extract_ports_sv(SV_MULTILINE))
+    assert c["a"] == "Inline wins."
+
+
+def test_vhdl_port_description_joins_the_block_and_ignores_a_banner():
+    c = _by_name(extract_ports_vhdl(VHDL_MULTILINE))
+    assert c["start_i"] == ("Held-level start request. Core detects the rising edge "
+                            "internally and pulses start_i for one cycle.")
+    assert c["done_o"] == ""
