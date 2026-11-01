@@ -37,13 +37,7 @@ DEFAULT_COLOUR = "white"
 # Shared helpers
 # ─────────────────────────────────────────────────────────────────────────────
 
-def strip_vhdl_comments(text: str) -> str:
-    return re.sub(r"--[^\n]*", "", text)
-
-def strip_sv_comments(text: str) -> str:
-    text = re.sub(r"//[^\n]*", "", text)
-    text = re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
-    return text
+from hdl_text import strip_sv_comments, strip_vhdl_comments  # noqa: F401  (re-exported)
 
 def normalise(text: str) -> str:
     return re.sub(r"\s+", " ", text.lower()).strip()

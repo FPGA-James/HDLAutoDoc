@@ -1,8 +1,0 @@
-sample_stream — Clock Domain Analysis
-=====================================
-
-Auto-extracted from ``sample_stream.sv``.
-
-.. note::
-
-   No clocked processes detected. This module appears to be purely combinational.

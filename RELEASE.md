@@ -7,6 +7,16 @@
 - **pyuvm testbenches** — the Testbenches section now lists [pyuvm](https://github.com/pyuvm/pyuvm) tests, from a `tb/pyuvm/` subdirectory. Each class decorated with `@pyuvm.test(...)` (or `@test(...)` imported from pyuvm) is a test; its purpose is the first line of the class docstring and `skip=True` tests are listed and marked skipped. The testbench is linked to the module it tests by file name, as for cocotb, and gets its own section and row in the summary table.
 - `example_full/` gains a pyuvm environment for `axis_pipeline` (sequence, driver, monitor, scoreboard, two tests and one skipped).
 
+#### Fixes
+
+- **The hierarchy tree printed by `make doc-hierarchy` nests correctly.** Grandchildren were drawn as `├── └── name`; they now hang under their parent with a continuation bar.
+
+#### Maintenance
+
+- GitHub Actions: tests on Python 3.11-3.13, a lint job (ruff), and every example built with Sphinx warnings as errors. The example sites are published to GitHub Pages from `main`.
+- The generated `_build` output of the examples is no longer committed (it is published to Pages instead).
+- The comment-stripping, identifier and title helpers the extractors each copied now live in `hdl_text.py`; `ruff` passes.
+
 #### Compatibility
 
 - Backwards compatible. A project with no `tb/pyuvm/` directory gets the same Testbenches page as before.

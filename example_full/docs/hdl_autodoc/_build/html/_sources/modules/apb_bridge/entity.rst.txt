@@ -1,8 +1,0 @@
-apb_bridge — Entity
-===================
-
-Source file: ``src/apb_bridge.vhd``.
-
-.. vhdl:autoentity:: apb_bridge
-
-.. include:: apb_bridge_source.rst

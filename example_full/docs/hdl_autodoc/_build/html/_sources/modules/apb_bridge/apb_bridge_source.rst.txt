@@ -1,7 +1,0 @@
-Annotated Source
-----------------
-
-.. literalinclude:: ../../../../src/apb_bridge.vhd
-   :language: vhdl
-   :linenos:
-   :caption: src/apb_bridge.vhd

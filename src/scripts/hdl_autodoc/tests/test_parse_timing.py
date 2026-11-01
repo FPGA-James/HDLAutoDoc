@@ -14,9 +14,8 @@ Covers:
 """
 
 import pytest
-from pathlib import Path
 
-from parse_timing import ClockTiming, parse_timing
+from parse_timing import parse_timing
 
 
 # ── Sample report text ────────────────────────────────────────────────────────

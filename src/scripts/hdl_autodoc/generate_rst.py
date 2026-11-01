@@ -81,7 +81,8 @@ def extract_entities(src_path: Path,
                 if text and not re.match(r"^[-=*#/]+$", text):
                     brief_lines.insert(0, text)
             elif s == "":
-                j -= 1; continue
+                j -= 1
+                continue
             else:
                 break
             j -= 1
@@ -473,7 +474,6 @@ def extract_wavedrom_blocks(rst_text: str) -> list[list[str]]:
 
 def hierarchy_dot(hierarchy: dict) -> str:
     """Graphviz dot for the full instantiation tree."""
-    top     = hierarchy["top"]
     modules = hierarchy["modules"]
     lines   = [
         "digraph hierarchy {",

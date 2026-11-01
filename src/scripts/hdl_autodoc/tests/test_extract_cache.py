@@ -1,10 +1,8 @@
 """Tests for extract_cache.py."""
 
 import json
-from pathlib import Path
 
 from extract_cache import (
-    CACHE_VERSION,
     ExtractCache,
     compute_extractor_hash,
     compute_file_hash,

@@ -1,1 +1,0 @@
-.. include:: axil_regs_cdc.rst

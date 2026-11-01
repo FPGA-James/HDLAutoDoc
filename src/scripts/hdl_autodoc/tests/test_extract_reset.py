@@ -15,14 +15,12 @@ Covers:
   - RST output: single domain note, multi-domain warning and table.
 """
 
-import pytest
 
 from extract_reset import (
     extract_process_info_sv,
     extract_process_info_vhdl,
     find_reset_crossings,
     group_by_reset,
-    strip_sv_comments,
     strip_vhdl_comments,
     write_dot_reset,
     write_rst_multi_domain,

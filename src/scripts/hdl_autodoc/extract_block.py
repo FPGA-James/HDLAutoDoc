@@ -38,6 +38,7 @@ import re
 import sys
 from pathlib import Path
 
+from hdl_text import safe_id
 from sv_interfaces import collect_interfaces, find_interface_port
 
 
@@ -226,7 +227,9 @@ def _sv_port_list_spans(text: str) -> list[tuple[int, int]]:
     ports are only looked for here, so an interface *instance* in a module body
     (`stream_if s (.clk(clk));`) is never read as a port.
     """
-    blank = lambda m: re.sub(r"[^\n]", " ", m.group(0))
+    def blank(m):
+        return re.sub(r"[^\n]", " ", m.group(0))
+
     stripped = re.sub(r"/\*.*?\*/", blank, text, flags=re.DOTALL)
     stripped = re.sub(r"//[^\n]*", blank, stripped)
     spans: list[tuple[int, int]] = []
@@ -492,8 +495,7 @@ def _width_label(port: dict) -> str:
 
 import html as _html
 
-def _safe(name: str) -> str:
-    return re.sub(r"\W", "_", name)
+_safe = safe_id
 
 
 # Modport-name tokens that mean "this port drives the bus": drawn on the right.
@@ -571,7 +573,7 @@ def write_dot_block(module_name: str, ports: list[dict],
             + "\n        </TABLE>>"
         )
         lines += [
-            f"    // Generics box",
+            "    // Generics box",
             f"    gen_box_{safe_mod} [label={gen_label}];",
             "",
         ]
@@ -626,7 +628,7 @@ def write_dot_block(module_name: str, ports: list[dict],
         + "\n        </TABLE>>"
     )
     lines += [
-        f"    // Ports box",
+        "    // Ports box",
         f"    port_box_{safe_mod} [label={port_label}];",
         "",
     ]
@@ -648,7 +650,7 @@ def write_dot_block(module_name: str, ports: list[dict],
             + "\n        </TABLE>>"
         )
         lines += [
-            f"    // Internal interfaces box",
+            "    // Internal interfaces box",
             f"    iface_box_{safe_mod} [label={inst_label}];",
             "",
         ]

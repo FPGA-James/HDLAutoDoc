@@ -14,7 +14,6 @@ Covers:
   - RST output contains port table and generics table.
 """
 
-import pytest
 
 from extract_block import (
     _width_label,

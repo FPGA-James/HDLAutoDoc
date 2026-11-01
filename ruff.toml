@@ -1,0 +1,7 @@
+# Lint configuration for development and CI (the tool itself ships from src/).
+extend-exclude = ["**/_build", "example*/.venv", ".superpowers"]
+
+[lint]
+# E741: `l` for a line of text is idiomatic in these parsers.
+# E402: the scripts run as programs and put their own directory on sys.path first.
+ignore = ["E741", "E402"]

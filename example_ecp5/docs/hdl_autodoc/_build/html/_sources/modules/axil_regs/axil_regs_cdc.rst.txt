@@ -1,8 +1,0 @@
-axil_regs — Clock Domain Analysis
-=================================
-
-Auto-extracted from ``axil_regs.sv``.
-
-.. note::
-
-   No clocked processes detected. This module appears to be purely combinational.

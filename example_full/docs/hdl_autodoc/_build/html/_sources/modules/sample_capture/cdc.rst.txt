@@ -1,1 +1,0 @@
-.. include:: sample_capture_cdc.rst

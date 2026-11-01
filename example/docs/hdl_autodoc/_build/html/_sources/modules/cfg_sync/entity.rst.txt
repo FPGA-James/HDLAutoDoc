@@ -1,8 +1,0 @@
-cfg_sync — Entity
-=================
-
-Source file: ``src/cfg_sync.vhd``.
-
-.. vhdl:autoentity:: cfg_sync
-
-.. include:: cfg_sync_source.rst

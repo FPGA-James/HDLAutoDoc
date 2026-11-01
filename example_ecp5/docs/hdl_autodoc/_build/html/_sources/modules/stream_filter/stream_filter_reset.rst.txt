@@ -1,8 +1,0 @@
-stream_filter — Reset Domain Analysis
-=====================================
-
-Auto-extracted from ``stream_filter.sv``.
-
-.. note::
-
-   No clocked processes detected. This module appears to be purely combinational.

@@ -13,7 +13,6 @@ Covers:
   - Graphviz dot output contains the expected clusters and edge styling.
 """
 
-import pytest
 
 from extract_cdc import (
     detect_dual_clock_instances_sv,

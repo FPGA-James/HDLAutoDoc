@@ -1,8 +1,0 @@
-traffic_light — Entity
-======================
-
-Source file: ``src/traffic_light.vhd``.
-
-.. vhdl:autoentity:: traffic_light
-
-.. include:: traffic_light_source.rst

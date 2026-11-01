@@ -1,7 +1,0 @@
-Register Maps
-=============
-
-.. toctree::
-   :maxdepth: 1
-
-   modules/axil_regs/registers

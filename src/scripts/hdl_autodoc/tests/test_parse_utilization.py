@@ -14,10 +14,8 @@ Covers:
   8.  Unrecognised text → ([], None)
 """
 
-import pytest
-from pathlib import Path
 
-from parse_utilization import ModuleUtilization, parse_utilization
+from parse_utilization import parse_utilization
 
 
 # ── Sample report text ────────────────────────────────────────────────────────

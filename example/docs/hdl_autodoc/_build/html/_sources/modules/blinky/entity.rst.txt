@@ -1,8 +1,0 @@
-blinky — Entity
-===============
-
-Source file: ``src/blinky.vhd``.
-
-.. vhdl:autoentity:: blinky
-
-.. include:: blinky_source.rst

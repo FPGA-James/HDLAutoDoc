@@ -79,7 +79,8 @@ def project(tmp_path_factory):
         out = tmp_path_factory.mktemp(name)
         for script in ("extract_fsm.py", "extract_cdc.py", "extract_reset.py"):
             _extract(script, source, name, out)
-        read = lambda f: (out / f).read_text() if (out / f).exists() else ""
+        def read(f):
+            return (out / f).read_text() if (out / f).exists() else ""
         extractions[name] = {"fsm": read(f"{name}.rst"), "cdc": read(f"{name}_cdc.rst"),
                              "reset": read(f"{name}_reset.rst")}
     pure_sv = not any(p.suffix.lower() in (".vhd", ".vhdl") for p in files.values())
@@ -165,7 +166,8 @@ def test_every_module_has_a_header_description(project):
 # ── FSMs, processes, waveforms ───────────────────────────────────────────────
 
 def test_fsm_diagrams_in_vhdl_and_in_systemverilog(project):
-    has_fsm = lambda m: "State Machine" in project.extractions[m]["fsm"]
+    def has_fsm(m):
+        return "State Machine" in project.extractions[m]["fsm"]
     sv = [m for m in project.sv_modules() if has_fsm(m)]
     if project.pure_sv:
         assert len(sv) >= 2, "pure-SV example needs two SystemVerilog FSMs"

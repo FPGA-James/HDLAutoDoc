@@ -11,7 +11,6 @@ Covers:
   - RST output contains the expected sections and transition data.
 """
 
-import pytest
 
 from extract_fsm import (
     collect_states,
