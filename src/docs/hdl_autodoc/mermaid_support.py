@@ -60,7 +60,10 @@ def omit_unrendered_diagrams(app, doctree, docname) -> None:
         return
     found = list(doctree.findall(mermaid))
     for node in found:
-        node.replace_self(nodes.paragraph("", NOTE))
+        # A captioned diagram sits in a figure; replace the whole figure, or the PDF
+        # would hold a numbered "Figure" that contains only the note.
+        target = node.parent if isinstance(node.parent, nodes.figure) else node
+        target.replace_self(nodes.paragraph("", NOTE))
     app._hdl_mermaid_omitted = getattr(app, "_hdl_mermaid_omitted", 0) + len(found)
 
 

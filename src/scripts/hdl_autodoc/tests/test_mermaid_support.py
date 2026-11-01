@@ -239,3 +239,26 @@ def test_the_message_names_the_configured_command(monkeypatch):
     ms.omit_unrendered_diagrams(app, _doctree(1), "a")
     ms.report_omitted_diagrams(app, None)
     assert "my-renderer" in rec.messages[0]
+
+
+# ── a captioned diagram leaves no figure behind ──────────────────────────────
+
+def test_a_captioned_diagram_without_the_command_leaves_a_note_not_a_figure():
+    doc = new_document("test")
+    section = nodes.section()
+    figure = nodes.figure()
+    figure += mermaid()
+    figure += nodes.caption("", "Handshake")
+    section += figure
+    doc += section
+    ms.omit_unrendered_diagrams(_app("latex"), doc, "index")
+    assert not list(doc.findall(nodes.figure)) and not list(doc.findall(nodes.caption))
+    assert NOTE in _paragraph_text(doc)
+
+
+def test_latex_build_with_a_caption_and_no_mmdc_has_no_figure(tmp_path):
+    out, warnings, _ = _build(tmp_path, "latex")
+    tex = next(out.glob("*.tex")).read_text()
+    assert warnings == ""
+    assert "\\caption{A flow}" not in tex and "\\caption{Handshake}" not in tex
+    assert "\\begin{figure}" not in tex
