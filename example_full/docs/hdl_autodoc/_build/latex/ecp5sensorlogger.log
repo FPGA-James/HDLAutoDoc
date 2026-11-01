@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.6)  1 NOV 2026 21:12
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.6)  1 NOV 2026 21:26
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -850,17 +850,17 @@ r/local/texlive/2026basic/texmf-dist/fonts/enc/dvips/tex-gyre/q-ec.enc}] [2
 
 ]
 Chapter 1.
-<graphviz-61386c19948be9831c2fc665db3084cad714a609.pdf, id=1189, 791.95876pt x 
+<graphviz-435f263e4426d8565f654194d3a91baf0466edda.pdf, id=1199, 791.95876pt x 
 260.975pt>
 LaTeX Font Info:    Trying to load font information for T1+txtt on input line 1
 10.
 (/usr/local/texlive/2026basic/texmf-dist/tex/latex/txfonts/t1txtt.fd
 File: t1txtt.fd 2000/12/15 v3.1
 )
-File: graphviz-61386c19948be9831c2fc665db3084cad714a609.pdf Graphic file (type 
+File: graphviz-435f263e4426d8565f654194d3a91baf0466edda.pdf Graphic file (type 
 pdf)
-<use graphviz-61386c19948be9831c2fc665db3084cad714a609.pdf>
-Package pdftex.def Info: graphviz-61386c19948be9831c2fc665db3084cad714a609.pdf 
+<use graphviz-435f263e4426d8565f654194d3a91baf0466edda.pdf>
+Package pdftex.def Info: graphviz-435f263e4426d8565f654194d3a91baf0466edda.pdf 
  used on input line 110.
 (pdftex.def)             Requested size: 469.76515pt x 154.79822pt.
 LaTeX Font Info:    Trying to load font information for TS1+qtm on input line 1
@@ -884,6 +884,21 @@ Underfull \hbox (badness 10000) in paragraph at lines 327--327
  []
 
 
+Underfull \hbox (badness 10000) in paragraph at lines 327--327
+[][][]\T1/qtm/m/it/10 sam-
+ []
+
+
+Overfull \hbox (26.73738pt too wide) in paragraph at lines 327--327
+\T1/qtm/m/it/10 ple_capture[][]| 
+ []
+
+
+Overfull \hbox (49.78883pt too wide) in paragraph at lines 327--327
+[]\T1/txtt/m/n/10 sample_capture.
+ []
+
+
 Overfull \hbox (32.74739pt too wide) in paragraph at lines 327--327
 [][][]\T1/qtm/m/it/10 axis_pipeline[][]| 
  []
@@ -894,18 +909,38 @@ Overfull \hbox (44.53885pt too wide) in paragraph at lines 327--327
  []
 
 
-Overfull \hbox (16.39235pt too wide) in paragraph at lines 327--327
-[][][]\T1/qtm/m/it/10 axil_regs[][]| 
+Underfull \hbox (badness 10000) in paragraph at lines 327--327
+[][][]\T1/qtm/m/it/10 re-
  []
 
 
-Overfull \hbox (23.53891pt too wide) in paragraph at lines 327--327
-[]\T1/txtt/m/n/10 axil_regs.
+Overfull \hbox (13.2374pt too wide) in paragraph at lines 327--327
+\T1/qtm/m/it/10 set_sync[][]| 
  []
 
 
-Overfull \hbox (17.06467pt too wide) in paragraph at lines 327--327
-[]\T1/txtt/m/n/10 axil_adapter| 
+Overfull \hbox (28.7889pt too wide) in paragraph at lines 327--327
+[]\T1/txtt/m/n/10 reset_sync.
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 327--327
+[][][]\T1/qtm/m/it/10 sam-
+ []
+
+
+Overfull \hbox (23.56236pt too wide) in paragraph at lines 327--327
+\T1/qtm/m/it/10 ple_stream[][]| 
+ []
+
+
+Overfull \hbox (44.53885pt too wide) in paragraph at lines 327--327
+[]\T1/txtt/m/n/10 sample_stream.
+ []
+
+
+Underfull \hbox (badness 5460) in paragraph at lines 327--327
+[]\T1/qtm/m/n/10 Cap-tured sam-ples as a fil-tered byte
  []
 
 
@@ -921,6 +956,31 @@ Overfull \hbox (10.61237pt too wide) in paragraph at lines 327--327
 
 Overfull \hbox (34.03888pt too wide) in paragraph at lines 327--327
 []\T1/txtt/m/n/10 sample_ctrl.
+ []
+
+
+Overfull \hbox (30.7374pt too wide) in paragraph at lines 327--327
+[][][]\T1/qtm/m/it/10 axil_adapter[][]| 
+ []
+
+
+Overfull \hbox (39.28886pt too wide) in paragraph at lines 327--327
+[]\T1/txtt/m/n/10 axil_adapter.
+ []
+
+
+Overfull \hbox (16.39235pt too wide) in paragraph at lines 327--327
+[][][]\T1/qtm/m/it/10 axil_regs[][]| 
+ []
+
+
+Overfull \hbox (23.53891pt too wide) in paragraph at lines 327--327
+[]\T1/txtt/m/n/10 axil_regs.
+ []
+
+
+Overfull \hbox (17.06467pt too wide) in paragraph at lines 327--327
+[]\T1/txtt/m/n/10 axil_adapter| 
  []
 
 
@@ -947,6 +1007,31 @@ tm/m/n/10 ,
  []
 
 
+Overfull \hbox (19.66737pt too wide) in paragraph at lines 327--327
+[][][]\T1/qtm/m/it/10 async_fifo[][]| 
+ []
+
+
+Overfull \hbox (28.7889pt too wide) in paragraph at lines 327--327
+[]\T1/txtt/m/n/10 async_fifo.
+ []
+
+
+Overfull \hbox (27.56464pt too wide) in paragraph at lines 327--327
+[]\T1/txtt/m/n/10 sample_capture| 
+ []
+
+
+Overfull \hbox (25.07738pt too wide) in paragraph at lines 327--327
+[][][]\T1/qtm/m/it/10 apb_bridge[][]| 
+ []
+
+
+Overfull \hbox (28.7889pt too wide) in paragraph at lines 327--327
+[]\T1/txtt/m/n/10 apb_bridge.
+ []
+
+
 Overfull \hbox (30.48737pt too wide) in paragraph at lines 327--327
 [][][]\T1/qtm/m/it/10 stream_filter[][]| 
  []
@@ -966,99 +1051,14 @@ Overfull \hbox (22.37463pt too wide) in paragraph at lines 327--327
 \T1/txtt/m/n/10 sample_stream| 
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 327--327
-[][][]\T1/qtm/m/it/10 sam-
- []
-
-
-Overfull \hbox (26.73738pt too wide) in paragraph at lines 327--327
-\T1/qtm/m/it/10 ple_capture[][]| 
- []
-
-
-Overfull \hbox (49.78883pt too wide) in paragraph at lines 327--327
-[]\T1/txtt/m/n/10 sample_capture.
- []
-
-
-Overfull \hbox (30.7374pt too wide) in paragraph at lines 327--327
-[][][]\T1/qtm/m/it/10 axil_adapter[][]| 
- []
-
-
-Overfull \hbox (39.28886pt too wide) in paragraph at lines 327--327
-[]\T1/txtt/m/n/10 axil_adapter.
- []
-
-
-Overfull \hbox (19.66737pt too wide) in paragraph at lines 327--327
-[][][]\T1/qtm/m/it/10 async_fifo[][]| 
- []
-
-
-Overfull \hbox (28.7889pt too wide) in paragraph at lines 327--327
-[]\T1/txtt/m/n/10 async_fifo.
- []
-
-
-Overfull \hbox (27.56464pt too wide) in paragraph at lines 327--327
-[]\T1/txtt/m/n/10 sample_capture| 
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 327--327
-[][][]\T1/qtm/m/it/10 re-
- []
-
-
-Overfull \hbox (13.2374pt too wide) in paragraph at lines 327--327
-\T1/qtm/m/it/10 set_sync[][]| 
- []
-
-
-Overfull \hbox (28.7889pt too wide) in paragraph at lines 327--327
-[]\T1/txtt/m/n/10 reset_sync.
- []
-
-
-Overfull \hbox (25.07738pt too wide) in paragraph at lines 327--327
-[][][]\T1/qtm/m/it/10 apb_bridge[][]| 
- []
-
-
-Overfull \hbox (28.7889pt too wide) in paragraph at lines 327--327
-[]\T1/txtt/m/n/10 apb_bridge.
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 327--327
-[][][]\T1/qtm/m/it/10 sam-
- []
-
-
-Overfull \hbox (23.56236pt too wide) in paragraph at lines 327--327
-\T1/qtm/m/it/10 ple_stream[][]| 
- []
-
-
-Overfull \hbox (44.53885pt too wide) in paragraph at lines 327--327
-[]\T1/txtt/m/n/10 sample_stream.
- []
-
-
-Underfull \hbox (badness 5460) in paragraph at lines 327--327
-[]\T1/qtm/m/n/10 Cap-tured sam-ples as a fil-tered byte
- []
-
 [1
 
 {/usr/local/texlive/2026basic/texmf-dist/fonts/enc/dvips/tex-gyre/q-ts1.enc} <.
-/graphviz-61386c19948be9831c2fc665db3084cad714a609.pdf>] [2]
+/graphviz-435f263e4426d8565f654194d3a91baf0466edda.pdf>] [2]
 Chapter 2.
 LaTeX Font Info:    Font shape `T1/txtt/b/n' in size <10> not available
 (Font)              Font shape `T1/txtt/bx/n' tried instead on input line 349.
-<mermaid-436c617912b74c087a7bc9c12c116e9931d26248.pdf, id=1245, 602.25pt x 121.
+<mermaid-436c617912b74c087a7bc9c12c116e9931d26248.pdf, id=1255, 602.25pt x 121.
 4136pt>
 File: mermaid-436c617912b74c087a7bc9c12c116e9931d26248.pdf Graphic file (type p
 df)
@@ -1172,7 +1172,7 @@ Underfull \vbox (badness 10000) detected at line 1010
  []
 
 [9]
-<graphviz-8433186dbfea1fd05d48afa04271640a5b42fa90.pdf, id=1340, 366.36874pt x 
+<graphviz-8433186dbfea1fd05d48afa04271640a5b42fa90.pdf, id=1350, 366.36874pt x 
 552.0625pt>
 File: graphviz-8433186dbfea1fd05d48afa04271640a5b42fa90.pdf Graphic file (type 
 pdf)
@@ -1218,7 +1218,7 @@ Underfull \vbox (badness 10000) detected at line 2165
  []
 
 [16]
-<graphviz-d5cd63bd0817f2184e4b6e10b217ac449519c887.pdf, id=1413, 372.39125pt x 
+<graphviz-d5cd63bd0817f2184e4b6e10b217ac449519c887.pdf, id=1423, 372.39125pt x 
 478.78876pt>
 File: graphviz-d5cd63bd0817f2184e4b6e10b217ac449519c887.pdf Graphic file (type 
 pdf)
@@ -1228,7 +1228,7 @@ Package pdftex.def Info: graphviz-d5cd63bd0817f2184e4b6e10b217ac449519c887.pdf
 (pdftex.def)             Requested size: 372.39034pt x 478.78758pt.
  [17] [18 <./graphviz-d5cd63bd0817f2184e4b6e10b217ac449519c887.pdf>]
 [19]
-<apb_bridge_schematic.pdf, id=1459, 2203.4822pt x 2093.57156pt>
+<apb_bridge_schematic.pdf, id=1469, 2203.4822pt x 2093.57156pt>
 File: apb_bridge_schematic.pdf Graphic file (type pdf)
 <use apb_bridge_schematic.pdf>
 Package pdftex.def Info: apb_bridge_schematic.pdf  used on input line 2258.
@@ -1246,7 +1246,7 @@ Underfull \vbox (badness 10000) detected at line 2731
  []
 
 [24]
-<graphviz-2ee5813608e0de83463794f17b1766a9d7b50a90.pdf, id=1491, 365.365pt x 54
+<graphviz-2ee5813608e0de83463794f17b1766a9d7b50a90.pdf, id=1501, 365.365pt x 54
 8.0475pt>
 File: graphviz-2ee5813608e0de83463794f17b1766a9d7b50a90.pdf Graphic file (type 
 pdf)
@@ -1256,7 +1256,7 @@ Package pdftex.def Info: graphviz-2ee5813608e0de83463794f17b1766a9d7b50a90.pdf
 (pdftex.def)             Requested size: 365.3641pt x 548.04616pt.
  [25] [26 <./graphviz-2ee5813608e0de83463794f17b1766a9d7b50a90.pdf>]
 [27]
-<axil_adapter_schematic.pdf, id=1550, 453.94594pt x 898.85812pt>
+<axil_adapter_schematic.pdf, id=1560, 453.94594pt x 898.85812pt>
 File: axil_adapter_schematic.pdf Graphic file (type pdf)
 <use axil_adapter_schematic.pdf>
 Package pdftex.def Info: axil_adapter_schematic.pdf  used on input line 3065.
@@ -1264,7 +1264,7 @@ Package pdftex.def Info: axil_adapter_schematic.pdf  used on input line 3065.
  [28
 
  <./axil_adapter_schematic.pdf>]
-<mermaid-9b185eb5a29d14637eb6d6ff9483128fc9fe6ec5.pdf, id=1563, 409.53pt x 350.
+<mermaid-9b185eb5a29d14637eb6d6ff9483128fc9fe6ec5.pdf, id=1573, 409.53pt x 350.
 26859pt>
 File: mermaid-9b185eb5a29d14637eb6d6ff9483128fc9fe6ec5.pdf Graphic file (type p
 df)
@@ -1291,7 +1291,7 @@ Underfull \vbox (badness 10000) detected at line 3269
  []
 
 [32]
-<graphviz-41bf6dbf486603e586f2ca8ac10f44267cec46bb.pdf, id=1631, 359.3425pt x 2
+<graphviz-41bf6dbf486603e586f2ca8ac10f44267cec46bb.pdf, id=1641, 359.3425pt x 2
 43.91125pt>
 File: graphviz-41bf6dbf486603e586f2ca8ac10f44267cec46bb.pdf Graphic file (type 
 pdf)
@@ -1300,7 +1300,7 @@ Package pdftex.def Info: graphviz-41bf6dbf486603e586f2ca8ac10f44267cec46bb.pdf
  used on input line 3279.
 (pdftex.def)             Requested size: 359.34161pt x 243.91064pt.
  [33 <./graphviz-41bf6dbf486603e586f2ca8ac10f44267cec46bb.pdf>] [34]
-<axil_regs_schematic.pdf, id=1678, 1458.19781pt x 1303.49484pt>
+<axil_regs_schematic.pdf, id=1688, 1458.19781pt x 1303.49484pt>
 File: axil_regs_schematic.pdf Graphic file (type pdf)
 <use axil_regs_schematic.pdf>
 Package pdftex.def Info: axil_regs_schematic.pdf  used on input line 3800.
@@ -1326,7 +1326,7 @@ Overfull \hbox (78.049pt too wide) in paragraph at lines 4373--4375
  []
 
 [39]
-<graphviz-09b79249395495ed59c5ed4ea4580274746f5b69.pdf, id=1712, 345.29pt x 443
+<graphviz-09b79249395495ed59c5ed4ea4580274746f5b69.pdf, id=1722, 345.29pt x 443
 .6575pt>
 File: graphviz-09b79249395495ed59c5ed4ea4580274746f5b69.pdf Graphic file (type 
 pdf)
@@ -1336,7 +1336,7 @@ Package pdftex.def Info: graphviz-09b79249395495ed59c5ed4ea4580274746f5b69.pdf
 (pdftex.def)             Requested size: 345.28914pt x 443.6564pt.
  [40] [41 <./graphviz-09b79249395495ed59c5ed4ea4580274746f5b69.pdf>]
 [42]
-<axis_pipeline_schematic.pdf, id=1762, 353.06906pt x 462.22687pt>
+<axis_pipeline_schematic.pdf, id=1772, 353.06906pt x 462.22687pt>
 File: axis_pipeline_schematic.pdf Graphic file (type pdf)
 <use axis_pipeline_schematic.pdf>
 Package pdftex.def Info: axis_pipeline_schematic.pdf  used on input line 4618.
@@ -1354,7 +1354,7 @@ Underfull \vbox (badness 10000) detected at line 4799
  []
 
 [45]
-<graphviz-cdc7defbc4acf652096d4225242d4de2f9985acc.pdf, id=1785, 386.44376pt x 
+<graphviz-cdc7defbc4acf652096d4225242d4de2f9985acc.pdf, id=1795, 386.44376pt x 
 317.185pt>
 File: graphviz-cdc7defbc4acf652096d4225242d4de2f9985acc.pdf Graphic file (type 
 pdf)
@@ -1378,7 +1378,7 @@ Overfull \hbox (1.01802pt too wide) in paragraph at lines 4939--4939
  []
 
 [47 <./graphviz-cdc7defbc4acf652096d4225242d4de2f9985acc.pdf>] [48]
-<stream_filter_schematic.pdf, id=1830, 1962.58218pt x 859.71187pt>
+<stream_filter_schematic.pdf, id=1840, 1962.58218pt x 859.71187pt>
 File: stream_filter_schematic.pdf Graphic file (type pdf)
 <use stream_filter_schematic.pdf>
 Package pdftex.def Info: stream_filter_schematic.pdf  used on input line 5093.
@@ -1386,7 +1386,7 @@ Package pdftex.def Info: stream_filter_schematic.pdf  used on input line 5093.
  [49
 
  <./stream_filter_schematic.pdf>]
-<graphviz-c2b5b173cb7bcf96fa60de421ca993a1ab0b6da5.pdf, id=1844, 393.47pt x 283
+<graphviz-c2b5b173cb7bcf96fa60de421ca993a1ab0b6da5.pdf, id=1854, 393.47pt x 283
 .0575pt>
 File: graphviz-c2b5b173cb7bcf96fa60de421ca993a1ab0b6da5.pdf Graphic file (type 
 pdf)
@@ -1394,32 +1394,32 @@ pdf)
 Package pdftex.def Info: graphviz-c2b5b173cb7bcf96fa60de421ca993a1ab0b6da5.pdf 
  used on input line 5108.
 (pdftex.def)             Requested size: 393.46902pt x 283.0568pt.
-<wavedrom-b967a685-9725-4435-8965-18af731adcdc.pdf, id=1845, 301.125pt x 90.337
+<wavedrom-a3215cf5-87ac-4879-8dc6-38b8cb81cab1.pdf, id=1855, 301.125pt x 90.337
 5pt>
-File: wavedrom-b967a685-9725-4435-8965-18af731adcdc.pdf Graphic file (type pdf)
+File: wavedrom-a3215cf5-87ac-4879-8dc6-38b8cb81cab1.pdf Graphic file (type pdf)
 
-<use wavedrom-b967a685-9725-4435-8965-18af731adcdc.pdf>
-Package pdftex.def Info: wavedrom-b967a685-9725-4435-8965-18af731adcdc.pdf  use
+<use wavedrom-a3215cf5-87ac-4879-8dc6-38b8cb81cab1.pdf>
+Package pdftex.def Info: wavedrom-a3215cf5-87ac-4879-8dc6-38b8cb81cab1.pdf  use
 d on input line 5188.
 (pdftex.def)             Requested size: 301.12425pt x 90.33727pt.
  [50
 
  <./graphviz-c2b5b173cb7bcf96fa60de421ca993a1ab0b6da5.pdf>]
-<wavedrom-cc4774de-52e5-4a2b-8996-296df63ff521.pdf, id=1864, 301.125pt x 90.337
+<wavedrom-20d02205-b97d-4787-954e-1767cbbd1fb9.pdf, id=1874, 301.125pt x 90.337
 5pt>
-File: wavedrom-cc4774de-52e5-4a2b-8996-296df63ff521.pdf Graphic file (type pdf)
+File: wavedrom-20d02205-b97d-4787-954e-1767cbbd1fb9.pdf Graphic file (type pdf)
 
-<use wavedrom-cc4774de-52e5-4a2b-8996-296df63ff521.pdf>
-Package pdftex.def Info: wavedrom-cc4774de-52e5-4a2b-8996-296df63ff521.pdf  use
+<use wavedrom-20d02205-b97d-4787-954e-1767cbbd1fb9.pdf>
+Package pdftex.def Info: wavedrom-20d02205-b97d-4787-954e-1767cbbd1fb9.pdf  use
 d on input line 5216.
 (pdftex.def)             Requested size: 301.12425pt x 90.33727pt.
- [51 <./wavedrom-b967a685-9725-4435-8965-18af731adcdc.pdf> <./wavedrom-cc4774de
--52e5-4a2b-8996-296df63ff521.pdf
+ [51 <./wavedrom-a3215cf5-87ac-4879-8dc6-38b8cb81cab1.pdf> <./wavedrom-20d02205
+-b97d-4787-954e-1767cbbd1fb9.pdf
 
-pdfTeX warning: pdflatex (file ./wavedrom-cc4774de-52e5-4a2b-8996-296df63ff521.
+pdfTeX warning: pdflatex (file ./wavedrom-20d02205-b97d-4787-954e-1767cbbd1fb9.
 pdf): PDF inclusion: multiple pdfs with page group included in a single page
 >] [52]
-<mermaid-060b719637c10dbfe4fc5650531bff004312f02c.pdf, id=1893, 545.1567pt x 35
+<mermaid-060b719637c10dbfe4fc5650531bff004312f02c.pdf, id=1903, 545.1567pt x 35
 2.43669pt>
 File: mermaid-060b719637c10dbfe4fc5650531bff004312f02c.pdf Graphic file (type p
 df)
@@ -1436,7 +1436,7 @@ Underfull \vbox (badness 10000) detected at line 5637
  []
 
 [55]
-<graphviz-54d40c970c2c0acc6cbea028f013412cdb274c1f.pdf, id=1968, 252.945pt x 21
+<graphviz-54d40c970c2c0acc6cbea028f013412cdb274c1f.pdf, id=1978, 252.945pt x 21
 2.795pt>
 File: graphviz-54d40c970c2c0acc6cbea028f013412cdb274c1f.pdf Graphic file (type 
 pdf)
@@ -1445,7 +1445,7 @@ Package pdftex.def Info: graphviz-54d40c970c2c0acc6cbea028f013412cdb274c1f.pdf
  used on input line 5647.
 (pdftex.def)             Requested size: 252.94438pt x 212.79446pt.
  [56 <./graphviz-54d40c970c2c0acc6cbea028f013412cdb274c1f.pdf>] [57]
-<reset_sync_schematic.pdf, id=2008, 251.43938pt x 140.77594pt>
+<reset_sync_schematic.pdf, id=2018, 251.43938pt x 140.77594pt>
 File: reset_sync_schematic.pdf Graphic file (type pdf)
 <use reset_sync_schematic.pdf>
 Package pdftex.def Info: reset_sync_schematic.pdf  used on input line 5803.
@@ -1456,7 +1456,7 @@ Package pdftex.def Info: reset_sync_schematic.pdf  used on input line 5803.
  <./reset_sync_schematic.pdf>] [59
 
 ]
-<mermaid-ae94140a35d9c2ae98213997b980594bd5f07641.pdf, id=2027, 602.25pt x 151.
+<mermaid-ae94140a35d9c2ae98213997b980594bd5f07641.pdf, id=2037, 602.25pt x 151.
 5261pt>
 File: mermaid-ae94140a35d9c2ae98213997b980594bd5f07641.pdf Graphic file (type p
 df)
@@ -1477,7 +1477,7 @@ Underfull \vbox (badness 10000) detected at line 6191
  []
 
 [62]
-<graphviz-a5fee78ae7ec10d9e6b388fcb94aaa73ce01b06a.pdf, id=2093, 453.695pt x 36
+<graphviz-a5fee78ae7ec10d9e6b388fcb94aaa73ce01b06a.pdf, id=2103, 453.695pt x 36
 9.38pt>
 File: graphviz-a5fee78ae7ec10d9e6b388fcb94aaa73ce01b06a.pdf Graphic file (type 
 pdf)
@@ -1501,7 +1501,7 @@ Overfull \hbox (12.85396pt too wide) in paragraph at lines 6380--6380
  []
 
 [64 <./graphviz-a5fee78ae7ec10d9e6b388fcb94aaa73ce01b06a.pdf>] [65]
-<sample_capture_schematic.pdf, id=2145, 1628.33344pt x 841.26797pt>
+<sample_capture_schematic.pdf, id=2155, 1628.33344pt x 841.26797pt>
 File: sample_capture_schematic.pdf Graphic file (type pdf)
 <use sample_capture_schematic.pdf>
 Package pdftex.def Info: sample_capture_schematic.pdf  used on input line 6395.
@@ -1512,7 +1512,7 @@ Package pdftex.def Info: sample_capture_schematic.pdf  used on input line 6395.
  <./sample_capture_schematic.pdf>] [67
 
 ] [68]
-<graphviz-91a1e6e1342fb5183fc4acd9eb54d7f3c20d38d0.pdf, id=2175, 430.60875pt x 
+<graphviz-91a1e6e1342fb5183fc4acd9eb54d7f3c20d38d0.pdf, id=2185, 430.60875pt x 
 329.23pt>
 File: graphviz-91a1e6e1342fb5183fc4acd9eb54d7f3c20d38d0.pdf Graphic file (type 
 pdf)
@@ -1521,7 +1521,7 @@ Package pdftex.def Info: graphviz-91a1e6e1342fb5183fc4acd9eb54d7f3c20d38d0.pdf
  used on input line 6684.
 (pdftex.def)             Requested size: 430.60768pt x 329.22919pt.
  [69] [70 <./graphviz-91a1e6e1342fb5183fc4acd9eb54d7f3c20d38d0.pdf>]
-<graphviz-8fb3fd2119a0874a6b9c277ffc2abd08085f28ce.pdf, id=2238, 365.365pt x 24
+<graphviz-8fb3fd2119a0874a6b9c277ffc2abd08085f28ce.pdf, id=2248, 365.365pt x 24
 1.90375pt>
 File: graphviz-8fb3fd2119a0874a6b9c277ffc2abd08085f28ce.pdf Graphic file (type 
 pdf)
@@ -1581,7 +1581,7 @@ Underfull \vbox (badness 10000) detected at line 7350
  []
 
 [74]
-<graphviz-0811227f41c812fa07def5f375e5432ef614d4df.pdf, id=2287, 397.485pt x 36
+<graphviz-0811227f41c812fa07def5f375e5432ef614d4df.pdf, id=2297, 397.485pt x 36
 5.365pt>
 File: graphviz-0811227f41c812fa07def5f375e5432ef614d4df.pdf Graphic file (type 
 pdf)
@@ -1625,7 +1625,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 7570--7570
  []
 
 [77]
-<async_fifo_schematic.pdf, id=2331, 870.25125pt x 1067.86453pt>
+<async_fifo_schematic.pdf, id=2341, 870.25125pt x 1067.86453pt>
 File: async_fifo_schematic.pdf Graphic file (type pdf)
 <use async_fifo_schematic.pdf>
 Package pdftex.def Info: async_fifo_schematic.pdf  used on input line 7720.
@@ -1635,7 +1635,7 @@ Package pdftex.def Info: async_fifo_schematic.pdf  used on input line 7720.
  <./async_fifo_schematic.pdf>] [79
 
 ] [80]
-<graphviz-3257dfb6d2643af3aec85b835fbc49232db620be.pdf, id=2362, 363.3575pt x 2
+<graphviz-3257dfb6d2643af3aec85b835fbc49232db620be.pdf, id=2372, 363.3575pt x 2
 46.9225pt>
 File: graphviz-3257dfb6d2643af3aec85b835fbc49232db620be.pdf Graphic file (type 
 pdf)
@@ -1644,7 +1644,7 @@ Package pdftex.def Info: graphviz-3257dfb6d2643af3aec85b835fbc49232db620be.pdf
  used on input line 8012.
 (pdftex.def)             Requested size: 363.3566pt x 246.92188pt.
  [81]
-<graphviz-4277897b12d224a9bf12d3272ee75f74acefe9de.pdf, id=2367, 389.455pt x 24
+<graphviz-4277897b12d224a9bf12d3272ee75f74acefe9de.pdf, id=2377, 389.455pt x 24
 1.90375pt>
 File: graphviz-4277897b12d224a9bf12d3272ee75f74acefe9de.pdf Graphic file (type 
 pdf)
@@ -1685,7 +1685,7 @@ Underfull \vbox (badness 10000) detected at line 8596
  []
 
 [86]
-<graphviz-8637d531c5ecb6bbe80d5e08e8a3f5bce1a6f308.pdf, id=2440, 293.095pt x 26
+<graphviz-8637d531c5ecb6bbe80d5e08e8a3f5bce1a6f308.pdf, id=2450, 293.095pt x 26
 4.99pt>
 File: graphviz-8637d531c5ecb6bbe80d5e08e8a3f5bce1a6f308.pdf Graphic file (type 
 pdf)
@@ -1714,7 +1714,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 8723--8723
  []
 
 [88 <./graphviz-8637d531c5ecb6bbe80d5e08e8a3f5bce1a6f308.pdf>] [89]
-<sample_ctrl_schematic.pdf, id=2492, 1200.73593pt x 1209.01688pt>
+<sample_ctrl_schematic.pdf, id=2502, 1200.73593pt x 1209.01688pt>
 File: sample_ctrl_schematic.pdf Graphic file (type pdf)
 <use sample_ctrl_schematic.pdf>
 Package pdftex.def Info: sample_ctrl_schematic.pdf  used on input line 8844.
@@ -1722,7 +1722,7 @@ Package pdftex.def Info: sample_ctrl_schematic.pdf  used on input line 8844.
  [90
 
  <./sample_ctrl_schematic.pdf>]
-<graphviz-5399c0a7bb458f9f475bc5da9ae4ce628dbf3054.pdf, id=2505, 653.44125pt x 
+<graphviz-5399c0a7bb458f9f475bc5da9ae4ce628dbf3054.pdf, id=2515, 653.44125pt x 
 195.73125pt>
 File: graphviz-5399c0a7bb458f9f475bc5da9ae4ce628dbf3054.pdf Graphic file (type 
 pdf)
@@ -1730,45 +1730,45 @@ pdf)
 Package pdftex.def Info: graphviz-5399c0a7bb458f9f475bc5da9ae4ce628dbf3054.pdf 
  used on input line 8859.
 (pdftex.def)             Requested size: 469.74948pt x 140.71732pt.
-<wavedrom-8a8f72bb-122c-438a-ab88-1b7676acbfe1.pdf, id=2506, 376.40625pt x 90.3
+<wavedrom-db2a1281-fb41-4498-a5c4-1b7eb590d41b.pdf, id=2516, 376.40625pt x 90.3
 375pt>
-File: wavedrom-8a8f72bb-122c-438a-ab88-1b7676acbfe1.pdf Graphic file (type pdf)
+File: wavedrom-db2a1281-fb41-4498-a5c4-1b7eb590d41b.pdf Graphic file (type pdf)
 
-<use wavedrom-8a8f72bb-122c-438a-ab88-1b7676acbfe1.pdf>
-Package pdftex.def Info: wavedrom-8a8f72bb-122c-438a-ab88-1b7676acbfe1.pdf  use
+<use wavedrom-db2a1281-fb41-4498-a5c4-1b7eb590d41b.pdf>
+Package pdftex.def Info: wavedrom-db2a1281-fb41-4498-a5c4-1b7eb590d41b.pdf  use
 d on input line 9014.
 (pdftex.def)             Requested size: 376.40532pt x 90.33727pt.
  [91
 
- <./graphviz-5399c0a7bb458f9f475bc5da9ae4ce628dbf3054.pdf> <./wavedrom-8a8f72bb
--122c-438a-ab88-1b7676acbfe1.pdf
+ <./graphviz-5399c0a7bb458f9f475bc5da9ae4ce628dbf3054.pdf> <./wavedrom-db2a1281
+-fb41-4498-a5c4-1b7eb590d41b.pdf
 
-pdfTeX warning: pdflatex (file ./wavedrom-8a8f72bb-122c-438a-ab88-1b7676acbfe1.
+pdfTeX warning: pdflatex (file ./wavedrom-db2a1281-fb41-4498-a5c4-1b7eb590d41b.
 pdf): PDF inclusion: multiple pdfs with page group included in a single page
 >]
-<wavedrom-54ad25cc-0d01-4e1b-9448-f7e6f79b8ba4.pdf, id=2549, 301.125pt x 90.337
+<wavedrom-4bb02284-09da-46ef-9d26-ac026089c08e.pdf, id=2559, 301.125pt x 90.337
 5pt>
-File: wavedrom-54ad25cc-0d01-4e1b-9448-f7e6f79b8ba4.pdf Graphic file (type pdf)
+File: wavedrom-4bb02284-09da-46ef-9d26-ac026089c08e.pdf Graphic file (type pdf)
 
-<use wavedrom-54ad25cc-0d01-4e1b-9448-f7e6f79b8ba4.pdf>
-Package pdftex.def Info: wavedrom-54ad25cc-0d01-4e1b-9448-f7e6f79b8ba4.pdf  use
+<use wavedrom-4bb02284-09da-46ef-9d26-ac026089c08e.pdf>
+Package pdftex.def Info: wavedrom-4bb02284-09da-46ef-9d26-ac026089c08e.pdf  use
 d on input line 9019.
 (pdftex.def)             Requested size: 301.12425pt x 90.33727pt.
-<wavedrom-983d5fbc-8f2d-431c-9fa5-3129bce5b776.pdf, id=2550, 301.125pt x 90.337
+<wavedrom-f1c96ee5-f6eb-4026-a3ed-19a7cfe26f66.pdf, id=2560, 301.125pt x 90.337
 5pt>
-File: wavedrom-983d5fbc-8f2d-431c-9fa5-3129bce5b776.pdf Graphic file (type pdf)
+File: wavedrom-f1c96ee5-f6eb-4026-a3ed-19a7cfe26f66.pdf Graphic file (type pdf)
 
-<use wavedrom-983d5fbc-8f2d-431c-9fa5-3129bce5b776.pdf>
-Package pdftex.def Info: wavedrom-983d5fbc-8f2d-431c-9fa5-3129bce5b776.pdf  use
+<use wavedrom-f1c96ee5-f6eb-4026-a3ed-19a7cfe26f66.pdf>
+Package pdftex.def Info: wavedrom-f1c96ee5-f6eb-4026-a3ed-19a7cfe26f66.pdf  use
 d on input line 9048.
 (pdftex.def)             Requested size: 301.12425pt x 90.33727pt.
- [92 <./wavedrom-54ad25cc-0d01-4e1b-9448-f7e6f79b8ba4.pdf> <./wavedrom-983d5fbc
--8f2d-431c-9fa5-3129bce5b776.pdf
+ [92 <./wavedrom-4bb02284-09da-46ef-9d26-ac026089c08e.pdf> <./wavedrom-f1c96ee5
+-f6eb-4026-a3ed-19a7cfe26f66.pdf
 
-pdfTeX warning: pdflatex (file ./wavedrom-983d5fbc-8f2d-431c-9fa5-3129bce5b776.
+pdfTeX warning: pdflatex (file ./wavedrom-f1c96ee5-f6eb-4026-a3ed-19a7cfe26f66.
 pdf): PDF inclusion: multiple pdfs with page group included in a single page
 >]
-<mermaid-1d86975f411cd643219ac92c1d43de06496d65d2.pdf, id=2570, 258.0039pt x 35
+<mermaid-1d86975f411cd643219ac92c1d43de06496d65d2.pdf, id=2580, 258.0039pt x 35
 8.4592pt>
 File: mermaid-1d86975f411cd643219ac92c1d43de06496d65d2.pdf Graphic file (type p
 df)
@@ -1776,21 +1776,21 @@ df)
 Package pdftex.def Info: mermaid-1d86975f411cd643219ac92c1d43de06496d65d2.pdf  
 used on input line 9100.
 (pdftex.def)             Requested size: 258.00327pt x 358.45831pt.
-<wavedrom-04b46b27-29fc-4353-a49b-d3fa0e096a8b.pdf, id=2571, 376.40625pt x 90.3
+<wavedrom-f1ad231b-7a1c-48cc-92b8-9116efc05ffb.pdf, id=2581, 376.40625pt x 90.3
 375pt>
-File: wavedrom-04b46b27-29fc-4353-a49b-d3fa0e096a8b.pdf Graphic file (type pdf)
+File: wavedrom-f1ad231b-7a1c-48cc-92b8-9116efc05ffb.pdf Graphic file (type pdf)
 
-<use wavedrom-04b46b27-29fc-4353-a49b-d3fa0e096a8b.pdf>
-Package pdftex.def Info: wavedrom-04b46b27-29fc-4353-a49b-d3fa0e096a8b.pdf  use
+<use wavedrom-f1ad231b-7a1c-48cc-92b8-9116efc05ffb.pdf>
+Package pdftex.def Info: wavedrom-f1ad231b-7a1c-48cc-92b8-9116efc05ffb.pdf  use
 d on input line 9103.
 (pdftex.def)             Requested size: 376.40532pt x 90.33727pt.
  [93 <./mermaid-1d86975f411cd643219ac92c1d43de06496d65d2.pdf>] [94 <./wavedrom-
-04b46b27-29fc-4353-a49b-d3fa0e096a8b.pdf>] [95]
+f1ad231b-7a1c-48cc-92b8-9116efc05ffb.pdf>] [95]
 Overfull \vbox (2.0122pt too high) detected at line 9480
  []
 
 [96]
-<graphviz-4803a61817ead09c795744837f2b002bd6d28c5a.pdf, id=2649, 477.785pt x 39
+<graphviz-4803a61817ead09c795744837f2b002bd6d28c5a.pdf, id=2659, 477.785pt x 39
 1.4625pt>
 File: graphviz-4803a61817ead09c795744837f2b002bd6d28c5a.pdf Graphic file (type 
 pdf)
@@ -1799,7 +1799,7 @@ Package pdftex.def Info: graphviz-4803a61817ead09c795744837f2b002bd6d28c5a.pdf
  used on input line 9490.
 (pdftex.def)             Requested size: 469.7571pt x 384.90292pt.
  [97 <./graphviz-4803a61817ead09c795744837f2b002bd6d28c5a.pdf>] [98]
-<sample_stream_schematic.pdf, id=2696, 432.86719pt x 441.90094pt>
+<sample_stream_schematic.pdf, id=2706, 432.86719pt x 441.90094pt>
 File: sample_stream_schematic.pdf Graphic file (type pdf)
 <use sample_stream_schematic.pdf>
 Package pdftex.def Info: sample_stream_schematic.pdf  used on input line 9641.
@@ -1821,11 +1821,11 @@ Chapter 4.
 
 ]
 Chapter 5.
-[105] [106] [107] [108
-
-]
+[105] [106] [107] [108]
 Chapter 6.
-[109] [110]
+[109
+
+] [110]
 Chapter 7.
 
 Package sphinx Warning: The package pict2e is required for rounded boxes.
@@ -1846,16 +1846,16 @@ LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
 Package rerunfilecheck Info: File `ecp5sensorlogger.out' has not changed.
-(rerunfilecheck)             Checksum: 67F87675B5998863854B9E7FF621D8E9;38620.
+(rerunfilecheck)             Checksum: B3D9D01121637158144FA312B892E90F;38860.
  ) 
 Here is how much of TeX's memory you used:
- 18195 strings out of 469006
- 332416 string characters out of 5454814
- 1257174 words of memory out of 5000000
- 46126 multiletter control sequences out of 15000+600000
+ 18201 strings out of 469006
+ 332537 string characters out of 5454814
+ 1257265 words of memory out of 5000000
+ 46130 multiletter control sequences out of 15000+600000
  702239 words of font info for 93 fonts, out of 8000000 for 9000
  320 hyphenation exceptions out of 8191
- 72i,20n,82p,1205b,711s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 72i,20n,82p,1205b,684s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5
 .pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/amsfonts/cm/cm
 sy10.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/amsfonts/c
@@ -1872,10 +1872,10 @@ fonts/t1xtt.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/txf
 onts/t1xtt.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/txfo
 nts/tcxtt.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/urw/times/ut
 mr8a.pfb>
-Output written on ecp5sensorlogger.pdf (117 pages, 1235989 bytes).
+Output written on ecp5sensorlogger.pdf (117 pages, 1236987 bytes).
 PDF statistics:
- 2916 PDF objects out of 2984 (max. 8388607)
- 2258 compressed objects within 23 object streams
- 402 named destinations out of 1000 (max. 500000)
- 2300 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 2928 PDF objects out of 2984 (max. 8388607)
+ 2270 compressed objects within 23 object streams
+ 404 named destinations out of 1000 (max. 500000)
+ 2316 words of extra memory for PDF output out of 10000 (max. 10000000)
 

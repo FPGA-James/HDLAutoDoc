@@ -424,13 +424,17 @@
 <td><p>1</p></td>
 <td><p>3 (1 skipped)</p></td>
 </tr>
-<tr class="row-even"><td><p>Directed</p></td>
+<tr class="row-even"><td><p>pyuvm</p></td>
+<td><p>1</p></td>
+<td><p>3 (1 skipped)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Directed</p></td>
 <td><p>3</p></td>
 <td><p>6</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>Total</strong></p></td>
-<td><p>6</p></td>
-<td><p>15 (1 skipped)</p></td>
+<tr class="row-even"><td><p><strong>Total</strong></p></td>
+<td><p>7</p></td>
+<td><p>18 (2 skipped)</p></td>
 </tr>
 </tbody>
 </table>
@@ -546,6 +550,46 @@
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">start_runs_a_capture</span></code> <em>(skipped)</em></p></td>
 <td><p>Setting ctrl.start moves the status to running (needs the full top level).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="pyuvm">
+<h2>pyuvm<a class="headerlink" href="#pyuvm" title="Link to this heading">¶</a></h2>
+<section id="test-axis-pipeline">
+<h3>test_axis_pipeline<a class="headerlink" href="#test-axis-pipeline" title="Link to this heading">¶</a></h3>
+<dl class="field-list simple">
+<dt class="field-odd">File<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">tb/pyuvm/test_axis_pipeline.py</span></code></p>
+</dd>
+<dt class="field-even">Tests module<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../modules/axis_pipeline/index.html"><span class="doc">axis_pipeline</span></a></p>
+</dd>
+<dt class="field-odd">Purpose<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pyuvm environment for axis_pipeline.</p>
+</dd>
+<dt class="field-even">Tests<span class="colon">:</span></dt>
+<dd class="field-even"><p>3 tests, 1 skipped</p>
+</dd>
+</dl>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Test</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RandomPacketsTest</span></code></p></td>
+<td><p>Random packets: only those starting at or above the threshold come out.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SinglePacketTest</span></code></p></td>
+<td><p>A single packet goes through and the scoreboard sees it.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BackpressureTest</span></code> <em>(skipped)</em></p></td>
+<td><p>m_axis_tready toggles while packets are in flight (not written yet).</p></td>
 </tr>
 </tbody>
 </table>
@@ -710,6 +754,10 @@
 </li>
 <li><a class="reference internal" href="#cocotb">cocotb</a><ul>
 <li><a class="reference internal" href="#test-axil-adapter">test_axil_adapter</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pyuvm">pyuvm</a><ul>
+<li><a class="reference internal" href="#test-axis-pipeline">test_axis_pipeline</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#directed">Directed</a><ul>

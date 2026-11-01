@@ -35,12 +35,6 @@ Modules
      - ``top``
      - —
 
-   * - :doc:`modules/sample_capture/index`
-     - ``sample_capture.sv``
-     - Sample capture across a clock boundary. Registers samples from a free-running converter clock (adc_clk) and hands
-     - ``top``
-     - ``async_fifo``
-
    * - :doc:`modules/sample_ctrl/index`
      - ``sample_ctrl.vhd``
      - Sampler controller. Runs one capture window per start request: it arms, enables the capture
@@ -53,17 +47,17 @@ Modules
      - ``axil_adapter``
      - —
 
-   * - :doc:`modules/axis_pipeline/index`
-     - ``axis_pipeline.sv``
-     - Filtered pass-through for an external byte stream. Presents flat AXI4-Stream ports, wraps them in interface instances and runs
+   * - :doc:`modules/sample_capture/index`
+     - ``sample_capture.sv``
+     - Sample capture across a clock boundary. Registers samples from a free-running converter clock (adc_clk) and hands
      - ``top``
-     - ``stream_filter``
+     - ``async_fifo``
 
-   * - :doc:`modules/axil_adapter/index`
-     - ``axil_adapter.sv``
-     - Flat AXI4-Lite to register file adapter. Presents the register bus as flat AXI4-Lite subordinate ports (so a VHDL
-     - ``top``
-     - ``axil_regs``
+   * - :doc:`modules/stream_filter/index`
+     - ``stream_filter.sv``
+     - Packet filter for a byte stream. Looks at the first byte of each packet: if it is at or above the threshold
+     - ``axis_pipeline``, ``sample_stream``
+     - —
 
    * - :doc:`modules/apb_bridge/index`
      - ``apb_bridge.vhd``
@@ -89,8 +83,14 @@ Modules
      - ``top``
      - ``stream_filter``
 
-   * - :doc:`modules/stream_filter/index`
-     - ``stream_filter.sv``
-     - Packet filter for a byte stream. Looks at the first byte of each packet: if it is at or above the threshold
-     - ``axis_pipeline``, ``sample_stream``
-     - —
+   * - :doc:`modules/axis_pipeline/index`
+     - ``axis_pipeline.sv``
+     - Filtered pass-through for an external byte stream. Presents flat AXI4-Stream ports, wraps them in interface instances and runs
+     - ``top``
+     - ``stream_filter``
+
+   * - :doc:`modules/axil_adapter/index`
+     - ``axil_adapter.sv``
+     - Flat AXI4-Lite to register file adapter. Presents the register bus as flat AXI4-Lite subordinate ports (so a VHDL
+     - ``top``
+     - ``axil_regs``
