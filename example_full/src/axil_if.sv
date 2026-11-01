@@ -4,7 +4,7 @@
 // port: Yosys cannot pass a clocked interface instance to a submodule.
 interface axil_if;
     // Write address channel.
-    logic [7:0]  awaddr;
+    logic [full_pkg::ADDR_W-1:0]  awaddr;
     logic        awvalid;
     logic        awready;
     // Write data channel.
@@ -17,7 +17,7 @@ interface axil_if;
     logic        bvalid;
     logic        bready;
     // Read address channel.
-    logic [7:0]  araddr;
+    logic [full_pkg::ADDR_W-1:0]  araddr;
     logic        arvalid;
     logic        arready;
     // Read data channel.

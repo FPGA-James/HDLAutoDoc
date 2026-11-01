@@ -94,7 +94,7 @@ def test_one_info_message_states_the_count_across_documents(monkeypatch):
     assert rec.messages == []                      # nothing per document
     ms.report_omitted_diagrams(app, None)
     assert len(rec.messages) == 1
-    assert "3" in rec.messages[0] and "mmdc" in rec.messages[0]
+    assert "3" in rec.messages[0] and MISSING in rec.messages[0]
 
 
 def test_no_message_when_nothing_was_omitted(monkeypatch):
@@ -211,3 +211,31 @@ def test_check_env_asks_for_doc_venv_when_sphinxcontrib_mermaid_is_missing(tmp_p
                             capture_output=True, text=True)
     assert result.returncode != 0
     assert "make doc-venv" in result.stdout + result.stderr
+
+
+# ── the render command may have arguments or escaped spaces ──────────────────
+
+def test_a_command_with_arguments_is_available_when_its_program_is():
+    doc = _doctree(2)
+    ms.omit_unrendered_diagrams(_app("latex", cmd=f"{sys.executable} -m mmdc"), doc, "index")
+    assert len(list(doc.findall(mermaid))) == 2
+
+
+def test_a_command_whose_path_has_an_escaped_space_is_available(tmp_path):
+    folder = tmp_path / "My Tools"
+    folder.mkdir()
+    tool = folder / "mmdc"
+    tool.write_text("#!/bin/sh\n")
+    tool.chmod(0o755)
+    doc = _doctree(1)
+    ms.omit_unrendered_diagrams(_app("latex", cmd=str(tool).replace(" ", "\\ ")), doc, "index")
+    assert len(list(doc.findall(mermaid))) == 1
+
+
+def test_the_message_names_the_configured_command(monkeypatch):
+    rec = _Recorder()
+    monkeypatch.setattr(ms, "logger", rec)
+    app = _app("latex", cmd="my-renderer --fast")
+    ms.omit_unrendered_diagrams(app, _doctree(1), "a")
+    ms.report_omitted_diagrams(app, None)
+    assert "my-renderer" in rec.messages[0]

@@ -31,6 +31,8 @@ module axil_adapter (
     output logic        filter_enable,
     // Holds the packet counter at zero while high.
     output logic        clear,
+    // Clears the sampler's overflow flag while high.
+    output logic        clear_overflow,
     // Smallest first-byte value the filters let through.
     output logic [7:0]  threshold,
     // Sampler controller state.
@@ -62,7 +64,7 @@ module axil_adapter (
 
     axil_regs u_regs (
         .clk(clk), .rst(rst), .s_axil(bus),
-        .start(start), .filter_enable(filter_enable), .clear(clear),
+        .start(start), .filter_enable(filter_enable), .clear(clear), .clear_overflow(clear_overflow),
         .threshold(threshold), .state_code(state_code), .overflow(overflow), .count(count)
     );
 endmodule

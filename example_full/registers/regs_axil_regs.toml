@@ -17,6 +17,11 @@ type = "bit"
 description = "Hold high to hold the forwarded-packet counter at zero."
 default_value = "0"
 
+[ctrl.clear_overflow]
+type = "bit"
+description = "Hold high to clear the overflow flag. While the flag is set a new capture ends at once, so clear it before starting."
+default_value = "0"
+
 [status]
 mode = "r"
 description = "Sampler status."

@@ -13,13 +13,13 @@ use ieee.std_logic_1164.all;
 --
 --    flowchart LR
 --      APB[s_apb] --> BR[apb_bridge] --> RG[axil_adapter + axil_regs]
---      RG -- start, threshold --> CT[sample_ctrl]
+--      RG -- start --> CT[sample_ctrl]
 --      ADC[adc_data] --> CAP[sample_capture]
 --      CT -- capture_en --> CAP
 --      CAP --> SS[sample_stream] --> MA[m_axis]
 --      EXT[s_ext] --> AP[axis_pipeline] --> ME[m_ext]
---      RG -- filter_enable --> SS
---      RG -- filter_enable --> AP
+--      RG -- filter_enable, threshold --> SS
+--      RG -- filter_enable, threshold --> AP
 entity top is
     generic (
         -- Length of the capture window in system clock cycles.
@@ -75,6 +75,7 @@ architecture rtl of top is
             clk          : in  std_logic;
             rst_n        : in  std_logic;
             enable       : in  std_logic;
+            clear_overflow : in std_logic;
             adc_clk      : in  std_logic;
             adc_rst      : in  std_logic;
             adc_data     : in  std_logic_vector(11 downto 0);
@@ -144,6 +145,7 @@ architecture rtl of top is
             start          : out std_logic;
             filter_enable  : out std_logic;
             clear          : out std_logic;
+            clear_overflow : out std_logic;
             threshold      : out std_logic_vector(7 downto 0);
             state_code     : in  std_logic_vector(1 downto 0);
             overflow       : in  std_logic;
@@ -164,7 +166,7 @@ architecture rtl of top is
     signal arvalid, arready, rvalid, rready                 : std_logic;
 
     -- Control.
-    signal start, filter_enable, clear : std_logic;
+    signal start, filter_enable, clear, clear_overflow : std_logic;
     signal threshold                   : std_logic_vector(7 downto 0);
     signal capture_en, busy            : std_logic;
     signal state_code                  : std_logic_vector(1 downto 0);
@@ -230,6 +232,7 @@ begin
             s_axil_rdata => rdata, s_axil_rresp => rresp,
             s_axil_rvalid => rvalid, s_axil_rready => rready,
             start => start, filter_enable => filter_enable, clear => clear,
+            clear_overflow => clear_overflow,
             threshold => threshold, state_code => state_code,
             overflow => ovf_sync, count => ext_count
         );
@@ -245,7 +248,7 @@ begin
     -- Capture across the clock boundary.
     u_capture : sample_capture
         port map (
-            clk => clk, rst_n => srst_n, enable => capture_en,
+            clk => clk, rst_n => srst_n, enable => capture_en, clear_overflow => clear_overflow,
             adc_clk => adc_clk, adc_rst => adc_rst, adc_data => adc_data,
             sample_data => sample_data, sample_valid => sample_valid,
             sample_ready => sample_ready, overflow => overflow

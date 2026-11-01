@@ -1,6 +1,6 @@
 // AXI4-Lite register file for the sampler.
 //
-// Five 32-bit registers: control (start, filter enable, clear), a read-only
+// Five 32-bit registers: control (start, filter enable, clear, clear overflow), a read-only
 // status word (controller state, overflow flag), the filter threshold, a
 // scratch register and a read-only packet count. Write strobes are ignored:
 // every write updates the whole register. See registers/regs_axil_regs.toml.
@@ -29,6 +29,8 @@ module axil_regs (
     output logic        filter_enable,
     // Holds the packet counter at zero while high.
     output logic        clear,
+    // Clears the sampler's overflow flag while high.
+    output logic        clear_overflow,
     // Smallest first-byte value the filters let through.
     output logic [7:0]  threshold,
     // Sampler controller state.
@@ -100,5 +102,6 @@ module axil_regs (
     assign start         = ctrl_r[0];
     assign filter_enable = ctrl_r[1];
     assign clear         = ctrl_r[2];
+    assign clear_overflow = ctrl_r[3];
     assign threshold     = threshold_r[7:0];
 endmodule

@@ -26,7 +26,7 @@ captured samples and an external byte stream both go through packet filters.
 Also: `docs/hdl_autodoc/bus_groups.toml` (a custom port group), `registers/` (register map),
 `tb/` (VUnit, cocotb and directed benches, one skipped test and one unlinked bench),
 `reports/` (real Yosys/nextpnr output plus sample Vivado reports), and RTL schematics.
-`test_example_full.py` fails if any of these stops being demonstrated.
+`test_example_full.py` checks, from the source files and the extractors' output, that the design still demonstrates the features above (it does not render the site, the schematics or the PDF).
 
 ## Try it
 

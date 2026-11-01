@@ -540,3 +540,8 @@ def test_sv_header_diagram_keeps_closing_braces_and_frontmatter_lines():
     lines = [l.strip() for l in desc.splitlines()]
     assert "}" in lines
     assert lines.count("---") == 2
+
+
+def test_prose_that_starts_with_dots_is_not_a_directive(tmp_path):
+    text = "// Counter\n// ...wraps at N.\nmodule m;\nendmodule\n"
+    assert _brief(tmp_path, "m.sv", text) == "Counter ...wraps at N."

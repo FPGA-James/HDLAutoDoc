@@ -93,13 +93,20 @@ def need_vhdl(project):
 
 
 def mermaid_blocks(text: str) -> list[str]:
-    """First diagram line of every `.. mermaid::` block in the comments of `text`."""
+    """First diagram line of every `.. mermaid::` block in the comments of `text`.
+
+    The block is the indented lines that follow the directive; the first line that is not
+    indented ends it (an empty block yields "")."""
     blocks = []
     lines = [re.sub(r"^\s*(--|//)\s?", "", l) for l in text.splitlines() if re.match(r"^\s*(--|//)", l)]
     for i, line in enumerate(lines):
         if re.match(r"^\.\.\s+mermaid::\s*$", line):
-            body = [l for l in lines[i + 1:] if l.strip()]
-            body = [l.strip() for l in body if not l.strip().startswith(":")]
+            body = []
+            for l in lines[i + 1:]:
+                if l.strip() and not l[:1].isspace():
+                    break
+                body.append(l)
+            body = [l.strip() for l in body if l.strip() and not l.strip().startswith(":")]
             blocks.append(body[0] if body else "")
     return blocks
 
@@ -117,7 +124,7 @@ def test_hierarchy_has_three_levels_and_a_module_with_two_parents(project):
 
 
 def test_the_design_mixes_vhdl_and_systemverilog(project):
-    need_vhdl(project)
+    # Not waived by need_vhdl: this example is mixed-language, and losing a language fails.
     assert project.vhdl_modules() and project.sv_modules()
 
 
@@ -212,8 +219,14 @@ def test_cdc_analysis_finds_domains_a_synchroniser_and_a_dual_clock_structure(pr
     assert any("Dual-Clock Instances" in t for t in cdc), "no async FIFO / dual-clock instance"
 
 
-def test_reset_analysis_finds_more_than_one_reset_domain(project):
-    assert any("Reset Domains" in e["reset"] for e in project.extractions.values())
+def test_reset_analysis_finds_more_than_one_reset_domain_and_both_reset_styles(project):
+    resets = [e["reset"] for e in project.extractions.values()]
+    assert any("Reset Domains" in t for t in resets)
+    assert any("- Async" in t for t in resets), "no asynchronous reset"
+    assert any("- Sync" in t for t in resets), "no synchronous reset"
+    need_vhdl(project)
+    assert any("reset" in m.lower() and "sync" in m.lower() for m in project.vhdl_modules()), \
+        "no reset synchroniser module"
 
 
 # ── Buses and registers ──────────────────────────────────────────────────────
@@ -261,6 +274,7 @@ def test_testbenches_in_all_three_frameworks_linked_with_one_skipped(project):
     for framework in ("vunit", "cocotb", "directed"):
         assert any(t.dut for t in tbs if t.framework == framework), f"no linked {framework} bench"
     assert any(c.skipped for t in tbs for c in t.tests)
+    assert any(t.dut for t in tbs) and any(not t.dut for t in tbs), "need linked and unlinked benches"
     suffixes = {Path(t.file).suffix for t in tbs}
     assert ".sv" in suffixes
     if not project.pure_sv:

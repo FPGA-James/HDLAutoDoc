@@ -21,7 +21,7 @@ module tb_axil_adapter;
     .s_axil_bresp(), .s_axil_bvalid(bvalid), .s_axil_bready(bready),
     .s_axil_araddr(araddr), .s_axil_arvalid(arvalid), .s_axil_arready(arready),
     .s_axil_rdata(rdata), .s_axil_rresp(), .s_axil_rvalid(rvalid), .s_axil_rready(rready),
-    .start, .filter_enable, .clear, .threshold,
+    .start, .filter_enable, .clear, .clear_overflow(), .threshold,
     .state_code(2'b00), .overflow(1'b0), .count(16'd0)
   );
 

@@ -66,7 +66,7 @@ begin
     --      { "name": "clk",   "wave": "P......." },
     --      { "name": "rst",   "wave": "1.0....." },
     --      { "name": "start", "wave": "0..1...." },
-    --      { "name": "state", "wave": "=.=.=.=.", "data": ["(any)","IDLE","ARMED","RUN"] }
+    --      { "name": "state", "wave": "=.=.==..", "data": ["(any)","IDLE","ARMED","RUN"] }
     --    ]}
     p_state_reg : process(clk) is
     begin
@@ -107,10 +107,10 @@ begin
     -- .. wavedrom::
     --
     --    { "signal": [
-    --      { "name": "clk",      "wave": "P........" },
-    --      { "name": "start",    "wave": "01......0" },
-    --      { "name": "run_last", "wave": "0....10.." },
-    --      { "name": "state",    "wave": "=.=.=.=.=", "data": ["IDLE","ARMED","RUN","DONE","IDLE"] }
+    --      { "name": "clk",      "wave": "P........." },
+    --      { "name": "start",    "wave": "01.....0.." },
+    --      { "name": "run_last", "wave": "0....10..." },
+    --      { "name": "state",    "wave": "=.==..=.=.", "data": ["IDLE","ARMED","RUN","DONE","IDLE"] }
     --    ]}
     p_next_state : process(state, start, overflow, run_last) is
     begin

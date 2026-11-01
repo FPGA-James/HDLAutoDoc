@@ -331,8 +331,8 @@ entity master is
 always_ff @(posedge clk) begin : p_state
 ```
 
-- **Where it appears:** a header diagram on the module's *Entity* page; a process diagram under the process's *Description*, in the order you wrote it. The process index has a *Mermaid* column next to *WaveDrom*.
-- **Indentation is kept**, since Mermaid depends on it (`subgraph`, nested `state`, `mindmap`). Write `-->` freely inside VHDL comments; only the leading `--` is removed.
+- **Where it appears:** a header diagram on the module's *Entity* page; a process diagram under the process's *Description*, in the order you wrote it. The process index gets a *Mermaid* column next to *WaveDrom* when a process in that module has a diagram.
+- **Indentation is kept**, since Mermaid depends on it (`subgraph`, nested `state`, `mindmap`). Write `-->` freely inside VHDL comments; only the leading `--` is removed. In a VHDL header, write the comment marker as `-- ` (with a space): the VHDL header reader ignores `--.. mermaid::` and a tab after `--`, and the comment above a process loses a tab after `--` too.
 - **The overview description** (the one line in the overview table) stops at the first directive, so a diagram never leaks into it.
 - **Generated diagrams are unchanged.** The FSM, hierarchy, CDC and block diagrams still use Graphviz; Mermaid is only for diagrams you write.
 - **Dark mode** follows the Furo toggle automatically.
@@ -569,7 +569,7 @@ Set these on the command line (`make doc-html SCHEMATICS=0`) or in your Makefile
 | `AUTODOC_AUTHOR`, `AUTODOC_RELEASE` | `HDL Team`, `1.0.0` | Author and release shown in the docs |
 | `SCHEMATICS` | `1` | `0` skips RTL schematics |
 | `ANNOTATED_SOURCE` | `1` | `0` omits the "Annotated Source" listing from entity pages |
-| `AUTODOC_MERMAID_CMD` | `mmdc` | Command that renders Mermaid diagrams for the PDF |
+| `AUTODOC_MERMAID_CMD` | `mmdc` | Command that renders Mermaid diagrams for the PDF; it may carry arguments (`npx -y @mermaid-js/mermaid-cli`), and a space in a path is written `\ ` |
 | `AUTODOC_MERMAID_PARAMS` | *(none)* | Extra arguments for it, e.g. `-p puppeteer.json` |
 | `AUTODOC_MERMAID_JS` | *(CDN)* | Where to load Mermaid from: a path relative to `docs/hdl_autodoc/_static/` (e.g. `mermaid/mermaid.esm.min.mjs`) or an `https://` URL, for HTML that works offline (serve the site; see above) |
 | `TESTBENCHES` | `1` | `0` removes the Testbenches section |

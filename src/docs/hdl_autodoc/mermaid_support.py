@@ -41,12 +41,22 @@ def mermaid_settings(environ: Mapping[str, str]) -> dict:
     }
 
 
+def _program(command: str) -> str:
+    """The program in a render command, as the extension splits it (arguments may follow;
+    a space in the path is written `\\ `)."""
+    try:
+        parts = shlex.split(command)
+    except ValueError:
+        parts = command.split()
+    return parts[0] if parts else command
+
+
 def omit_unrendered_diagrams(app, doctree, docname) -> None:
     """
     `doctree-resolved` handler.  For the LaTeX builder, when the render command is
     not available, replace every Mermaid node with a note and count them.
     """
-    if app.builder.name != "latex" or shutil.which(app.config.mermaid_cmd) is not None:
+    if app.builder.name != "latex" or shutil.which(_program(app.config.mermaid_cmd)) is not None:
         return
     found = list(doctree.findall(mermaid))
     for node in found:
@@ -60,8 +70,8 @@ def report_omitted_diagrams(app, exception) -> None:
     if count:
         logger.info(
             f"{count} Mermaid diagram{'s' if count != 1 else ''} omitted from the PDF: "
-            f"mermaid-cli (mmdc) was not found. Install it, or set AUTODOC_MERMAID_CMD, "
-            f"to include them.")
+            f"mermaid-cli ({_program(app.config.mermaid_cmd)}) was not found. Install it, "
+            f"or set AUTODOC_MERMAID_CMD, to include them.")
 
 
 def install_js_for_documents_only(app, pagename, templatename, context, doctree) -> None:

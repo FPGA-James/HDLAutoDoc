@@ -9,8 +9,9 @@ use ieee.numeric_std.all;
 -- the other domain through a two-flop synchroniser, so only one bit changes at
 -- a time and a pointer is never sampled half-updated.
 --
--- Depth is 2**DEPTH_LOG2 words. Full and empty are conservative: they may
--- assert a cycle or two late after the opposite side moves, never early.
+-- Depth is 2**DEPTH_LOG2 words. Full and empty are conservative: each side
+-- sees the other side's pointer a cycle or two late, so a flag may stay
+-- asserted slightly longer than needed, but is never released early.
 entity async_fifo is
     generic (
         -- Width of one stored word in bits (default matches full_pkg::SAMPLE_W).
