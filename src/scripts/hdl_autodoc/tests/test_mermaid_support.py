@@ -189,3 +189,25 @@ def test_pages_without_a_diagram_never_load_the_mermaid_script(tmp_path):
     for page in ("plain.html", "genindex.html", "search.html"):
         assert (out / page).exists(), page
         assert CDN not in (out / page).read_text(), page
+
+
+# ── make doc-check-env ───────────────────────────────────────────────────────
+
+def test_check_env_asks_for_doc_venv_when_sphinxcontrib_mermaid_is_missing(tmp_path):
+    """A project upgraded to a tool that needs sphinxcontrib-mermaid, with an old
+    environment, is told to run `make doc-venv` instead of getting a traceback."""
+    import subprocess
+    # A Python that behaves like this one except that sphinxcontrib.mermaid is not installed.
+    shim = tmp_path / "python-without-mermaid"
+    shim.write_text(
+        "#!/bin/sh\n"
+        f'exec "{sys.executable}" -c "import sys; sys.modules[\'sphinxcontrib.mermaid\'] = None; '
+        'exec(sys.argv[1])" "$2"\n')
+    shim.chmod(0o755)
+    project = tmp_path / "project"
+    project.mkdir()
+    (project / "Makefile").write_text(f"include {HDL_AUTODOC_DOCS.parents[1] / 'autodoc.mk'}\n")
+    result = subprocess.run(["make", "-C", str(project), "doc-check-env", f"PYTHON={shim}"],
+                            capture_output=True, text=True)
+    assert result.returncode != 0
+    assert "make doc-venv" in result.stdout + result.stderr

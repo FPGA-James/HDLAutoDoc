@@ -135,7 +135,7 @@ doc-install:
 # Fails early with the fix instead of a Sphinx "no theme named 'furo'" traceback
 # when no .venv exists and the system Python lacks the dependencies.
 doc-check-env:
-	@$(PYTHON) -c "import sphinx, furo, sphinxcontrib.wavedrom, sphinxvhdl" 2>/dev/null || { \
+	@$(PYTHON) -c "import sphinx, furo, sphinxcontrib.wavedrom, sphinxcontrib.mermaid, sphinxvhdl" 2>/dev/null || { \
 		echo "ERROR: the Python packages HDL AutoDoc needs are not installed for $(PYTHON)."; \
 		echo "       Run 'make doc-venv' (creates .venv and installs them), then re-run."; \
 		echo "       Or 'make doc-install' to install into the active environment."; \
