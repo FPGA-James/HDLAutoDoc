@@ -37,6 +37,7 @@ DEFAULT_COLOUR = "white"
 # Shared helpers
 # ─────────────────────────────────────────────────────────────────────────────
 
+from hdl_scan import matching_paren
 from hdl_text import strip_sv_comments, strip_vhdl_comments  # noqa: F401  (re-exported)
 
 def normalise(text: str) -> str:
@@ -65,7 +66,7 @@ def extract_transitions_vhdl(vhd_text: str) -> list[tuple[str,str,str]]:
             continue
         from_state = state_m.group(1).upper()
         for m in re.finditer(
-            r"if\s+([\w\s=/']+?)\s+then\s+next_state\s*<=\s*(\w+)", clause
+            r"if\s+((?:(?!\bthen\b).)+?)\s+then\s+next_state\s*<=\s*(\w+)", clause
         ):
             transitions.append((from_state, m.group(2).upper(), m.group(1).strip()))
         body = re.sub(r"if\b.*?end\s+if", "", clause, flags=re.DOTALL)
@@ -114,70 +115,105 @@ def extract_outputs_vhdl(vhd_text: str) -> dict:
 # SystemVerilog extraction
 # ─────────────────────────────────────────────────────────────────────────────
 
+_SV_DEPTH_TOKENS = re.compile(r"\bbegin\b|\bend\b|\bcase[xz]?\b|\bendcase\b|[()]", re.IGNORECASE)
+_SV_ARM_LABEL = re.compile(r"(?<![\w:])(\w+(?:\s*,\s*\w+)*)\s*:(?!:)")
+
+
+def _sv_case_body(text: str) -> str | None:
+    """The body of the first `case` statement that assigns next_state (nested cases and
+    parentheses in the selector are handled), or None."""
+    for m in re.finditer(r"\bcase[xz]?\s*\(", text, re.IGNORECASE):
+        close = matching_paren(text, m.end() - 1)
+        if close is None:
+            continue
+        depth = 1
+        for t in re.finditer(r"\bcase[xz]?\b|\bendcase\b", text[close + 1:], re.IGNORECASE):
+            depth += 1 if t.group(0).lower() != "endcase" else -1
+            if depth == 0:
+                body = text[close + 1:close + 1 + t.start()]
+                if "next_state" in body.lower():
+                    return body
+                break
+    return None
+
+
+def _sv_arms(body: str) -> list[tuple[str, str]]:
+    """[(label, arm text)] for the arms of a case body.  A label is `NAME:` at the start
+    of a statement outside any begin/end, nested case or parentheses, so the colon of a
+    ternary (`a ? B : C`) is not one."""
+    depth_at: list[tuple[int, int]] = []          # (position, depth after the token)
+    depth = 0
+    for t in _SV_DEPTH_TOKENS.finditer(body):
+        word = t.group(0).lower()
+        depth += -1 if word in ("end", "endcase", ")") else 1
+        depth_at.append((t.start(), depth))
+
+    def depth_before(pos: int) -> int:
+        d = 0
+        for p, after in depth_at:
+            if p >= pos:
+                break
+            d = after
+        return d
+
+    starts = []
+    for m in _SV_ARM_LABEL.finditer(body):
+        before = body[:m.start()].rstrip()
+        at_statement_start = (not before or before.endswith(";")
+                              or re.search(r"\bend$", before, re.IGNORECASE) is not None)
+        if at_statement_start and depth_before(m.start()) == 0:
+            starts.append(m)
+    return [(m.group(1), body[m.end():starts[i + 1].start() if i + 1 < len(starts) else len(body)])
+            for i, m in enumerate(starts)]
+
+
+def _sv_arm_transitions(from_state: str, arm: str) -> list[tuple[str, str, str]]:
+    """The transitions one case arm makes: `if (cond) next_state = X`, a ternary
+    assignment, and bare assignments."""
+    found: list[tuple[str, str, str]] = []
+    consumed: list[tuple[int, int]] = []
+    assign = re.compile(r"next_state\s*(?:<=|=)\s*([^;]+);", re.IGNORECASE)
+
+    for m in re.finditer(r"\bif\s*\(", arm, re.IGNORECASE):
+        close = matching_paren(arm, m.end() - 1)
+        if close is None:
+            continue
+        cond = arm[m.end():close].strip()
+        rest = re.match(r"\s*(?:begin\b\s*)?", arm[close + 1:], re.IGNORECASE)
+        a = assign.match(arm, close + 1 + rest.end())
+        if a:
+            found.append((from_state, a.group(1).strip().upper(), cond))
+            consumed.append((m.start(), a.end()))
+
+    for m in assign.finditer(arm):
+        if any(s <= m.start() < e for s, e in consumed):
+            continue
+        value = m.group(1).strip()
+        tern = re.fullmatch(r"(.+?)\s*\?\s*(\w+)\s*:\s*(\w+)", value, re.DOTALL)
+        if tern:
+            cond, yes, no = tern.group(1).strip(), tern.group(2).upper(), tern.group(3).upper()
+            if yes != from_state:
+                found.append((from_state, yes, cond))
+            if no != from_state:
+                found.append((from_state, no, f"!({cond})"))
+        elif re.fullmatch(r"\w+", value) and value.upper() != from_state:
+            found.append((from_state, value.upper(), ""))
+    return found
+
+
 def extract_transitions_sv(sv_text: str) -> list[tuple[str,str,str]]:
     # Work on comment-stripped text only — do NOT normalise (normalise lowercases
     # state names which breaks the label splitter)
-    text = strip_sv_comments(sv_text)
-
-    # Find the always block that contains next_state assignment
-    # Pattern: always_comb/always_ff ... begin [: label] ... endcase ... end
-    block_re = re.compile(
-        r"always_(?:comb|ff)\b[^;]*?begin\b(?:\s*:\s*\w+)?\s*(.*?)\bend\b",
-        re.DOTALL | re.IGNORECASE
-    )
-    case_body = None
-    for bm in block_re.finditer(text):
-        block = bm.group(1)
-        if "next_state" not in block.lower():
-            continue
-        cm = re.search(r"\bcase\s*\([^)]+\)(.*?)\bendcase\b", block,
-                       re.DOTALL | re.IGNORECASE)
-        if cm:
-            case_body = cm.group(1)
-            break
-
-    if case_body is None:
-        # Fallback: find any case block containing next_state
-        for cm in re.finditer(r"\bcase\s*\([^)]+\)(.*?)\bendcase\b",
-                              text, re.DOTALL | re.IGNORECASE):
-            if "next_state" in cm.group(1).lower():
-                case_body = cm.group(1)
-                break
-
-    if case_body is None:
+    body = _sv_case_body(strip_sv_comments(sv_text))
+    if body is None:
         return []  # No FSM in this file
 
-    transitions = []
-    # Split on state labels: "WORD:" where WORD is not a keyword
-    SV_KEYWORDS = {"begin","end","if","else","case","endcase","default",
-                   "assign","always","module","endmodule","logic","input","output"}
-    clauses = re.split(r"\b(\w+)\s*:", case_body)
-
-    i = 1
-    while i < len(clauses) - 1:
-        label = clauses[i].strip()
-        body  = clauses[i+1] if i+1 < len(clauses) else ""
-        i += 2
-
-        if label.lower() in SV_KEYWORDS:
-            continue
-        from_state = label.upper()
-
-        # if (cond) next_state = TARGET
-        for m in re.finditer(
-            r"if\s*\(([^)]+)\)\s*(?:begin\s*)?next_state\s*(?:<=|=)\s*(\w+)",
-            body, re.IGNORECASE
-        ):
-            transitions.append((from_state, m.group(2).upper(), m.group(1).strip()))
-
-        # unconditional: strip if blocks then find bare next_state assignments
-        body_no_if = re.sub(r"\bif\s*\([^)]*\)\s*(?:begin.*?end|[^;]+;)",
-                            "", body, flags=re.DOTALL | re.IGNORECASE)
-        for m in re.finditer(r"next_state\s*(?:<=|=)\s*(\w+)", body_no_if, re.IGNORECASE):
-            to = m.group(1).upper()
-            if to != from_state:
-                transitions.append((from_state, to, ""))
-
+    transitions: list[tuple[str, str, str]] = []
+    for labels, arm in _sv_arms(body):
+        for label in re.split(r"\s*,\s*", labels):
+            if label.lower() == "default":
+                continue
+            transitions += _sv_arm_transitions(label.upper(), arm)
     return transitions
 
 

@@ -760,6 +760,20 @@ Done. The new module appears in the overview (tree and table), navigation, and g
 
 ## 📋 Release notes
 
+### v3.15.0
+
+#### Fixes
+
+- **Dual-clock instances with nested parentheses are found.** The CDC page missed an asynchronous FIFO written `async_fifo #(.WIDTH(8), .DEPTH(clog2(16))) u_fifo (...)` or `generic map (WIDTH => f(8))`, because the instance matcher could not count parentheses. Instances are now read with a small scanner that balances them. A clock connected through an expression (a gate, a slice) is no longer taken for a second clock.
+- **FSM extraction handles conditions with parentheses and ternaries** (SystemVerilog and VHDL). `if (start && (mode == 1 || force)) next_state = RUN;` kept no transition; a ternary `next_state = done ? IDLE : ERR;` invented a state. Transitions now keep the whole condition, a ternary gives one transition per outcome (`done` and `!(done)`), and arms written with `begin ... end` are read in full.
+- **A VHDL port range containing a call is shown whole** (`unsigned(clog2(DEPTH) - 1 downto 0)`, not `clog2(DEPTH`).
+
+#### Compatibility
+
+- Backwards compatible. On the example projects the extracted transitions and instances are identical to before; only inputs that were read wrongly change.
+
+---
+
 ### v3.14.2
 
 #### Fixes

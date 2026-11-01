@@ -38,6 +38,7 @@ import re
 import sys
 from pathlib import Path
 
+from hdl_scan import matching_paren
 from hdl_text import safe_id
 from sv_interfaces import collect_interfaces, find_interface_port
 
@@ -154,9 +155,19 @@ def extract_ports_vhdl(text: str) -> list[dict]:
     ports  = []
 
     for idx, line in enumerate(lines):
-        m = _VHDL_PORT_RE.search(re.sub(r"--.*", "", line))  # strip for matching
+        code = re.sub(r"--.*", "", line)  # strip for matching
+        m = _VHDL_PORT_RE.search(code)
         if not m:
             continue
+
+        # The regex's range stops at the first `)`; a range holding a call needs balancing.
+        range_text = (m.group(4) or "").strip()
+        opened = re.match(r"\s*\(", code[m.end(3):])
+        if opened:
+            open_idx = m.end(3) + opened.end() - 1
+            close = matching_paren(code, open_idx)
+            if close is not None:
+                range_text = code[open_idx + 1:close].strip()
 
         comment = _inline_comment_vhdl(line) or _preceding_comment(lines, idx, "--")
         for name in [n.strip() for n in m.group(1).split(",")]:
@@ -164,7 +175,7 @@ def extract_ports_vhdl(text: str) -> list[dict]:
                 "name":    name,
                 "dir":     m.group(2).lower(),
                 "type":    m.group(3).lower(),
-                "range":   (m.group(4) or "").strip(),
+                "range":   range_text,
                 "comment": comment,
             })
 

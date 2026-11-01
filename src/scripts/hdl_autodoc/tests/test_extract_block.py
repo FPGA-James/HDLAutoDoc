@@ -907,3 +907,11 @@ def test_vhdl_port_description_joins_the_block_and_ignores_a_banner():
     assert c["start_i"] == ("Held-level start request. Core detects the rising edge "
                             "internally and pulses start_i for one cycle.")
     assert c["done_o"] == ""
+
+
+def test_vhdl_port_range_may_contain_a_function_call():
+    text = ("entity e is\n  port (\n"
+            "    addr : in unsigned(clog2(DEPTH) - 1 downto 0);\n"
+            "    d    : in std_logic_vector(W - 1 downto 0)\n  );\nend entity e;\n")
+    by_name = {p["name"]: p["range"] for p in extract_ports_vhdl(text)}
+    assert by_name == {"addr": "clog2(DEPTH) - 1 downto 0", "d": "W - 1 downto 0"}
