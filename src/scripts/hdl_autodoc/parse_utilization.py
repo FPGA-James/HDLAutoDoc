@@ -180,6 +180,23 @@ def _parse_vivado(text: str) -> list[ModuleUtilization]:
 
 # ── Yosys stat parser ─────────────────────────────────────────────────────────
 
+_PARAMOD_RE = re.compile(r"^\\?\$paramod(?:\$[0-9a-f]+)?\\([^\\]+)")
+
+
+def _yosys_design_name(name: str) -> str:
+    """
+    The module a Yosys section belongs to.  Yosys writes a specialised copy of a module
+    under a generated name: `aes_cipher$interfaces$axis_ifaxis_if` for each combination of
+    interfaces it is instantiated with, `$paramod\\stream_filter\\COUNT_W=16` for a
+    parameterised copy.  Both are the module they were made from.
+    """
+    name = name.strip()
+    m = _PARAMOD_RE.match(name)
+    if m:
+        return m.group(1)
+    return name.lstrip("\\").split("$interfaces$", 1)[0]
+
+
 def _parse_yosys(text: str) -> list[ModuleUtilization]:
     results: list[ModuleUtilization] = []
     sections = re.split(r'^=== (.+?) ===$', text, flags=re.MULTILINE)
@@ -188,7 +205,7 @@ def _parse_yosys(text: str) -> list[ModuleUtilization]:
         body = sections[i + 1] if i + 1 < len(sections) else ""
         if name.lower() in ("aggregate", "design hierarchy"):
             continue
-        mu = ModuleUtilization(module_name=name.lower())
+        mu = ModuleUtilization(module_name=_yosys_design_name(name).lower())
         for line in body.split("\n"):
             # Older Yosys prints "<cell> <count>", current Yosys "<count> <cell>".
             m = re.match(r'\s+(\S+)\s+(\d+)', line)
@@ -207,7 +224,15 @@ def _parse_yosys(text: str) -> list[ModuleUtilization]:
                 mu.brams += count
             elif cell in _DSP_CELLS:
                 mu.dsps += count
-        results.append(mu)
+        # Copies of one module (different interface or parameter sets) are one row.
+        same = next((r for r in results if r.module_name == mu.module_name), None)
+        if same is None:
+            results.append(mu)
+        else:
+            same.luts += mu.luts
+            same.ffs += mu.ffs
+            same.brams += mu.brams
+            same.dsps += mu.dsps
     return results
 
 

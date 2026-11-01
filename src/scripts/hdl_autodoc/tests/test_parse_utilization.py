@@ -222,3 +222,62 @@ def test_yosys_design_hierarchy_section_is_not_a_module(tmp_path):
     rpt.write_text(_YOSYS_MODERN_STAT)
     modules, _ = parse_utilization(rpt)
     assert [m.module_name for m in modules] == ["cnt"]
+
+
+# ── Yosys specialised module names (issue #4) ────────────────────────────────
+
+_YOSYS_SPECIALISED = """\
+=== top ===
+
+   Number of cells:                 3
+     TRELLIS_COMB                   3
+
+=== aes_cipher$interfaces$axis_ifaxis_if ===
+
+   Number of cells:                10
+     TRELLIS_COMB                   6
+     TRELLIS_FF                     4
+
+=== aes_cipher$interfaces$axil_ifaxil_ifaxis_if ===
+
+   Number of cells:                 5
+     TRELLIS_COMB                   3
+     TRELLIS_FF                     2
+
+=== $paramod\\stream_filter\\COUNT_W=16 ===
+
+   Number of cells:                 3
+     TRELLIS_FF                     3
+
+=== stream_filter ===
+
+   Number of cells:                 1
+     TRELLIS_FF                     1
+"""
+
+
+def _modules(text):
+    from parse_utilization import parse_utilization_text
+    modules, tool = parse_utilization_text(text)
+    assert tool == "yosys"
+    return {m.module_name: m for m in modules}
+
+
+def test_interface_specialisations_are_listed_under_the_module_name():
+    names = list(_modules(_YOSYS_SPECIALISED))
+    assert "aes_cipher" in names
+    assert not [n for n in names if "$" in n]
+
+
+def test_specialisations_of_one_module_are_merged_by_adding_their_resources():
+    aes = _modules(_YOSYS_SPECIALISED)["aes_cipher"]
+    assert (aes.luts, aes.ffs) == (9, 6)
+
+
+def test_a_parameterised_copy_is_merged_into_the_plain_module():
+    sf = _modules(_YOSYS_SPECIALISED)["stream_filter"]
+    assert sf.ffs == 4
+
+
+def test_names_without_a_specialisation_are_untouched_and_keep_their_order():
+    assert list(_modules(_YOSYS_SPECIALISED)) == ["top", "aes_cipher", "stream_filter"]

@@ -760,6 +760,19 @@ Done. The new module appears in the overview (tree and table), navigation, and g
 
 ## 📋 Release notes
 
+### v3.14.2
+
+#### Fixes
+
+- **A port comment that spans several lines is the whole description** (issue #3). The block table showed only the last line above a port, often a sentence fragment. The description is now the whole contiguous comment block above the port, joined into one sentence; it ends at a blank line, a bare comment line, or a section banner (`// ── control ──`, `-- ===== status =====`), and a banner on its own is no longer used as a description. An inline trailing comment still takes precedence, and single-line comments behave as before. This applies to generics and parameters too.
+- **The Build page lists specialised Yosys modules under their own name** (issue #4). Yosys names its copies of a module `aes_cipher$interfaces$axis_ifaxis_if` (one per set of interfaces) or `$paramod\stream_filter\COUNT_W=16` (one per parameter set); they are now shown as `aes_cipher` / `stream_filter`, with the copies' resources added together.
+
+#### Compatibility
+
+- Backwards compatible. Ports with a single-line comment, and designs without specialised Yosys modules, produce the same pages as before.
+
+---
+
 ### v3.14.1
 
 #### Fixes
