@@ -268,3 +268,29 @@ def test_dot_cdc_fifo_cluster_present():
     dot = write_dot_cdc("my_mod", domains, [], dual)
     assert "cluster_dual_clk" in dot
     assert "u_fifo" in dot
+
+
+# ── dual-clock instances with nested parentheses ─────────────────────────────
+
+def test_sv_dual_clock_instance_with_a_nested_parameter_override_is_found():
+    from extract_cdc import detect_dual_clock_instances_sv
+    text = ("async_fifo #(.WIDTH(8), .DEPTH(clog2(16))) u_fifo (\n"
+            "    .wr_clk(clk_a), .rd_clk(clk_b), .din(d));\n")
+    (found,) = detect_dual_clock_instances_sv(text)
+    assert found["instance"] == "u_fifo" and found["component"] == "async_fifo"
+    assert found["clocks"] == {"wr_clk": "clk_a", "rd_clk": "clk_b"}
+
+
+def test_vhdl_dual_clock_instance_with_a_nested_generic_is_found():
+    from extract_cdc import detect_dual_clock_instances_vhdl
+    text = ("u_f : entity work.async_fifo generic map (WIDTH => f(8))\n"
+            "    port map (wr_clk => clk_a, rd_clk => clk_b, din => std_logic_vector(d));\n")
+    (found,) = detect_dual_clock_instances_vhdl(text)
+    assert found["instance"] == "u_f" and found["component"] == "async_fifo"
+    assert found["clocks"] == {"wr_clk": "clk_a", "rd_clk": "clk_b"}
+
+
+def test_a_clock_connected_through_an_expression_is_not_a_second_clock():
+    from extract_cdc import detect_dual_clock_instances_sv
+    text = "m u (.clk(clk), .aux_clk(clk), .x(f(a, b)));\n"
+    assert detect_dual_clock_instances_sv(text) == []
