@@ -15,6 +15,7 @@ Usage:
 """
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 import sys
@@ -303,6 +304,19 @@ def _remove_module_pages(docs_dir: Path) -> None:
         page.unlink()
 
 
+def _report_file(variable: str, default: Path) -> Path:
+    """The report file for one tool output: the path in environment variable `variable`
+    if it is set (relative paths are taken from the working directory, the project root
+    under make), else `default`.  A named file that does not exist is warned about."""
+    value = os.environ.get(variable, "").strip()
+    if not value:
+        return default
+    path = Path(value)
+    if not path.exists():
+        _warn(path, f"{variable} names a file that does not exist")
+    return path
+
+
 def main(hierarchy_path: Path, docs_dir: Path, reports_dir: Path,
          if_present: bool = False) -> bool:
     """
@@ -316,14 +330,16 @@ def main(hierarchy_path: Path, docs_dir: Path, reports_dir: Path,
     docs_dir     = Path(docs_dir)
     reports_dir  = Path(reports_dir)
 
-    # Locate report files (prefer placed over synth for Vivado utilization)
-    vivado_util  = reports_dir / "vivado" / "utilization_placed.rpt"
-    if not vivado_util.exists():
-        vivado_util  = reports_dir / "vivado" / "utilization_synth.rpt"
-    yosys_util   = reports_dir / "yosys"  / "stat.txt"
-    yosys_log    = reports_dir / "yosys"  / "yosys.log"
-    vivado_time  = reports_dir / "vivado" / "timing_summary_routed.rpt"
-    nextpnr_time = reports_dir / "yosys"  / "nextpnr.log"
+    # Locate report files: the standard layout under `reports_dir` unless a variable names
+    # the file (prefer placed over synth for Vivado utilization).
+    vivado_default = reports_dir / "vivado" / "utilization_placed.rpt"
+    if not vivado_default.exists():
+        vivado_default = reports_dir / "vivado" / "utilization_synth.rpt"
+    vivado_util  = _report_file("AUTODOC_VIVADO_UTILIZATION", vivado_default)
+    yosys_util   = _report_file("AUTODOC_YOSYS_STAT",   reports_dir / "yosys"  / "stat.txt")
+    yosys_log    = _report_file("AUTODOC_YOSYS_LOG",    reports_dir / "yosys"  / "yosys.log")
+    vivado_time  = _report_file("AUTODOC_VIVADO_TIMING", reports_dir / "vivado" / "timing_summary_routed.rpt")
+    nextpnr_time = _report_file("AUTODOC_NEXTPNR_LOG",  reports_dir / "yosys"  / "nextpnr.log")
 
     # Read every report once (warning about binary / non-UTF-8 files as we go).
     texts = {p: _read_text(p) for p in

@@ -14,6 +14,8 @@ Covers:
 import json
 from pathlib import Path
 
+import pytest
+
 from parse_utilization import ModuleUtilization
 from parse_timing import ClockTiming
 from extract_reports import (
@@ -440,3 +442,77 @@ def test_documented_at_ignores_changes_to_any_tracked_build_output(tmp_path):
     main(h, docs, rep)
     page = (docs / "synthesis" / "index.rst").read_text()
     assert "Documented at" in page and "dirty" not in page
+
+
+# ── report files with their own names (issue #4) ─────────────────────────────
+
+_ENV_NAMES = ("AUTODOC_VIVADO_UTILIZATION", "AUTODOC_VIVADO_TIMING", "AUTODOC_YOSYS_STAT",
+              "AUTODOC_YOSYS_LOG", "AUTODOC_NEXTPNR_LOG")
+
+
+@pytest.fixture(autouse=True)
+def _no_report_overrides(monkeypatch):
+    for name in _ENV_NAMES:
+        monkeypatch.delenv(name, raising=False)
+
+
+def test_a_yosys_stat_file_can_have_any_name_and_place(tmp_path, monkeypatch):
+    h, docs, rep = _reports(tmp_path)
+    custom = tmp_path / "build" / "synth_stat.rpt"
+    custom.parent.mkdir()
+    custom.write_text(_YOSYS_STAT)
+    monkeypatch.setenv("AUTODOC_YOSYS_STAT", str(custom))
+    assert main(h, docs, rep, if_present=True) is True
+    assert "16" in (docs / "synthesis" / "index.rst").read_text()
+
+
+def test_each_report_has_its_own_variable(tmp_path, monkeypatch):
+    h, docs, rep = _reports(tmp_path)
+    log = tmp_path / "y.log"
+    log.write_text(_YOSYS_LOG)
+    nextpnr = tmp_path / "pnr.txt"
+    nextpnr.write_text(_NEXTPNR_LOG)
+    monkeypatch.setenv("AUTODOC_YOSYS_LOG", str(log))
+    monkeypatch.setenv("AUTODOC_NEXTPNR_LOG", str(nextpnr))
+    main(h, docs, rep, if_present=True)
+    page = (docs / "synthesis" / "index.rst").read_text()
+    assert "0.56+186" in page and "346.86" in page
+
+
+def test_vivado_reports_can_be_renamed_too(tmp_path, monkeypatch):
+    h, docs, rep = _reports(tmp_path)
+    util = tmp_path / "my_util.rpt"
+    util.write_text((Path(__file__).parents[4] / "example" / "reports" / "vivado"
+                     / "utilization_placed.rpt").read_text())
+    timing = tmp_path / "my_timing.rpt"
+    timing.write_text((Path(__file__).parents[4] / "example" / "reports" / "vivado"
+                       / "timing_summary_routed.rpt").read_text())
+    monkeypatch.setenv("AUTODOC_VIVADO_UTILIZATION", str(util))
+    monkeypatch.setenv("AUTODOC_VIVADO_TIMING", str(timing))
+    main(h, docs, rep, if_present=True)
+    page = (docs / "synthesis" / "index.rst").read_text()
+    assert "By module (Vivado)" in page and "blinky" in page and "clk_50" in page
+
+
+def test_a_relative_override_is_taken_from_the_working_directory(tmp_path, monkeypatch):
+    h, docs, rep = _reports(tmp_path)
+    (tmp_path / "out").mkdir()
+    (tmp_path / "out" / "s.txt").write_text(_YOSYS_STAT)
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("AUTODOC_YOSYS_STAT", "out/s.txt")
+    assert main(h, docs, rep, if_present=True) is True
+
+
+def test_an_empty_variable_means_the_default_layout(tmp_path, monkeypatch):
+    h, docs, rep = _reports(tmp_path, **{"stat.txt": _YOSYS_STAT})
+    monkeypatch.setenv("AUTODOC_YOSYS_STAT", "")
+    assert main(h, docs, rep, if_present=True) is True
+    assert "16" in (docs / "synthesis" / "index.rst").read_text()
+
+
+def test_a_configured_file_that_is_missing_is_named_in_a_warning(tmp_path, monkeypatch, capsys):
+    h, docs, rep = _reports(tmp_path, **{"stat.txt": _YOSYS_STAT})
+    monkeypatch.setenv("AUTODOC_NEXTPNR_LOG", str(tmp_path / "nope.log"))
+    main(h, docs, rep, if_present=True)
+    err = capsys.readouterr().err
+    assert "AUTODOC_NEXTPNR_LOG" in err and "nope.log" in err
