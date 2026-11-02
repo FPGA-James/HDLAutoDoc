@@ -36,6 +36,21 @@ AUTODOC_TB_DIR  ?= tb
 #   make doc-html BUILD=0
 BUILD               ?= 1
 AUTODOC_REPORTS_DIR ?= reports
+# Report files that do not follow the layout under AUTODOC_REPORTS_DIR (yosys/stat.txt,
+# yosys/yosys.log, yosys/nextpnr.log, vivado/utilization_placed.rpt,
+# vivado/timing_summary_routed.rpt) can be named one by one.  Relative paths are taken
+# from the project root.
+#   make doc-html AUTODOC_YOSYS_STAT=build/synth_stat.txt AUTODOC_NEXTPNR_LOG=build/pnr.log
+AUTODOC_VIVADO_UTILIZATION ?=
+AUTODOC_VIVADO_TIMING      ?=
+AUTODOC_YOSYS_STAT         ?=
+AUTODOC_YOSYS_LOG          ?=
+AUTODOC_NEXTPNR_LOG        ?=
+AUTODOC_REPORT_ENV          = AUTODOC_VIVADO_UTILIZATION="$(AUTODOC_VIVADO_UTILIZATION)" \
+                              AUTODOC_VIVADO_TIMING="$(AUTODOC_VIVADO_TIMING)" \
+                              AUTODOC_YOSYS_STAT="$(AUTODOC_YOSYS_STAT)" \
+                              AUTODOC_YOSYS_LOG="$(AUTODOC_YOSYS_LOG)" \
+                              AUTODOC_NEXTPNR_LOG="$(AUTODOC_NEXTPNR_LOG)"
 
 # =============================================================================
 # HDL AutoDoc (Sphinx pipeline) variables
@@ -167,7 +182,7 @@ doc-extract: doc-scaffold
 		$(if $(filter 1,$(SCHEMATICS)),--schematics) $(if $(FORCE),--force)
 	$(if $(filter 0,$(TESTBENCHES)),,$(PYTHON) $(AUTODOC_SCRIPTDIR)/extract_testbenches.py \
 		$(AUTODOC_HIERARCHY_JSON) $(AUTODOC_SOURCEDIR) $(AUTODOC_TB_DIR))
-	$(if $(filter 0,$(BUILD)),,$(PYTHON) $(AUTODOC_SCRIPTDIR)/extract_reports.py \
+	$(if $(filter 0,$(BUILD)),,$(AUTODOC_REPORT_ENV) $(PYTHON) $(AUTODOC_SCRIPTDIR)/extract_reports.py \
 		$(AUTODOC_HIERARCHY_JSON) $(AUTODOC_SOURCEDIR) $(AUTODOC_REPORTS_DIR) --if-present)
 	@echo "Regenerating timing pages..."
 	$(PYTHON) $(AUTODOC_SCRIPTDIR)/generate_rst.py $(AUTODOC_SRCDIR) $(AUTODOC_SOURCEDIR) "$(PROJECT)" $(AUTODOC_GENRST_FLAGS)
@@ -180,7 +195,7 @@ doc-coverage: doc-hierarchy
 # ── Step 3c: synthesis/PnR report ingestion (opt-in, after CI generates reports/) ──
 doc-reports: doc-hierarchy
 	@echo "Ingesting synthesis reports..."
-	$(PYTHON) $(AUTODOC_SCRIPTDIR)/extract_reports.py \
+	$(AUTODOC_REPORT_ENV) $(PYTHON) $(AUTODOC_SCRIPTDIR)/extract_reports.py \
 		$(AUTODOC_HIERARCHY_JSON) $(AUTODOC_SOURCEDIR) $(AUTODOC_REPORTS_DIR)
 	@echo "Regenerating RST for build pages..."
 	$(PYTHON) $(AUTODOC_SCRIPTDIR)/generate_rst.py $(AUTODOC_SRCDIR) $(AUTODOC_SOURCEDIR) "$(PROJECT)" $(filter-out --no-build,$(AUTODOC_GENRST_FLAGS))

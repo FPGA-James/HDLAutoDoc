@@ -1,5 +1,17 @@
 # Release Notes
 
+## v3.16.0
+
+#### New features
+
+- **Report files can have their own names and places** (issue #4). The Build section looks for `yosys/stat.txt`, `yosys/yosys.log`, `yosys/nextpnr.log`, `vivado/utilization_placed.rpt` and `vivado/timing_summary_routed.rpt` under `AUTODOC_REPORTS_DIR`. Each can now be named directly: `AUTODOC_YOSYS_STAT`, `AUTODOC_YOSYS_LOG`, `AUTODOC_NEXTPNR_LOG`, `AUTODOC_VIVADO_UTILIZATION` and `AUTODOC_VIVADO_TIMING` (a relative path is taken from the project root). A variable that names a file that does not exist is reported with a warning that names the variable. Unset, everything works as before.
+
+#### Compatibility
+
+- Backwards compatible: with none of the variables set the Build section is unchanged.
+
+---
+
 ## v3.15.0
 
 #### Fixes

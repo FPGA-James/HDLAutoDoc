@@ -581,6 +581,11 @@ Set these on the command line (`make doc-html SCHEMATICS=0`) or in your Makefile
 | `AUTODOC_TB_DIR` | `tb` | Root of the testbenches, with one subdirectory per framework (`vunit/`, `cocotb/`, `pyuvm/`, `directed/`) |
 | `BUILD` | `1` | `0` removes the Build section |
 | `AUTODOC_REPORTS_DIR` | `reports` | Root of the build report files (`yosys/`, `vivado/`). Relative paths are taken from the project root. |
+| `AUTODOC_YOSYS_STAT` | *(`<reports>/yosys/stat.txt`)* | Path to the Yosys `stat` output, if it does not follow the layout above. Relative paths are taken from the project root. |
+| `AUTODOC_YOSYS_LOG` | *(`<reports>/yosys/yosys.log`)* | Path to the Yosys log |
+| `AUTODOC_NEXTPNR_LOG` | *(`<reports>/yosys/nextpnr.log`)* | Path to the nextpnr log |
+| `AUTODOC_VIVADO_UTILIZATION` | *(`<reports>/vivado/utilization_placed.rpt`)* | Path to the Vivado utilization report |
+| `AUTODOC_VIVADO_TIMING` | *(`<reports>/vivado/timing_summary_routed.rpt`)* | Path to the Vivado timing summary |
 | `AUTODOC_REGISTERS_DIR` | `registers` | Directory holding `regs_*.toml`, `config.yml` and the generated `generated/` and `out/` output. Relocate it, e.g. `AUTODOC_REGISTERS_DIR=out/registers`. Relative paths are taken from the project root. |
 
 ---
@@ -759,6 +764,18 @@ Done. The new module appears in the overview (tree and table), navigation, and g
 ---
 
 ## 📋 Release notes
+
+### v3.16.0
+
+#### New features
+
+- **Report files can have their own names and places** (issue #4). The Build section looks for `yosys/stat.txt`, `yosys/yosys.log`, `yosys/nextpnr.log`, `vivado/utilization_placed.rpt` and `vivado/timing_summary_routed.rpt` under `AUTODOC_REPORTS_DIR`. Each can now be named directly: `AUTODOC_YOSYS_STAT`, `AUTODOC_YOSYS_LOG`, `AUTODOC_NEXTPNR_LOG`, `AUTODOC_VIVADO_UTILIZATION` and `AUTODOC_VIVADO_TIMING` (a relative path is taken from the project root). A variable that names a file that does not exist is reported with a warning that names the variable. Unset, everything works as before.
+
+#### Compatibility
+
+- Backwards compatible: with none of the variables set the Build section is unchanged.
+
+---
 
 ### v3.15.0
 

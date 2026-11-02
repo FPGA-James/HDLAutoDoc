@@ -57,3 +57,17 @@ def test_explicit_doc_reports_uses_the_variable_and_never_passes_no_build(tmp_pa
     assert "out/r" in out
     assert "--no-build" not in out
     assert "--if-present" not in out      # explicit target keeps its placeholder behaviour
+
+
+def test_report_file_variables_reach_the_report_script(tmp_path):
+    out = _dry_run(tmp_path, "doc-extract", "AUTODOC_YOSYS_STAT=build/s.txt",
+                   "AUTODOC_NEXTPNR_LOG=build/p.log")
+    line = next(l for l in out.splitlines() if "extract_reports.py" in l)
+    assert 'AUTODOC_YOSYS_STAT="build/s.txt"' in line
+    assert 'AUTODOC_NEXTPNR_LOG="build/p.log"' in line
+
+
+def test_report_file_variables_reach_doc_reports_too(tmp_path):
+    out = _dry_run(tmp_path, "doc-reports", "AUTODOC_VIVADO_TIMING=t.rpt")
+    line = next(l for l in out.splitlines() if "extract_reports.py" in l)
+    assert 'AUTODOC_VIVADO_TIMING="t.rpt"' in line
