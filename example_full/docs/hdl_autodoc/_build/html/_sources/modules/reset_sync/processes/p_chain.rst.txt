@@ -1,0 +1,26 @@
+p_chain
+=======
+
+| **Source file:** ``reset_sync.vhd``
+| **Source line:** 43
+| **Block type:** ``process``
+| **Sensitivity list:** ``clk``, ``arst_n``
+
+Description
+-----------
+
+p_chain\: Shifts a one through the chain once the reset is released.
+
+Source
+------
+
+.. code-block:: vhdl
+
+       p_chain : process(clk, arst_n) is
+       begin
+           if arst_n = '0' then
+               chain <= (others => '0');
+           elsif rising_edge(clk) then
+               chain <= chain(STAGES - 2 downto 0) & '1';
+           end if;
+       end process p_chain;

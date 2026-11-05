@@ -1,0 +1,8 @@
+axis_pipeline — Reset Domain Analysis
+=====================================
+
+Auto-extracted from ``axis_pipeline.sv``.
+
+.. note::
+
+   No clocked processes detected. This module appears to be purely combinational.

@@ -1,0 +1,1 @@
+.. include:: sample_capture_block.rst

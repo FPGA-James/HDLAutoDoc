@@ -1,0 +1,24 @@
+reset_sync — Reset Domain Analysis
+==================================
+
+Auto-extracted from ``reset_sync.vhd``.
+
+.. note::
+
+   All clocked processes use a single reset domain (``arst_n``, async). No reset domain crossings detected.
+
+Reset Domain
+------------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Process
+     - Clock
+     - Reset
+     - Style
+
+   * - ``p_chain``
+     - ``clk``
+     - ``arst_n``
+     - Async

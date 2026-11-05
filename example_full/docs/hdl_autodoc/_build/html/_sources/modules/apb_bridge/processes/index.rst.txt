@@ -1,0 +1,27 @@
+Processes
+=========
+
+Auto-extracted from ``apb_bridge.vhd``.
+
+.. toctree::
+   :maxdepth: 2
+
+   p_phase
+
+Summary
+-------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Block
+     - Type
+     - Sensitivity
+     - Source Line
+     - WaveDrom
+
+   * - :doc:`p_phase`
+     - ``process``
+     - ``clk``
+     - 52
+     - —

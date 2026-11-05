@@ -1,0 +1,41 @@
+p_state
+=======
+
+| **Source file:** ``stream_filter.sv``
+| **Source line:** 59
+| **Block type:** ``always_ff``
+| **Sensitivity list:** ``posedge clk``
+
+Description
+-----------
+
+p_state\: Clocked state register and forwarded-packet counter.
+
+.. wavedrom::
+
+
+   { "signal": [
+   { "name": "clk",    "wave": "P......." },
+   { "name": "tvalid", "wave": "01.....0" },
+   { "name": "tlast",  "wave": "0....10." },
+   { "name": "state",  "wave": "=.=...=.", "data": ["FIRST","FORWARD","FIRST"] }
+   ]}
+
+Source
+------
+
+.. code-block:: systemverilog
+
+       always_ff @(posedge clk) begin : p_state
+           if (rst) begin
+               state <= FIRST;
+               count <= '0;
+           end else begin
+               state <= next_state;
+               if (clear) begin
+                   count <= '0;
+               end else if (forwarding && last_beat) begin
+                   count <= count + 1'b1;
+               end
+           end
+       end

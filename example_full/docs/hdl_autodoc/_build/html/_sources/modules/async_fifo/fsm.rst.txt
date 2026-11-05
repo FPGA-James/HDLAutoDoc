@@ -1,0 +1,8 @@
+async_fifo — State Machine
+==========================
+
+No FSM detected in ``async_fifo.vhd``.
+
+This module is either a structural wrapper (no combinational
+state logic) or uses a coding style not yet supported by the
+FSM extractor.

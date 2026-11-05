@@ -5,7 +5,9 @@ __pycache__/
 .DS_Store
 
 # Sphinx build output (under any docs/ tree)
-**/docs/hdl_autodoc/_build/
+# Built output is not committed, except the HTML of the example, which can be opened straight from a clone.
+**/docs/hdl_autodoc/_build/*
+!example_full/docs/hdl_autodoc/_build/html/
 
 # Auto-generated Sphinx doc files (re-created by `make html`)
 **/docs/hdl_autodoc/hierarchy.json

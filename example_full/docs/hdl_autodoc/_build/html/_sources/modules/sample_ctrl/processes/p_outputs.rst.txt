@@ -1,0 +1,32 @@
+p_outputs
+=========
+
+| **Source file:** ``sample_ctrl.vhd``
+| **Source line:** 145
+| **Block type:** ``process``
+| **Sensitivity list:** ``state``
+
+Description
+-----------
+
+p_outputs\: Combinational Moore output decode.
+Capture is enabled in RUN only; busy covers everything but IDLE.
+
+Source
+------
+
+.. code-block:: vhdl
+
+       p_outputs : process(state) is
+       begin
+           capture_en <= '0';
+           busy       <= '1';
+           state_code <= "00";
+   
+           case state is
+               when IDLE  => busy <= '0';
+               when ARMED => state_code <= "01";
+               when RUN   => capture_en <= '1'; state_code <= "10";
+               when DONE  => state_code <= "11";
+           end case;
+       end process p_outputs;

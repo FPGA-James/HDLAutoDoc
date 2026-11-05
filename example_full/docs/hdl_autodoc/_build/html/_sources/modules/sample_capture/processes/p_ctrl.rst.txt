@@ -1,0 +1,27 @@
+p_ctrl
+======
+
+| **Source file:** ``sample_capture.sv``
+| **Source line:** 68
+| **Block type:** ``always_ff``
+| **Sensitivity list:** ``posedge clk``, ``negedge rst_n``
+
+Description
+-----------
+
+p_ctrl\: Registers the enable and clear requests on the system clock.
+
+Source
+------
+
+.. code-block:: systemverilog
+
+       always_ff @(posedge clk or negedge rst_n) begin : p_ctrl
+           if (!rst_n) begin
+               capture_en <= 1'b0;
+               clear_req  <= 1'b0;
+           end else begin
+               capture_en <= enable;
+               clear_req  <= clear_overflow;
+           end
+       end

@@ -1,0 +1,8 @@
+async_fifo — Entity
+===================
+
+Source file: ``src/async_fifo.vhd``.
+
+.. vhdl:autoentity:: async_fifo
+
+.. include:: async_fifo_source.rst

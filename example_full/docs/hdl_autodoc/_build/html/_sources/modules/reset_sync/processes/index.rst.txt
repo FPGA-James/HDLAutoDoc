@@ -1,0 +1,27 @@
+Processes
+=========
+
+Auto-extracted from ``reset_sync.vhd``.
+
+.. toctree::
+   :maxdepth: 2
+
+   p_chain
+
+Summary
+-------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Block
+     - Type
+     - Sensitivity
+     - Source Line
+     - WaveDrom
+
+   * - :doc:`p_chain`
+     - ``process``
+     - ``clk``, ``arst_n``
+     - 43
+     - —

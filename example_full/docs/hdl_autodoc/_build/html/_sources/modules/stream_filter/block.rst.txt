@@ -1,0 +1,1 @@
+.. include:: stream_filter_block.rst

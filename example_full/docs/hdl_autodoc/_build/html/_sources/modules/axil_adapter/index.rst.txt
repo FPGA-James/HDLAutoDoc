@@ -1,0 +1,21 @@
+axil_adapter
+============
+
+.. toctree::
+   :maxdepth: 3
+
+   entity
+   block
+   fsm
+   timing
+   cdc
+   reset
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 3
+   :caption: Submodules
+
+   ../axil_regs/index

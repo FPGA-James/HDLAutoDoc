@@ -113,10 +113,10 @@ def test_header_diagrams_are_returned_with_the_module():
 
 
 def test_fsm_has_states_transitions_and_graphviz_source():
-    doc = build_document((ROOT / "example/src/traffic_light.vhd").read_text(), "vhdl")
+    doc = build_document((ROOT / "example_full/src/sample_ctrl.vhd").read_text(), "vhdl")
     fsm = doc["fsm"]
-    assert {"RED", "RED_AMBER", "GREEN", "AMBER"} <= set(fsm["states"])
-    assert {"from": "RED", "to": "RED_AMBER", "condition": "timer_exp = '1'"} in fsm["transitions"]
+    assert {"IDLE", "ARMED", "RUN", "DONE"} <= set(fsm["states"])
+    assert {"from": "IDLE", "to": "ARMED", "condition": "start = '1'"} in fsm["transitions"]
     assert fsm["dot"].startswith("digraph")
 
 

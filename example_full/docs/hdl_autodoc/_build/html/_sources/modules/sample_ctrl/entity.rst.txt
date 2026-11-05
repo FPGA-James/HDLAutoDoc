@@ -1,0 +1,8 @@
+sample_ctrl — Entity
+====================
+
+Source file: ``src/sample_ctrl.vhd``.
+
+.. vhdl:autoentity:: sample_ctrl
+
+.. include:: sample_ctrl_source.rst

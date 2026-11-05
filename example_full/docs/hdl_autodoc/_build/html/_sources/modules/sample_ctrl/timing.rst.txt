@@ -1,0 +1,30 @@
+sample_ctrl — Timing Diagrams
+=============================
+
+All timing diagrams extracted from ``sample_ctrl.vhd``.
+Diagrams are sourced from ``.. wavedrom::`` blocks in the VHDL
+source comments above each process.
+
+P Next State
+------------
+
+.. wavedrom::
+
+   { "signal": [
+   { "name": "clk",      "wave": "P........." },
+   { "name": "start",    "wave": "01.....0.." },
+   { "name": "run_last", "wave": "0....10..." },
+   { "name": "state",    "wave": "=.==..=.=.", "data": ["IDLE","ARMED","RUN","DONE","IDLE"] }
+   ]}
+
+P State Reg
+-----------
+
+.. wavedrom::
+
+   { "signal": [
+   { "name": "clk",   "wave": "P......." },
+   { "name": "rst",   "wave": "1.0....." },
+   { "name": "start", "wave": "0..1...." },
+   { "name": "state", "wave": "=.=.==..", "data": ["(any)","IDLE","ARMED","RUN"] }
+   ]}

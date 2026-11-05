@@ -1,0 +1,1 @@
+.. include:: async_fifo_reset.rst

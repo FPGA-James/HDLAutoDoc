@@ -1,0 +1,7 @@
+Annotated Source
+----------------
+
+.. literalinclude:: ../../../../src/axis_pipeline.sv
+   :language: systemverilog
+   :linenos:
+   :caption: src/axis_pipeline.sv
