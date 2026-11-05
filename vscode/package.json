@@ -47,12 +47,14 @@
     "build": "node esbuild.mjs",
     "typecheck": "tsc --noEmit",
     "test": "node --test test/*.test.mjs",
-    "vsix": "make vsix"
+    "vsix": "make vsix",
+    "test:integration": "node test/integration/run.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.20.5",
     "@types/vscode": "1.90.0",
     "@viz-js/viz": "3.31.0",
+    "@vscode/test-electron": "3.1.0",
     "@vscode/vsce": "^4.1.0",
     "esbuild": "^0.28.2",
     "mermaid": "12.3.0",

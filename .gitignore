@@ -32,3 +32,4 @@ vscode/dist/
 vscode/python/
 vscode/*.vsix
 vscode/test/out/
+.vscode-test/
