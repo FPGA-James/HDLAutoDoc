@@ -31,3 +31,4 @@ vscode/node_modules/
 vscode/dist/
 vscode/python/
 vscode/*.vsix
+vscode/test/out/

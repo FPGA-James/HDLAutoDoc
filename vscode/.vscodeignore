@@ -3,5 +3,7 @@
 !README.md
 !dist/extension.js
 !dist/webview.js
+!dist/panel.css
+!dist/vendor/**
 !python/**
 **/__pycache__/**
