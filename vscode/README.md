@@ -17,6 +17,7 @@ clicking a port, generic, instance or process jumps to its line.
 1. Open a `.vhd`, `.vhdl`, `.sv`, `.svh`, `.v` or `.vh` file.
 2. Click the preview icon at the top right of the editor, or run **HDL AutoDoc: Show documentation** from the Command Palette. The panel opens beside the editor.
 3. **Export HTML** (top right of the panel, or **HDL AutoDoc: Export documentation as HTML**) saves a standalone page with the diagrams drawn for a white background, whatever theme the panel is in.
+4. **Export Markdown** (or **HDL AutoDoc: Export documentation as Markdown**) saves the same documentation as a `.md` file. Diagrams are inserted as their source in fenced `mermaid`, `wavedrom` and `dot` code blocks: GitHub and many editors draw the Mermaid ones, and the others stay readable as code.
 
 The panel refreshes after you stop typing, on save, and when you switch files. Opening a file that is
 not HDL leaves the last document in place and says so.
