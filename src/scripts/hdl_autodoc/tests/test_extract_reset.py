@@ -356,3 +356,57 @@ def test_rst_no_reset_warning():
                                       "my_mod_reset.dot", domains, [])
     assert "no reset" in rst.lower()
     assert "p_norst" in rst
+
+
+# ── analyse_reset: the analysis behind the CLI, as a function ────────────────
+
+RESET_SV = """\
+module m (input logic clk, input logic rst, input logic arst_n, input logic d);
+    logic a, b;
+    always_ff @(posedge clk) begin : p_sync
+        if (rst) a <= 1'b0;
+        else     a <= d;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin : p_async
+        if (!arst_n) b <= 1'b0;
+        else         b <= a;
+    end
+endmodule
+"""
+
+
+def test_analyse_reset_groups_processes_by_reset_and_style():
+    from extract_reset import analyse_reset
+    result = analyse_reset(RESET_SV, is_vhdl=False)
+    styles = {p["label"]: (p["reset"], p["style"]) for p in result["processes"]}
+    assert styles == {"p_sync": ("rst", "sync"), "p_async": ("arst_n", "async")}
+    assert {k: [p["label"] for p in v] for k, v in result["domains"].items()} == {
+        "rst": ["p_sync"], "arst_n": ["p_async"]}
+    assert [(c["signal"], c["src_reset"], c["dst_reset"]) for c in result["crossings"]] == [
+        ("a", "rst", "arst_n")]
+
+
+def test_analyse_reset_of_a_single_reset_file_has_no_crossings():
+    from extract_reset import analyse_reset
+    text = RESET_SV.replace("arst_n", "rst").replace("negedge rst", "posedge rst")
+    result = analyse_reset(text, is_vhdl=False)
+    assert len(result["domains"]) == 1 and result["crossings"] == []
+
+
+def test_analyse_reset_of_a_file_without_clocked_logic_is_empty():
+    from extract_reset import analyse_reset
+    assert analyse_reset("module m; endmodule\n", is_vhdl=False) == {
+        "processes": [], "domains": {}, "crossings": []}
+
+
+def test_the_reset_cli_still_writes_the_same_kind_of_page(tmp_path):
+    import subprocess
+    import sys
+    from pathlib import Path
+    src = tmp_path / "m.sv"
+    src.write_text(RESET_SV)
+    out = tmp_path / "out"
+    subprocess.run([sys.executable, str(Path(__file__).parents[1] / "extract_reset.py"),
+                    str(src), "m", str(out)], check=True, capture_output=True, text=True)
+    rst = (out / "m_reset.rst").read_text()
+    assert "Reset Domains" in rst and "Async" in rst and "Sync" in rst

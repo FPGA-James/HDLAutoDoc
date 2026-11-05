@@ -532,6 +532,24 @@ def write_rst_multi_domain(
 # Entry point
 # ─────────────────────────────────────────────────────────────────────────────
 
+def analyse_reset(text: str, is_vhdl: bool) -> dict:
+    """
+    Reset analysis of one source file: `{"processes": [{label, clock, reset, style, ...}],
+    "domains": {reset signal or "__none__": [process dicts]}, "crossings": [{signal,
+    src_reset, dst_reset}]}`.  Crossings are only looked for with two or more reset domains.
+    """
+    if is_vhdl:
+        stripped = strip_vhdl_comments(text)
+        procs    = extract_process_info_vhdl(text)
+    else:
+        stripped = strip_sv_comments(text)
+        procs    = extract_process_info_sv(text)
+
+    domains = group_by_reset(procs)
+    crossings = find_reset_crossings(stripped, domains, is_vhdl) if len(domains) >= 2 else []
+    return {"processes": procs, "domains": domains, "crossings": crossings}
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 4:
         sys.exit("Usage: extract_reset.py <file.vhd|sv> <module_name> <output_dir>")
@@ -545,15 +563,16 @@ if __name__ == "__main__":
     ext  = src_path.suffix.lower()
 
     if ext in (".vhd", ".vhdl"):
-        is_vhdl  = True
-        stripped = strip_vhdl_comments(text)
-        procs    = extract_process_info_vhdl(text)
+        is_vhdl = True
     elif ext in (".sv", ".svh"):
-        is_vhdl  = False
-        stripped = strip_sv_comments(text)
-        procs    = extract_process_info_sv(text)
+        is_vhdl = False
     else:
         sys.exit(f"ERROR: Unsupported file type '{ext}'")
+
+    analysis  = analyse_reset(text, is_vhdl)
+    procs     = analysis["processes"]
+    domains   = analysis["domains"]
+    crossings = analysis["crossings"]
 
     rst_path = output_dir / f"{module_name}_reset.rst"
     dot_path = output_dir / f"{module_name}_reset.dot"
@@ -563,8 +582,6 @@ if __name__ == "__main__":
         print(f"  (no clocked processes in {src_path.name})")
         print(f"  → {rst_path}")
         sys.exit(0)
-
-    domains = group_by_reset(procs)
 
     if len(domains) == 1:
         reset_key, domain_procs = next(iter(domains.items()))
@@ -576,7 +593,6 @@ if __name__ == "__main__":
         sys.exit(0)
 
     # Multiple reset domains
-    crossings = find_reset_crossings(stripped, domains, is_vhdl)
     dot_filename = f"{module_name}_reset.dot"
 
     dot_path.write_text(write_dot_reset(module_name, domains, crossings))

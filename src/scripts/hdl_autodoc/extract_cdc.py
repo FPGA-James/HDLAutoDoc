@@ -495,6 +495,53 @@ def write_rst_cdc(module_name: str, src_filename: str,
 # Entry point
 # ─────────────────────────────────────────────────────────────────────────────
 
+def analyse_cdc(text: str, is_vhdl: bool) -> dict:
+    """
+    Clock-domain analysis of one source file: `{"domains": {clock: [process label]},
+    "crossings": [{signal, src_clock, dst_clock, synchronized}], "dual_clock_instances":
+    [{instance, component, clocks}]}`.  Crossings are only looked for with two or more
+    domains.
+    """
+    if is_vhdl:
+        stripped = strip_vhdl_comments(text)
+        domains  = extract_domains_vhdl(text)
+        dual     = detect_dual_clock_instances_vhdl(stripped)
+    else:
+        stripped = strip_sv_comments(text)
+        domains  = extract_domains_sv(text)
+        dual     = detect_dual_clock_instances_sv(stripped)
+
+    crossings: list[dict] = []
+    if len(domains) >= 2:
+        domain_lhs, domain_rhs = collect_domain_signals(stripped, domains, is_vhdl)
+        # Filter clock names themselves out of the signal sets
+        clock_names = set(domains.keys())
+        clock_list = list(domains.keys())
+        for src_clk in clock_list:
+            for dst_clk in clock_list:
+                if src_clk == dst_clk:
+                    continue
+                crossing_sigs = (
+                    domain_lhs[src_clk] & domain_rhs[dst_clk] - clock_names
+                )
+                for sig in sorted(crossing_sigs):
+                    crossings.append({
+                        "signal":       sig,
+                        "src_clock":    src_clk,
+                        "dst_clock":    dst_clk,
+                        "synchronized": False,
+                    })
+
+        if crossings:
+            crossing_names = {c["signal"] for c in crossings}
+            synced = detect_synchronizers(stripped, crossing_names)
+            for c in crossings:
+                if c["signal"] in synced:
+                    c["synchronized"] = True
+
+    return {"domains": domains, "crossings": crossings, "dual_clock_instances": dual}
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 4:
         sys.exit("Usage: extract_cdc.py <file.vhd|file.sv> <module_name> <output_dir>")
@@ -508,17 +555,16 @@ if __name__ == "__main__":
     ext  = src_path.suffix.lower()
 
     if ext in (".vhd", ".vhdl"):
-        is_vhdl         = True
-        stripped        = strip_vhdl_comments(text)
-        domains         = extract_domains_vhdl(text)
-        dual_clk_insts  = detect_dual_clock_instances_vhdl(stripped)
+        is_vhdl = True
     elif ext in (".sv", ".svh"):
-        is_vhdl         = False
-        stripped        = strip_sv_comments(text)
-        domains         = extract_domains_sv(text)
-        dual_clk_insts  = detect_dual_clock_instances_sv(stripped)
+        is_vhdl = False
     else:
         sys.exit(f"ERROR: Unsupported file type '{ext}'")
+
+    analysis       = analyse_cdc(text, is_vhdl)
+    domains        = analysis["domains"]
+    crossings      = analysis["crossings"]
+    dual_clk_insts = analysis["dual_clock_instances"]
 
     out_path = output_dir / f"{module_name}_cdc.rst"
 
@@ -535,36 +581,6 @@ if __name__ == "__main__":
         )
         print(f"  (single clock domain '{clock}' — no CDC) → {out_path}")
         sys.exit(0)
-
-    # ── Multiple clock domains: find crossings ───────────────────────────────
-    domain_lhs, domain_rhs = collect_domain_signals(stripped, domains, is_vhdl)
-
-    # Filter clock names themselves out of the signal sets
-    clock_names = set(domains.keys())
-
-    crossings: list[dict] = []
-    clock_list = list(domains.keys())
-    for src_clk in clock_list:
-        for dst_clk in clock_list:
-            if src_clk == dst_clk:
-                continue
-            crossing_sigs = (
-                domain_lhs[src_clk] & domain_rhs[dst_clk] - clock_names
-            )
-            for sig in sorted(crossing_sigs):
-                crossings.append({
-                    "signal":       sig,
-                    "src_clock":    src_clk,
-                    "dst_clock":    dst_clk,
-                    "synchronized": False,
-                })
-
-    if crossings:
-        crossing_names = {c["signal"] for c in crossings}
-        synced = detect_synchronizers(stripped, crossing_names)
-        for c in crossings:
-            if c["signal"] in synced:
-                c["synchronized"] = True
 
     dot_path = output_dir / f"{module_name}_cdc.dot"
     dot_path.write_text(

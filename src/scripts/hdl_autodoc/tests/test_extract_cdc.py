@@ -294,3 +294,75 @@ def test_a_clock_connected_through_an_expression_is_not_a_second_clock():
     from extract_cdc import detect_dual_clock_instances_sv
     text = "m u (.clk(clk), .aux_clk(clk), .x(f(a, b)));\n"
     assert detect_dual_clock_instances_sv(text) == []
+
+
+# ── analyse_cdc: the analysis behind the CLI, as a function ──────────────────
+
+CDC_SV = """\
+module m (input logic clk_a, input logic clk_b, input logic rst_n, input logic d);
+    logic req_a, meta, sync_b, other;
+    always_ff @(posedge clk_a or negedge rst_n) begin : p_a
+        if (!rst_n) req_a <= 1'b0;
+        else        req_a <= d;
+    end
+    always_ff @(posedge clk_b) begin : p_b
+        meta   <= req_a;
+        sync_b <= meta;
+    end
+    async_fifo u_fifo (.wr_clk(clk_a), .rd_clk(clk_b));
+endmodule
+"""
+
+CDC_VHDL = """\
+entity e is port (clk : in std_logic; d : in std_logic; q : out std_logic); end entity e;
+architecture rtl of e is
+begin
+    p_r : process (clk) is
+    begin
+        if rising_edge(clk) then q <= d; end if;
+    end process p_r;
+end architecture rtl;
+"""
+
+
+def test_analyse_cdc_finds_domains_a_synchronised_crossing_and_a_dual_clock_instance():
+    from extract_cdc import analyse_cdc
+    result = analyse_cdc(CDC_SV, is_vhdl=False)
+    assert result["domains"] == {"clk_a": ["p_a"], "clk_b": ["p_b"]}
+    (crossing,) = result["crossings"]
+    assert (crossing["signal"], crossing["src_clock"], crossing["dst_clock"]) == ("req_a", "clk_a", "clk_b")
+    assert crossing["synchronized"] is True
+    (inst,) = result["dual_clock_instances"]
+    assert inst["instance"] == "u_fifo" and inst["component"] == "async_fifo"
+
+
+def test_analyse_cdc_of_a_single_clock_file_has_one_domain_and_no_crossings():
+    from extract_cdc import analyse_cdc
+    result = analyse_cdc(CDC_VHDL, is_vhdl=True)
+    assert result["domains"] == {"clk": ["p_r"]}
+    assert result["crossings"] == [] and result["dual_clock_instances"] == []
+
+
+def test_analyse_cdc_of_a_file_without_clocked_logic_is_empty():
+    from extract_cdc import analyse_cdc
+    result = analyse_cdc("module m; assign a = b; endmodule\n", is_vhdl=False)
+    assert result == {"domains": {}, "crossings": [], "dual_clock_instances": []}
+
+
+def _run_cli(tmp_path, script, name, text, suffix):
+    import subprocess
+    import sys
+    from pathlib import Path
+    src = tmp_path / f"{name}{suffix}"
+    src.write_text(text)
+    out = tmp_path / "out"
+    subprocess.run([sys.executable, str(Path(__file__).parents[1] / script), str(src), name, str(out)],
+                   check=True, capture_output=True, text=True)
+    return out
+
+
+def test_the_cdc_cli_still_writes_the_same_kind_of_page(tmp_path):
+    out = _run_cli(tmp_path, "extract_cdc.py", "m", CDC_SV, ".sv")
+    rst = (out / "m_cdc.rst").read_text()
+    assert "Clock Domains" in rst and "Dual-Clock Instances" in rst and "Yes *(two-flop)*" in rst
+    assert (out / "m_cdc.dot").exists()
