@@ -57,3 +57,31 @@ jobs:
       - run: pip install -r src/requirements.txt
       - run: make doc-html SCHEMATICS=0 AUTODOC_SPHINXOPTS="-W --keep-going"
         working-directory: ${{ matrix.example }}
+
+  vscode:
+    # The extension: unit tests, the .vsix contents, and the panel drawn in headless Chrome
+    # (the runner image has Chrome and Python 3).  The .vsix is kept as a build artifact.
+    name: VS Code extension
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: vscode
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: vscode/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: make vsix
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hdl-autodoc-vsix
+          path: vscode/hdl-autodoc-*.vsix
+          if-no-files-found: error

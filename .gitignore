@@ -25,3 +25,11 @@ __pycache__/
 
 # pyenv
 .python-version
+
+# VS Code extension build output
+vscode/node_modules/
+vscode/dist/
+vscode/python/
+vscode/*.vsix
+vscode/test/out/
+.vscode-test/

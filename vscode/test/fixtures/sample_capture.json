@@ -1,0 +1,302 @@
+{
+    "language": "systemverilog",
+    "module": {
+        "name": "sample_capture",
+        "line": 23,
+        "description": "Sample capture across a clock boundary.\n\nRegisters samples from a free-running converter clock (adc_clk) and hands\nthem to the system clock (clk) through an asynchronous FIFO. The enable\nand clear requests go the other way through two-flop synchronisers, so\nneither domain samples a signal that changes under its own clock edge.",
+        "wavedrom": [],
+        "mermaid": [
+            {
+                "caption": "Capture data path",
+                "source": "flowchart LR\n  subgraph sys[clk domain]\n    E[enable] --> C[p_ctrl]\n    O[p_out] --> S[sample_data]\n  end\n  subgraph adc[adc_clk domain]\n    N[p_adc_en] --> R[p_adc_capture]\n    D[adc_data] --> R\n  end\n  C -- capture_en, clear_req --> N\n  R -- samples --> F[(async_fifo)]\n  F --> O"
+            }
+        ]
+    },
+    "generics": [
+        {
+            "name": "STICKY_OVERFLOW",
+            "type": "bit",
+            "default": "1'b1",
+            "description": "Keep overflow set until reset (1), or show it for one cycle per lost sample (0).",
+            "line": 26
+        }
+    ],
+    "ports": [
+        {
+            "name": "clk",
+            "direction": "in",
+            "type": "logic",
+            "range": "",
+            "description": "System clock.",
+            "line": 29,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": null
+        },
+        {
+            "name": "rst_n",
+            "direction": "in",
+            "type": "logic",
+            "range": "",
+            "description": "System-domain asynchronous active-low reset, released synchronously (from a reset_sync on clk).",
+            "line": 32,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": null
+        },
+        {
+            "name": "enable",
+            "direction": "in",
+            "type": "logic",
+            "range": "",
+            "description": "Capture while high.",
+            "line": 34,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": null
+        },
+        {
+            "name": "clear_overflow",
+            "direction": "in",
+            "type": "logic",
+            "range": "",
+            "description": "Clears the overflow flag while high (system clock domain).",
+            "line": 36,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": null
+        },
+        {
+            "name": "adc_clk",
+            "direction": "in",
+            "type": "logic",
+            "range": "",
+            "description": "Converter clock; unrelated to clk.",
+            "line": 38,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": "Converter interface"
+        },
+        {
+            "name": "adc_rst",
+            "direction": "in",
+            "type": "logic",
+            "range": "",
+            "description": "Converter-domain synchronous active-high reset, released on adc_clk.",
+            "line": 40,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": "Converter interface"
+        },
+        {
+            "name": "adc_data",
+            "direction": "in",
+            "type": "logic",
+            "range": "full_pkg::SAMPLE_W-1:0",
+            "description": "Sample from the converter.",
+            "line": 42,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": "Converter interface"
+        },
+        {
+            "name": "sample_data",
+            "direction": "out",
+            "type": "logic",
+            "range": "full_pkg::SAMPLE_W-1:0",
+            "description": "Oldest unread sample, valid while sample_valid is high.",
+            "line": 44,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": null
+        },
+        {
+            "name": "sample_valid",
+            "direction": "out",
+            "type": "logic",
+            "range": "",
+            "description": "A sample is waiting on sample_data.",
+            "line": 46,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": null
+        },
+        {
+            "name": "sample_ready",
+            "direction": "in",
+            "type": "logic",
+            "range": "",
+            "description": "Consumer takes the sample this cycle.",
+            "line": 48,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": null
+        },
+        {
+            "name": "overflow",
+            "direction": "out",
+            "type": "logic",
+            "range": "",
+            "description": "Set when a sample arrived while the FIFO was full (held until clear_overflow when STICKY_OVERFLOW). Changes under adc_clk, so the reader must treat it as asynchronous.",
+            "line": 52,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": null
+        }
+    ],
+    "instances": [
+        {
+            "instance": "u_fifo",
+            "component": "async_fifo",
+            "kind": "module",
+            "line": 125
+        }
+    ],
+    "processes": [
+        {
+            "label": "p_ctrl",
+            "kind": "always_ff",
+            "line": 68,
+            "sensitivity": [
+                "posedge clk",
+                "negedge rst_n"
+            ],
+            "description": "p_ctrl: Registers the enable and clear requests on the system clock.",
+            "wavedrom": [],
+            "mermaid": []
+        },
+        {
+            "label": "p_out",
+            "kind": "always_ff",
+            "line": 79,
+            "sensitivity": [
+                "posedge clk",
+                "negedge rst_n"
+            ],
+            "description": "p_out: Presents the oldest sample to the consumer.",
+            "wavedrom": [],
+            "mermaid": []
+        },
+        {
+            "label": "p_adc_en",
+            "kind": "always_ff",
+            "line": 92,
+            "sensitivity": [
+                "posedge adc_clk"
+            ],
+            "description": "p_adc_en: Brings capture_en and clear_req into the converter domain.",
+            "wavedrom": [],
+            "mermaid": []
+        },
+        {
+            "label": "p_adc_capture",
+            "kind": "always_ff",
+            "line": 107,
+            "sensitivity": [
+                "posedge adc_clk"
+            ],
+            "description": "p_adc_capture: Registers each sample and flags FIFO overflow.",
+            "wavedrom": [],
+            "mermaid": []
+        }
+    ],
+    "fsm": null,
+    "cdc": {
+        "domains": {
+            "clk": [
+                "p_ctrl",
+                "p_out"
+            ],
+            "adc_clk": [
+                "p_adc_en",
+                "p_adc_capture"
+            ]
+        },
+        "crossings": [
+            {
+                "signal": "capture_en",
+                "src_clock": "clk",
+                "dst_clock": "adc_clk",
+                "synchronized": true
+            },
+            {
+                "signal": "clear_req",
+                "src_clock": "clk",
+                "dst_clock": "adc_clk",
+                "synchronized": true
+            }
+        ],
+        "dual_clock_instances": [
+            {
+                "instance": "u_fifo",
+                "component": "async_fifo",
+                "clocks": {
+                    "wr_clk": "adc_clk",
+                    "rd_clk": "clk"
+                }
+            }
+        ]
+    },
+    "reset": {
+        "processes": [
+            {
+                "label": "p_ctrl",
+                "clock": "clk",
+                "reset": "rst_n",
+                "style": "async"
+            },
+            {
+                "label": "p_out",
+                "clock": "clk",
+                "reset": "rst_n",
+                "style": "async"
+            },
+            {
+                "label": "p_adc_en",
+                "clock": "adc_clk",
+                "reset": "adc_rst",
+                "style": "sync"
+            },
+            {
+                "label": "p_adc_capture",
+                "clock": "adc_clk",
+                "reset": "adc_rst",
+                "style": "sync"
+            }
+        ],
+        "domains": {
+            "rst_n": [
+                "p_ctrl",
+                "p_out"
+            ],
+            "adc_rst": [
+                "p_adc_en",
+                "p_adc_capture"
+            ]
+        },
+        "crossings": [
+            {
+                "signal": "capture_en",
+                "src_reset": "rst_n",
+                "dst_reset": "adc_rst"
+            },
+            {
+                "signal": "clear_req",
+                "src_reset": "rst_n",
+                "dst_reset": "adc_rst"
+            }
+        ]
+    },
+    "warnings": []
+}

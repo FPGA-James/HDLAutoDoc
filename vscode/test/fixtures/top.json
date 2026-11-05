@@ -1,0 +1,437 @@
+{
+    "language": "vhdl",
+    "module": {
+        "name": "top",
+        "line": 23,
+        "description": "Sampler top level.\n\nCaptures samples from a converter clock into the system clock, runs a capture\nwindow under register control (APB in, through an AXI4-Lite register file)\nand sends the samples, and a second external byte stream, through packet\nfilters. The converter and system clocks are asynchronous to each other.",
+        "wavedrom": [],
+        "mermaid": [
+            {
+                "caption": "Top-level structure",
+                "source": "flowchart LR\n  APB[s_apb] --> BR[apb_bridge] --> RG[axil_adapter + axil_regs]\n  RG -- start --> CT[sample_ctrl]\n  ADC[adc_data] --> CAP[sample_capture]\n  CT -- capture_en --> CAP\n  CAP --> SS[sample_stream] --> MA[m_axis]\n  EXT[s_ext] --> AP[axis_pipeline] --> ME[m_ext]\n  RG -- filter_enable, threshold --> SS\n  RG -- filter_enable, threshold --> AP"
+            }
+        ]
+    },
+    "generics": [
+        {
+            "name": "WINDOW_CYCLES",
+            "type": "positive",
+            "default": "1024",
+            "description": "Length of the capture window in system clock cycles.",
+            "line": 26
+        }
+    ],
+    "ports": [
+        {
+            "name": "clk",
+            "direction": "in",
+            "type": "std_logic",
+            "range": "",
+            "description": "System clock.",
+            "line": 30,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": null
+        },
+        {
+            "name": "arst_n",
+            "direction": "in",
+            "type": "std_logic",
+            "range": "",
+            "description": "System-domain asynchronous active-low reset input.",
+            "line": 32,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": null
+        },
+        {
+            "name": "adc_clk",
+            "direction": "in",
+            "type": "std_logic",
+            "range": "",
+            "description": "Converter clock; asynchronous to clk.",
+            "line": 34,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": null
+        },
+        {
+            "name": "adc_arst_n",
+            "direction": "in",
+            "type": "std_logic",
+            "range": "",
+            "description": "Converter-domain asynchronous active-low reset input.",
+            "line": 36,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": null
+        },
+        {
+            "name": "adc_data",
+            "direction": "in",
+            "type": "std_logic_vector",
+            "range": "11 downto 0",
+            "description": "Sample from the converter.",
+            "line": 38,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": null
+        },
+        {
+            "name": "s_apb_psel",
+            "direction": "in",
+            "type": "std_logic",
+            "range": "",
+            "description": "APB subordinate port for register access.",
+            "line": 40,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": "APB Subordinate"
+        },
+        {
+            "name": "s_apb_penable",
+            "direction": "in",
+            "type": "std_logic",
+            "range": "",
+            "description": "",
+            "line": 41,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": "APB Subordinate"
+        },
+        {
+            "name": "s_apb_pwrite",
+            "direction": "in",
+            "type": "std_logic",
+            "range": "",
+            "description": "",
+            "line": 42,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": "APB Subordinate"
+        },
+        {
+            "name": "s_apb_paddr",
+            "direction": "in",
+            "type": "std_logic_vector",
+            "range": "7 downto 0",
+            "description": "",
+            "line": 43,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": "APB Subordinate"
+        },
+        {
+            "name": "s_apb_pwdata",
+            "direction": "in",
+            "type": "std_logic_vector",
+            "range": "31 downto 0",
+            "description": "",
+            "line": 44,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": "APB Subordinate"
+        },
+        {
+            "name": "s_apb_prdata",
+            "direction": "out",
+            "type": "std_logic_vector",
+            "range": "31 downto 0",
+            "description": "",
+            "line": 45,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": "APB Subordinate"
+        },
+        {
+            "name": "s_apb_pready",
+            "direction": "out",
+            "type": "std_logic",
+            "range": "",
+            "description": "",
+            "line": 46,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": "APB Subordinate"
+        },
+        {
+            "name": "m_axis_tdata",
+            "direction": "out",
+            "type": "std_logic_vector",
+            "range": "7 downto 0",
+            "description": "Filtered captured samples (low byte, one-byte packets).",
+            "line": 48,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": "AXI4-Stream Manager"
+        },
+        {
+            "name": "m_axis_tvalid",
+            "direction": "out",
+            "type": "std_logic",
+            "range": "",
+            "description": "",
+            "line": 49,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": "AXI4-Stream Manager"
+        },
+        {
+            "name": "m_axis_tready",
+            "direction": "in",
+            "type": "std_logic",
+            "range": "",
+            "description": "",
+            "line": 50,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": "AXI4-Stream Manager"
+        },
+        {
+            "name": "m_axis_tlast",
+            "direction": "out",
+            "type": "std_logic",
+            "range": "",
+            "description": "",
+            "line": 51,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": "AXI4-Stream Manager"
+        },
+        {
+            "name": "s_ext_tdata",
+            "direction": "in",
+            "type": "std_logic_vector",
+            "range": "7 downto 0",
+            "description": "External byte stream in.",
+            "line": 53,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": "AXI4-Stream Subordinate"
+        },
+        {
+            "name": "s_ext_tvalid",
+            "direction": "in",
+            "type": "std_logic",
+            "range": "",
+            "description": "",
+            "line": 54,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": "AXI4-Stream Subordinate"
+        },
+        {
+            "name": "s_ext_tready",
+            "direction": "out",
+            "type": "std_logic",
+            "range": "",
+            "description": "",
+            "line": 55,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": "AXI4-Stream Subordinate"
+        },
+        {
+            "name": "s_ext_tlast",
+            "direction": "in",
+            "type": "std_logic",
+            "range": "",
+            "description": "",
+            "line": 56,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": "AXI4-Stream Subordinate"
+        },
+        {
+            "name": "m_ext_tdata",
+            "direction": "out",
+            "type": "std_logic_vector",
+            "range": "7 downto 0",
+            "description": "External byte stream out, after filtering.",
+            "line": 58,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": "AXI4-Stream Manager"
+        },
+        {
+            "name": "m_ext_tvalid",
+            "direction": "out",
+            "type": "std_logic",
+            "range": "",
+            "description": "",
+            "line": 59,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": "AXI4-Stream Manager"
+        },
+        {
+            "name": "m_ext_tready",
+            "direction": "in",
+            "type": "std_logic",
+            "range": "",
+            "description": "",
+            "line": 60,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": "AXI4-Stream Manager"
+        },
+        {
+            "name": "m_ext_tlast",
+            "direction": "out",
+            "type": "std_logic",
+            "range": "",
+            "description": "",
+            "line": 61,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": "AXI4-Stream Manager"
+        },
+        {
+            "name": "led_busy",
+            "direction": "out",
+            "type": "std_logic",
+            "range": "",
+            "description": "High while a capture is in progress.",
+            "line": 63,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": null
+        },
+        {
+            "name": "led_overflow",
+            "direction": "out",
+            "type": "std_logic",
+            "range": "",
+            "description": "High after a sample was lost to a full FIFO.",
+            "line": 65,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": null
+        }
+    ],
+    "instances": [
+        {
+            "instance": "u_rst_sys",
+            "component": "reset_sync",
+            "kind": "module",
+            "line": 185
+        },
+        {
+            "instance": "u_rst_adc",
+            "component": "reset_sync",
+            "kind": "module",
+            "line": 189
+        },
+        {
+            "instance": "u_apb",
+            "component": "apb_bridge",
+            "kind": "module",
+            "line": 208
+        },
+        {
+            "instance": "u_regs",
+            "component": "axil_adapter",
+            "kind": "module",
+            "line": 224
+        },
+        {
+            "instance": "u_ctrl",
+            "component": "sample_ctrl",
+            "kind": "module",
+            "line": 241
+        },
+        {
+            "instance": "u_capture",
+            "component": "sample_capture",
+            "kind": "module",
+            "line": 249
+        },
+        {
+            "instance": "u_samples",
+            "component": "sample_stream",
+            "kind": "module",
+            "line": 258
+        },
+        {
+            "instance": "u_ext",
+            "component": "axis_pipeline",
+            "kind": "module",
+            "line": 268
+        }
+    ],
+    "processes": [
+        {
+            "label": "p_ovf_sync",
+            "kind": "process",
+            "line": 196,
+            "sensitivity": [
+                "clk"
+            ],
+            "description": "p_ovf_sync: Brings the converter-domain overflow flag onto clk.",
+            "wavedrom": [],
+            "mermaid": []
+        }
+    ],
+    "fsm": null,
+    "cdc": {
+        "domains": {
+            "clk": [
+                "p_ovf_sync"
+            ]
+        },
+        "crossings": [],
+        "dual_clock_instances": [
+            {
+                "instance": "u_capture",
+                "component": "sample_capture",
+                "clocks": {
+                    "clk": "clk",
+                    "adc_clk": "adc_clk"
+                }
+            }
+        ]
+    },
+    "reset": {
+        "processes": [
+            {
+                "label": "p_ovf_sync",
+                "clock": "clk",
+                "reset": null,
+                "style": "none"
+            }
+        ],
+        "domains": {
+            "__none__": [
+                "p_ovf_sync"
+            ]
+        },
+        "crossings": []
+    },
+    "warnings": []
+}

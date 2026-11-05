@@ -1,5 +1,24 @@
 # Release Notes
 
+## v3.17.0
+
+#### New features
+
+- **VS Code extension** (`vscode/`) — a live documentation preview for the VHDL or SystemVerilog file being edited: header, generics or parameters, ports (with bus groups and interface ports), instances, state machine, processes with WaveDrom and Mermaid diagrams, and clock- and reset-domain analysis. It uses the same extractors as the site build, works on unsaved text, follows the editor theme, and clicking a row jumps to its line. Build it with `make -C vscode vsix` and install the `.vsix` with `code --install-extension`; it needs Python 3.11+ and nothing else (the `.vsix` carries its own copy of the scripts). Not published to the Marketplace; CI builds the `.vsix` as a build artifact. See `vscode/README.md`.
+- - **Editor icon and export** — an icon at the top right of the editor opens the panel for HDL files. **Export HTML** saves a standalone page with the diagrams drawn for a white background; **Export Markdown** saves a `.md` with the diagrams inserted as fenced source (`mermaid`, `wavedrom`, `dot`).
+**`autodoc_json.py`** — a new command that reads one source file on standard input and prints a JSON document (module, generics, ports, instances, processes, state machine, CDC and reset analysis, warnings). It is what the extension runs, and a data layer for other tools. Standard library only.
+- Ports, generics, parameters and interface instances carry a `line` field in the extractors' results.
+
+#### Fixes
+
+- **State-machine diagrams with a double quote in a condition** (for example `mode = "01"`) produced invalid Graphviz source; quotes are now escaped. This affected the site's FSM diagrams as well.
+
+#### Compatibility
+
+- Backwards compatible: the site's pages and every existing command, make target and variable are unchanged. The extension is additional.
+
+---
+
 ## v3.16.0
 
 #### New features

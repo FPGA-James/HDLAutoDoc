@@ -29,6 +29,7 @@ No separate doc files to maintain. No manual diagrams to draw. If it's in the so
 | **Register map** | Auto-embeds `registers/generated/*.html` — any register builder output supported |
 | **Testbenches** | Lists VUnit, cocotb, pyuvm and directed testbenches with their purpose and test counts, read from source — on by default (`TESTBENCHES=0` to skip) |
 | **Build reports** | Ingests Yosys/nextpnr (ECP5) and Vivado reports — summary, utilization, timing and warnings — on by default (`BUILD=0` to skip) |
+| **VS Code preview** | A live per-file preview in the editor from the same extractors — ports, FSM, processes with WaveDrom and Mermaid, CDC and reset — installed from a `.vsix` (see [VS Code extension](#vs-code-extension)) |
 | **Dark / light mode** | Built-in Furo toggle — persists across sessions, respects OS preference |
 | **Ctrl+K search** | Keyboard shortcut focuses the sidebar search input |
 | **PDF output** | Full LaTeX PDF via `make doc-pdf` |
@@ -204,6 +205,17 @@ Two more examples live alongside it: `example_sv/` (a SystemVerilog package, int
 - clock-domain analysis (two domains, a two-flop synchroniser, an asynchronous FIFO) and reset analysis (synchronous and asynchronous resets, several reset domains);
 - generics and parameters, a package, two interfaces, interface ports and an internal interface instance, flat AXI4-Lite / AXI4-Stream / APB port groups and a custom group in `bus_groups.toml`;
 - a register map (`registers/regs_axil_regs.toml`), RTL schematics, testbenches in all three frameworks (one skipped test), and real Yosys/nextpnr reports plus sample Vivado reports.
+
+### VS Code extension
+
+`vscode/` holds an extension that shows the documentation of the file you are editing, live, in a panel beside it: header, generics, ports, instances, the state machine, processes with their WaveDrom and Mermaid diagrams, and clock- and reset-domain analysis. It reads the source with the same extractors as the site build (through the new `autodoc_json.py`, which prints one JSON document per file), works on unsaved text, and follows the editor theme.
+
+```bash
+make -C vscode vsix                                      # builds vscode/hdl-autodoc-<version>.vsix
+code --install-extension vscode/hdl-autodoc-*.vsix       # then: "HDL AutoDoc: Show documentation"
+```
+
+It needs Python 3.11+ on the `PATH` (nothing to `pip install`: the `.vsix` carries its own copy of the scripts) and is not published to the Marketplace; CI builds the `.vsix` on every push and keeps it as a build artifact. See [`vscode/README.md`](vscode/README.md) for settings and limits.
 
 ---
 
@@ -764,6 +776,25 @@ Done. The new module appears in the overview (tree and table), navigation, and g
 ---
 
 ## 📋 Release notes
+
+### v3.17.0
+
+#### New features
+
+- **VS Code extension** (`vscode/`) — a live documentation preview for the VHDL or SystemVerilog file being edited: header, generics or parameters, ports (with bus groups and interface ports), instances, state machine, processes with WaveDrom and Mermaid diagrams, and clock- and reset-domain analysis. It uses the same extractors as the site build, works on unsaved text, follows the editor theme, and clicking a row jumps to its line. Build it with `make -C vscode vsix` and install the `.vsix` with `code --install-extension`; it needs Python 3.11+ and nothing else (the `.vsix` carries its own copy of the scripts). Not published to the Marketplace; CI builds the `.vsix` as a build artifact. See `vscode/README.md`.
+- - **Editor icon and export** — an icon at the top right of the editor opens the panel for HDL files. **Export HTML** saves a standalone page with the diagrams drawn for a white background; **Export Markdown** saves a `.md` with the diagrams inserted as fenced source (`mermaid`, `wavedrom`, `dot`).
+**`autodoc_json.py`** — a new command that reads one source file on standard input and prints a JSON document (module, generics, ports, instances, processes, state machine, CDC and reset analysis, warnings). It is what the extension runs, and a data layer for other tools. Standard library only.
+- Ports, generics, parameters and interface instances carry a `line` field in the extractors' results.
+
+#### Fixes
+
+- **State-machine diagrams with a double quote in a condition** (for example `mode = "01"`) produced invalid Graphviz source; quotes are now escaped. This affected the site's FSM diagrams as well.
+
+#### Compatibility
+
+- Backwards compatible: the site's pages and every existing command, make target and variable are unchanged. The extension is additional.
+
+---
 
 ### v3.16.0
 

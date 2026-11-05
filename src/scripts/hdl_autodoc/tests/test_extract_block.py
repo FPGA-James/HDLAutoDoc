@@ -915,3 +915,85 @@ def test_vhdl_port_range_may_contain_a_function_call():
             "    d    : in std_logic_vector(W - 1 downto 0)\n  );\nend entity e;\n")
     by_name = {p["name"]: p["range"] for p in extract_ports_vhdl(text)}
     assert by_name == {"addr": "clog2(DEPTH) - 1 downto 0", "d": "W - 1 downto 0"}
+
+
+# ── source line numbers (VS Code extension: click to jump) ───────────────────
+
+LINE_VHDL = """\
+-- Header comment.
+--
+-- More header.
+
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity e is
+    generic (
+        -- Width.
+        W : positive := 8;
+        D : natural := 4
+    );
+    port (
+        clk : in std_logic;
+        -- Data.
+        d   : in std_logic_vector(W - 1 downto 0);
+        a, b : in std_logic
+    );
+end entity e;
+"""
+
+LINE_SV = """\
+// Header comment.
+
+module m #(
+    // Width.
+    parameter int W = 8,
+    parameter int D = 4
+) (
+    // Clock.
+    input  logic         clk,
+    input  logic [W-1:0] d
+);
+    localparam int X = 2;
+endmodule
+"""
+
+
+def _line_of(text, needle):
+    return next(i for i, l in enumerate(text.splitlines(), 1) if needle in l)
+
+
+def test_vhdl_ports_and_generics_carry_their_line_number():
+    ports = {p["name"]: p["line"] for p in extract_ports_vhdl(LINE_VHDL)}
+    assert ports == {"clk": _line_of(LINE_VHDL, "clk :"), "d": _line_of(LINE_VHDL, "d   :"),
+                     "a": _line_of(LINE_VHDL, "a, b"), "b": _line_of(LINE_VHDL, "a, b")}
+    generics = {g["name"]: g["line"] for g in extract_generics_vhdl(LINE_VHDL)}
+    assert generics == {"W": _line_of(LINE_VHDL, "W :"), "D": _line_of(LINE_VHDL, "D :")}
+
+
+def test_sv_ports_and_params_carry_their_line_number():
+    ports = {p["name"]: p["line"] for p in extract_ports_sv(LINE_SV)}
+    assert ports == {"clk": _line_of(LINE_SV, "input  logic         clk"),
+                     "d": _line_of(LINE_SV, "input  logic [W-1:0] d")}
+    params = {g["name"]: g["line"] for g in extract_params_sv(LINE_SV)}
+    assert params == {"W": _line_of(LINE_SV, "int W"), "D": _line_of(LINE_SV, "int D"),
+                      "X": _line_of(LINE_SV, "localparam")}
+
+
+def test_a_one_line_port_list_reports_the_line_the_keyword_is_on():
+    text = "\n\nentity e is port (clk : in std_logic);\nend entity e;\n"
+    (port,) = extract_ports_vhdl(text)
+    assert port["line"] == 3
+
+
+def test_interface_ports_carry_their_line_number():
+    text = "module m (\n    input logic clk,\n    axis_if.slave s\n);\nendmodule\n"
+    ports = {p["name"]: p["line"] for p in extract_ports_sv(text, {"axis_if"})}
+    assert ports == {"clk": 2, "s": 3}
+
+
+def test_crlf_source_gives_the_same_line_numbers():
+    crlf = LINE_VHDL.replace("\n", "\r\n")
+    assert [p["line"] for p in extract_ports_vhdl(crlf)] == [p["line"] for p in extract_ports_vhdl(LINE_VHDL)]
+    assert [p["line"] for p in extract_ports_sv(LINE_SV.replace("\n", "\r\n"))] == \
+        [p["line"] for p in extract_ports_sv(LINE_SV)]

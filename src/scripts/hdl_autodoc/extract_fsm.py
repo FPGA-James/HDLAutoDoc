@@ -291,7 +291,7 @@ def write_dot(transitions, states, module_name):
         lines.append(f"    __start -> {states[0]} [label=\"reset\"];")
     lines.append("")
     for frm, to, cond in transitions:
-        label = cond if cond else "always"
+        label = (cond if cond else "always").replace("\\", "\\\\").replace('"', '\\"')
         lines.append(f"    {frm} -> {to} [label=\"{label}\"];")
     lines.append("}")
     return "\n".join(lines)
