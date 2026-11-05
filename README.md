@@ -224,12 +224,9 @@ generate_rst.py        Scaffolds docs/modules/<n>/ for each module.
     │                  Write-if-missing: entity pages (safe to hand-edit).
     ▼
 run_extract.py         Calls extract_fsm.py, extract_processes.py,
-    │                  extract_cdc.py, and extract_block.py for every
-    │                  module in hierarchy.json.
-    ▼
-include_registers.py   Checks registers/generated/*.html. Copies it
-    │                  to _static/ and embeds via iframe if found.
-    │                  Writes a placeholder page if not.
+    │                  extract_cdc.py, extract_block.py and
+    │                  extract_registers.py for every module in
+    │                  hierarchy.json.
     ▼
 extract_testbenches.py Lists the testbenches under tb/ (TESTBENCHES=1).
     ▼
@@ -489,33 +486,21 @@ The reports are picked up by the normal `make doc-html`. With no report files �
 - *Timing* — one row per clock with target and achieved fmax and PASS/FAIL (nextpnr) or WNS (Vivado). nextpnr prints each clock after placement and again after routing; the routed value is shown.
 - *Warnings* — the total, and the most frequent messages (messages that differ only by a quoted name are grouped).
 
-**Per-module synthesis page** — LUT/FF/BRAM/DSP counts for that instance.
-
 ---
 
 ## 🗺 Register map integration
 
-Place your register map HTML export under `registers/generated/` (or `$AUTODOC_REGISTERS_DIR/generated/` if you have relocated the registers directory — see [Make variables](#make-variables)):
+Describe a module's registers in `registers/regs_<module>.toml` (the [hdl-registers](https://hdl-registers.com) format, with `registers/config.yml` for the bus width), where `<module>` is a module in your hierarchy:
 
 ```
 registers/
-└── generated/
-    ├── index.html              ← entry point (required)
-    ├── index2.html
-    ├── index_registers.html
-    ├── style.css
-    └── Registers/
-        ├── reg_ctrl.html
-        └── reg_status.html
+├── config.yml
+└── regs_axil_regs.toml
 ```
 
-Run `make doc-html`. The entire directory is copied to `docs/_static/registers/` and embedded as a full-screen iframe, preserving all internal links and CSS. If no export is found a clear placeholder page is shown instead with instructions.
+`make doc-html` gives that module a **Registers** page: one table row per register with its address offset, access mode and description, and a field table for each register that has fields. A module with no `regs_<module>.toml` gets no page. Use `AUTODOC_REGISTERS_DIR` if the directory is not called `registers/` (see [Make variables](#make-variables)).
 
-Override the entry point filename if your tool produces a different name:
-
-```bash
-make doc-html AUTODOC_REG_ENTRY=regmap.html
-```
+`make doc-regs` also runs hdl-registers to generate VHDL packages, an AXI-Lite wrapper, a C header and HTML register documentation into `registers/generated/`. Those files are for your design and tools; the site does not embed them.
 
 ---
 
@@ -636,7 +621,6 @@ src/
 │   │   ├── parse_timing.py      ← Vivado timing summary + nextpnr log parser
 │   │   ├── generate_schematic.py← generates RTL schematic via yosys (optional, on by default)
 │   │   ├── run_extract.py       ← orchestrates extraction for all modules
-│   │   └── include_registers.py ← copies register map + writes rst page
 │   └── registers/
 │       └── generate.py         ← generates VHDL, C header, and HTML from register TOML
 └── docs/
@@ -690,7 +674,7 @@ Nothing from the tool is copied into the project tree, so there are no stale cop
 | `docs/hdl_autodoc/modules/<n>/block.rst` | 🔄 Auto-generated | Regenerated every build |
 | `docs/hdl_autodoc/modules/<n>/cdc.rst` | 🔄 Auto-generated | Regenerated every build |
 | `docs/hdl_autodoc/modules/<n>/processes/` | 🔄 Auto-generated | Regenerated every build |
-| `docs/hdl_autodoc/registers.rst` | 🔄 Auto-generated | Written by `include_registers.py` |
+| `docs/hdl_autodoc/registers.rst` | 🔄 Auto-generated | Written by `generate_rst.py` (lists the modules that have a register map) |
 | `docs/hdl_autodoc/_static/registers/` | 🔄 Auto-generated | Copied from `registers/generated/` |
 | `docs/hdl_autodoc/testbenches/index.rst` | 🔄 Auto-generated | The Testbenches page, from `tb/` |
 | `docs/hdl_autodoc/synthesis/index.rst` | 🔄 Auto-generated | The Build page, from `reports/` |
@@ -759,341 +743,12 @@ Done. The new module appears in the overview (tree and table), navigation, and g
 ### Output formats
 
 - **Wavedrom in PDF** — may not render identically to HTML output depending on the wavedrom CLI version.
-- **Register map in PDF** — the iframe embed is HTML-only. The PDF build skips the register page content.
 
 ---
 
 ## 📋 Release notes
 
-### v3.16.0
-
-#### New features
-
-- **Report files can have their own names and places** (issue #4). The Build section looks for `yosys/stat.txt`, `yosys/yosys.log`, `yosys/nextpnr.log`, `vivado/utilization_placed.rpt` and `vivado/timing_summary_routed.rpt` under `AUTODOC_REPORTS_DIR`. Each can now be named directly: `AUTODOC_YOSYS_STAT`, `AUTODOC_YOSYS_LOG`, `AUTODOC_NEXTPNR_LOG`, `AUTODOC_VIVADO_UTILIZATION` and `AUTODOC_VIVADO_TIMING` (a relative path is taken from the project root). A variable that names a file that does not exist is reported with a warning that names the variable. Unset, everything works as before.
-
-#### Compatibility
-
-- Backwards compatible: with none of the variables set the Build section is unchanged.
-
----
-
-### v3.15.0
-
-#### Fixes
-
-- **Dual-clock instances with nested parentheses are found.** The CDC page missed an asynchronous FIFO written `async_fifo #(.WIDTH(8), .DEPTH(clog2(16))) u_fifo (...)` or `generic map (WIDTH => f(8))`, because the instance matcher could not count parentheses. Instances are now read with a small scanner that balances them. A clock connected through an expression (a gate, a slice) is no longer taken for a second clock.
-- **FSM extraction handles conditions with parentheses and ternaries** (SystemVerilog and VHDL). `if (start && (mode == 1 || force)) next_state = RUN;` kept no transition; a ternary `next_state = done ? IDLE : ERR;` invented a state. Transitions now keep the whole condition, a ternary gives one transition per outcome (`done` and `!(done)`), and arms written with `begin ... end` are read in full.
-- **A VHDL port range containing a call is shown whole** (`unsigned(clog2(DEPTH) - 1 downto 0)`, not `clog2(DEPTH`).
-
-#### Compatibility
-
-- Backwards compatible. On the example projects the extracted transitions and instances are identical to before; only inputs that were read wrongly change.
-
----
-
-### v3.14.2
-
-#### Fixes
-
-- **A port comment that spans several lines is the whole description** (issue #3). The block table showed only the last line above a port, often a sentence fragment. The description is now the whole contiguous comment block above the port, joined into one sentence; it ends at a blank line, a bare comment line, or a section banner (`// ── control ──`, `-- ===== status =====`), and a banner on its own is no longer used as a description. An inline trailing comment still takes precedence, and single-line comments behave as before. This applies to generics and parameters too.
-- **The Build page lists specialised Yosys modules under their own name** (issue #4). Yosys names its copies of a module `aes_cipher$interfaces$axis_ifaxis_if` (one per set of interfaces) or `$paramod\stream_filter\COUNT_W=16` (one per parameter set); they are now shown as `aes_cipher` / `stream_filter`, with the copies' resources added together.
-
-#### Compatibility
-
-- Backwards compatible. Ports with a single-line comment, and designs without specialised Yosys modules, produce the same pages as before.
-
----
-
-### v3.14.1
-
-#### Fixes
-
-- **`make doc-check-env` no longer reports installed packages as missing on macOS.** The check imported `sphinxcontrib.wavedrom`, which loads cairo and xcb; macOS could not find `libxcb` from make's environment (SIP strips `DYLD_LIBRARY_PATH`), so the build stopped with "packages are not installed" although the real build works. The check now asks whether each package is installed without importing it, and names the ones that are missing.
-- The Sphinx tests that load the real `conf.py` skip, with the reason, when cairo cannot be loaded, instead of failing.
-
-#### Compatibility
-
-- Backwards compatible. A genuinely missing package is still caught by the check; one that is installed but cannot load its native libraries now fails in the Sphinx build with the real error.
-
----
-
-### v3.14.0
-
-#### New features
-
-- **pyuvm testbenches** — the Testbenches section now lists [pyuvm](https://github.com/pyuvm/pyuvm) tests, from a `tb/pyuvm/` subdirectory. Each class decorated with `@pyuvm.test(...)` (or `@test(...)` imported from pyuvm) is a test; its purpose is the first line of the class docstring and `skip=True` tests are listed and marked skipped. The testbench is linked to the module it tests by file name, as for cocotb, and gets its own section and row in the summary table.
-- `example_full/` gains a pyuvm environment for `axis_pipeline` (sequence, driver, monitor, scoreboard, two tests and one skipped).
-
-#### Fixes
-
-- **The hierarchy tree printed by `make doc-hierarchy` nests correctly.** Grandchildren were drawn as `├── └── name`; they now hang under their parent with a continuation bar.
-
-#### Maintenance
-
-- GitHub Actions: tests on Python 3.11-3.13, a lint job (ruff), and every example built with Sphinx warnings as errors. The example sites are published to GitHub Pages from `main`.
-- The generated `_build` output of the examples is no longer committed (it is published to Pages instead).
-- The comment-stripping, identifier and title helpers the extractors each copied now live in `hdl_text.py`; `ruff` passes.
-
-#### Compatibility
-
-- Backwards compatible. A project with no `tb/pyuvm/` directory gets the same Testbenches page as before.
-
----
-
-### v3.13.0
-
-#### New features
-
-- **Mermaid diagrams** — write a `.. mermaid::` block in a source comment, the way `.. wavedrom::` blocks work. It is supported in a module or entity header (VHDL and SystemVerilog) and in the comment block above a process or `always` block; options such as `:caption:` work, and the diagram keeps its indentation (state diagrams nest). HTML pages render them in the browser (Mermaid is fetched from a CDN, or served locally — see the README; the local copy needs the site to be served over http, not opened from disk); the PDF includes them when `mermaid-cli` (`mmdc`) is installed, and otherwise shows a one-line note where each diagram would be and the build prints a single message. The generated FSM, hierarchy, CDC and block diagrams stay on Graphviz. There is no on/off switch: a project with no Mermaid block is unchanged.
-- **Previous / Next links** at the bottom of every page, following the order of the sidebar (they had been lost to the page-footer override).
-- **Process index** — when at least one process in a module has a diagram, its process table gains a "Mermaid" column next to "WaveDrom"; modules without a diagram keep the old table.
-- New make variables: `AUTODOC_MERMAID_CMD` (default `mmdc`; it may carry arguments, and a space in a path is written `\ `), `AUTODOC_MERMAID_PARAMS` (for example a puppeteer config) and `AUTODOC_MERMAID_JS` (a local Mermaid script for offline pages). New dependency: `sphinxcontrib-mermaid>=2.1`.
-- **`example_full/`** — a mixed VHDL / SystemVerilog sampler for ECP5 that shows every feature at once: a three-level hierarchy with a shared module, VHDL and SystemVerilog FSMs, Mermaid flow / sequence / state diagrams, CDC and reset analysis, generics and parameters, a package, interfaces and flat bus groups, a custom `bus_groups.toml` group, a register map, testbenches in all three frameworks, and real Yosys/nextpnr reports. A test (`test_example_full.py`) keeps it covering every feature.
-
-#### Behaviour changes
-
-- **Synthesis numbers are only in the Build section.** The per-module "Synthesis Results" page that every module had in the Design sidebar is gone (it was empty for most modules, and could disagree with the Build page); per-module numbers are in the Build page's "By module" table. A project without reports now has no synthesis entry anywhere in the Design section. Stale `modules/<n>/synthesis.rst` files are removed on the next build.
-
-#### Fixes
-
-- **Without `mmdc`, a captioned diagram leaves only the note in the PDF**, not an empty numbered figure.
-- **`make doc-check-env` also checks `sphinxcontrib-mermaid`**, so an old environment is told to run `make doc-venv` instead of failing with a traceback.
-- **The breadcrumb bar stays at the top of the page while you scroll.**
-- A header comment line that merely starts with dots (`...wraps at N`) is no longer mistaken for a directive in the overview description.
-- **A SystemVerilog or VHDL header with a directive in it no longer turns the directive into the overview description.** The description shown in the module overview table now stops at the first directive line (`.. mermaid::`, `.. wavedrom::`), instead of including it.
-
-#### Compatibility
-
-- Backwards compatible. Projects without Mermaid blocks build the same pages as before; the Mermaid script is added only to pages that contain a diagram.
-- Install the new dependency with `make doc-venv` (or `pip install -r requirements.txt`).
-
----
-
-### v3.12.0
-
-#### New features
-
-- **Testbenches section** — lists the testbenches under `tb/` (`vunit/`, `cocotb/`, `directed/` subdirectories), each with its purpose, the module it tests, and its tests, counted from the source with no simulator run: VUnit `run("...")` and `` `TEST_CASE("...") ``, cocotb `@cocotb.test` functions (`skip=True` marked skipped), and directed tests marked with a `-- TEST: name — purpose` / `// TEST: name — purpose` comment. A summary table gives counts per framework and in total. Appears in the sidebar under **Verification**. `TESTBENCHES=0` removes it; `AUTODOC_TB_DIR` relocates it. The marker convention is documented in the new Testbenches section.
-- **Build section** — the Implementation section is now **Build**, and shows a summary (Yosys and nextpnr versions, device class, when the reports were produced, docs revision), utilization (nextpnr's device utilisation plus the per-module table), timing, and warnings (total and most frequent messages). Open-source ECP5 (Yosys + nextpnr) first; Vivado utilization and timing still work, with its power, DRC and other reports to follow. `BUILD=0` removes it; `AUTODOC_REPORTS_DIR` relocates the reports.
-- **`example_ecp5/`** — an ECP5 design (AXI4-Stream threshold filter with an AXI4-Lite register file, four registers), with one testbench per framework and real Yosys and nextpnr reports produced by `make ecp5-reports`.
-
-#### Behaviour changes
-
-- **Reports are now part of the normal build.** `make doc-html` ingests `reports/` itself (it used to need a separate `make doc-reports`), so a project that already has a `reports/` directory gets a Build section automatically. With no report files there is no section, as before; `make doc-reports` still writes its placeholder page; `BUILD=0` switches it off.
-- The sidebar caption and page title are **Build** (was Implementation). File paths (`synthesis/index.rst`, `modules/<n>/synthesis.rst`) and `make doc-reports` are unchanged.
-- The Build page order is Summary, Utilization, Timing, Warnings (timing used to come first).
-
-#### Fixes
-
-- **nextpnr timing showed every clock twice.** nextpnr prints `Max frequency for clock` after placement and again after routing; there is now one row per clock, with the routed value.
-- **Yosys utilization was all zeros on current Yosys.** Yosys now prints `stat` cell lines as `<count> <cell>`; the parser expected `<cell> <count>`. Both are read, and the `design hierarchy` total is no longer shown as a module.
-- When a switch is off, that section's pages from an earlier run are deleted, so they cannot reappear in the sidebar.
-
-#### Compatibility
-
-- Backwards compatible. With no `tb/` directory and no report files the output is unchanged.
-- Testbench files must not be listed in `filelist.f` (a listed testbench becomes a second top level).
-
-### v3.11.0
-
-#### New features
-
-- **Interfaces a module instantiates are documented and drawn** — a module that wires interfaces together without having interface ports of its own (a typical top level) is no longer silent about them. The block page's "Interfaces" section now also covers interfaces declared in a module's body (`axis_if m_axis (.clk(clk));`), shown as "instantiated here as ...", with each interface's members and widths. For an interface used only internally, every modport it defines gets a direction column. On the diagram they appear in a separate blue **interfaces** box (`name : interface`, one row each) below the ports box, since they are internal rather than ports.
-- **`make doc-check-env`** — `doc-html` and `doc-pdf` now first check that the Sphinx packages are importable and, if not, stop with "run `make doc-venv`" instead of a Sphinx `no theme named 'furo'` traceback.
-- **`example_sv/`** — a small SystemVerilog example with a package, two interfaces, and a module with interface ports (`make doc-venv && make doc-html` from that directory).
-
-#### Compatibility
-
-- Backwards compatible. Modules that neither have interface ports nor instantiate interfaces produce byte-identical block pages and diagrams.
-
-#### Notes
-
-- Interface instances are found by the same rules as interface ports: the interface must be defined in a support file or the module's own file, and ordinary module instances are never read as interfaces.
-
-### v3.10.0
-
-#### New features
-
-- **SystemVerilog interface ports in block diagrams and port tables** — ports typed as an interface (`axil_if.slave s_axil`, `axis_if.master m_axis`, or a bare `axis_if s_dbg`) are no longer skipped. A module with AXI-Lite / AXI-Stream interface ports now shows them next to `clk`/`rst`:
-  - **Port table:** one row per interface port. *Direction* is the modport (`slave`, `master`, or — if there is none), *Type* is the interface name, and the description comes from the preceding or inline comment like any other port.
-  - **Block diagram:** one bus-style port per interface, labelled `name (interface)`. Master-like modports (`master`, `manager`, `initiator`, `source`/`src`, `mst`, `tx`, `producer`, `driver`, `out`) are drawn on the right; every other port (`slave`, `subordinate`, `target`, `sink`/`snk`, `rx`, an unrecognised modport, or none) is on the left.
-  - **Interfaces section:** a new "Interfaces" heading lists the members of each interface a module uses (type, width and description), with a direction column for each modport the module's ports use.
-  - A type name counts as an interface only if an `interface ... endinterface` of that name is defined in one of the `support_files` (see v3.9.0) or in the module's own file, so an ordinary type name is never mistaken for one.
-- `generate_rst.py`'s flat-mode port list recognises interface ports the same way (it finds interface definitions across the source tree).
-
-#### Compatibility
-
-- Backwards compatible. Modules without interface ports produce byte-identical block pages, and `extract_block.py`'s new `--support` option is optional.
-- VHDL is unchanged: record-typed ports already appear as ordinary typed ports.
-
-#### Notes
-
-- Interface ports are read from the module header, one per line (the style the existing port extractor already assumes). An interface *instance* inside the module body is not a port. Interfaces defined in a file that also defines modules are found only for that file's own modules.
-- Interface members and widths are shown as written (`logic[W-1:0]`); parameters are not evaluated.
-- Support files are not part of a module's extraction cache key; after editing an interface run `make doc-extract FORCE=1`.
-- A *modport-less* interface port (`axis_if s_dbg`) makes the RTL schematic fall back to yosys's own renderer, because yosys marks its members `inout` and netlistsvg accepts only `input`/`output`. The block page is unaffected.
-
-### v3.9.0
-
-#### New features
-
-- **SystemVerilog packages and interfaces in schematics** — files that define no module (packages, interfaces) are now recorded in `hierarchy.json` as `support_files`, in filelist order, instead of only triggering a "could not extract module name" warning. RTL schematic generation reads them first, in that order (so a package precedes its users), then the module's dependencies, then the module itself, and runs `hierarchy -top <module>` before `proc; opt`. This fixes `Can't resolve function name pkg::...` and package-scoped syntax errors from yosys, and the netlistsvg failure on interface-typed ports (yosys now flattens the interface into plain signals).
-- **Cleaner schematic labels** — interface members appear as `if_name_signal` instead of falling back to a generic `output` label, and yosys's per-interface copies (`producer$interfaces$stream_if`) are labelled with the module name.
-
-#### Compatibility
-
-- Backwards compatible. `support_files` is an addition to `hierarchy.json` (an older file without it still works), VHDL modules ignore it, and projects with no packages or interfaces get the same schematics as before. VHDL package files are unaffected.
-- `generate_schematic.py` accepts `--support <file>` (repeatable) after its dependency arguments.
-
-#### Notes
-
-- yosys's native SystemVerilog frontend still applies: no `return` statements in functions, no `import` inside a module body (import in the module header or use `pkg::name`), and only basic interface/modport support. Modules that use unsupported constructs are skipped with a message, as before.
-- Support files are not part of a module's extraction cache key (neither are its dependencies). After editing a package or interface, run `make doc-extract FORCE=1` to refresh the schematics.
-
-### v3.8.0
-
-#### New features
-
-- **Configurable registers directory** — the register pipeline no longer assumes a top-level `registers/`. Set `AUTODOC_REGISTERS_DIR` (default `registers`) to relocate it, for example under `out/`: `make doc-html AUTODOC_REGISTERS_DIR=out/registers`. It moves `regs_*.toml` and `config.yml`, the `generated/` and `out/` output of `make doc-regs`, and the `generated/` export that `include_registers.py` looks for. `autodoc.mk` passes the variable to `run_extract.py` and `generate.py` as well as Sphinx.
-
-#### Compatibility
-
-- Backwards compatible. With the variable unset, every script keeps its previous default, including the `docs/hdl_autodoc`-relative fallback in `run_extract.py`. Through `make` the default resolves to `<project root>/registers`, which is the same directory for the standard layout.
-- The "no register export found" notice now names the configured directory, and says `make doc-html` rather than `make html`.
-
-### v3.7.0
-
-#### Behaviour changes
-
-- **Schematics are on by default** — `SCHEMATICS` now defaults to `1` (it was `0` in v3.6.x). They are skipped silently when yosys is not installed; `make doc-html SCHEMATICS=0` turns them off.
-- **Design Hierarchy merged into Overview** — the instantiation tree, shared-component list and parent/child columns now live on the single Overview page; the separate `hierarchy.rst` page is gone (an old one is deleted automatically on the next build).
-
-#### New features
-
-- **`ANNOTATED_SOURCE` switch** — `make doc-html ANNOTATED_SOURCE=0` drops the full source listing from entity pages (default on, as before). The listing now lives in an always-regenerated `<module>_source.rst` that `entity.rst` includes, so the switch works on existing pages too. Unedited older `entity.rst` shells are upgraded automatically; a hand-edited one that still contains the listing inline keeps it until you replace it with `.. include:: <module>_source.rst`.
-- **Black-box SystemVerilog children** — a VHDL module that instantiates SystemVerilog is no longer skipped as "mixed-language". A generated port-only VHDL stub stands in for each SV child, which is drawn as a black-box instance. ghdl's generic-value suffixes (`pwm_controller_8`) are stripped from box labels.
-- **Restyled schematics** — a bundled netlistsvg skin (soft colours, sans-serif font, dark-mode palette, slightly wider layout spacing).
-- **RTL Detail section** — the schematic sits under a collapsed "RTL Detail" disclosure on the block page in HTML, so the page leads with the block diagram. In the PDF each schematic gets its own landscape page, rotated 90° and fitted to the page.
-- **Navigation** — breadcrumbs on every page, and the left sidebar now scrolls to the current page (it keeps its position after a click inside the sidebar).
-
-#### Fixes
-
-- VHDL modules in a project that also contains SystemVerilog files now get schematics: only a module's own dependencies are passed to ghdl, not every file in the project.
-- netlistsvg drew the wrong module for hierarchical designs; the requested module is now moved to the front of the netlist.
-- Incremental rebuilds after an HDL edit no longer warn "Entity … not found" and drop the ports and generics from VHDL entity pages (a sphinx-vhdl bug, worked around in `conf.py`).
-- SystemVerilog descriptions now also appear on projects generated before v3.6.0 (unedited `entity.rst` shells are upgraded).
-
-### v3.6.1
-
-#### Fixes
-
-- **SystemVerilog descriptions on existing projects** — an unedited `entity.rst` from an older version is now upgraded automatically so the module description appears; hand-edited pages are left untouched.
-
-### v3.6.0
-
-#### Breaking changes
-
-- **Single-source Makefile** — `src/Makefile` is now `src/autodoc.mk`, included from your own Makefile instead of copied. All targets are prefixed `doc-` (`doc-html`, `doc-pdf`, `doc-regs`, `doc-clean`, …) so they cannot clash with host targets; `make doc` is now `make doc-all`. Run `make doc-help` for the list.
-- **`install.sh` rewritten** — adds the tool as a git submodule at `third_party/hdl_autodoc` (or copies `src/` with `--vendor`) and appends the `include` line to your Makefile. Scripts and Sphinx config are no longer copied into the project. Existing projects: delete their copied `scripts/` and `docs/hdl_autodoc/{conf.py,_static,_templates}`, then re-run the installer.
-- Project metadata (`PROJECT`, `AUTODOC_AUTHOR`, `AUTODOC_RELEASE`) now comes from make variables instead of editing `conf.py`.
-- `SCHEMATICS` now defaults to `0`, as documented.
-
-#### New features
-
-- **SystemVerilog module descriptions** — the `//` comment block directly above `module <name>` is rendered as the description on the entity page, matching what `vhdl:autoentity` does for VHDL. Unedited `entity.rst` shells from older versions are upgraded automatically.
-- **Breadcrumbs** on every page, and the **sidebar keeps its scroll position** between pages.
-
-#### Improvements
-
-- `Sphinx` reads `conf.py`, static files and templates from the tool via `-c`; the project's own `docs/hdl_autodoc/_static` is added for generated register pages.
-- Remaining bare `python` calls use `$(PYTHON)`, so the `.venv` is honoured everywhere.
-- `scripts/registers/generate.py` resolves `registers/` from the working directory, so it works from a shared checkout.
-- `example/` is now just a Makefile include plus sources, replacing its stale copy of the tool.
-
-### v3.5.0
-
-#### Breaking changes
-
-- **Template repo restructure** — the pipeline scripts and Sphinx config have moved to `src/`. Use `./install.sh <target>` to drop the tool into your HDL project. An `example/` directory provides a fully working demo (traffic light + PWM controller).
-
-### v3.4.0
-
-#### New features
-
-- **Synthesis reports** — `make reports` ingests Vivado (`utilization_placed.rpt`, `timing_summary_routed.rpt`) and Yosys/nextpnr (`stat.txt`, `nextpnr.log`) report files from a `reports/` directory. Writes an **Implementation** toctree section with a top-level timing + utilization page (per-module numbers are in its "By module" table). Utilization tables show hierarchy indentation (`└─ submodule`) and available resource counts. Timing tables show target frequency alongside achieved fmax. A placeholder page is always present so the Implementation sidebar section never disappears.
-- **Furo theme** — migrated from `sphinx-rtd-theme` to [Furo](https://pradyunsg.me/furo/) for a modern two-column layout with a built-in dark/light toggle and responsive sidebar. `Ctrl+K` / `Cmd+K` focuses the sidebar search input.
-
-### v3.3.0
-
-#### New features
-
-- **RTL schematics** — new `generate_schematic.py` script synthesises each module with `yosys` (JSON netlist) and renders a clean gate-level schematic SVG with `netlistsvg`. The schematic is embedded as an *RTL Schematic* section at the bottom of each module's block diagram page. Enabled with `make html SCHEMATICS=1`; off by default. VHDL modules require `ghdl` + `ghdl-yosys-plugin` via the OSS CAD Suite; SystemVerilog modules only need `yosys` + `netlistsvg`.
-- **`make venv` target** — creates a `.venv/` virtualenv and installs all Python dependencies into it in one step. The Makefile auto-detects `.venv/bin/python3` and uses it for all subsequent targets, keeping the project isolated from system Python and other tools (e.g. OSS CAD Suite) on `PATH`.
-
-#### Improvements
-
-- Sphinx is now invoked via `$(PYTHON) -m sphinx` rather than the `sphinx-build` binary, preventing PATH shadowing issues when tools like OSS CAD Suite install their own broken `sphinx-build` wrapper.
-- Mixed-language top-level modules (VHDL instantiating SystemVerilog submodules) are detected before synthesis and skipped with a single clear warning rather than dumping a full ghdl error trace.
-- All source files from `hierarchy.json` are passed to ghdl when synthesising any VHDL module, allowing cross-unit references to resolve correctly.
-- Expanded dependency documentation in README: required, optional PDF, and optional schematic tool groups with per-platform install commands and OSS CAD Suite setup instructions.
-
-### v3.2.0
-
-#### New features
-
-- **Block diagrams** — `extract_block.py` generates a `block.rst` page per module. The diagram uses a TerosHDL-inspired style: a green box for generics/parameters (with default values) stacked above a yellow box for ports (inputs left with `►`, outputs right with `◄`, bus widths annotated). Both VHDL `generic` and SV `parameter`/`localparam` declarations are extracted. SystemVerilog interface-typed ports (`axil_if.slave s_axil`) get one table row and one `name (interface)` port each — slave-style modports on the left, master-style on the right — and an "Interfaces" section lists each interface's members. Interfaces a module instantiates internally appear in a blue box under the ports.
-- **Port and generics/parameters tables** — the block page includes a full port table (name, direction, type, description) and a generics/parameters table (name, type, default, description). Comments from preceding lines and same-line inline comments are both captured.
-
-### v3.1.0
-
-#### New features
-
-- **Test suite** — pytest suite covering all pipeline scripts under `scripts/hdl_autodoc/tests/`. 119 tests across 6 test files.
-- **VS Code test runner config** — `pytest.ini`, `.python-version`, and `.vscode/settings.json` added so the VS Code Python extension discovers tests correctly.
-
-### v3.0.0
-
-#### New features
-
-- **CDC analysis** — `extract_cdc.py` generates a `cdc.rst` page per module with a Graphviz diagram. Detects clock domains, signal crossings (synchronized vs unsynchronized), two-flop synchronizer chains, and dual-clock instances (async FIFOs etc.).
-- **Register generation** — `scripts/registers/generate.py` generates VHDL packages, AXI-Lite wrappers, C headers, and HTML documentation from TOML/YAML register definitions using [hdl-registers](https://hdl-registers.com). `make regs` runs generation; `make doc` runs registers + full doc build.
-
-#### Improvements
-
-- Makefile variables prefixed: `AUTODOC_` for Sphinx pipeline variables, `REGS_` for register generation variables.
-- `make doc` target added: runs `regs` + `html` + `pdf` in sequence.
-- `scripts/` reorganised: `hdl_autodoc/` and `registers/` as separate subdirectories.
-
-### v2.0.0
-
-#### New features
-
-- **Register map integration** — `include_registers.py` auto-detects `registers/generated/*.html` and embeds it as a full-screen iframe page nested under the top module. If no file is found a placeholder page with instructions is shown instead. The register page is listed above Submodules in the top module's navigation.
-- **Dark mode** — floating toggle pill fixed to the bottom-right of every page. Saves preference to `localStorage`. Respects OS `prefers-color-scheme` on first visit.
-- **Catppuccin theming** — light mode uses [Catppuccin Latte](https://catppuccin.com), dark mode uses [Catppuccin Mocha](https://catppuccin.com), both following the official style guide semantic mappings.
-- **Fluid layout** — content area scales to viewport using `clamp()` rather than a fixed pixel cap. Removes the RTD theme's default ~800px content limit.
-- **`PROJECT` variable** — set the documentation title from the command line: `make html PROJECT="My FPGA Design"`. Falls back to the parent directory name if not set.
-- **`theme.js`** — standalone JS file handles all dark mode logic via DOM injection, independent of Sphinx template block availability.
-
-#### Improvements
-
-- Table styling overhauled — transparent backgrounds, single-rule headers, minimal row dividers. RTD theme's white even-row override is explicitly reset.
-- Admonitions use Catppuccin semantic colours: Mauve for notes, Yellow for warnings, Red for errors, Teal for tips.
-- Sidebar uses Catppuccin Crust as background in both modes for consistent contrast regardless of light/dark mode.
-- Code blocks use Catppuccin Crust as background with an accent-coloured left border.
-- `include_registers.py` warns if multiple HTML files are found in `registers/generated/` and states which is used.
-- `clean-generated` target now also removes `docs/registers.rst` and `docs/_static/registers.html`.
-
-### v1.0.0
-
-- Initial release
-- VHDL and SystemVerilog support
-- FSM extraction (Graphviz dot diagrams)
-- Per-process pages with WaveDrom waveforms
-- Design hierarchy via `filelist.f`
-- Shared component support
-- Mixed VHDL + SV projects
-- HTML and PDF output
+Each release's notes are in [RELEASE.md](RELEASE.md) and on the [releases page](https://github.com/FPGA-James/HDLAutoDoc/releases).
 
 ---
 
@@ -1114,7 +769,7 @@ scripts/hdl_autodoc/
 ├── parse_timing.py       timing report      → list[ClockTiming]
 ├── generate_schematic.py <file.vhd|sv>      → <module>_schematic.svg  (optional, on by default)
 ├── run_extract.py        hierarchy.json     → orchestrates above
-└── include_registers.py  registers/         → docs/registers.rst + _static/
+└── extract_registers.py  registers/regs_<m>.toml → modules/<m>/registers.rst
 ```
 
 ---

@@ -172,3 +172,70 @@ def test_extract_block_gets_the_support_files_too(tmp_path):
         main(h_json, docs_dir, Path(__file__).parents[1], force=True)
     (block,) = [c for c in calls if c[1].endswith("extract_block.py")]
     assert block[-2:] == ["--support", "src/axis_if.sv"]
+
+
+# ── the cache must notice every input of a module's pages ────────────────────
+
+def _run_main_counting(tmp_path, scripts_dir, hierarchy_path, **kw):
+    calls = []
+    with patch("run_extract.subprocess.run",
+               side_effect=lambda cmd, **k: calls.append(cmd) or MagicMock(returncode=0)):
+        main(hierarchy_path, tmp_path, scripts_dir, **kw)
+    return calls
+
+
+def _project(tmp_path):
+    scripts_dir = tmp_path / "scripts"
+    scripts_dir.mkdir()
+    (scripts_dir / "extract_fsm.py").write_text("# fsm")
+    (tmp_path / "top.sv").write_text("module top; endmodule\n")
+    (tmp_path / "axis_if.sv").write_text("interface axis_if; endinterface\n")
+    h = {"modules": {"top": {"file": str(tmp_path / "top.sv"), "children": [], "parents": []}},
+         "support_files": [str(tmp_path / "axis_if.sv")]}
+    path = tmp_path / "hierarchy.json"
+    path.write_text(json.dumps(h))
+    return scripts_dir, path
+
+
+def test_unchanged_inputs_are_skipped_on_the_second_run(tmp_path):
+    scripts_dir, h = _project(tmp_path)
+    assert _run_main_counting(tmp_path, scripts_dir, h)
+    assert not [c for c in _run_main_counting(tmp_path, scripts_dir, h) if "extract_fsm.py" in str(c)]
+
+
+def test_editing_an_interface_file_extracts_the_modules_again(tmp_path):
+    scripts_dir, h = _project(tmp_path)
+    _run_main_counting(tmp_path, scripts_dir, h)
+    (tmp_path / "axis_if.sv").write_text("interface axis_if; logic tuser; endinterface\n")
+    assert [c for c in _run_main_counting(tmp_path, scripts_dir, h) if "extract_fsm.py" in str(c)]
+
+
+def test_editing_bus_groups_toml_extracts_the_modules_again(tmp_path):
+    scripts_dir, h = _project(tmp_path)
+    _run_main_counting(tmp_path, scripts_dir, h)
+    (tmp_path / "bus_groups.toml").write_text('[[group]]\nprefix = "adc"\nlabel = "Converter"\n')
+    assert [c for c in _run_main_counting(tmp_path, scripts_dir, h) if "extract_fsm.py" in str(c)]
+
+
+def test_editing_a_helper_script_extracts_the_modules_again(tmp_path):
+    scripts_dir, h = _project(tmp_path)
+    (scripts_dir / "hdl_scan.py").write_text("# v1")
+    _run_main_counting(tmp_path, scripts_dir, h)
+    (scripts_dir / "hdl_scan.py").write_text("# v2")
+    assert [c for c in _run_main_counting(tmp_path, scripts_dir, h) if "extract_fsm.py" in str(c)]
+
+
+def test_editing_a_child_module_extracts_the_parent_again(tmp_path):
+    scripts_dir = tmp_path / "scripts"
+    scripts_dir.mkdir()
+    (scripts_dir / "extract_fsm.py").write_text("# fsm")
+    (tmp_path / "top.vhd").write_text("entity top is end;")
+    (tmp_path / "leaf.vhd").write_text("entity leaf is end;")
+    h = {"modules": {"top": {"file": str(tmp_path / "top.vhd"), "children": ["leaf"], "parents": []},
+                     "leaf": {"file": str(tmp_path / "leaf.vhd"), "children": [], "parents": ["top"]}}}
+    path = tmp_path / "hierarchy.json"
+    path.write_text(json.dumps(h))
+    _run_main_counting(tmp_path, scripts_dir, path)
+    (tmp_path / "leaf.vhd").write_text("entity leaf is port (x : in bit); end;")
+    calls = [str(c) for c in _run_main_counting(tmp_path, scripts_dir, path) if "extract_fsm.py" in str(c)]
+    assert any("top.vhd" in c for c in calls) and any("leaf.vhd" in c for c in calls)

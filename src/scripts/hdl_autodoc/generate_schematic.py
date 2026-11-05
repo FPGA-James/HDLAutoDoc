@@ -41,23 +41,32 @@ import sys
 from pathlib import Path
 
 
+# One module's synthesis or render taking longer than this is treated as a failure, so a hung
+# tool cannot hang the whole documentation build.
+TOOL_TIMEOUT_S = 300
+
+
+def _run_tool(cmd: list[str]) -> subprocess.CompletedProcess:
+    """Run an external tool; a run that exceeds TOOL_TIMEOUT_S is a failed run (status 124)."""
+    try:
+        return subprocess.run(cmd, capture_output=True, text=True, timeout=TOOL_TIMEOUT_S)
+    except subprocess.TimeoutExpired:
+        return subprocess.CompletedProcess(cmd, 124, "", f"timed out after {TOOL_TIMEOUT_S} s")
+
+
 def _have(tool: str) -> bool:
     return shutil.which(tool) is not None
 
 
 def _have_ghdl_plugin() -> bool:
     """Return True if yosys can load the ghdl plugin."""
-    r = subprocess.run(
-        ["yosys", "-m", "ghdl", "-p", ""],
-        capture_output=True,
-        text=True,
-    )
+    r = _run_tool(["yosys", "-m", "ghdl", "-p", ""])
     return "Can't load module" not in r.stderr
 
 
 def _run_yosys(args: list[str]) -> tuple[bool, str]:
     """Run yosys with *args; return (success, stderr_snippet)."""
-    r = subprocess.run(["yosys"] + args, capture_output=True, text=True)
+    r = _run_tool(["yosys"] + args)
     return r.returncode == 0, r.stderr[:600] if r.stderr else ""
 
 
@@ -274,11 +283,7 @@ def _run_netlistsvg(json_path: Path, svg_path: Path, module_name: str) -> bool:
     cmd = ["netlistsvg", str(json_path), "-o", str(svg_path)]
     if NETLISTSVG_SKIN.is_file():
         cmd += ["--skin", str(NETLISTSVG_SKIN)]
-    r = subprocess.run(
-        cmd,
-        capture_output=True,
-        text=True,
-    )
+    r = _run_tool(cmd)
     if r.returncode != 0:
         print(f"  ! SCHEMATIC [{module_name}]: netlistsvg failed")
         if r.stderr:
@@ -307,11 +312,7 @@ def _run_rsvg_convert(svg_path: Path, pdf_path: Path) -> bool:
     omit the schematic if this — or rsvg-convert itself — isn't available."""
     if not _have("rsvg-convert"):
         return False
-    r = subprocess.run(
-        ["rsvg-convert", "-f", "pdf", "-o", str(pdf_path), str(svg_path)],
-        capture_output=True,
-        text=True,
-    )
+    r = _run_tool(["rsvg-convert", "-f", "pdf", "-o", str(pdf_path), str(svg_path)])
     return r.returncode == 0
 
 

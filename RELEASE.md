@@ -1,5 +1,26 @@
 # Release Notes
 
+## v3.16.1
+
+#### Fixes
+
+- **The extraction cache no longer serves stale pages.** A module was skipped when its own file and the `extract_*.py` scripts were unchanged, so editing an interface or package file, `bus_groups.toml`, a child module (whose schematic is built from it) or a helper script such as `hdl_scan.py` left its pages out of date until `make doc-extract FORCE=1`. The cache key now covers all of those.
+- **Make variables are passed as text.** A backtick or `$(...)` in `PROJECT`, `AUTODOC_AUTHOR`, `AUTODOC_RELEASE` or a path ran as a shell command, and a double quote was silently dropped from the title. Values are now quoted for the shell.
+- **A hung `yosys`, `netlistsvg` or `rsvg-convert` no longer hangs the build.** Each run stops after 300 s and is reported as a failed schematic, like any other failure.
+- **`install.sh --vendor` copies the tool without its tests and Python caches** (they were committed into the project).
+- `furo` and `hdl-registers` have an upper version bound in `requirements.txt`.
+
+#### Removed
+
+- **`include_registers.py` and `AUTODOC_REG_ENTRY`.** Nothing called the script (register pages come from `registers/regs_<module>.toml`, written by `extract_registers.py`), and the variable had no effect. The register section of the README now describes what the tool does.
+- The README no longer repeats every release's notes: they are in `RELEASE.md` (which gained v1.0.0 and v2.0.0).
+
+#### Compatibility
+
+- Backwards compatible. The first build after upgrading re-extracts every module, because the cache key changed.
+
+---
+
 ## v3.16.0
 
 #### New features
@@ -527,3 +548,38 @@ pytest scripts/hdl_autodoc/tests/
 - Fixed `cclean-generated` typo in Makefile (was a double `c`, target was unreachable).
 - Fixed stray characters in `AUTODOC_REG_ENTRY` default value (`counter_regs.htmlP` → `counter_regs.html`).
 - Fixed stray characters in `AUTODOC_REGGEN` comment (`diffePrent` → `different`).
+
+---
+
+## v2.0.0
+
+#### New features
+
+- **Register map integration** — `include_registers.py` auto-detects `registers/generated/*.html` and embeds it as a full-screen iframe page nested under the top module. If no file is found a placeholder page with instructions is shown instead. The register page is listed above Submodules in the top module's navigation.
+- **Dark mode** — floating toggle pill fixed to the bottom-right of every page. Saves preference to `localStorage`. Respects OS `prefers-color-scheme` on first visit.
+- **Catppuccin theming** — light mode uses [Catppuccin Latte](https://catppuccin.com), dark mode uses [Catppuccin Mocha](https://catppuccin.com), both following the official style guide semantic mappings.
+- **Fluid layout** — content area scales to viewport using `clamp()` rather than a fixed pixel cap. Removes the RTD theme's default ~800px content limit.
+- **`PROJECT` variable** — set the documentation title from the command line: `make html PROJECT="My FPGA Design"`. Falls back to the parent directory name if not set.
+- **`theme.js`** — standalone JS file handles all dark mode logic via DOM injection, independent of Sphinx template block availability.
+
+#### Improvements
+
+- Table styling overhauled — transparent backgrounds, single-rule headers, minimal row dividers. RTD theme's white even-row override is explicitly reset.
+- Admonitions use Catppuccin semantic colours: Mauve for notes, Yellow for warnings, Red for errors, Teal for tips.
+- Sidebar uses Catppuccin Crust as background in both modes for consistent contrast regardless of light/dark mode.
+- Code blocks use Catppuccin Crust as background with an accent-coloured left border.
+- `include_registers.py` warns if multiple HTML files are found in `registers/generated/` and states which is used.
+- `clean-generated` target now also removes `docs/registers.rst` and `docs/_static/registers.html`.
+
+---
+
+## v1.0.0
+
+- Initial release
+- VHDL and SystemVerilog support
+- FSM extraction (Graphviz dot diagrams)
+- Per-process pages with WaveDrom waveforms
+- Design hierarchy via `filelist.f`
+- Shared component support
+- Mixed VHDL + SV projects
+- HTML and PDF output

@@ -5,7 +5,7 @@ sphinx>=7.0,<9.0
 docutils>=0.18,<0.21
 
 # ── Theme ─────────────────────────────────────────────────────────────────────
-furo>=2025.12.19
+furo>=2025.12.19,<2027
 
 # ── Sphinx extensions ─────────────────────────────────────────────────────────
 # WaveDrom timing diagrams via .. wavedrom:: directive
@@ -23,7 +23,7 @@ wavedrom
 # ── Register map generation ───────────────────────────────────────────────────
 # Generates VHDL packages, AXI-Lite wrappers, C headers, and HTML from
 # TOML/YAML register definitions (see scripts/registers/generate.py)
-hdl-registers>=8.0
+hdl-registers>=8.0,<9
 
 # ── Development / testing ─────────────────────────────────────────────────────
 pytest>=8.0

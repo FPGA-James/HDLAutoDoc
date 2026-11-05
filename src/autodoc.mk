@@ -46,11 +46,14 @@ AUTODOC_VIVADO_TIMING      ?=
 AUTODOC_YOSYS_STAT         ?=
 AUTODOC_YOSYS_LOG          ?=
 AUTODOC_NEXTPNR_LOG        ?=
-AUTODOC_REPORT_ENV          = AUTODOC_VIVADO_UTILIZATION="$(AUTODOC_VIVADO_UTILIZATION)" \
-                              AUTODOC_VIVADO_TIMING="$(AUTODOC_VIVADO_TIMING)" \
-                              AUTODOC_YOSYS_STAT="$(AUTODOC_YOSYS_STAT)" \
-                              AUTODOC_YOSYS_LOG="$(AUTODOC_YOSYS_LOG)" \
-                              AUTODOC_NEXTPNR_LOG="$(AUTODOC_NEXTPNR_LOG)"
+# A value as one shell word that is text, not syntax: quotes, `$` and backticks in a project
+# name, author or path cannot break the line or run a command.
+sh_quote = '$(subst ','\'',$(1))'
+AUTODOC_REPORT_ENV          = AUTODOC_VIVADO_UTILIZATION=$(call sh_quote,$(AUTODOC_VIVADO_UTILIZATION)) \
+                              AUTODOC_VIVADO_TIMING=$(call sh_quote,$(AUTODOC_VIVADO_TIMING)) \
+                              AUTODOC_YOSYS_STAT=$(call sh_quote,$(AUTODOC_YOSYS_STAT)) \
+                              AUTODOC_YOSYS_LOG=$(call sh_quote,$(AUTODOC_YOSYS_LOG)) \
+                              AUTODOC_NEXTPNR_LOG=$(call sh_quote,$(AUTODOC_NEXTPNR_LOG))
 
 # =============================================================================
 # HDL AutoDoc (Sphinx pipeline) variables
@@ -66,13 +69,13 @@ AUTODOC_RELEASE       ?=
 AUTODOC_MERMAID_CMD    ?= mmdc
 AUTODOC_MERMAID_PARAMS ?=
 AUTODOC_MERMAID_JS     ?=
-AUTODOC_ENV            = AUTODOC_PROJECT="$(PROJECT)" AUTODOC_AUTHOR="$(AUTODOC_AUTHOR)" \
-                         AUTODOC_RELEASE="$(AUTODOC_RELEASE)" AUTODOC_SRC="$(abspath $(AUTODOC_SRCDIR))" \
-                         AUTODOC_SOURCEDIR="$(abspath $(AUTODOC_SOURCEDIR))" \
-                         AUTODOC_REGISTERS_DIR="$(abspath $(AUTODOC_REGISTERS_DIR))" \
-                         AUTODOC_MERMAID_CMD="$(AUTODOC_MERMAID_CMD)" \
-                         AUTODOC_MERMAID_PARAMS="$(AUTODOC_MERMAID_PARAMS)" \
-                         AUTODOC_MERMAID_JS="$(AUTODOC_MERMAID_JS)"
+AUTODOC_ENV            = AUTODOC_PROJECT=$(call sh_quote,$(PROJECT)) AUTODOC_AUTHOR=$(call sh_quote,$(AUTODOC_AUTHOR)) \
+                         AUTODOC_RELEASE=$(call sh_quote,$(AUTODOC_RELEASE)) AUTODOC_SRC=$(call sh_quote,$(abspath $(AUTODOC_SRCDIR))) \
+                         AUTODOC_SOURCEDIR=$(call sh_quote,$(abspath $(AUTODOC_SOURCEDIR))) \
+                         AUTODOC_REGISTERS_DIR=$(call sh_quote,$(abspath $(AUTODOC_REGISTERS_DIR))) \
+                         AUTODOC_MERMAID_CMD=$(call sh_quote,$(AUTODOC_MERMAID_CMD)) \
+                         AUTODOC_MERMAID_PARAMS=$(call sh_quote,$(AUTODOC_MERMAID_PARAMS)) \
+                         AUTODOC_MERMAID_JS=$(call sh_quote,$(AUTODOC_MERMAID_JS))
 AUTODOC_SPHINXBUILD    = $(PYTHON) -m sphinx
 AUTODOC_SOURCEDIR      = docs/hdl_autodoc
 AUTODOC_BUILDDIR       = $(AUTODOC_SOURCEDIR)/_build
@@ -87,14 +90,6 @@ AUTODOC_GENRST_FLAGS   = $(if $(filter 0,$(ANNOTATED_SOURCE)),--no-source) \
                          $(if $(filter 0,$(BUILD)),--no-build)
 AUTODOC_FILELIST       = filelist.f
 AUTODOC_HIERARCHY_JSON = $(AUTODOC_SOURCEDIR)/hierarchy.json
-# Entry point filename for the register map HTML output.
-# Override to match your register tool's output filename.
-# Examples:
-#   make doc AUTODOC_REG_ENTRY=index.html            (Questa Register Assistant)
-#   make doc AUTODOC_REG_ENTRY=counter_regs.html     (custom generator)
-#   make doc AUTODOC_REG_ENTRY=regmap.html           (other tools)
-# Leave blank to auto-detect (picks index.html or first .html found).
-AUTODOC_REG_ENTRY  ?= counter_regs.html
 
 # ── Register generation + full doc build ─────────────────────────────────────
 # Runs the register generator first, then the full Sphinx pipeline.
