@@ -1,0 +1,42 @@
+#!/usr/bin/env node
+// A stand-in for `python3`, steered by environment variables, for the runner tests.
+//   FAKE_VERSION   version printed for the probe (default 3.12)
+//   FAKE_MODE      ok | echo | hang | fail | badjson   (default ok)
+//   FAKE_PIDFILE   file to write this process's pid to, when set
+//   FAKE_PROBEFILE file to append a line to on every version probe, when set
+import { appendFileSync, writeFileSync } from 'node:fs';
+
+const args = process.argv.slice(2);
+if (process.env.FAKE_PIDFILE) writeFileSync(process.env.FAKE_PIDFILE, String(process.pid));
+
+if (args[0] === '-c') {
+  if (process.env.FAKE_PROBEFILE) appendFileSync(process.env.FAKE_PROBEFILE, 'probe\n');
+  console.log(process.env.FAKE_VERSION ?? '3.12');
+  process.exit(0);
+}
+
+const mode = process.env.FAKE_MODE ?? 'ok';
+const chunks = [];
+process.stdin.on('data', (c) => chunks.push(c));
+process.stdin.on('end', () => {
+  const input = Buffer.concat(chunks).toString('utf8');
+  if (mode === 'hang') {
+    setInterval(() => {}, 1000);
+    return;
+  }
+  if (mode === 'fail') {
+    process.stderr.write('Traceback: something broke\n');
+    process.exit(3);
+  }
+  if (mode === 'badjson') {
+    console.log('this is not json');
+    return;
+  }
+  const doc = {
+    language: args[args.indexOf('--language') + 1],
+    module: mode === 'echo' ? { name: 'm', line: 1, description: input, wavedrom: [], mermaid: [] } : null,
+    generics: [], ports: [], instances: [], processes: [], fsm: null, cdc: null, reset: null,
+    warnings: [JSON.stringify(args)],
+  };
+  console.log(JSON.stringify(doc));
+});
