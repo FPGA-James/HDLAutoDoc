@@ -116,3 +116,60 @@ def test_cache_invalidated_after_source_change(tmp_path):
 
     loaded = load_cache(cache_path)
     assert is_up_to_date(loaded, "blinky", str(src), "h") is False
+
+
+# ── what the cache key covers (audit: stale pages after a dependency changed) ─
+
+def test_extractor_hash_covers_the_helper_modules_the_extractors_import(tmp_path):
+    (tmp_path / "extract_fsm.py").write_text("# fsm")
+    helper = tmp_path / "hdl_scan.py"
+    helper.write_text("# v1")
+    h1 = compute_extractor_hash(tmp_path)
+    helper.write_text("# v2")
+    assert compute_extractor_hash(tmp_path) != h1
+
+
+def test_extractor_hash_ignores_subdirectories_such_as_tests(tmp_path):
+    (tmp_path / "extract_fsm.py").write_text("# fsm")
+    (tmp_path / "tests").mkdir()
+    h1 = compute_extractor_hash(tmp_path)
+    (tmp_path / "tests" / "test_x.py").write_text("# a test")
+    assert compute_extractor_hash(tmp_path) == h1
+
+
+def test_extractor_hash_covers_extra_input_files_and_skips_missing_ones(tmp_path):
+    (tmp_path / "extract_fsm.py").write_text("# fsm")
+    extra = tmp_path / "axis_if.sv"
+    extra.write_text("interface a; endinterface")
+    h1 = compute_extractor_hash(tmp_path, [extra, tmp_path / "missing.toml"])
+    extra.write_text("interface a; logic x; endinterface")
+    assert compute_extractor_hash(tmp_path, [extra, tmp_path / "missing.toml"]) != h1
+    assert compute_extractor_hash(tmp_path, [tmp_path / "missing.toml"]) == compute_extractor_hash(tmp_path)
+
+
+def test_module_hash_without_dependencies_is_the_file_hash(tmp_path):
+    from extract_cache import compute_module_hash
+    src = tmp_path / "a.vhd"
+    src.write_text("entity a is end;")
+    assert compute_module_hash(src, []) == compute_file_hash(src)
+
+
+def test_module_hash_changes_when_a_dependency_changes(tmp_path):
+    from extract_cache import compute_module_hash
+    src, child = tmp_path / "a.vhd", tmp_path / "child.vhd"
+    src.write_text("entity a is end;")
+    child.write_text("entity child is end;")
+    h1 = compute_module_hash(src, [str(child)])
+    child.write_text("entity child is port (x : in bit); end;")
+    assert compute_module_hash(src, [str(child)]) != h1
+
+
+def test_is_up_to_date_follows_the_dependencies(tmp_path):
+    from extract_cache import compute_module_hash
+    src, child = tmp_path / "a.vhd", tmp_path / "child.vhd"
+    src.write_text("entity a is end;")
+    child.write_text("entity child is end;")
+    cache = ExtractCache("h", {"a": compute_module_hash(src, [str(child)])})
+    assert is_up_to_date(cache, "a", str(src), "h", [str(child)]) is True
+    child.write_text("changed")
+    assert is_up_to_date(cache, "a", str(src), "h", [str(child)]) is False

@@ -27,15 +27,34 @@ def compute_file_hash(path: Path) -> str:
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def compute_extractor_hash(scripts_dir: Path) -> str:
-    """Return a single SHA-256 over all extractor + schematic scripts (sorted)."""
-    paths = sorted(
-        list(scripts_dir.glob("extract_*.py"))
-        + list(scripts_dir.glob("generate_schematic.py"))
-    )
+def compute_extractor_hash(scripts_dir: Path, extra_files=()) -> str:
+    """
+    Return one SHA-256 over every top-level script in `scripts_dir` (the extractors and the
+    helper modules they import, so a fix in any of them invalidates the cache) and over
+    `extra_files`, the project inputs every module's pages depend on (SystemVerilog support
+    files, bus_groups.toml).  Files that do not exist are skipped.
+    """
     h = hashlib.sha256()
-    for p in paths:
+    for p in sorted(Path(scripts_dir).glob("*.py")):
         h.update(p.read_bytes())
+    for f in sorted(Path(f) for f in extra_files):
+        if f.is_file():
+            h.update(f.read_bytes())
+    return h.hexdigest()
+
+
+def compute_module_hash(src_file, extra_files=()) -> str:
+    """
+    Fingerprint of everything one module's pages are built from: its own source file and
+    `extra_files` (the child modules its schematic is synthesised from).  With no extra
+    files it is the file hash.
+    """
+    if not extra_files:
+        return compute_file_hash(Path(src_file))
+    h = hashlib.sha256(Path(src_file).read_bytes())
+    for f in map(Path, extra_files):
+        if f.is_file():
+            h.update(f.read_bytes())
     return h.hexdigest()
 
 
@@ -68,8 +87,9 @@ def is_up_to_date(
     name: str,
     src_file: str,
     extractor_hash: str,
+    extra_files=(),
 ) -> bool:
-    """Return True only if name's source file and extractor scripts are unchanged."""
+    """Return True only if name's source (and `extra_files`) and the extractor scripts are unchanged."""
     if cache is None:
         return False
     if cache.extractor_hash != extractor_hash:
@@ -77,4 +97,4 @@ def is_up_to_date(
     cached_src_hash = cache.modules.get(name)
     if cached_src_hash is None:
         return False
-    return cached_src_hash == compute_file_hash(Path(src_file))
+    return cached_src_hash == compute_module_hash(src_file, extra_files)

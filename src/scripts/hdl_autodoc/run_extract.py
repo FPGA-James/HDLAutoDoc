@@ -25,7 +25,7 @@ from pathlib import Path
 from extract_cache import (
     ExtractCache,
     compute_extractor_hash,
-    compute_file_hash,
+    compute_module_hash,
     is_up_to_date,
     load_cache,
     save_cache,
@@ -81,7 +81,9 @@ def main(
     hierarchy = json.loads(hierarchy_path.read_text())
 
     cache_path     = docs_dir / ".extract_cache.json"
-    extractor_hash = compute_extractor_hash(scripts_dir)
+    # Inputs every module depends on: SystemVerilog support files and the custom port groups.
+    extractor_hash = compute_extractor_hash(
+        scripts_dir, [*hierarchy.get("support_files", []), docs_dir / "bus_groups.toml"])
     cache          = None if force else load_cache(cache_path)
     updated_cache  = ExtractCache(extractor_hash=extractor_hash)
 
@@ -90,7 +92,8 @@ def main(
         module_dir = docs_dir / "modules" / name
         proc_dir   = module_dir / "processes"
 
-        if is_up_to_date(cache, name, src_file, extractor_hash):
+        deps = dependency_files(hierarchy, name)
+        if is_up_to_date(cache, name, src_file, extractor_hash, deps):
             assert cache is not None  # proven by is_up_to_date
             print(f"Skipping:   {name} (unchanged)")
             updated_cache.modules[name] = cache.modules[name]
@@ -121,7 +124,7 @@ def main(
         if schematics:
             run(["python", str(scripts_dir / "generate_schematic.py"),
                  src_file, name, str(module_dir)]
-                + dependency_files(hierarchy, name) + support_args)
+                + deps + support_args)
 
         run(["python", str(scripts_dir / "extract_block.py"),
              src_file, name, str(module_dir),
@@ -130,7 +133,7 @@ def main(
         run(["python", str(scripts_dir / "extract_reset.py"),
              src_file, name, str(module_dir)])
 
-        updated_cache.modules[name] = compute_file_hash(Path(src_file))
+        updated_cache.modules[name] = compute_module_hash(src_file, deps)
 
     save_cache(updated_cache, cache_path)
 

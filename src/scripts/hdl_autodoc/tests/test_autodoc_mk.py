@@ -63,11 +63,30 @@ def test_report_file_variables_reach_the_report_script(tmp_path):
     out = _dry_run(tmp_path, "doc-extract", "AUTODOC_YOSYS_STAT=build/s.txt",
                    "AUTODOC_NEXTPNR_LOG=build/p.log")
     line = next(l for l in out.splitlines() if "extract_reports.py" in l)
-    assert 'AUTODOC_YOSYS_STAT="build/s.txt"' in line
-    assert 'AUTODOC_NEXTPNR_LOG="build/p.log"' in line
+    assert "AUTODOC_YOSYS_STAT='build/s.txt'" in line
+    assert "AUTODOC_NEXTPNR_LOG='build/p.log'" in line
 
 
 def test_report_file_variables_reach_doc_reports_too(tmp_path):
     out = _dry_run(tmp_path, "doc-reports", "AUTODOC_VIVADO_TIMING=t.rpt")
     line = next(l for l in out.splitlines() if "extract_reports.py" in l)
-    assert 'AUTODOC_VIVADO_TIMING="t.rpt"' in line
+    assert "AUTODOC_VIVADO_TIMING='t.rpt'" in line
+
+
+def test_values_reach_the_scripts_as_text_whatever_characters_they_hold(tmp_path):
+    """A quote, a backtick or `$` in PROJECT, the author or a path is data: it must not break the
+    shell line, be dropped, or run a command."""
+    import sys
+    (tmp_path / "Makefile").write_text(
+        f"include {AUTODOC_MK}\n"
+        "show:\n"
+        f"\t@$(AUTODOC_ENV) {sys.executable} -c \"import os; print(os.environ['AUTODOC_PROJECT']); "
+        "print(os.environ['AUTODOC_AUTHOR']); print(os.environ['AUTODOC_MERMAID_PARAMS'])\"\n")
+    marker = tmp_path / "marker"
+    out = subprocess.run(
+        ["make", "show", 'PROJECT=Acme "Pro" it\'s $$HOME', f"AUTODOC_AUTHOR=a`touch {marker}`b",
+         "AUTODOC_MERMAID_PARAMS=-p 'x y'"],
+        cwd=tmp_path, capture_output=True, text=True)
+    assert out.returncode == 0, out.stderr
+    assert out.stdout.splitlines() == ['Acme "Pro" it\'s $HOME', f"a`touch {marker}`b", "-p 'x y'"]
+    assert not marker.exists(), "the backtick command ran"

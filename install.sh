@@ -8,7 +8,7 @@
 # What it does:
 #   1. Places the tool at <target>/third_party/hdl_autodoc
 #        default  : `git submodule add` of this repository's origin URL
-#        --vendor : copies this checkout's src/ to third_party/hdl_autodoc/src
+#        --vendor : copies this checkout's src/ (without tests) to third_party/hdl_autodoc/src
 #   2. Adds `include third_party/hdl_autodoc/src/autodoc.mk` to <target>/Makefile
 #      (creates the Makefile if there is none; skips if the line is present)
 #
@@ -51,8 +51,9 @@ if [[ -f "$TARGET/$DEST_REL/src/autodoc.mk" ]]; then
     echo "  → $DEST_REL already present — leaving it as is"
 elif [[ $VENDOR -eq 1 ]]; then
     echo "  → Copying src/ to $DEST_REL/src ..."
-    mkdir -p "$TARGET/$DEST_REL"
-    cp -r "$SRC" "$TARGET/$DEST_REL/"
+    mkdir -p "$TARGET/$DEST_REL/src"
+    # Not the tool's own tests or Python caches: they would be committed into the project.
+    tar -C "$SRC" --exclude=tests --exclude=__pycache__ --exclude='*.pyc' -cf - . | tar -C "$TARGET/$DEST_REL/src" -xf -
 else
     if ! git -C "$TARGET" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
         echo "Error: $TARGET is not a git repository. Use --vendor to copy the tool instead."
