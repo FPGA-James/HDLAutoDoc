@@ -1,0 +1,59 @@
+{
+  "name": "hdl-autodoc",
+  "displayName": "HDL AutoDoc",
+  "description": "Live documentation preview for VHDL and SystemVerilog files, from the same extractors as the HDL AutoDoc site.",
+  "version": "3.16.0",
+  "publisher": "local",
+  "license": "SEE LICENSE IN ../README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FPGA-James/HDLAutoDoc.git"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Visualization",
+    "Other"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "commands": [
+      {
+        "command": "hdlAutodoc.showDocumentation",
+        "title": "HDL AutoDoc: Show documentation"
+      }
+    ],
+    "configuration": {
+      "title": "HDL AutoDoc",
+      "properties": {
+        "hdlAutodoc.pythonPath": {
+          "type": "string",
+          "default": "python3",
+          "description": "Python 3.11 or newer used to read the source. The extractors need only the standard library."
+        },
+        "hdlAutodoc.refreshDelayMs": {
+          "type": "number",
+          "default": 400,
+          "minimum": 0,
+          "description": "Pause after the last keystroke before the preview refreshes."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test test/*.test.mjs",
+    "vsix": "make vsix"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "@types/vscode": "1.90.0",
+    "@vscode/vsce": "^4.1.0",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2"
+  }
+}
