@@ -1,0 +1,31 @@
+/* The panel follows the editor theme: only VS Code variables, no fixed colours. */
+body {
+  color: var(--vscode-foreground);
+  background: var(--vscode-editor-background);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+  padding: 0 1rem 2rem;
+}
+h1, h2, h3 { font-weight: 600; }
+h1 { font-size: 1.6em; border-bottom: 1px solid var(--vscode-panel-border); padding-bottom: 0.3em; }
+h2 { font-size: 1.25em; margin-top: 1.8em; border-bottom: 1px solid var(--vscode-panel-border); padding-bottom: 0.2em; }
+h3 { font-size: 1.05em; margin-top: 1.2em; }
+small, .meta { color: var(--vscode-descriptionForeground); font-weight: normal; }
+.lang { margin-left: 0.6em; font-size: 0.55em; text-transform: uppercase; letter-spacing: 0.05em; }
+code, pre { font-family: var(--vscode-editor-font-family); font-size: var(--vscode-editor-font-size); }
+code { background: var(--vscode-textCodeBlock-background); padding: 0 0.25em; border-radius: 3px; }
+table { border-collapse: collapse; width: 100%; margin: 0.6em 0 1em; }
+th, td { text-align: left; padding: 0.35em 0.7em; border: 1px solid var(--vscode-panel-border); vertical-align: top; }
+th { background: var(--vscode-editorWidget-background); }
+tr[data-line], h1[data-line], .process[data-line] { cursor: pointer; }
+tr[data-line]:hover { background: var(--vscode-list-hoverBackground); }
+.process { border: 1px solid var(--vscode-panel-border); border-radius: 4px; padding: 0.2em 1em 0.8em; margin: 1em 0; }
+.process:hover { border-color: var(--vscode-focusBorder); }
+figure { margin: 1em 0; }
+figcaption { color: var(--vscode-descriptionForeground); text-align: center; font-size: 0.9em; }
+.wavedrom, .fsm { overflow-x: auto; margin: 1em 0; }
+.ok { color: var(--vscode-testing-iconPassed); }
+.bad { color: var(--vscode-errorForeground); font-weight: 600; }
+.warnings { color: var(--vscode-editorWarning-foreground); }
+.message { padding: 0.8em 1em; margin: 1em 0; border-left: 4px solid var(--vscode-focusBorder); background: var(--vscode-editorWidget-background); }
+.message-error { border-left-color: var(--vscode-errorForeground); }

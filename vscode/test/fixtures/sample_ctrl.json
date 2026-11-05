@@ -1,0 +1,215 @@
+{
+    "language": "vhdl",
+    "module": {
+        "name": "sample_ctrl",
+        "line": 11,
+        "description": "Sampler controller.\n\nRuns one capture window per start request: it arms, enables the capture\npath for RUN_CYCLES clock cycles (or until the FIFO overflows), then reports\ndone and waits for the request to be withdrawn before it can run again.\n\nState sequence: IDLE -> ARMED -> RUN -> DONE -> IDLE.",
+        "wavedrom": [],
+        "mermaid": []
+    },
+    "generics": [
+        {
+            "name": "RUN_CYCLES",
+            "type": "positive",
+            "default": "1024",
+            "description": "Length of the capture window in clock cycles.",
+            "line": 14
+        }
+    ],
+    "ports": [
+        {
+            "name": "clk",
+            "direction": "in",
+            "type": "std_logic",
+            "range": "",
+            "description": "System clock, rising-edge triggered.",
+            "line": 18,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": null
+        },
+        {
+            "name": "rst",
+            "direction": "in",
+            "type": "std_logic",
+            "range": "",
+            "description": "Synchronous active-high reset. Returns the FSM to IDLE.",
+            "line": 20,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": null
+        },
+        {
+            "name": "start",
+            "direction": "in",
+            "type": "std_logic",
+            "range": "",
+            "description": "Start request; held high until the capture is done.",
+            "line": 22,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": null
+        },
+        {
+            "name": "overflow",
+            "direction": "in",
+            "type": "std_logic",
+            "range": "",
+            "description": "A sample was lost; ends the window early.",
+            "line": 24,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": null
+        },
+        {
+            "name": "capture_en",
+            "direction": "out",
+            "type": "std_logic",
+            "range": "",
+            "description": "High while samples should be captured.",
+            "line": 26,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": null
+        },
+        {
+            "name": "busy",
+            "direction": "out",
+            "type": "std_logic",
+            "range": "",
+            "description": "High from arming until the request is withdrawn.",
+            "line": 28,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": null
+        },
+        {
+            "name": "state_code",
+            "direction": "out",
+            "type": "std_logic_vector",
+            "range": "1 downto 0",
+            "description": "Current state, 0 IDLE, 1 ARMED, 2 RUN, 3 DONE.",
+            "line": 30,
+            "kind": "port",
+            "interface": null,
+            "modport": null,
+            "group": null
+        }
+    ],
+    "instances": [],
+    "processes": [
+        {
+            "label": "p_state_reg",
+            "kind": "process",
+            "line": 71,
+            "sensitivity": [
+                "clk"
+            ],
+            "description": "p_state_reg: Clocked state register and window counter.\nSynchronous reset returns the state to IDLE and clears the counter.",
+            "wavedrom": [
+                "\n{ \"signal\": [\n{ \"name\": \"clk\",   \"wave\": \"P.......\" },\n{ \"name\": \"rst\",   \"wave\": \"1.0.....\" },\n{ \"name\": \"start\", \"wave\": \"0..1....\" },\n{ \"name\": \"state\", \"wave\": \"=.=.==..\", \"data\": [\"(any)\",\"IDLE\",\"ARMED\",\"RUN\"] }\n]}"
+            ],
+            "mermaid": []
+        },
+        {
+            "label": "p_next_state",
+            "kind": "process",
+            "line": 115,
+            "sensitivity": [
+                "state",
+                "start",
+                "overflow",
+                "run_last"
+            ],
+            "description": "p_next_state: Combinational next-state logic.\nA start request arms the controller; the window ends after RUN_CYCLES\ncycles or on overflow; DONE is left when the request is withdrawn.",
+            "wavedrom": [
+                "\n{ \"signal\": [\n{ \"name\": \"clk\",      \"wave\": \"P.........\" },\n{ \"name\": \"start\",    \"wave\": \"01.....0..\" },\n{ \"name\": \"run_last\", \"wave\": \"0....10...\" },\n{ \"name\": \"state\",    \"wave\": \"=.==..=.=.\", \"data\": [\"IDLE\",\"ARMED\",\"RUN\",\"DONE\",\"IDLE\"] }\n]}"
+            ],
+            "mermaid": [
+                {
+                    "caption": "Controller states",
+                    "source": "stateDiagram-v2\n  [*] --> IDLE\n  IDLE --> ARMED: start\n  ARMED --> RUN\n  RUN --> DONE: window over or overflow\n  DONE --> IDLE: start withdrawn"
+                }
+            ]
+        },
+        {
+            "label": "p_outputs",
+            "kind": "process",
+            "line": 145,
+            "sensitivity": [
+                "state"
+            ],
+            "description": "p_outputs: Combinational Moore output decode.\nCapture is enabled in RUN only; busy covers everything but IDLE.",
+            "wavedrom": [],
+            "mermaid": []
+        }
+    ],
+    "fsm": {
+        "states": [
+            "IDLE",
+            "ARMED",
+            "RUN",
+            "DONE"
+        ],
+        "transitions": [
+            {
+                "from": "IDLE",
+                "to": "ARMED",
+                "condition": "start = '1'"
+            },
+            {
+                "from": "ARMED",
+                "to": "RUN",
+                "condition": ""
+            },
+            {
+                "from": "RUN",
+                "to": "DONE",
+                "condition": "run_last = '1'"
+            },
+            {
+                "from": "RUN",
+                "to": "DONE",
+                "condition": "overflow = '1'"
+            },
+            {
+                "from": "DONE",
+                "to": "IDLE",
+                "condition": "start = '0'"
+            }
+        ],
+        "dot": "digraph sample_ctrl {\n    rankdir=LR;\n    node [shape=circle, style=filled, fontname=Helvetica, fontsize=12];\n    edge [fontname=Helvetica, fontsize=10];\n\n    __start [shape=point, width=0.2, fillcolor=black];\n\n    IDLE [fillcolor=lightblue];\n    ARMED [fillcolor=white];\n    RUN [fillcolor=white];\n    DONE [fillcolor=lightgreen];\n\n    __start -> IDLE [label=\"reset\"];\n\n    IDLE -> ARMED [label=\"start = '1'\"];\n    ARMED -> RUN [label=\"always\"];\n    RUN -> DONE [label=\"run_last = '1'\"];\n    RUN -> DONE [label=\"overflow = '1'\"];\n    DONE -> IDLE [label=\"start = '0'\"];\n}"
+    },
+    "cdc": {
+        "domains": {
+            "clk": [
+                "p_state_reg"
+            ]
+        },
+        "crossings": [],
+        "dual_clock_instances": []
+    },
+    "reset": {
+        "processes": [
+            {
+                "label": "p_state_reg",
+                "clock": "clk",
+                "reset": "rst",
+                "style": "sync"
+            }
+        ],
+        "domains": {
+            "rst": [
+                "p_state_reg"
+            ]
+        },
+        "crossings": []
+    },
+    "warnings": []
+}
