@@ -53,11 +53,19 @@ def _extract_paren_section(text: str, keyword: str) -> str:
     return everything between the opening paren and its matching close paren.
     Returns an empty string if the keyword is not found.
     """
+    return _extract_paren_section_at(text, keyword)[0]
+
+
+def _extract_paren_section_at(text: str, keyword: str) -> tuple[str, int]:
+    """
+    Like `_extract_paren_section`, also returning the 1-based line of `text` on which
+    the section starts (that of the opening parenthesis), 1 if the keyword is absent.
+    """
     # Replace comments with spaces of equal length so character indices stay valid
     stripped = re.sub(r"--[^\n]*", lambda m: " " * len(m.group(0)), text)
     m = re.compile(rf"\b{keyword}\s*\(", re.IGNORECASE).search(stripped)
     if not m:
-        return ""
+        return "", 1
 
     start = m.end()
     depth = 1
@@ -77,7 +85,7 @@ def _extract_paren_section(text: str, keyword: str) -> str:
                 break
         i += 1
 
-    return text[start:i]
+    return text[start:i], text.count("\n", 0, start) + 1
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -144,10 +152,10 @@ _VHDL_GENERIC_RE = re.compile(
 def extract_ports_vhdl(text: str) -> list[dict]:
     """
     Extract port declarations from a VHDL entity.
-    Returns list of {name, dir, type, range, comment}.
+    Returns list of {name, dir, type, range, comment, line}.
     Comments are taken from same-line or the preceding comment line.
     """
-    section = _extract_paren_section(text, "port")
+    section, first_line = _extract_paren_section_at(text, "port")
     if not section:
         return []
 
@@ -177,6 +185,7 @@ def extract_ports_vhdl(text: str) -> list[dict]:
                 "type":    m.group(3).lower(),
                 "range":   range_text,
                 "comment": comment,
+                "line":    first_line + idx,
             })
 
     return ports
@@ -185,9 +194,9 @@ def extract_ports_vhdl(text: str) -> list[dict]:
 def extract_generics_vhdl(text: str) -> list[dict]:
     """
     Extract generic declarations from a VHDL entity.
-    Returns list of {name, type, default, comment}.
+    Returns list of {name, type, default, comment, line}.
     """
-    section = _extract_paren_section(text, "generic")
+    section, first_line = _extract_paren_section_at(text, "generic")
     if not section:
         return []
 
@@ -205,6 +214,7 @@ def extract_generics_vhdl(text: str) -> list[dict]:
             "type":    m.group(2).lower(),
             "default": m.group(3).strip().rstrip(";,").strip(),
             "comment": comment,
+            "line":    first_line + idx,
         })
 
     return generics
@@ -279,7 +289,7 @@ def _sv_port_list_spans(text: str) -> list[tuple[int, int]]:
 def extract_ports_sv(text: str, interface_names: set[str] | None = None) -> list[dict]:
     """
     Extract port declarations from a SystemVerilog module.
-    Returns list of {name, dir, type, range, comment}.
+    Returns list of {name, dir, type, range, comment, line}.
 
     With `interface_names` (the known `interface` definitions), interface-typed
     ports in the module header (`axil_if.slave s_axil`, `axis_if m_axis`) are also
@@ -316,6 +326,7 @@ def extract_ports_sv(text: str, interface_names: set[str] | None = None) -> list
                         "kind":      "interface",
                         "interface": ifc,
                         "modport":   modport,
+                        "line":      idx + 1,
                     })
             continue
 
@@ -329,6 +340,7 @@ def extract_ports_sv(text: str, interface_names: set[str] | None = None) -> list
             "type":    (m.group(2) or "logic").lower(),
             "range":   (m.group(3) or "").strip(),
             "comment": comment,
+            "line":    idx + 1,
         })
 
     return ports
@@ -370,7 +382,7 @@ def extract_interface_instances_sv(text: str,
 def extract_params_sv(text: str) -> list[dict]:
     """
     Extract parameter and localparam declarations from a SystemVerilog module.
-    Returns list of {name, type, default, comment, kind}.
+    Returns list of {name, type, default, comment, kind, line}.
     """
     lines  = text.splitlines()
     params = []
@@ -387,6 +399,7 @@ def extract_params_sv(text: str) -> list[dict]:
             "default": m.group(4).strip().rstrip(",;").strip(),
             "comment": comment,
             "kind":    m.group(1).lower(),
+            "line":    idx + 1,
         })
 
     return params
