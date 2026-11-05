@@ -18,6 +18,7 @@ clicking a port, generic, instance or process jumps to its line.
 2. Click the preview icon at the top right of the editor, or run **HDL AutoDoc: Show documentation** from the Command Palette. The panel opens beside the editor.
 3. **Export HTML** (top right of the panel, or **HDL AutoDoc: Export documentation as HTML**) saves a standalone page with the diagrams drawn for a white background, whatever theme the panel is in.
 4. **Export Markdown** (or **HDL AutoDoc: Export documentation as Markdown**) saves the same documentation as a `.md` file. Diagrams are inserted as their source in fenced `mermaid`, `wavedrom` and `dot` code blocks: GitHub and many editors draw the Mermaid ones, and the others stay readable as code.
+5. **Export PDF** (or **HDL AutoDoc: Export documentation as PDF**) prints the same page as the HTML export to an A4 PDF, with tables and diagrams kept whole across page breaks. It needs Chrome, Edge, Brave or Chromium, found in the usual places or named in `hdlAutodoc.browserPath`; without one it offers to save the HTML for you to print from any browser.
 
 The panel refreshes after you stop typing, on save, and when you switch files. Opening a file that is
 not HDL leaves the last document in place and says so.
@@ -33,6 +34,7 @@ standard library, so nothing needs installing, and the extension carries its own
 |---|---|---|
 | `hdlAutodoc.pythonPath` | `python3` | Python 3.11+ used to read the source |
 | `hdlAutodoc.refreshDelayMs` | `400` | Pause after the last keystroke before the preview refreshes |
+| `hdlAutodoc.browserPath` | *(empty)* | Chrome, Edge, Brave or Chromium used for the PDF export; empty looks in the usual places |
 
 A SystemVerilog file that uses interfaces (`axis_if.slave s_axis`) is documented with those interfaces
 when the workspace holds the `interface` definition. Custom port groups are read from

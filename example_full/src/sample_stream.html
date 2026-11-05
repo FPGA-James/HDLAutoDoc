@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>sample_stream</title>
+<style>:root{--vscode-foreground:#222;--vscode-editor-background:#fff;--vscode-panel-border:#ccc;--vscode-descriptionForeground:#666;--vscode-textCodeBlock-background:#eee;--vscode-editorWidget-background:#f3f3f3;--vscode-list-hoverBackground:#e8e8e8;--vscode-focusBorder:#07c;--vscode-errorForeground:#c00;--vscode-testing-iconPassed:#080;--vscode-editorWarning-foreground:#a60;--vscode-font-family:system-ui,sans-serif;--vscode-font-size:14px;--vscode-editor-font-family:ui-monospace,Menlo,Consolas,monospace;--vscode-editor-font-size:13px}body{max-width:1000px;margin:0 auto}tr[data-line],h1[data-line],.process[data-line]{cursor:auto}
+/* The panel follows the editor theme: only VS Code variables, no fixed colours. */
+body {
+  color: var(--vscode-foreground);
+  background: var(--vscode-editor-background);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+  padding: 0 1rem 2rem;
+}
+h1, h2, h3 { font-weight: 600; }
+h1 { font-size: 1.6em; border-bottom: 1px solid var(--vscode-panel-border); padding-bottom: 0.3em; }
+h2 { font-size: 1.25em; margin-top: 1.8em; border-bottom: 1px solid var(--vscode-panel-border); padding-bottom: 0.2em; }
+h3 { font-size: 1.05em; margin-top: 1.2em; }
+small, .meta { color: var(--vscode-descriptionForeground); font-weight: normal; }
+.lang { margin-left: 0.6em; font-size: 0.55em; text-transform: uppercase; letter-spacing: 0.05em; }
+code, pre { font-family: var(--vscode-editor-font-family); font-size: var(--vscode-editor-font-size); }
+code { background: var(--vscode-textCodeBlock-background); padding: 0 0.25em; border-radius: 3px; }
+table { border-collapse: collapse; width: 100%; margin: 0.6em 0 1em; }
+th, td { text-align: left; padding: 0.35em 0.7em; border: 1px solid var(--vscode-panel-border); vertical-align: top; }
+th { background: var(--vscode-editorWidget-background); }
+tr[data-line], h1[data-line], .process[data-line] { cursor: pointer; }
+tr[data-line]:hover { background: var(--vscode-list-hoverBackground); }
+.process { border: 1px solid var(--vscode-panel-border); border-radius: 4px; padding: 0.2em 1em 0.8em; margin: 1em 0; }
+.process:hover { border-color: var(--vscode-focusBorder); }
+figure { margin: 1em 0; }
+figcaption { color: var(--vscode-descriptionForeground); text-align: center; font-size: 0.9em; }
+.wavedrom, .fsm { overflow-x: auto; margin: 1em 0; }
+.ok { color: var(--vscode-testing-iconPassed); }
+.bad { color: var(--vscode-errorForeground); font-weight: 600; }
+.warnings { color: var(--vscode-editorWarning-foreground); }
+.message { padding: 0.8em 1em; margin: 1em 0; border-left: 4px solid var(--vscode-focusBorder); background: var(--vscode-editorWidget-background); }
+.message-error { border-left-color: var(--vscode-errorForeground); }
+.diagram-error { color: var(--vscode-errorForeground); white-space: pre-wrap; }
+/* Graphviz draws edges in black: use the theme's text colour so they show on a dark background. */
+.fsm svg { max-width: 100%; height: auto; }
+.fsm g.edge path { stroke: var(--vscode-foreground); }
+.fsm g.edge polygon { stroke: var(--vscode-foreground); fill: var(--vscode-foreground); }
+.fsm g.edge text { fill: var(--vscode-foreground); }
+.fsm > svg > g > polygon { fill: transparent; stroke: transparent; }
+/* WaveDrom draws dark-on-light; in a dark theme invert it, keeping the hues. */
+body.vscode-dark .wavedrom svg, body.vscode-high-contrast .wavedrom svg { filter: invert(1) hue-rotate(180deg); }
+/* State names sit on pale node fills chosen by the extractor, so they stay black in every theme. */
+.fsm g.node text { fill: black; }
+#toolbar { position: sticky; top: 0; z-index: 2; display: flex; gap: 0.5em; justify-content: flex-end; padding: 0.5em 0; background: var(--vscode-editor-background); }
+#toolbar button { color: var(--vscode-button-secondaryForeground); background: var(--vscode-button-secondaryBackground); border: 1px solid var(--vscode-panel-border); border-radius: 3px; padding: 0.25em 0.8em; cursor: pointer; font-family: inherit; }
+#toolbar button:hover { background: var(--vscode-button-secondaryHoverBackground); }
+</style>
+</head><body>
+<header class="module">
+<h1 data-line="6">sample_stream<small class="lang">systemverilog</small></h1>
+<p>Captured samples as a filtered byte stream.</p>
+<p>Sends the low byte of each sample as a one-byte packet and runs it through a
+stream_filter, so only samples whose low byte reaches the threshold leave on
+the flat AXI4-Stream master port.</p>
+</header>
+<section>
+<h2>Ports</h2>
+<table>
+<thead><tr><th>Name</th><th>Direction</th><th>Type</th><th>Description</th></tr></thead>
+<tbody>
+<tr data-line="8"><td><code>clk</code></td><td>in</td><td>logic</td><td>System clock.</td></tr>
+<tr data-line="10"><td><code>rst</code></td><td>in</td><td>logic</td><td>Synchronous active-high reset.</td></tr>
+<tr data-line="12"><td><code>enable</code></td><td>in</td><td>logic</td><td>Filtering is on while high.</td></tr>
+<tr data-line="14"><td><code>threshold</code></td><td>in</td><td>logic(7:0)</td><td>Smallest low-byte value that lets a sample through.</td></tr>
+<tr data-line="16"><td><code>sample_data</code></td><td>in</td><td>logic(full_pkg::SAMPLE_W-1:0)</td><td>Sample and its handshake from the capture path.</td></tr>
+<tr data-line="17"><td><code>sample_valid</code></td><td>in</td><td>logic</td><td></td></tr>
+<tr data-line="18"><td><code>sample_ready</code></td><td>out</td><td>logic</td><td></td></tr>
+</tbody>
+</table>
+<h3>AXI4-Stream Manager</h3>
+<table>
+<thead><tr><th>Name</th><th>Direction</th><th>Type</th><th>Description</th></tr></thead>
+<tbody>
+<tr data-line="20"><td><code>m_axis_tdata</code></td><td>out</td><td>logic(7:0)</td><td>Forwarded bytes.</td></tr>
+<tr data-line="21"><td><code>m_axis_tvalid</code></td><td>out</td><td>logic</td><td></td></tr>
+<tr data-line="22"><td><code>m_axis_tready</code></td><td>in</td><td>logic</td><td></td></tr>
+<tr data-line="23"><td><code>m_axis_tlast</code></td><td>out</td><td>logic</td><td></td></tr>
+</tbody>
+</table>
+</section>
+<section>
+<h2>Instances</h2>
+<table>
+<thead><tr><th>Instance</th><th>Of</th><th>Kind</th></tr></thead>
+<tbody>
+<tr data-line="25"><td><code>s_if</code></td><td><code>axis_if</code></td><td>interface</td></tr>
+<tr data-line="26"><td><code>m_if</code></td><td><code>axis_if</code></td><td>interface</td></tr>
+<tr data-line="38"><td><code>u_filter</code></td><td><code>stream_filter</code></td><td>module</td></tr>
+</tbody>
+</table>
+</section>
+</body></html>

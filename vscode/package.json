@@ -33,6 +33,10 @@
       {
         "command": "hdlAutodoc.exportMarkdown",
         "title": "HDL AutoDoc: Export documentation as Markdown"
+      },
+      {
+        "command": "hdlAutodoc.exportPdf",
+        "title": "HDL AutoDoc: Export documentation as PDF"
       }
     ],
     "configuration": {
@@ -48,6 +52,11 @@
           "default": 400,
           "minimum": 0,
           "description": "Pause after the last keystroke before the preview refreshes."
+        },
+        "hdlAutodoc.browserPath": {
+          "type": "string",
+          "default": "",
+          "description": "Chrome, Edge, Brave or Chromium used to print the PDF export. Empty: look in the usual places."
         }
       }
     },

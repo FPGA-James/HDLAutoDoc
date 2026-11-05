@@ -1,9 +1,11 @@
 import * as fs from 'node:fs';
+import * as os from 'node:os';
 import * as path from 'node:path';
 import * as vscode from 'vscode';
 import { resetVersionCache, runAutodocJson } from './runner.ts';
 import { exportPage } from './export.ts';
 import { renderMarkdown } from './markdown.ts';
+import { printToPdf, systemBrowser } from './pdf.ts';
 import { languageOf, Session } from './session.ts';
 import { shellHtml } from './shell.ts';
 import type { RunRequest, Snapshot } from './session.ts';
@@ -91,21 +93,54 @@ export function activate(context: vscode.ExtensionContext): TestApi {
 
   let exportTarget: vscode.Uri | undefined;
 
-  async function saveExport(extension: 'html' | 'md', filterName: string, content: (name: string) => string): Promise<void> {
-    const file = followed?.fileName;
-    const name = file ? path.basename(file, path.extname(file)) : 'documentation';
-    const folder = file ? path.dirname(file) : vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? '';
-    const target = exportTarget ?? await vscode.window.showSaveDialog({
-      defaultUri: vscode.Uri.file(path.join(folder, `${name}.${extension}`)), filters: { [filterName]: [extension] } });
-    if (!target) return;
-    await vscode.workspace.fs.writeFile(target, Buffer.from(content(name), 'utf8'));
+  const exportName = (): string => followed ? path.basename(followed.fileName, path.extname(followed.fileName)) : 'documentation';
+
+  async function chooseTarget(extension: string, filterName: string): Promise<vscode.Uri | undefined> {
+    if (exportTarget) return exportTarget;
+    const folder = followed ? path.dirname(followed.fileName) : vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? '';
+    return vscode.window.showSaveDialog({
+      defaultUri: vscode.Uri.file(path.join(folder, `${exportName()}.${extension}`)), filters: { [filterName]: [extension] } });
+  }
+
+  function exported(target: vscode.Uri): void {
     void vscode.window.showInformationMessage(`Exported ${target.fsPath}`, 'Open').then((choice) => {
       if (choice === 'Open') void vscode.env.openExternal(target);
     });
   }
 
+  async function saveExport(extension: 'html' | 'md', filterName: string, content: (name: string) => string): Promise<void> {
+    const target = await chooseTarget(extension, filterName);
+    if (!target) return;
+    await vscode.workspace.fs.writeFile(target, Buffer.from(content(exportName()), 'utf8'));
+    exported(target);
+  }
+
   const saveHtml = (body: string) => saveExport('html', 'HTML', (name) =>
     exportPage(name, body, fs.readFileSync(path.join(context.extensionPath, 'dist', 'panel.css'), 'utf8')));
+
+  async function savePdf(body: string): Promise<void> {
+    const setting = settings().get<string>('browserPath', '').trim() || undefined;
+    const browser = systemBrowser(setting);
+    if (!browser) {
+      const why = setting ? `The browser in hdlAutodoc.browserPath ("${setting}") does not exist.` : 'No Chrome, Edge, Brave or Chromium was found.';
+      void vscode.window.showWarningMessage(`${why} Set hdlAutodoc.browserPath, or save the HTML and print it from any browser.`, 'Save HTML instead')
+        .then((choice) => { if (choice) void saveHtml(body); });
+      return;
+    }
+    const target = await chooseTarget('pdf', 'PDF');
+    if (!target) return;
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hdl-autodoc-pdf-'));
+    try {
+      const html = path.join(dir, 'page.html');
+      fs.writeFileSync(html, exportPage(exportName(), body, fs.readFileSync(path.join(context.extensionPath, 'dist', 'panel.css'), 'utf8')));
+      const result = await vscode.window.withProgress({ location: vscode.ProgressLocation.Window, title: 'HDL AutoDoc: exporting PDF…' },
+        () => printToPdf({ browser, html, pdf: target.fsPath, timeoutMs: 60000 }));
+      if (result.ok) exported(target);
+      else void vscode.window.showErrorMessage(`HDL AutoDoc: PDF export failed. ${result.message}`);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  }
 
   async function saveMarkdown(): Promise<void> {
     if (!lastDoc) {
@@ -124,6 +159,8 @@ export function activate(context: vscode.ExtensionContext): TestApi {
       refreshNow();
     } else if (m?.type === 'export' && m.format === 'html' && typeof m.html === 'string') {
       await saveHtml(m.html);
+    } else if (m?.type === 'export' && m.format === 'pdf' && typeof m.html === 'string') {
+      await savePdf(m.html);
     } else if (m?.type === 'export' && m.format === 'markdown') {
       await saveMarkdown();
     } else if (m?.type === 'goto' && typeof m.line === 'number' && followed) {
@@ -134,6 +171,11 @@ export function activate(context: vscode.ExtensionContext): TestApi {
       editor.selection = new vscode.Selection(position, position);
       editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenterIfOutsideViewport);
     }
+  }
+
+  function requestExport(format: string): void {
+    if (!panel) openPanel();
+    void panel?.webview.postMessage({ type: 'requestExport', format });
   }
 
   function openPanel(): void {
@@ -162,10 +204,8 @@ export function activate(context: vscode.ExtensionContext): TestApi {
   context.subscriptions.push(
     vscode.commands.registerCommand('hdlAutodoc.showDocumentation', openPanel),
     vscode.commands.registerCommand('hdlAutodoc.exportMarkdown', () => void saveMarkdown()),
-    vscode.commands.registerCommand('hdlAutodoc.exportHtml', () => {
-      if (!panel) openPanel();
-      void panel?.webview.postMessage({ type: 'requestExport', format: 'html' });
-    }),
+    vscode.commands.registerCommand('hdlAutodoc.exportHtml', () => requestExport('html')),
+    vscode.commands.registerCommand('hdlAutodoc.exportPdf', () => requestExport('pdf')),
     vscode.window.onDidChangeActiveTextEditor((editor) => {
       if (!panel || !editor) return;                         // focusing the panel itself leaves no editor
       if (languageOf(snapshot(editor.document)) !== null) followed = editor.document;

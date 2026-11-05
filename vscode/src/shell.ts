@@ -21,7 +21,7 @@ export function shellHtml(o: ShellOptions): string {
 <meta http-equiv="Content-Security-Policy" content="${csp}">
 <link rel="stylesheet" href="${o.panelCss}">
 </head><body data-assets="${o.vendorBase}/">
-<div id="toolbar"><button data-export="html" title="Save this documentation as a standalone HTML file">Export HTML</button><button data-export="markdown" title="Save this documentation as Markdown, with the diagrams as fenced source">Export Markdown</button></div>
+<div id="toolbar"><button data-export="html" title="Save this documentation as a standalone HTML file">Export HTML</button><button data-export="markdown" title="Save this documentation as Markdown, with the diagrams as fenced source">Export Markdown</button><button data-export="pdf" title="Save this documentation as a PDF (needs Chrome, Edge, Brave or Chromium)">Export PDF</button></div>
 <div id="content"></div>
 <script nonce="${o.nonce}" src="${o.webviewJs}"></script>
 </body></html>`;
