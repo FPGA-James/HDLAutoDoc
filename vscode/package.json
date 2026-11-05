@@ -2,7 +2,7 @@
   "name": "hdl-autodoc",
   "displayName": "HDL AutoDoc",
   "description": "Live documentation preview for VHDL and SystemVerilog files, from the same extractors as the HDL AutoDoc site.",
-  "version": "3.16.0",
+  "version": "3.17.0",
   "publisher": "local",
   "license": "SEE LICENSE IN ../README.md",
   "repository": {

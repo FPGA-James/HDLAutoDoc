@@ -1,4 +1,65 @@
 # HDL AutoDoc for VS Code
 
-A live documentation preview for VHDL and SystemVerilog files, built from the same extractors as the
-[HDL AutoDoc](https://github.com/FPGA-James/HDLAutoDoc) site. Work in progress.
+A live documentation preview for the VHDL or SystemVerilog file you are editing. It shows what the
+[HDL AutoDoc](https://github.com/FPGA-James/HDLAutoDoc) site will show for that module, as you type:
+
+- the header description, generics or parameters, and ports (with bus groups and interface ports),
+- instances, the state machine (diagram and transition table),
+- every process, with its description, **WaveDrom** waveforms and **Mermaid** diagrams,
+- clock-domain and reset analysis (crossings, synchronisers, dual-clock instances).
+
+It uses the same extractors as the site build, so the preview and the generated documentation read your
+comments the same way. It works on unsaved text, follows the active editor, follows the editor theme, and
+clicking a port, generic, instance or process jumps to its line.
+
+## Use
+
+1. Open a `.vhd`, `.vhdl`, `.sv`, `.svh`, `.v` or `.vh` file.
+2. Run **HDL AutoDoc: Show documentation** from the Command Palette. The panel opens beside the editor.
+
+The panel refreshes after you stop typing, on save, and when you switch files. Opening a file that is
+not HDL leaves the last document in place and says so.
+
+## Requirements
+
+Python 3.11 or newer on your `PATH` (or set `hdlAutodoc.pythonPath`). The extractors use only Python's
+standard library, so nothing needs installing, and the extension carries its own copy of them.
+
+## Settings
+
+| Setting | Default | |
+|---|---|---|
+| `hdlAutodoc.pythonPath` | `python3` | Python 3.11+ used to read the source |
+| `hdlAutodoc.refreshDelayMs` | `400` | Pause after the last keystroke before the preview refreshes |
+
+A SystemVerilog file that uses interfaces (`axis_if.slave s_axis`) is documented with those interfaces
+when the workspace holds the `interface` definition. Custom port groups are read from
+`docs/hdl_autodoc/bus_groups.toml` in the first workspace folder, as the site build does.
+
+## Install the `.vsix`
+
+```bash
+code --install-extension hdl-autodoc-<version>.vsix
+```
+
+## Build it
+
+From the repository root (needs Node 20 or newer):
+
+```bash
+make -C vscode vsix        # writes vscode/hdl-autodoc-<version>.vsix
+cd vscode && npm test      # unit tests, the .vsix contents, and the webview in headless Chrome
+cd vscode && npm run test:integration   # drives the installed VS Code with a throw-away profile
+```
+
+`npm test` renders real documents in headless Chrome (set `CHROME` if it is not found) and writes
+screenshots to `test/out/`. The integration tests open a VS Code window briefly; they use their own
+user-data and extensions folders and never touch your settings.
+
+## Not included
+
+- RTL schematics (they need Yosys and netlistsvg), the register map, testbenches and build reports:
+  those belong to the full site (`make doc-html`).
+- Descriptions are shown as plain text with ``code`` spans; other reStructuredText is not rendered.
+- A port declaration must be on its own line to be read (`input a, input b,` on one line yields only `a`).
+- No publishing to the Marketplace yet; the extension is installed from the `.vsix` file.
