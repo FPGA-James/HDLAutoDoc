@@ -208,7 +208,7 @@ Two more examples live alongside it: `example_sv/` (a SystemVerilog package, int
 
 ### VS Code extension
 
-`vscode/` holds an extension that shows the documentation of the file you are editing, live, in a panel beside it: header, generics, ports, instances, the state machine, processes with their WaveDrom and Mermaid diagrams, and clock- and reset-domain analysis. It reads the source with the same extractors as the site build (through the new `autodoc_json.py`, which prints one JSON document per file), works on unsaved text, and follows the editor theme.
+`vscode/` holds an extension that shows the documentation of the file you are editing, live, in a panel beside it: header, generics, ports, instances, the state machine, processes with their WaveDrom and Mermaid diagrams, and clock- and reset-domain analysis. It reads the source with the same extractors as the site build (through the new `autodoc_json.py`, which prints one JSON document per file), works on unsaved text, follows the editor theme, and exports the documentation as HTML, Markdown or PDF (the PDF needs Chrome, Edge, Brave or Chromium installed).
 
 ```bash
 make -C vscode vsix                                      # builds vscode/hdl-autodoc-<version>.vsix

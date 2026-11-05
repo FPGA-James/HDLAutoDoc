@@ -96,7 +96,19 @@ exports.run = async function run() {
   fs.unlinkSync(mdTarget.fsPath);
   api.exportTo(undefined);
 
-  // 9. Closing the panel stops the updates.
+  // 9. PDF: a real browser prints the page; with no usable browser nothing is written and nothing hangs.
+  const pdfTarget = vscode.Uri.file(path.join(os.tmpdir(), `hdl-autodoc-export-${Date.now()}.pdf`));
+  api.exportTo(pdfTarget);
+  await api.handleMessage({ type: 'export', format: 'pdf', html: '<h1>exported</h1><p>capture_en</p>' });
+  assert.equal(fs.readFileSync(pdfTarget.fsPath).subarray(0, 5).toString(), '%PDF-');
+  fs.unlinkSync(pdfTarget.fsPath);
+  await config.update('browserPath', '/no/such/browser', vscode.ConfigurationTarget.Global);
+  await api.handleMessage({ type: 'export', format: 'pdf', html: '<p>x</p>' });
+  assert.equal(fs.existsSync(pdfTarget.fsPath), false);
+  await config.update('browserPath', undefined, vscode.ConfigurationTarget.Global);
+  api.exportTo(undefined);
+
+  // 10. Closing the panel stops the updates.
   await vscode.commands.executeCommand('workbench.action.closeAllEditors');
   await waitFor('the panel to close', () => !api.hasPanel());
 };

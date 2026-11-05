@@ -262,3 +262,19 @@ test('Export Markdown asks the host without drawing anything again', async (t) =
   assert.equal(await count('.export-root'), 0);
   await page.close();
 });
+
+
+test('Export PDF sends the light, drawn page for the host to print', async (t) => {
+  if (!browser) return t.skip('no Chrome');
+  const doc = fixture('sample_ctrl');
+  await open('dark');
+  await render(renderDocument(doc));
+  await page.waitForFunction(() => document.querySelector('.fsm svg') && document.querySelector('.mermaid svg'), { timeout: 20000 });
+  await page.evaluate(() => document.querySelector('[data-export="pdf"]').click());
+  await page.waitForFunction(() => window.__posted.some((m) => m.type === 'export'), { timeout: 30000 });
+  const message = await exported();
+  assert.equal(message.format, 'pdf');
+  assert.ok((message.html.match(/<svg/g) ?? []).length >= waves(doc) + flows(doc) + 1);
+  assert.match(message.html, /ECECFF/i);
+  await page.close();
+});
