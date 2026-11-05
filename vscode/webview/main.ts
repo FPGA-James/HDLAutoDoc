@@ -147,7 +147,8 @@ async function lightHtml(): Promise<string> {
 
 async function requestExport(format: string): Promise<void> {
   if (!latestHtml) return;                              // nothing to export yet
-  host?.postMessage({ type: 'export', format, html: await lightHtml() });
+  // Only HTML is the drawn page; Markdown is built from the document by the host.
+  host?.postMessage(format === 'html' ? { type: 'export', format, html: await lightHtml() } : { type: 'export', format });
 }
 
 window.addEventListener('message', (event: MessageEvent) => {

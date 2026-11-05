@@ -3,7 +3,7 @@
 // and decide what the panel shows (a document, an error, or a note about the active file).
 import { renderDocument, renderMessage } from './render.ts';
 import type { RunResult } from './runner.ts';
-import type { Language } from './types.ts';
+import type { Document, Language } from './types.ts';
 
 export interface Snapshot {
   uri: string;
@@ -17,7 +17,8 @@ export interface RunRequest extends Snapshot {
 
 export interface SessionDeps {
   run(request: RunRequest, signal: AbortSignal): Promise<RunResult>;
-  post(message: { type: 'render'; html: string }): void;
+  /** `doc` is the document the HTML was made from, when there is one (not for errors and notes). */
+  post(message: { type: 'render'; html: string; doc?: Document }): void;
   /** Pause after the last edit; read on every update so a settings change applies at once. */
   delayMs(): number;
   setTimer?(callback: () => void, ms: number): unknown;
@@ -111,7 +112,7 @@ export class Session {
   private finish(result: RunResult): void {
     if (result.ok) {
       this.lastHtml = renderDocument(result.doc);
-      this.deps.post({ type: 'render', html: this.lastHtml });
+      this.deps.post({ type: 'render', html: this.lastHtml, doc: result.doc });
     } else if (result.kind !== 'aborted') {
       this.deps.post({ type: 'render', html: renderMessage('error', result.message) + this.lastHtml });
     }

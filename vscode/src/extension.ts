@@ -3,10 +3,12 @@ import * as path from 'node:path';
 import * as vscode from 'vscode';
 import { resetVersionCache, runAutodocJson } from './runner.ts';
 import { exportPage } from './export.ts';
+import { renderMarkdown } from './markdown.ts';
 import { languageOf, Session } from './session.ts';
 import { shellHtml } from './shell.ts';
 import type { RunRequest, Snapshot } from './session.ts';
 import { SupportFinder } from './support.ts';
+import type { Document } from './types.ts';
 
 /** What the integration tests can observe; the webview itself cannot be inspected from here. */
 export interface TestApi {
@@ -31,6 +33,7 @@ export function activate(context: vscode.ExtensionContext): TestApi {
   let session: Session | undefined;
   let followed: vscode.TextDocument | undefined;
   let lastHtml = '';
+  let lastDoc: Document | undefined;
   let pending: { type: 'render'; html: string } | undefined;
   let ready = false;
 
@@ -66,10 +69,11 @@ export function activate(context: vscode.ExtensionContext): TestApi {
       signal,
     });
 
-  function send(message: { type: 'render'; html: string }): void {
+  function send(message: { type: 'render'; html: string; doc?: Document }): void {
     lastHtml = message.html;
-    pending = message;
-    if (ready) void panel?.webview.postMessage(message);
+    if (message.doc) lastDoc = message.doc;
+    pending = { type: 'render', html: message.html };           // the webview needs only the HTML
+    if (ready) void panel?.webview.postMessage(pending);
   }
 
   function refreshNow(): void {
@@ -87,18 +91,29 @@ export function activate(context: vscode.ExtensionContext): TestApi {
 
   let exportTarget: vscode.Uri | undefined;
 
-  async function saveHtml(body: string): Promise<void> {
+  async function saveExport(extension: 'html' | 'md', filterName: string, content: (name: string) => string): Promise<void> {
     const file = followed?.fileName;
     const name = file ? path.basename(file, path.extname(file)) : 'documentation';
     const folder = file ? path.dirname(file) : vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? '';
     const target = exportTarget ?? await vscode.window.showSaveDialog({
-      defaultUri: vscode.Uri.file(path.join(folder, `${name}.html`)), filters: { HTML: ['html'] } });
+      defaultUri: vscode.Uri.file(path.join(folder, `${name}.${extension}`)), filters: { [filterName]: [extension] } });
     if (!target) return;
-    const css = fs.readFileSync(path.join(context.extensionPath, 'dist', 'panel.css'), 'utf8');
-    await vscode.workspace.fs.writeFile(target, Buffer.from(exportPage(name, body, css), 'utf8'));
+    await vscode.workspace.fs.writeFile(target, Buffer.from(content(name), 'utf8'));
     void vscode.window.showInformationMessage(`Exported ${target.fsPath}`, 'Open').then((choice) => {
       if (choice === 'Open') void vscode.env.openExternal(target);
     });
+  }
+
+  const saveHtml = (body: string) => saveExport('html', 'HTML', (name) =>
+    exportPage(name, body, fs.readFileSync(path.join(context.extensionPath, 'dist', 'panel.css'), 'utf8')));
+
+  async function saveMarkdown(): Promise<void> {
+    if (!lastDoc) {
+      void vscode.window.showInformationMessage('HDL AutoDoc: there is no documentation to export yet. Open an HDL file and show the documentation first.');
+      return;
+    }
+    const doc = lastDoc;
+    await saveExport('md', 'Markdown', () => renderMarkdown(doc));
   }
 
   async function handleMessage(message: unknown): Promise<void> {
@@ -109,6 +124,8 @@ export function activate(context: vscode.ExtensionContext): TestApi {
       refreshNow();
     } else if (m?.type === 'export' && m.format === 'html' && typeof m.html === 'string') {
       await saveHtml(m.html);
+    } else if (m?.type === 'export' && m.format === 'markdown') {
+      await saveMarkdown();
     } else if (m?.type === 'goto' && typeof m.line === 'number' && followed) {
       const document = followed;
       const column = vscode.window.visibleTextEditors.find((e) => e.document === document)?.viewColumn;
@@ -144,6 +161,7 @@ export function activate(context: vscode.ExtensionContext): TestApi {
 
   context.subscriptions.push(
     vscode.commands.registerCommand('hdlAutodoc.showDocumentation', openPanel),
+    vscode.commands.registerCommand('hdlAutodoc.exportMarkdown', () => void saveMarkdown()),
     vscode.commands.registerCommand('hdlAutodoc.exportHtml', () => {
       if (!panel) openPanel();
       void panel?.webview.postMessage({ type: 'requestExport', format: 'html' });

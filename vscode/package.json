@@ -29,6 +29,10 @@
       {
         "command": "hdlAutodoc.exportHtml",
         "title": "HDL AutoDoc: Export documentation as HTML"
+      },
+      {
+        "command": "hdlAutodoc.exportMarkdown",
+        "title": "HDL AutoDoc: Export documentation as Markdown"
       }
     ],
     "configuration": {

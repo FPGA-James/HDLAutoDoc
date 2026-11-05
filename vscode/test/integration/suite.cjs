@@ -84,7 +84,19 @@ exports.run = async function run() {
   fs.unlinkSync(target.fsPath);
   api.exportTo(undefined);
 
-  // 8. Closing the panel stops the updates.
+  // 8. Markdown is built from the last document and inserts the diagram sources as fenced code.
+  const mdTarget = vscode.Uri.file(path.join(os.tmpdir(), `hdl-autodoc-export-${Date.now()}.md`));
+  api.exportTo(mdTarget);
+  await api.handleMessage({ type: 'export', format: 'markdown' });
+  const markdown = fs.readFileSync(mdTarget.fsPath, 'utf8');
+  assert.match(markdown, /^# sample_capture\n/);
+  assert.match(markdown, /```mermaid\nflowchart LR/);
+  assert.match(markdown, /\| Name \| Direction \| Type \| Description \|/);
+  assert.match(markdown, /### Converter interface/);
+  fs.unlinkSync(mdTarget.fsPath);
+  api.exportTo(undefined);
+
+  // 9. Closing the panel stops the updates.
   await vscode.commands.executeCommand('workbench.action.closeAllEditors');
   await waitFor('the panel to close', () => !api.hasPanel());
 };

@@ -247,3 +247,18 @@ test('the export button does nothing before there is a document', async (t) => {
   assert.equal(await exported(), undefined);
   await page.close();
 });
+
+
+test('Export Markdown asks the host without drawing anything again', async (t) => {
+  if (!browser) return t.skip('no Chrome');
+  await open();
+  await render(renderDocument(fixture('sample_capture')));
+  await page.waitForSelector('.mermaid svg', { timeout: 20000 });
+  await page.evaluate(() => document.querySelector('[data-export="markdown"]').click());
+  await page.waitForFunction(() => window.__posted.some((m) => m.type === 'export'), { timeout: 5000 });
+  const message = await exported();
+  assert.equal(message.format, 'markdown');
+  assert.equal(message.html, undefined, 'Markdown is built from the document, not from the drawn page');
+  assert.equal(await count('.export-root'), 0);
+  await page.close();
+});

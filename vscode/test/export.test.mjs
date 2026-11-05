@@ -31,6 +31,7 @@ test('the panel shell allows scripts only by nonce and offers the export button'
   assert.doesNotMatch(html, /script-src[^;"]*'self'/);
   assert.match(html, /<script nonce="abc" src="w\.js">/);
   assert.match(html, /<button[^>]*data-export="html"/);
+  assert.match(html, /<button[^>]*data-export="markdown"/);
   assert.match(html, /data-assets="v\/"/);
 });
 
@@ -48,4 +49,5 @@ test('the editor title bar offers the panel for HDL files only', () => {
 
 test('exporting is also a command in the palette', () => {
   assert.ok(pkg.contributes.commands.some((c) => c.command === 'hdlAutodoc.exportHtml'));
+  assert.ok(pkg.contributes.commands.some((c) => c.command === 'hdlAutodoc.exportMarkdown'));
 });

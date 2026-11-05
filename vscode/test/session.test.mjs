@@ -184,3 +184,15 @@ test('a language id that names a different language wins over the extension', as
   session.flush(snap('x', { uri: 'file:///w/a.vhd', languageId: 'markdown' }));
   assert.equal(runs.length, 0);
 });
+
+
+test('a rendered document is posted together with the document it came from; errors and notes carry none', async () => {
+  let call = 0;
+  const { session, posted } = make(async () => (++call === 1 ? ok('counter') : { ok: false, kind: 'failed', message: 'boom' }));
+  session.flush(snap('x')); await tick();
+  assert.equal(posted[0].doc.module.name, 'counter');
+  session.flush(snap('y')); await tick();
+  assert.equal(posted[1].doc, undefined);
+  session.update(snap('# n', { uri: 'file:///n.md', languageId: 'markdown' }));
+  assert.equal(posted[2].doc, undefined);
+});
