@@ -32,3 +32,17 @@ def test_the_extractors_use_the_shared_helpers_not_copies():
         assert module._safe is hdl_text.safe_id
     for module in (extract_cdc, extract_reset):
         assert module._title is hdl_text.title
+
+
+def test_blanked_comments_keep_every_position_and_newline():
+    vhdl = "a <= b; -- note\nc <= d;\n"
+    assert hdl_text.blank_vhdl_comments(vhdl) == "a <= b;        \nc <= d;\n"
+    sv = "x; // line\n/* block\n   two */ y;\n"
+    out = hdl_text.blank_sv_comments(sv)
+    assert len(out) == len(sv) and out.count("\n") == sv.count("\n")
+    assert "line" not in out and "block" not in out and out.startswith("x;") and out.rstrip().endswith("y;")
+
+
+def test_blanking_leaves_code_that_merely_resembles_a_comment_start_in_a_string_alone_for_now():
+    # Documented limit shared with strip_*: no string-literal awareness.
+    assert hdl_text.blank_sv_comments('a = "x"; // c\n') == 'a = "x";     \n'

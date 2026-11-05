@@ -19,6 +19,20 @@ def strip_sv_comments(text: str) -> str:
     return re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
 
 
+def blank_vhdl_comments(text: str) -> str:
+    """`text` with VHDL `--` comments replaced by spaces: every other character keeps its
+    position, so an index into the result is an index into the original (and line
+    numbers survive)."""
+    return re.sub(r"--[^\n]*", lambda m: " " * len(m.group(0)), text)
+
+
+def blank_sv_comments(text: str) -> str:
+    """`text` with SystemVerilog `//` and `/* */` comments replaced by spaces, newlines
+    kept; positions and line numbers are those of the original."""
+    text = re.sub(r"//[^\n]*", lambda m: " " * len(m.group(0)), text)
+    return re.sub(r"/\*.*?\*/", lambda m: re.sub(r"[^\n]", " ", m.group(0)), text, flags=re.DOTALL)
+
+
 def safe_id(name: str) -> str:
     """A Graphviz-safe identifier: every non-word character becomes `_`."""
     return re.sub(r"\W", "_", name)

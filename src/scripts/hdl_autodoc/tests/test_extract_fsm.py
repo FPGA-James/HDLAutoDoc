@@ -234,3 +234,9 @@ def test_vhdl_condition_with_parentheses_is_kept_whole():
     assert ("IDLE", "RUN", "start = '1' and (mode = \"01\" or force_go = '1')") in got
     assert ("RUN", "IDLE", "done = '1'") in got and ("RUN", "ERR", "err = '1'") in got
     assert ("ERR", "IDLE", "") in got
+
+
+def test_dot_escapes_double_quotes_in_conditions():
+    from extract_fsm import write_dot
+    dot = write_dot([("A", "B", 'mode = "01"')], ["A", "B"], "m")
+    assert 'label="mode = \\"01\\""' in dot

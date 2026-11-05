@@ -354,7 +354,7 @@ def extract_interface_instances_sv(text: str,
                                    interface_names: set[str] | None = None) -> list[dict]:
     """
     Interfaces instantiated in a module body: `axis_if m_axis (.clk(clk));`,
-    `axil_if #(8) bus ();`.  Returns [{name, interface, comment}] in source order.
+    `axil_if #(8) bus ();`.  Returns [{name, interface, comment, line}] in source order.
     Only known interface names match, and header port lists are skipped, so an
     ordinary module instance or a port is never read as one.
     """
@@ -375,6 +375,7 @@ def extract_interface_instances_sv(text: str,
                 "interface": m.group("ifc"),
                 "comment":   _inline_comment_sv(line)
                              or _preceding_comment(lines, idx, "//"),
+                "line":      idx + 1,
             })
     return found
 
