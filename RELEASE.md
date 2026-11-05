@@ -9,6 +9,10 @@
 **`autodoc_json.py`** — a new command that reads one source file on standard input and prints a JSON document (module, generics, ports, instances, processes, state machine, CDC and reset analysis, warnings). It is what the extension runs, and a data layer for other tools. Standard library only.
 - Ports, generics, parameters and interface instances carry a `line` field in the extractors' results.
 
+#### Removed
+
+- **The `example/`, `example_sv/` and `example_ecp5/` projects.** `example_full/` covers every feature they showed and is the one example. Its built HTML (`example_full/docs/hdl_autodoc/_build/html/`) is committed, so a clone can open it without building; the GitHub Pages site now serves it at the site root.
+
 #### Fixes
 
 - **State-machine diagrams with a double quote in a condition** (for example `mode = "01"`) produced invalid Graphviz source; quotes are now escaped. This affected the site's FSM diagrams as well.

@@ -25,8 +25,17 @@ not HDL leaves the last document in place and says so.
 
 ## Requirements
 
-Python 3.11 or newer on your `PATH` (or set `hdlAutodoc.pythonPath`). The extractors use only Python's
-standard library, so nothing needs installing, and the extension carries its own copy of them.
+**To use it**
+
+| Tool | For | Notes |
+|---|---|---|
+| VS Code 1.90 or newer | the extension | |
+| Python 3.11 or newer | reading the source | standard library only: nothing to `pip install`; the extension carries its own copy of the extractors |
+| Chrome, Edge, Brave or Chromium | **Export PDF** only | found in the usual places, or set `hdlAutodoc.browserPath` |
+
+**To build the `.vsix`** (`make -C vscode vsix`): Node 20 or newer with npm, and `make`. The npm packages (`esbuild`, `typescript`, `@vscode/vsce`, WaveDrom, Mermaid, viz-js) are installed by `npm ci`, which the make target runs.
+
+**To run the tests** (`cd vscode && npm test`): the same, plus Chrome for the webview and PDF tests (they are skipped without it); `pdftotext` and `pdfinfo` from poppler are optional extra checks on the PDF. `npm run test:integration` needs VS Code installed and opens a window briefly.
 
 ## Settings
 

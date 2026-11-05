@@ -1,0 +1,29 @@
+sample_capture — Entity
+=======================
+
+Source file: ``src/sample_capture.sv``.
+
+Sample capture across a clock boundary.
+
+Registers samples from a free-running converter clock (adc_clk) and hands
+them to the system clock (clk) through an asynchronous FIFO. The enable
+request goes the other way through a two-flop synchroniser, so neither
+domain samples a signal that changes under its own clock edge.
+
+.. mermaid::
+   :caption: Capture data path
+
+   flowchart LR
+     subgraph sys[clk domain]
+       E[enable] --> C[p_ctrl]
+       O[p_out] --> S[sample_data]
+     end
+     subgraph adc[adc_clk domain]
+       N[p_adc_en] --> R[p_adc_capture]
+       D[adc_data] --> R
+     end
+     C -- capture_en --> N
+     R -- samples --> F[(async_fifo)]
+     F --> O
+
+.. include:: sample_capture_source.rst

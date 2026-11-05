@@ -184,20 +184,9 @@ make doc-html PROJECT="My FPGA Design"
 
 ### Try the example
 
-**Live:** the four example projects, built from `main`, are at [fpga-james.github.io/HDLAutoDoc](https://fpga-james.github.io/HDLAutoDoc/) (without the RTL schematics, which need Yosys).
+**Live:** the example project, built from `main`, is at [fpga-james.github.io/HDLAutoDoc](https://fpga-james.github.io/HDLAutoDoc/) (without the RTL schematics, which need Yosys). Its built HTML is also in the repository, so after cloning you can open `example_full/docs/hdl_autodoc/_build/html/index.html` without building anything.
 
-A fully working example design (traffic light controller + PWM controller) lives in `example/`. It is a self-contained project with HDL sources, register definitions, and dummy synthesis reports:
-
-```bash
-cd example
-make doc-venv && make doc-html
-```
-
-Then open `example/docs/hdl_autodoc/_build/html/index.html`.
-
-Two more examples live alongside it: `example_sv/` (a SystemVerilog package, interfaces and interface ports) and `example_ecp5/` (an AXI4-Stream filter with an AXI4-Lite register file for Lattice ECP5, with testbenches in all three frameworks and real Yosys/nextpnr reports — it shows the Verification and Build sections).
-
-`example_full/` shows **every feature at once** — a mixed VHDL / SystemVerilog sampler for ECP5 (`make doc-venv && make doc-html` from that directory; the PDF shows its Mermaid diagrams when `mmdc` is installed):
+The example, `example_full/`, shows **every feature at once** — a mixed VHDL / SystemVerilog sampler for ECP5 (`make doc-venv && make doc-html` from that directory; the PDF shows its Mermaid diagrams when `mmdc` is installed):
 
 - a three-level hierarchy with a shared module (`stream_filter` has two parents), VHDL parents of SystemVerilog children and the reverse;
 - a VHDL FSM (`sample_ctrl`) and a SystemVerilog FSM (`stream_filter`) with generated diagrams, processes with WaveDrom waveforms, and a process-level Mermaid state diagram;
@@ -606,7 +595,7 @@ Installed automatically by `make doc-install`:
 
 ## 📁 Repository layout
 
-This repository is the **tool** — it lives in `src/`, is consumed by projects through `third_party/hdl_autodoc` (see `install.sh`), and a working demo lives in `example/`.
+This repository is the **tool** — it lives in `src/`, is consumed by projects through `third_party/hdl_autodoc` (see `install.sh`), and a working demo lives in `example_full/`.
 
 ### Template (`src/`)
 

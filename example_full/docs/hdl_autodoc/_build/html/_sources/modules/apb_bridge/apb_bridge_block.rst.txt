@@ -1,0 +1,256 @@
+apb_bridge — Block Diagram
+==========================
+
+Auto-extracted from ``apb_bridge.vhd``.
+
+.. graphviz:: apb_bridge_block.dot
+
+Ports
+-----
+
+.. raw:: html
+
+   <table class="port-table">
+     <thead>
+       <tr><th>Port</th><th>Direction</th><th>Type</th><th>Description</th></tr>
+     </thead>
+     <tbody>
+       <tr class="bus-group-row">
+         <td colspan="4">
+           <details>
+             <summary><strong>m_axil</strong> — AXI4-Lite Manager (17 ports)</summary>
+             <table class="bus-ports-inner">
+               <tr>
+                 <td><code>m_axil_awaddr</code></td>
+                 <td><code>out</code></td>
+                 <td><code>std_logic_vector(7 downto 0)</code></td>
+                 <td>AXI4-Lite manager port.</td>
+               </tr>
+               <tr>
+                 <td><code>m_axil_awvalid</code></td>
+                 <td><code>out</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>m_axil_awready</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>m_axil_wdata</code></td>
+                 <td><code>out</code></td>
+                 <td><code>std_logic_vector(31 downto 0)</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>m_axil_wstrb</code></td>
+                 <td><code>out</code></td>
+                 <td><code>std_logic_vector(3 downto 0)</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>m_axil_wvalid</code></td>
+                 <td><code>out</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>m_axil_wready</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>m_axil_bresp</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic_vector(1 downto 0)</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>m_axil_bvalid</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>m_axil_bready</code></td>
+                 <td><code>out</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>m_axil_araddr</code></td>
+                 <td><code>out</code></td>
+                 <td><code>std_logic_vector(7 downto 0)</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>m_axil_arvalid</code></td>
+                 <td><code>out</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>m_axil_arready</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>m_axil_rdata</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic_vector(31 downto 0)</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>m_axil_rresp</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic_vector(1 downto 0)</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>m_axil_rvalid</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>m_axil_rready</code></td>
+                 <td><code>out</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+             </table>
+           </details>
+         </td>
+       </tr>
+       <tr class="bus-group-row">
+         <td colspan="4">
+           <details>
+             <summary><strong>s_apb</strong> — APB Subordinate (7 ports)</summary>
+             <table class="bus-ports-inner">
+               <tr>
+                 <td><code>s_apb_psel</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic</code></td>
+                 <td>APB subordinate port.</td>
+               </tr>
+               <tr>
+                 <td><code>s_apb_penable</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>s_apb_pwrite</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>s_apb_paddr</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic_vector(7 downto 0)</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>s_apb_pwdata</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic_vector(31 downto 0)</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>s_apb_prdata</code></td>
+                 <td><code>out</code></td>
+                 <td><code>std_logic_vector(31 downto 0)</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>s_apb_pready</code></td>
+                 <td><code>out</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+             </table>
+           </details>
+         </td>
+       </tr>
+       <tr>
+         <td><code>clk</code></td>
+         <td><code>in</code></td>
+         <td><code>std_logic</code></td>
+         <td>System clock.</td>
+       </tr>
+       <tr>
+         <td><code>rst</code></td>
+         <td><code>in</code></td>
+         <td><code>std_logic</code></td>
+         <td>Synchronous active-high reset.</td>
+       </tr>
+     </tbody>
+   </table>
+
+
+Signals
+-------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Signal
+     - Type
+     - Description
+
+   * - ``phase``
+     - ``t_phase``
+     - —
+
+   * - ``addr``
+     - ``std_logic_vector(7 downto 0)``
+     - —
+
+   * - ``wdata``
+     - ``std_logic_vector(31 downto 0)``
+     - —
+
+   * - ``rdata``
+     - ``std_logic_vector(31 downto 0)``
+     - —
+
+
+RTL Detail
+----------
+
+Gate-level netlist generated by ``yosys`` and rendered with ``netlistsvg``.
+
+.. only:: html
+
+   .. raw:: html
+
+      <details class="hdl-rtl-detail">
+      <summary>Show RTL schematic</summary>
+
+   .. image:: apb_bridge_schematic.*
+      :align: center
+
+   .. raw:: html
+
+      </details>
+
+.. only:: latex
+
+   .. raw:: latex
+
+      \begin{landscape}
+      \makeatletter
+      \spx@image@maxheight=\dimexpr\textheight-4\baselineskip\relax
+      \makeatother
+
+   .. image:: apb_bridge_schematic.*
+      :align: center
+
+   .. raw:: latex
+
+      \end{landscape}

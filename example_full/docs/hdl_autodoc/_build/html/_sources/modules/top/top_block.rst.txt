@@ -1,0 +1,392 @@
+top — Block Diagram
+===================
+
+Auto-extracted from ``top.vhd``.
+
+.. graphviz:: top_block.dot
+
+Ports
+-----
+
+.. raw:: html
+
+   <table class="port-table">
+     <thead>
+       <tr><th>Port</th><th>Direction</th><th>Type</th><th>Description</th></tr>
+     </thead>
+     <tbody>
+       <tr class="bus-group-row">
+         <td colspan="4">
+           <details>
+             <summary><strong>m_axis</strong> — AXI4-Stream Manager (4 ports)</summary>
+             <table class="bus-ports-inner">
+               <tr>
+                 <td><code>m_axis_tdata</code></td>
+                 <td><code>out</code></td>
+                 <td><code>std_logic_vector(7 downto 0)</code></td>
+                 <td>Filtered captured samples (low byte, one-byte packets).</td>
+               </tr>
+               <tr>
+                 <td><code>m_axis_tvalid</code></td>
+                 <td><code>out</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>m_axis_tready</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>m_axis_tlast</code></td>
+                 <td><code>out</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+             </table>
+           </details>
+         </td>
+       </tr>
+       <tr class="bus-group-row">
+         <td colspan="4">
+           <details>
+             <summary><strong>s_apb</strong> — APB Subordinate (7 ports)</summary>
+             <table class="bus-ports-inner">
+               <tr>
+                 <td><code>s_apb_psel</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic</code></td>
+                 <td>APB subordinate port for register access.</td>
+               </tr>
+               <tr>
+                 <td><code>s_apb_penable</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>s_apb_pwrite</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>s_apb_paddr</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic_vector(7 downto 0)</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>s_apb_pwdata</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic_vector(31 downto 0)</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>s_apb_prdata</code></td>
+                 <td><code>out</code></td>
+                 <td><code>std_logic_vector(31 downto 0)</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>s_apb_pready</code></td>
+                 <td><code>out</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+             </table>
+           </details>
+         </td>
+       </tr>
+       <tr class="bus-group-row">
+         <td colspan="4">
+           <details>
+             <summary><strong>s_ext</strong> — AXI4-Stream Subordinate (4 ports)</summary>
+             <table class="bus-ports-inner">
+               <tr>
+                 <td><code>s_ext_tdata</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic_vector(7 downto 0)</code></td>
+                 <td>External byte stream in.</td>
+               </tr>
+               <tr>
+                 <td><code>s_ext_tvalid</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>s_ext_tready</code></td>
+                 <td><code>out</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>s_ext_tlast</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+             </table>
+           </details>
+         </td>
+       </tr>
+       <tr class="bus-group-row">
+         <td colspan="4">
+           <details>
+             <summary><strong>m_ext</strong> — AXI4-Stream Manager (4 ports)</summary>
+             <table class="bus-ports-inner">
+               <tr>
+                 <td><code>m_ext_tdata</code></td>
+                 <td><code>out</code></td>
+                 <td><code>std_logic_vector(7 downto 0)</code></td>
+                 <td>External byte stream out, after filtering.</td>
+               </tr>
+               <tr>
+                 <td><code>m_ext_tvalid</code></td>
+                 <td><code>out</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>m_ext_tready</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+               <tr>
+                 <td><code>m_ext_tlast</code></td>
+                 <td><code>out</code></td>
+                 <td><code>std_logic</code></td>
+                 <td></td>
+               </tr>
+             </table>
+           </details>
+         </td>
+       </tr>
+       <tr class="bus-group-row">
+         <td colspan="4">
+           <details>
+             <summary><strong>adc</strong> — Converter interface (3 ports)</summary>
+             <table class="bus-ports-inner">
+               <tr>
+                 <td><code>adc_clk</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic</code></td>
+                 <td>Converter clock; asynchronous to clk.</td>
+               </tr>
+               <tr>
+                 <td><code>adc_arst_n</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic</code></td>
+                 <td>Converter-domain asynchronous active-low reset input.</td>
+               </tr>
+               <tr>
+                 <td><code>adc_data</code></td>
+                 <td><code>in</code></td>
+                 <td><code>std_logic_vector(11 downto 0)</code></td>
+                 <td>Sample from the converter.</td>
+               </tr>
+             </table>
+           </details>
+         </td>
+       </tr>
+       <tr>
+         <td><code>clk</code></td>
+         <td><code>in</code></td>
+         <td><code>std_logic</code></td>
+         <td>System clock.</td>
+       </tr>
+       <tr>
+         <td><code>arst_n</code></td>
+         <td><code>in</code></td>
+         <td><code>std_logic</code></td>
+         <td>System-domain asynchronous active-low reset input.</td>
+       </tr>
+       <tr>
+         <td><code>led_busy</code></td>
+         <td><code>out</code></td>
+         <td><code>std_logic</code></td>
+         <td>High while a capture is in progress.</td>
+       </tr>
+       <tr>
+         <td><code>led_overflow</code></td>
+         <td><code>out</code></td>
+         <td><code>std_logic</code></td>
+         <td>High after a sample was lost to a full FIFO.</td>
+       </tr>
+     </tbody>
+   </table>
+
+
+Generics
+--------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Name
+     - Type
+     - Default
+     - Description
+
+   * - ``WINDOW_CYCLES``
+     - ``positive``
+     - ``1024``
+     - Length of the capture window in system clock cycles.
+
+
+Signals
+-------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Signal
+     - Type
+     - Description
+
+   * - ``srst_n``
+     - ``std_logic``
+     - Resets: asserted at once, released on the domain's clock.
+
+   * - ``adc_srst_n``
+     - ``std_logic``
+     - Resets: asserted at once, released on the domain's clock.
+
+   * - ``rst``
+     - ``std_logic``
+     - —
+
+   * - ``adc_rst``
+     - ``std_logic``
+     - —
+
+   * - ``awaddr``
+     - ``std_logic_vector(7 downto 0)``
+     - Register bus between the APB bridge and the register file.
+
+   * - ``araddr``
+     - ``std_logic_vector(7 downto 0)``
+     - Register bus between the APB bridge and the register file.
+
+   * - ``wdata``
+     - ``std_logic_vector(31 downto 0)``
+     - —
+
+   * - ``rdata``
+     - ``std_logic_vector(31 downto 0)``
+     - —
+
+   * - ``wstrb``
+     - ``std_logic_vector(3 downto 0)``
+     - —
+
+   * - ``bresp``
+     - ``std_logic_vector(1 downto 0)``
+     - —
+
+   * - ``rresp``
+     - ``std_logic_vector(1 downto 0)``
+     - —
+
+   * - ``awvalid``
+     - ``std_logic``
+     - —
+
+   * - ``awready``
+     - ``std_logic``
+     - —
+
+   * - ``wvalid``
+     - ``std_logic``
+     - —
+
+   * - ``wready``
+     - ``std_logic``
+     - —
+
+   * - ``bvalid``
+     - ``std_logic``
+     - —
+
+   * - ``bready``
+     - ``std_logic``
+     - —
+
+   * - ``arvalid``
+     - ``std_logic``
+     - —
+
+   * - ``arready``
+     - ``std_logic``
+     - —
+
+   * - ``rvalid``
+     - ``std_logic``
+     - —
+
+   * - ``rready``
+     - ``std_logic``
+     - —
+
+   * - ``start``
+     - ``std_logic``
+     - Control.
+
+   * - ``filter_enable``
+     - ``std_logic``
+     - Control.
+
+   * - ``clear``
+     - ``std_logic``
+     - Control.
+
+   * - ``clear_overflow``
+     - ``std_logic``
+     - Control.
+
+   * - ``threshold``
+     - ``std_logic_vector(7 downto 0)``
+     - —
+
+   * - ``capture_en``
+     - ``std_logic``
+     - —
+
+   * - ``busy``
+     - ``std_logic``
+     - —
+
+   * - ``state_code``
+     - ``std_logic_vector(1 downto 0)``
+     - —
+
+   * - ``ext_count``
+     - ``std_logic_vector(15 downto 0)``
+     - —
+
+   * - ``sample_data``
+     - ``std_logic_vector(11 downto 0)``
+     - Capture path.
+
+   * - ``sample_valid``
+     - ``std_logic``
+     - —
+
+   * - ``sample_ready``
+     - ``std_logic``
+     - —
+
+   * - ``overflow``
+     - ``std_logic``
+     - —
+
+   * - ``ovf_meta``
+     - ``std_logic``
+     - overflow is set on adc_clk; two flops bring it onto clk.
+
+   * - ``ovf_sync``
+     - ``std_logic``
+     - overflow is set on adc_clk; two flops bring it onto clk.

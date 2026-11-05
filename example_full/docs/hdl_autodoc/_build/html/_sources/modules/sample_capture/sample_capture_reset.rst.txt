@@ -1,0 +1,61 @@
+sample_capture — Reset Domain Analysis
+======================================
+
+Auto-extracted from ``sample_capture.sv``.
+
+.. graphviz:: sample_capture_reset.dot
+
+Reset Domains
+-------------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Process
+     - Clock
+     - Reset
+     - Style
+
+   * - ``p_adc_en``
+     - ``adc_clk``
+     - ``adc_rst``
+     - Sync
+
+   * - ``p_adc_capture``
+     - ``adc_clk``
+     - ``adc_rst``
+     - Sync
+
+   * - ``p_ctrl``
+     - ``clk``
+     - ``rst_n``
+     - Async
+
+   * - ``p_out``
+     - ``clk``
+     - ``rst_n``
+     - Async
+
+
+.. warning::
+
+   The following signals cross between different reset domains. Logic driven under one reset may not be in a consistent state when the other reset releases.
+
+
+Signal Crossings
+----------------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Signal
+     - Source Reset
+     - Destination Reset
+
+   * - ``capture_en``
+     - ``rst_n``
+     - ``adc_rst``
+
+   * - ``clear_req``
+     - ``rst_n``
+     - ``adc_rst``

@@ -482,16 +482,16 @@ def test_each_report_has_its_own_variable(tmp_path, monkeypatch):
 def test_vivado_reports_can_be_renamed_too(tmp_path, monkeypatch):
     h, docs, rep = _reports(tmp_path)
     util = tmp_path / "my_util.rpt"
-    util.write_text((Path(__file__).parents[4] / "example" / "reports" / "vivado"
+    util.write_text((Path(__file__).parents[4] / "example_full" / "reports" / "vivado"
                      / "utilization_placed.rpt").read_text())
     timing = tmp_path / "my_timing.rpt"
-    timing.write_text((Path(__file__).parents[4] / "example" / "reports" / "vivado"
+    timing.write_text((Path(__file__).parents[4] / "example_full" / "reports" / "vivado"
                        / "timing_summary_routed.rpt").read_text())
     monkeypatch.setenv("AUTODOC_VIVADO_UTILIZATION", str(util))
     monkeypatch.setenv("AUTODOC_VIVADO_TIMING", str(timing))
     main(h, docs, rep, if_present=True)
     page = (docs / "synthesis" / "index.rst").read_text()
-    assert "By module (Vivado)" in page and "blinky" in page and "clk_50" in page
+    assert "By module (Vivado)" in page and "capture" in page and "adc_clk" in page
 
 
 def test_a_relative_override_is_taken_from_the_working_directory(tmp_path, monkeypatch):

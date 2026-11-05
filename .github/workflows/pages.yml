@@ -1,6 +1,6 @@
 name: Pages
 
-# Publishes the example sites, built from main, to GitHub Pages.
+# Publishes the example project's site, built from main, to GitHub Pages.
 on:
   push:
     branches: [main]
@@ -29,14 +29,11 @@ jobs:
           cache-dependency-path: src/requirements.txt
       - run: sudo apt-get update && sudo apt-get install -y graphviz
       - run: pip install -r src/requirements.txt
-      - name: Build the examples
+      - name: Build the example project
         run: |
-          for example in example example_sv example_ecp5 example_full; do
-            make -C "$example" doc-clean doc-html SCHEMATICS=0
-            mkdir -p "site/$example"
-            cp -r "$example/docs/hdl_autodoc/_build/html/." "site/$example/"
-          done
-          cp .github/pages/index.html site/index.html
+          make -C example_full doc-clean doc-html SCHEMATICS=0
+          mkdir -p site
+          cp -r example_full/docs/hdl_autodoc/_build/html/. site/
           touch site/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:

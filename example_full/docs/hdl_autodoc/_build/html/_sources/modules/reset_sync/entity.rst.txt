@@ -1,0 +1,8 @@
+reset_sync — Entity
+===================
+
+Source file: ``src/reset_sync.vhd``.
+
+.. vhdl:autoentity:: reset_sync
+
+.. include:: reset_sync_source.rst

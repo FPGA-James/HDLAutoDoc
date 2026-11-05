@@ -43,7 +43,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        example: [example, example_sv, example_ecp5, example_full]
+        example: [example_full]
     steps:
       - uses: actions/checkout@v4
         with:
