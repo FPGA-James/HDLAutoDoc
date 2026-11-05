@@ -9,6 +9,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { renderDocument } from '../src/render.ts';
+import { shellHtml } from '../src/shell.ts';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const chrome = [process.env.CHROME,
@@ -29,11 +30,8 @@ before(async (t) => {
   execFileSync('npm', ['run', 'build'], { cwd: root, stdio: 'pipe' });
   dir = mkdtempSync(join(tmpdir(), 'webview-'));
   cpSync(join(root, 'dist'), join(dir, 'dist'), { recursive: true });
-  const html = (nonce) => `<!doctype html><html><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'unsafe-inline' 'self'; script-src 'nonce-${nonce}' 'wasm-unsafe-eval' 'self'; font-src 'self';">
-<link rel="stylesheet" href="dist/panel.css"><style id="theme"></style></head>
-<body class="vscode-light" data-assets="dist/vendor/"><div id="content"></div><script nonce="${nonce}" src="dist/webview.js"></script></body></html>`;
-  writeFileSync(join(dir, 'index.html'), html('n0nce'));
+  writeFileSync(join(dir, 'index.html'), shellHtml({ nonce: 'n0nce', cspSource: "'self'", panelCss: 'dist/panel.css',
+    webviewJs: 'dist/webview.js', vendorBase: 'dist/vendor' }).replace('</head>', '<style id="theme"></style></head>'));
   mkdirSync(join(root, 'test/out'), { recursive: true });
   const { default: puppeteer } = await import('puppeteer-core');
   browser = await puppeteer.launch({ executablePath: chrome, args: ['--no-sandbox', '--allow-file-access-from-files'] });
@@ -204,3 +202,48 @@ for (const [theme, main, minor] of [['light', 'light', 'dark'], ['dark', 'dark',
     await page.close();
   });
 }
+
+
+const requestExport = () => page.evaluate(() => document.querySelector('[data-export="html"]').click());
+const exported = () => page.evaluate(() => window.__posted.find((m) => m.type === 'export'));
+
+test('Export HTML sends the document with its diagrams drawn in the light theme, even from a dark panel', async (t) => {
+  if (!browser) return t.skip('no Chrome');
+  const doc = fixture('sample_ctrl');
+  await open('dark');
+  await render(renderDocument(doc));
+  await page.waitForFunction(() => document.querySelector('.fsm svg') && document.querySelector('.mermaid svg') && document.querySelector('.wavedrom svg'), { timeout: 20000 });
+  await requestExport();
+  await page.waitForFunction(() => window.__posted.some((m) => m.type === 'export'), { timeout: 30000 });
+  const message = await exported();
+  assert.equal(message.format, 'html');
+  assert.ok((message.html.match(/<svg/g) ?? []).length >= waves(doc) + flows(doc) + 1, 'every diagram is drawn');
+  assert.match(message.html, /ECECFF/i, 'Mermaid default (light) theme');
+  assert.doesNotMatch(message.html, /1f2020/i, 'no dark Mermaid theme');
+  assert.match(message.html, /<h1[^>]*>sample_ctrl/);
+  assert.equal(await count('.export-root'), 0, 'the off-screen copy is removed');
+  assert.equal(await count('.fsm svg'), 1, 'the panel itself is untouched');
+  assert.equal(await count('.mermaid svg'), flows(doc));
+  assert.deepEqual(errors, []);
+  await page.close();
+});
+
+test('a request from the host exports the same way', async (t) => {
+  if (!browser) return t.skip('no Chrome');
+  await open();
+  await render(renderDocument(fixture('sample_capture')));
+  await page.waitForSelector('.mermaid svg', { timeout: 20000 });
+  await page.evaluate(() => window.postMessage({ type: 'requestExport', format: 'html' }, '*'));
+  await page.waitForFunction(() => window.__posted.some((m) => m.type === 'export'), { timeout: 30000 });
+  assert.match((await exported()).html, /sample_capture/);
+  await page.close();
+});
+
+test('the export button does nothing before there is a document', async (t) => {
+  if (!browser) return t.skip('no Chrome');
+  await open();
+  await requestExport();
+  await new Promise((r) => setTimeout(r, 300));
+  assert.equal(await exported(), undefined);
+  await page.close();
+});

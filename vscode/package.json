@@ -23,7 +23,12 @@
     "commands": [
       {
         "command": "hdlAutodoc.showDocumentation",
-        "title": "HDL AutoDoc: Show documentation"
+        "title": "HDL AutoDoc: Show documentation",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "hdlAutodoc.exportHtml",
+        "title": "HDL AutoDoc: Export documentation as HTML"
       }
     ],
     "configuration": {
@@ -41,6 +46,15 @@
           "description": "Pause after the last keystroke before the preview refreshes."
         }
       }
+    },
+    "menus": {
+      "editor/title": [
+        {
+          "command": "hdlAutodoc.showDocumentation",
+          "when": "resourceExtname =~ /^\\.(vhd|vhdl|sv|svh|v|vh)$/i",
+          "group": "navigation"
+        }
+      ]
     }
   },
   "scripts": {

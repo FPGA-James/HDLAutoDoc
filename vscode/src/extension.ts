@@ -2,7 +2,9 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as vscode from 'vscode';
 import { resetVersionCache, runAutodocJson } from './runner.ts';
+import { exportPage } from './export.ts';
 import { languageOf, Session } from './session.ts';
+import { shellHtml } from './shell.ts';
 import type { RunRequest, Snapshot } from './session.ts';
 import { SupportFinder } from './support.ts';
 
@@ -14,6 +16,8 @@ export interface TestApi {
   /** True once the webview has loaded its script and said so (proves the CSP and asset URIs work). */
   webviewReady(): boolean;
   handleMessage(message: unknown): Promise<void>;
+  /** Save exports here instead of asking (the dialog cannot be driven from a test). */
+  exportTo(target: vscode.Uri | undefined): void;
 }
 
 const RUN_TIMEOUT_MS = 15000;
@@ -77,29 +81,34 @@ export function activate(context: vscode.ExtensionContext): TestApi {
   function shell(webview: vscode.Webview, dist: vscode.Uri): string {
     const nonce = Array.from({ length: 24 }, () => Math.floor(Math.random() * 36).toString(36)).join('');
     const asset = (...parts: string[]) => webview.asWebviewUri(vscode.Uri.joinPath(dist, ...parts)).toString();
-    const csp = [
-      "default-src 'none'",
-      'img-src data:',
-      `style-src ${webview.cspSource} 'unsafe-inline'`,
-      `script-src 'nonce-${nonce}' 'wasm-unsafe-eval'`,
-      `font-src ${webview.cspSource}`,
-    ].join('; ');
-    return `<!doctype html>
-<html><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="${csp}">
-<link rel="stylesheet" href="${asset('panel.css')}">
-</head><body data-assets="${asset('vendor')}/">
-<div id="content"></div>
-<script nonce="${nonce}" src="${asset('webview.js')}"></script>
-</body></html>`;
+    return shellHtml({ nonce, cspSource: webview.cspSource, panelCss: asset('panel.css'),
+      webviewJs: asset('webview.js'), vendorBase: asset('vendor') });
+  }
+
+  let exportTarget: vscode.Uri | undefined;
+
+  async function saveHtml(body: string): Promise<void> {
+    const file = followed?.fileName;
+    const name = file ? path.basename(file, path.extname(file)) : 'documentation';
+    const folder = file ? path.dirname(file) : vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? '';
+    const target = exportTarget ?? await vscode.window.showSaveDialog({
+      defaultUri: vscode.Uri.file(path.join(folder, `${name}.html`)), filters: { HTML: ['html'] } });
+    if (!target) return;
+    const css = fs.readFileSync(path.join(context.extensionPath, 'dist', 'panel.css'), 'utf8');
+    await vscode.workspace.fs.writeFile(target, Buffer.from(exportPage(name, body, css), 'utf8'));
+    void vscode.window.showInformationMessage(`Exported ${target.fsPath}`, 'Open').then((choice) => {
+      if (choice === 'Open') void vscode.env.openExternal(target);
+    });
   }
 
   async function handleMessage(message: unknown): Promise<void> {
-    const m = message as { type?: string; line?: number } | undefined;
+    const m = message as { type?: string; line?: number; format?: string; html?: string } | undefined;
     if (m?.type === 'ready') {
       ready = true;
       if (pending) void panel?.webview.postMessage(pending);
       refreshNow();
+    } else if (m?.type === 'export' && m.format === 'html' && typeof m.html === 'string') {
+      await saveHtml(m.html);
     } else if (m?.type === 'goto' && typeof m.line === 'number' && followed) {
       const document = followed;
       const column = vscode.window.visibleTextEditors.find((e) => e.document === document)?.viewColumn;
@@ -135,6 +144,10 @@ export function activate(context: vscode.ExtensionContext): TestApi {
 
   context.subscriptions.push(
     vscode.commands.registerCommand('hdlAutodoc.showDocumentation', openPanel),
+    vscode.commands.registerCommand('hdlAutodoc.exportHtml', () => {
+      if (!panel) openPanel();
+      void panel?.webview.postMessage({ type: 'requestExport', format: 'html' });
+    }),
     vscode.window.onDidChangeActiveTextEditor((editor) => {
       if (!panel || !editor) return;                         // focusing the panel itself leaves no editor
       if (languageOf(snapshot(editor.document)) !== null) followed = editor.document;
@@ -162,6 +175,7 @@ export function activate(context: vscode.ExtensionContext): TestApi {
     hasPanel: () => panel !== undefined,
     webviewReady: () => ready,
     handleMessage,
+    exportTo: (target) => { exportTarget = target; },
   };
 }
 

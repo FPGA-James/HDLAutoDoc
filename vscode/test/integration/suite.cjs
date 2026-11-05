@@ -71,7 +71,20 @@ exports.run = async function run() {
   await config.update('pythonPath', undefined, vscode.ConfigurationTarget.Global);
   await waitFor('recovery', () => !api.lastHtml().includes('message-error') && api.lastHtml().includes('sample_capture'));
 
-  // 7. Closing the panel stops the updates.
+  // 7. Exporting writes a standalone HTML file where the dialog would have sent it.
+  const os = require('node:os');
+  const target = vscode.Uri.file(path.join(os.tmpdir(), `hdl-autodoc-export-${Date.now()}.html`));
+  api.exportTo(target);
+  await api.handleMessage({ type: 'export', format: 'html', html: '<h1>exported</h1><svg></svg>' });
+  const saved = fs.readFileSync(target.fsPath, 'utf8');
+  assert.match(saved, /<title>sample_capture<\/title>/);
+  assert.match(saved, /<h1>exported<\/h1>/);
+  assert.match(saved, /--vscode-foreground:#222/);
+  assert.doesNotMatch(saved, /<script/);
+  fs.unlinkSync(target.fsPath);
+  api.exportTo(undefined);
+
+  // 8. Closing the panel stops the updates.
   await vscode.commands.executeCommand('workbench.action.closeAllEditors');
   await waitFor('the panel to close', () => !api.hasPanel());
 };

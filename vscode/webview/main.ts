@@ -60,16 +60,16 @@ function scopeStyles(element: Element): void {
   });
 }
 
-async function drawWaveforms(): Promise<void> {
-  const elements = [...content.querySelectorAll<HTMLElement>('.wavedrom')];
+async function drawWaveforms(root: HTMLElement, prefix: string): Promise<void> {
+  const elements = [...root.querySelectorAll<HTMLElement>('.wavedrom')];
   if (elements.length === 0) return;
   await loadScript('wavedrom/default.js');
   await loadScript('wavedrom/wavedrom.min.js');
   elements.forEach((element, n) => {
     try {
       const source = JSON.parse(element.dataset.source ?? '') as object;
-      element.id = `hdlwave${n}_0`;
-      WaveDrom.RenderWaveForm(0, source, `hdlwave${n}_`);
+      element.id = `${prefix}${n}_0`;
+      WaveDrom.RenderWaveForm(0, source, `${prefix}${n}_`);
       scopeStyles(element);
     } catch (error) {
       showError(element, 'WaveDrom', error);
@@ -77,11 +77,11 @@ async function drawWaveforms(): Promise<void> {
   });
 }
 
-async function drawDiagrams(): Promise<void> {
-  const nodes = [...content.querySelectorAll('.mermaid')];
+async function drawDiagrams(root: HTMLElement, dark: boolean): Promise<void> {
+  const nodes = [...root.querySelectorAll('.mermaid')];
   if (nodes.length === 0) return;
   await loadScript('mermaid.min.js');
-  mermaid.initialize({ startOnLoad: false, securityLevel: 'strict', theme: isDark() ? 'dark' : 'default' });
+  mermaid.initialize({ startOnLoad: false, securityLevel: 'strict', theme: dark ? 'dark' : 'default' });
   try {
     await mermaid.run({ nodes, suppressErrors: true });
   } catch (error) {
@@ -89,8 +89,8 @@ async function drawDiagrams(): Promise<void> {
   }
 }
 
-async function drawStateMachines(): Promise<void> {
-  const elements = [...content.querySelectorAll<HTMLElement>('.fsm')];
+async function drawStateMachines(root: HTMLElement): Promise<void> {
+  const elements = [...root.querySelectorAll<HTMLElement>('.fsm')];
   if (elements.length === 0) return;
   await loadScript('viz-global.js');
   const viz = await Viz.instance();
@@ -112,7 +112,8 @@ async function show(html: string): Promise<void> {
   latestHtml = html;
   content.innerHTML = html;
   window.scrollTo(0, scroll);
-  for (const draw of [drawWaveforms, drawDiagrams, drawStateMachines]) {
+  const draws = [() => drawWaveforms(content, 'hdlwave'), () => drawDiagrams(content, isDark()), () => drawStateMachines(content)];
+  for (const draw of draws) {
     if (mine !== generation) return;                  // a newer render replaced this one
     try {
       await draw();
@@ -123,10 +124,40 @@ async function show(html: string): Promise<void> {
   if (mine === generation) window.scrollTo(0, scroll);
 }
 
+/**
+ * The document as it would look on a light page: drawn again off-screen with the light theme,
+ * whatever theme the panel is in (a dark Mermaid theme or an inverted waveform would be unreadable
+ * on the white page the export gives).  Off-screen but attached, because the diagram libraries measure the DOM.
+ */
+async function lightHtml(): Promise<string> {
+  const copy = document.createElement('div');
+  copy.className = 'export-root';
+  copy.style.cssText = 'position:absolute;left:-10000px;top:0;width:1000px';
+  copy.innerHTML = latestHtml;
+  document.body.appendChild(copy);
+  try {
+    for (const draw of [() => drawWaveforms(copy, 'hdlexp'), () => drawDiagrams(copy, false), () => drawStateMachines(copy)]) {
+      try { await draw(); } catch (error) { showError(copy, 'Diagram', error); }
+    }
+    return copy.innerHTML;
+  } finally {
+    copy.remove();
+  }
+}
+
+async function requestExport(format: string): Promise<void> {
+  if (!latestHtml) return;                              // nothing to export yet
+  host?.postMessage({ type: 'export', format, html: await lightHtml() });
+}
+
 window.addEventListener('message', (event: MessageEvent) => {
-  const message = event.data as { type?: string; html?: string } | undefined;
+  const message = event.data as { type?: string; html?: string; format?: string } | undefined;
   if (message?.type === 'render' && typeof message.html === 'string') void show(message.html);
+  if (message?.type === 'requestExport' && typeof message.format === 'string') void requestExport(message.format);
 });
+
+document.querySelectorAll<HTMLElement>('[data-export]').forEach((button) =>
+  button.addEventListener('click', () => void requestExport(button.dataset.export ?? 'html')));
 
 content.addEventListener('click', (event) => {
   const target = (event.target as Element).closest('[data-line]');
