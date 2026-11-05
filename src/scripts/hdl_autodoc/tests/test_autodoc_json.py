@@ -216,3 +216,38 @@ def test_interfaces_instantiated_in_the_body_are_listed_with_their_line(tmp_path
     assert doc["warnings"] == []
     assert [(i["instance"], i["component"], i["kind"], i["line"]) for i in doc["instances"]] == [
         ("s_if", "axis_if", "interface", 2), ("u", "plain", "module", 3)]
+
+
+# ── line numbers must be the editor's: VS Code breaks lines on \n and \r\n only ──
+
+def _editor_line(text, needle):
+    return next(i for i, l in enumerate(text.split("\n"), 1) if needle in l)
+
+
+@pytest.mark.parametrize("separator", ["\f", "\v", "\x85", " ", " ", "\x1c"])
+def test_vhdl_line_numbers_ignore_characters_python_treats_as_line_breaks(separator):
+    text = (f"-- Header{separator}comment.\n--\n-- My entity.\nentity e is\n    generic (\n        W : positive := 8\n    );\n"
+            "    port (\n        clk : in std_logic;\n        d : in std_logic\n    );\nend entity e;\n"
+            "architecture rtl of e is\nbegin\n    p_reg : process (clk) is\n    begin\n        null;\n"
+            "    end process p_reg;\n    u1 : entity work.sub port map (clk => clk);\nend architecture rtl;\n")
+    doc = build_document(text, "vhdl")
+    assert doc["module"]["line"] == _editor_line(text, "entity e is")
+    assert doc["module"]["description"].endswith("My entity.")
+    assert [p["line"] for p in doc["ports"]] == [_editor_line(text, "clk : in"), _editor_line(text, "d : in")]
+    assert doc["generics"][0]["line"] == _editor_line(text, "W :")
+    assert doc["processes"][0]["line"] == _editor_line(text, "p_reg : process")
+    assert doc["instances"][0]["line"] == _editor_line(text, "u1 :")
+
+
+@pytest.mark.parametrize("separator", ["\f", " ", "\x85"])
+def test_systemverilog_line_numbers_ignore_characters_python_treats_as_line_breaks(separator):
+    text = (f"// Header{separator}comment.\n//\n// Counter module.\nmodule m #(\n    parameter int W = 8\n) (\n"
+            "    input logic clk,\n    output logic [W-1:0] q\n);\n    always_ff @(posedge clk) begin : p_q\n"
+            "        q <= q + 1;\n    end\n    sub u_sub (.clk(clk));\nendmodule\n")
+    doc = build_document(text, "systemverilog")
+    assert doc["module"]["line"] == _editor_line(text, "module m")
+    assert doc["module"]["description"].endswith("Counter module.")
+    assert doc["generics"][0]["line"] == _editor_line(text, "parameter int W")
+    assert [p["line"] for p in doc["ports"]] == [_editor_line(text, "input logic clk"), _editor_line(text, "output logic")]
+    assert doc["processes"][0]["line"] == _editor_line(text, "p_q")
+    assert doc["instances"][0]["line"] == _editor_line(text, "u_sub")

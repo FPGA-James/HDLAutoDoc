@@ -39,7 +39,7 @@ import sys
 from pathlib import Path
 
 from hdl_scan import matching_paren
-from hdl_text import safe_id
+from hdl_text import safe_id, split_lines
 from sv_interfaces import collect_interfaces, find_interface_port
 
 
@@ -159,7 +159,7 @@ def extract_ports_vhdl(text: str) -> list[dict]:
     if not section:
         return []
 
-    lines  = section.splitlines()
+    lines  = split_lines(section)
     ports  = []
 
     for idx, line in enumerate(lines):
@@ -200,7 +200,7 @@ def extract_generics_vhdl(text: str) -> list[dict]:
     if not section:
         return []
 
-    lines    = section.splitlines()
+    lines    = split_lines(section)
     generics = []
 
     for idx, line in enumerate(lines):
@@ -297,7 +297,7 @@ def extract_ports_sv(text: str, interface_names: set[str] | None = None) -> list
     its `modport` ("" if none); `dir` holds the modport ("—" if none) and `type`
     the interface name.  Without it behaviour is unchanged.
     """
-    lines = text.splitlines()
+    lines = split_lines(text)
     ports = []
 
     spans: list[tuple[int, int]] = []
@@ -360,7 +360,7 @@ def extract_interface_instances_sv(text: str,
     """
     if not interface_names:
         return []
-    lines = text.splitlines()
+    lines = split_lines(text)
     spans = _sv_port_list_spans(text)
     found: list[dict] = []
     pos = 0
@@ -385,7 +385,7 @@ def extract_params_sv(text: str) -> list[dict]:
     Extract parameter and localparam declarations from a SystemVerilog module.
     Returns list of {name, type, default, comment, kind, line}.
     """
-    lines  = text.splitlines()
+    lines  = split_lines(text)
     params = []
 
     for idx, line in enumerate(lines):
@@ -435,7 +435,7 @@ def extract_signals_vhdl(text: str) -> list[dict]:
     first bare 'begin' line.  Returns list of {name, type, range, init, comment}.
     Comments from the preceding line or same line are captured.
     """
-    lines = text.splitlines()
+    lines = split_lines(text)
 
     arch_re  = re.compile(r"^\s*architecture\s+\w+\s+of\s+\w+\s+is\b", re.IGNORECASE)
     begin_re = re.compile(r"^\s*begin\s*$", re.IGNORECASE)
@@ -476,7 +476,7 @@ def extract_signals_sv(text: str) -> list[dict]:
     declarations (i.e. not prefixed with input/output/inout).
     Returns list of {name, type, range, init, comment}.
     """
-    lines   = text.splitlines()
+    lines   = split_lines(text)
     signals = []
 
     for idx, line in enumerate(lines):

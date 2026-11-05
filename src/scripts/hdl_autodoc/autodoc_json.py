@@ -42,7 +42,7 @@ import extract_reset
 from detect_buses import group_ports
 from generate_rst import ENTITY_RE, MODULE_RE
 from hdl_scan import scan_sv_instances, scan_vhdl_instances
-from hdl_text import blank_sv_comments, blank_vhdl_comments, safe_id
+from hdl_text import blank_sv_comments, blank_vhdl_comments, safe_id, split_lines
 from sv_interfaces import collect_interfaces
 
 LANGUAGES = ("vhdl", "systemverilog")
@@ -178,7 +178,7 @@ def build_document(text: str, language: str, support_files=(), bus_groups: Path 
     vhdl = language == "vhdl"
     warnings: list[str] = []
     blanked = blank_vhdl_comments(text) if vhdl else blank_sv_comments(text)
-    lines = text.splitlines()
+    lines = split_lines(text)
 
     def section(name: str, fn, default):
         try:

@@ -46,3 +46,15 @@ def test_blanked_comments_keep_every_position_and_newline():
 def test_blanking_leaves_code_that_merely_resembles_a_comment_start_in_a_string_alone_for_now():
     # Documented limit shared with strip_*: no string-literal awareness.
     assert hdl_text.blank_sv_comments('a = "x"; // c\n') == 'a = "x";     \n'
+
+
+def test_split_lines_breaks_only_on_newline_and_crlf():
+    assert hdl_text.split_lines("a\nb\r\nc\n") == ["a", "b", "c"]
+    assert hdl_text.split_lines("a\fb c\x85d\nz") == ["a\fb c\x85d", "z"]
+    assert hdl_text.split_lines("") == [] and hdl_text.split_lines("\n") == [""]
+    assert hdl_text.split_lines("a\n\nb") == ["a", "", "b"]
+
+
+def test_split_lines_agrees_with_splitlines_on_ordinary_text():
+    for text in ("x", "x\n", "x\ny\n\n", "\n\nx", "a\r\nb\r\n"):
+        assert hdl_text.split_lines(text) == text.splitlines(), repr(text)
